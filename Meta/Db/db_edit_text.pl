@@ -35,11 +35,11 @@ my($stat)="SELECT ".$field." FROM ".$table." WHERE ".$select_field."=".$dbi->quo
 my($res)=$dbi->execute_arrayref($stat);
 #Meta::Utils::Output::print("res is [".$res."]\n");
 if($#$res!=0) {
-	Meta::Utils::System::die("could not get field from db");
+	throw Meta::Error::Simple("could not get field from db");
 }
 my($content)=$res->[0][0];
 #Meta::Utils::Output::print("content is [".$content."]\n");
-#Meta::Utils::System::exit(1);
+#Meta::Utils::System::exit_ok();
 
 # get a temp file name that we can use for editing (usually in /tmp).
 
@@ -55,7 +55,8 @@ Meta::Tool::Editor::edit($temp);
 
 # load the content after the editing
 
-$content=Meta::Utils::File::File::load($temp);
+my($content);
+Meta::Utils::File::File::load($temp,\$content);
 
 # now save it in the database
 
@@ -100,7 +101,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_edit_text.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -208,6 +209,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -7,7 +7,7 @@ use Meta::Xml::Parsers::Base qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -18,15 +18,15 @@ $VERSION="0.10";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=XML::Parser::Expat->new();
 	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
+		throw Meta::Error::Simple("didn't get a parser");
 	}
 	$self->setHandlers(
 		'Doctype'=>\&handle_doctype,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{TYPE}=defined;
 	return($self);
 }
@@ -80,7 +80,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Type.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -153,6 +153,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -7,7 +7,7 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.02";
 @ISA=qw();
 
 #sub BEGIN($);
@@ -21,14 +21,11 @@ sub BEGIN() {
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_verbose",
 	);
-	Meta::Class::MethodMaker->print(["verbose"]);
 }
 
 sub verbose($$) {
 	my($self,$string)=@_;
-	if($self->get_verbose()) {
-		Meta::Utils::Output::print($string);
-	}
+	Meta::Utils::Output::verbose($self->get_verbose(),$string);
 }
 
 sub TEST($) {
@@ -69,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Verbose.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -135,6 +132,7 @@ None.
 
 	0.00 MV move tests to modules
 	0.01 MV bring movie data
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

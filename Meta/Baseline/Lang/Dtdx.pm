@@ -11,7 +11,7 @@ use Meta::Lang::Dtd::Html qw();
 use XML::LibXML qw();
 
 our($VERSION,@ISA);
-$VERSION="0.20";
+$VERSION="0.21";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -62,9 +62,7 @@ sub c2chec($) {
 
 sub c2html($) {
 	my($buil)=@_;
-	my($res)=Meta::Lang::Dtd::Html::c2html($buil);
-#	Meta::Baseline::Utils::file_emblem($buil->get_targ());
-	return($res);
+	Meta::Lang::Dtd::Html::c2html($buil);
 }
 
 sub my_file($$) {
@@ -131,7 +129,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dtdx.pm
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -218,6 +216,7 @@ None.
 	0.18 MV move tests into modules
 	0.19 MV move tests into modules
 	0.20 MV finish papers
+	0.21 MV md5 issues
 
 =head1 SEE ALSO
 

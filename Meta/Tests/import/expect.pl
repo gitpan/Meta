@@ -6,6 +6,7 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Test qw();
 use Expect qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -25,14 +26,14 @@ Meta::Utils::Output::print("cmd is [".$cmd."]\n");
 my($sess)=Expect->spawn($cmd);
 
 $sess->log_stdout(1);
-$sess->expect(30,$user."@".$host."'s password: ") || Meta::Utils::System::die("never got password prompt on [".$host."],[".$sess->exp_error()."]");
+$sess->expect(30,$user."@".$host."'s password: ") || throw Meta::Error::Simple("never got password prompt on [".$host."],[".$sess->exp_error()."]");
 print $sess $pass."\r";
 my($matc)=$sess->expect(30,"Login incorrect","-re",'(.*)\$');
 if($matc==0) {
-	Meta::Utils::System::die("connection closed");
+	throw Meta::Error::Simple("connection closed");
 }
 print $sess "ls -l\r";
-$matc=$sess->expect(30,"-re",'\r\n(.*)\$') || Meta::Utils::System::die("wait here");
+$matc=$sess->expect(30,"-re",'\r\n(.*)\$') || throw Meta::Error::Simple("wait here");
 my($retu)=$sess->exp_before();
 print $sess "exit\r";
 $sess->soft_close();
@@ -43,7 +44,7 @@ Meta::Utils::Output::print("in here\n");
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -76,7 +77,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: expect.pl
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -169,10 +170,11 @@ None.
 	0.23 MV SEE ALSO section fix
 	0.24 MV move tests to modules
 	0.25 MV web site development
+	0.26 MV md5 issues
 
 =head1 SEE ALSO
 
-Expect(3), Meta::Baseline::Test(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), Expect(3), Meta::Baseline::Test(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -7,7 +7,7 @@ use Meta::Ds::Ochash qw();
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw(Meta::Ds::Ochash Meta::Ds::Connected);
 
 #sub printd($$);
@@ -134,7 +134,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Parents.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -235,6 +235,7 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV teachers project
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 

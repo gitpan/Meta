@@ -7,9 +7,11 @@ use Meta::Development::Deps qw();
 use Meta::Utils::Utils qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
+use Meta::IO::File qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub is_internal($);
@@ -44,10 +46,9 @@ sub add_graph($$) {
 	my($show_external)=1;
 	my($path)=join(":",@INC);
 	$grap->node_insert($modu);
-	open(FILE,$srcx) || Meta::Utils::System::die("unable to open file [".$srcx."]");
-	my($line);
-	while($line=<FILE> || 0) {
-		chop($line);
+	my($io)=Meta::IO::File->new_reader($srcx);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
 		if($line=~/^use .* qw\(.*\);$/) {
 			my($cmod)=($line=~/^use (.*) qw\(.*\);$/);
 			if($cmod=~/^Meta/) {#this is an internal file
@@ -66,7 +67,7 @@ sub add_graph($$) {
 			}
 		}
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$srcx."]");
+	$io->close();
 }
 
 sub c2deps($) {
@@ -113,7 +114,7 @@ sub deps_to_module($) {
 	my($deps)=@_;
 	my($module)=($deps=~/deps\/(.*)\.deps$/);
 	if($module eq "") {
-		Meta::Utils::System::die("module is nothing from deps [".$deps."]");
+		throw Meta::Error::Simple("module is nothing from deps [".$deps."]");
 	}
 	my($suff);
 	if($module=~/^perl\/bin/) {
@@ -134,17 +135,16 @@ sub add_deps($$$$$) {
 	$grap->node_insert($modu);
 	my($fdep)=&module_to_deps($modu);
 	my($deps)=Meta::Utils::File::Path::resolve($path,$fdep,":");
-	open(FILE,$deps) || Meta::Utils::System::die("unable to open file [".$deps."]");
-	my($line);
-	while($line=<FILE> || 0) {
-		chop($line);
+	my($io)=Meta::IO::File->new_reader($deps);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
 		if($line=~/^\/\*/) {#skip comment lines
 			next;
 		}
 		if($line=~/^cascade .*=$/) {#read name of module and make sure it's the one we got
 			my($node)=($line=~/^cascade (.*)=$/);
 			if($node ne $modu) {
-				Meta::Utils::System::die("node [".$node."] ne modu [".$modu."]");
+				throw Meta::Error::Simple("node [".$node."] ne modu [".$modu."]");
 			}
 			next;
 		}
@@ -163,7 +163,7 @@ sub add_deps($$$$$) {
 			$grap->edge_insert($modu,$line);
 		}
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$deps."]");
+	$io->close();
 }
 
 sub add_deps_rec($$$$$) {
@@ -227,7 +227,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Deps.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -350,10 +350,11 @@ None.
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
 	0.14 MV teachers project
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Error::Simple(3), Meta::IO::File(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

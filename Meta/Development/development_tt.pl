@@ -12,11 +12,12 @@ $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($file)="temp/html/projects/Website/computing.temp";
-my($text)=Meta::Utils::File::File::load_deve($file);
+my($text);
+Meta::Utils::File::File::load_deve($file,\$text);
 my($parser)=Template::Parser->new();
 my($document)=$parser->parse($text);
 if(!$document) {
-	Meta::Utils::System::die("unable to parse document");
+	throw Meta::Error::Simple("unable to parse document");
 }
 Meta::Utils::Output::print("document is [".$document."]\n");
 while(my($key,$val)=each(%$document)) {
@@ -34,7 +35,7 @@ Meta::Utils::Output::print("metadata is [".$metadata."]\n");
 #my($blocks)=$document->blocks();
 #Meta::Utils::Output::print("blocks is [".$blocks."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -67,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: development_tt.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -139,6 +140,7 @@ None.
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
 	0.02 MV move tests to modules
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

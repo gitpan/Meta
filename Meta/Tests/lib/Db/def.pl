@@ -11,7 +11,7 @@ use Meta::Utils::Utils qw();
 use Meta::Utils::File::Remove qw();
 use Meta::Utils::Output qw();
 use Meta::Db::Info qw();
-use IO::File qw();
+use Meta::IO::File qw();
 use Meta::Development::Module qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -39,7 +39,7 @@ my($field_num)=$def->get_field_number("item","name");
 Meta::Utils::Output::print("field_num of item,name is [".$field_num."]\n");
 
 my($temp)=Meta::Utils::Utils::get_temp_file();
-my($outp)=IO::File->new("> ".$temp);
+my($outp)=Meta::IO::File->new("> ".$temp);
 my($writ)=Meta::Xml::Writer->new(OUTPUT=>$outp,DATA_INDENT=>1,DATA_MODE=>1,UNSAFE=>1);
 $writ->xmlDecl();
 $writ->comment(Meta::Lang::Docb::Params::get_comment());
@@ -54,7 +54,7 @@ Meta::Utils::File::Remove::rm($temp);
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: def.pl
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -187,10 +187,11 @@ None.
 	0.29 MV SEE ALSO section fix
 	0.30 MV move tests to modules
 	0.31 MV teachers project
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-IO::File(3), Meta::Baseline::Test(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Development::Module(3), Meta::Lang::Docb::Params(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Meta::Xml::Writer(3), strict(3)
+Meta::Baseline::Test(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Development::Module(3), Meta::IO::File(3), Meta::Lang::Docb::Params(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Meta::Xml::Writer(3), strict(3)
 
 =head1 TODO
 

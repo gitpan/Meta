@@ -9,13 +9,13 @@ $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
 =head1 NAME
 
-mime_import.pl - import mime types from Mime::Types into an RDBMS.
+mime_import.pl - import mime types from XML/MIME into an RDBMS.
 
 =head1 COPYRIGHT
 
@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: mime_import.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -50,10 +50,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This program will fill the mime database out of the list of Mimes
-which are used by the Mime::Types perl module. The list of mimes
-in that module is kept fairly up to data. The code is just an
-adjustment of the code found in Mime::Types.
+This program will read a MIME/XML file which has mime types, extensions
+and other data amd will import that data into an RDBMS that will be given
+to it.
 
 =head1 OPTIONS
 
@@ -113,6 +112,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

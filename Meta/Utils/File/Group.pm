@@ -3,69 +3,75 @@
 package Meta::Utils::File::Group;
 
 use strict qw(vars refs subs);
-use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
-#sub get_gidx($);
-#sub check_gidx($$$);
-#sub check_hash_gidx($$$);
-#sub grou2gidx($);
-#sub check_hash_grou($$$);
+#sub group2gid($);
+#sub gid2gourp($);
+#sub get_gid($);
+#sub get_group($);
+#sub check_gid($$);
+#sub check_group($$);
+#sub check_hash_gid($$);
+#sub check_hash_group($$);
 #sub TEST($);
 
 #__DATA__
 
-sub get_gidx($) {
+sub group2gid($) {
+	my($group)=@_;
+	my($gid)=(CORE::getgrnam($group))[2];
+	return($gid);
+}
+
+sub gid2group($) {
+	my($gid)=@_;
+	#need to do this
+}
+
+sub get_gid($) {
 	my($file)=@_;
 	my(@list)=stat($file);
 	if($list[0]) {
-		my($gidx)=$list[5];
-		return($gidx);
+		my($gid)=$list[5];
+		return($gid);
 	} else {
-		Meta::Utils::System::die("unable to stat file [".$file."]");
+		throw Meta::Error::Simple("unable to stat file [".$file."]");
 		return(0);
 	}
 }
 
-sub check_gidx($$$) {
-	my($file,$grou,$verb)=@_;
-	my($curr)=get_gidx($file);
-	if($curr ne $grou) {
-		if($verb) {
-			Meta::Utils::Output::print("failed group check [".$grou."] on file [".$file."] with group [".$curr."]\n");
-		}
-		return(0);
-	} else {
-		return(1);
-	}
+sub get_group($) {
+	my($file)=@_;
+	#need to do this
 }
 
-sub check_hash_gidx($$$) {
-	my($hash,$gidx,$verb)=@_;
-	my($stat)=1;
-	my($numb)=0;
+sub check_gid($$) {
+	my($file,$gid)=@_;
+	my($curr)=get_gid($file);
+	Meta::Development::Assert::assert_eq($gid,$curr,"bad group on file [".$file."]");
+}
+
+sub check_group($$) {
+	my($file,$group)=@_;
+	my($curr)=get_group($file);
+	Meta::Development::Assert::assert_eq($group,$curr,"bad group on file [".$file."]");
+}
+
+sub check_hash_gid($$) {
+	my($hash,$gid)=@_;
 	while(my($key,$val)=each(%$hash)) {
-		if(!check_gidx($key,$gidx,$verb)) {
-			$numb++;
-			$stat=0;
-		}
+		check_gid($key,$gid);
 	}
-	return($stat);
 }
 
-sub grou2gidx($) {
-	my($grou)=@_;
-	my($gidx)=(getgrnam($grou))[2];
-	return($gidx);
-}
-
-sub check_hash_grou($$$) {
-	my($hash,$grou,$verb)=@_;
-	my($gidx)=grou2gidx($grou);
-	return(check_hash_gidx($hash,$gidx,$verb));
+sub check_hash_group($$) {
+	my($hash,$group)=@_;
+	my($gid)=group2gid($group);
+	check_hash_gid($hash,$gid);
 }
 
 sub TEST($) {
@@ -106,13 +112,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Group.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Utils::File::Group qw();
-	my($result)=Meta::Utils::File::Group::check_hash($hash);
+	my($group)=Meta::Utils::File::Group::get_group("/etc/passwd");
+	# $group should now be "root"
 
 =head1 DESCRIPTION
 
@@ -120,49 +127,70 @@ This package can check and fix the group settings on files within your change.
 
 =head1 FUNCTIONS
 
-	get_gidx($)
-	check_gidx($$$)
-	check_hash_gidx($$$)
-	grou2gidx($)
-	check_hash_grou($$$)
+	group2gid($)
+	gid2group($)
+	get_gid($)
+	get_group($)
+	check_gid($$)
+	check_group($$)
+	check_hash_gid($$)
+	check_hash_group($$)
 	TEST($);
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<get_gidx($)>
+=item B<grou2gid($)>
+
+This function receives a group name and converts it to the group id.
+
+=item B<gid2group($)>
+
+This function receives a group id and returns the group name associated with that id.
+
+=item B<get_gid($)>
 
 This routine receives a file name and returns the group id ownership of that
 file. The function dies if the file does not exist.
 The function uses the standard "stat" function to get the relevant
 information.
 
-=item B<check_gidx($$$)>
+=item B<get_group($)>
 
-This routine receives a file, a group id and a verbose flag and makes
-sure that the file is of the appointed group.
-The result is 1 if the check went well and 0 otherwise.
+This routine receives a file name and returns the group name of that file.
+The function throws an exception if anything goes wrong.
 
-=item B<check_hash_gidx($$$)>
+=item B<check_gid($$)>
+
+This routine receives a file and a group id.
+It makes sure that the file is of the appointed group.
+It will throw an exception if it is not.
+
+=item B<check_group($$)>
+
+This method receives a file and a group name.
+It makes sure that the file is of the appointed group.
+It will throw an exception if it is not.
+
+=item B<check_hash_gid($$$)>
 
 The function receives a hash reference, a group id and a verbose flag.
 This routine runs a check on all the files in the hash that they are
 indeed of the designated group received.
 
-=item B<grou2gid($)>
+=item B<check_hash_group($$$)>
 
-This function receives a group name and converts it to the group id.
-
-=item B<check_hash_grou($$$)>
-
-This does exactly as the above function check_hash_gidx except it receives
+This does exactly as the above function check_hash_gid except it receives
 a group name and not an absolute id, and then translates it to an absolute
-id in order to make the check and simple calls: check_hash_gidx.
+id in order to make the check and simple calls: check_hash_gid.
 
 =item B<TEST($)>
 
 Test suite for this module.
+The test suite could be called individually or by a higher level script to perform
+regression testing for this class as part of a bigger class collection.
+This test suite currently does nothing.
 
 =back
 
@@ -194,10 +222,11 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Output(3), strict(3)
+Error(3), strict(3)
 
 =head1 TODO
 

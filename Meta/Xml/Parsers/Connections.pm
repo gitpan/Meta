@@ -8,7 +8,7 @@ use Meta::Db::Connection qw();
 use XML::Parser::Expat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.36";
+$VERSION="0.37";
 @ISA=qw(XML::Parser::Expat);
 
 #sub new($);
@@ -21,17 +21,17 @@ $VERSION="0.36";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=XML::Parser::Expat->new();
 	if(!$self) {
-		Meta::Utils::System::die("didnt get a parser");
+		throw Meta::Error::Simple("didnt get a parser");
 	}
 	$self->setHandlers(
 		"Start"=>\&handle_start,
 		"End"=>\&handle_end,
 		"Char"=>\&handle_char,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -71,38 +71,41 @@ sub handle_char($$) {
 	if($context eq "connections.connection.type") {
 		$self->{TEMP_CONNECTION}->set_type($elem);
 	}
+	if($context eq "connections.connection.use_host") {
+		$self->{TEMP_CONNECTION}->set_use_host($elem);
+	}
 	if($context eq "connections.connection.host") {
 		$self->{TEMP_CONNECTION}->set_host($elem);
+	}
+	if($context eq "connections.connection.use_port") {
+		$self->{TEMP_CONNECTION}->set_use_port($elem);
 	}
 	if($context eq "connections.connection.port") {
 		$self->{TEMP_CONNECTION}->set_port($elem);
 	}
+	if($context eq "connections.connection.use_user") {
+		$self->{TEMP_CONNECTION}->set_use_user($elem);
+	}
 	if($context eq "connections.connection.user") {
 		$self->{TEMP_CONNECTION}->set_user($elem);
+	}
+	if($context eq "connections.connection.use_password") {
+		$self->{TEMP_CONNECTION}->set_use_password($elem);
 	}
 	if($context eq "connections.connection.password") {
 		$self->{TEMP_CONNECTION}->set_password($elem);
 	}
-	if($context eq "connections.connection.drop") {
-		$self->{TEMP_CONNECTION}->set_drop($elem);
+	if($context eq "connections.connection.use_default_db") {
+		$self->{TEMP_CONNECTION}->set_use_default_db($elem);
 	}
-	if($context eq "connections.connection.crea") {
-		$self->{TEMP_CONNECTION}->set_crea($elem);
+	if($context eq "connections.connection.default_db") {
+		$self->{TEMP_CONNECTION}->set_default_db($elem);
 	}
-	if($context eq "connections.connection.drok") {
-		$self->{TEMP_CONNECTION}->set_drok($elem);
+	if($context eq "connections.connection.use_extra_options") {
+		$self->{TEMP_CONNECTION}->set_use_extra_options($elem);
 	}
-	if($context eq "connections.connection.must") {
-		$self->{TEMP_CONNECTION}->set_must($elem);
-	}
-	if($context eq "connections.connection.over") {
-		$self->{TEMP_CONNECTION}->set_over($elem);
-	}
-	if($context eq "connections.connection.edir") {
-		$self->{TEMP_CONNECTION}->set_edir($elem);
-	}
-	if($context eq "connections.connection.flat") {
-		$self->{TEMP_CONNECTION}->set_flat($elem);
+	if($context eq "connections.connection.extra_options") {
+		$self->{TEMP_CONNECTION}->set_extra_options($elem);
 	}
 }
 
@@ -144,7 +147,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connections.pm
 	PROJECT: meta
-	VERSION: 0.36
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -262,6 +265,7 @@ None.
 	0.34 MV web site automation
 	0.35 MV SEE ALSO section fix
 	0.36 MV teachers project
+	0.37 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -9,7 +9,7 @@ use File::Find qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.27";
 @ISA=qw();
 
 #sub doit();
@@ -38,8 +38,8 @@ sub hash($$) {
 	if(!$abso) {
 		my($other)={};
 		$dire.="/";
-		while(my($keyx,$valx)=each(%$hash)) {
-			my($curr)=Meta::Utils::Utils::minus($keyx,$dire);
+		while(my($key,$val)=each(%$hash)) {
+			my($curr)=Meta::Utils::Utils::minus($key,$dire);
 			$other->{$curr}=defined;
 		}
 		$hash=$other;
@@ -92,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Collect.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -187,6 +187,7 @@ None.
 	0.24 MV website construction
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 

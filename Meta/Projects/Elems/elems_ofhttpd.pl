@@ -3,7 +3,7 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use OpenFrame::Server::HTTP qw();
+#use OpenFrame::Server::HTTP qw();
 use OpenFrame qw();
 use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
@@ -17,26 +17,26 @@ $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 #my($dir)="htdocs/";
-my($dir)=Meta::Baseline::Aegis::baseline();
+#my($dir)=Meta::Baseline::Aegis::baseline();
 
-my($config)=OpenFrame::Config->new();
-$config->setKey(
-	'SLOTS',
-	[
-		{
-			dispatch=>'Local',
-			name=>'Meta::OpenFrame::Slot::Types',
-			config=>{ directory=>$dir,aegis=>1 },
-		},
-	]
-);
-$config->setKey(DEBUG=>$debug);
+#my($config)=OpenFrame::Config->new();
+#$config->setKey(
+#	'SLOTS',
+#	[
+#		{
+#			dispatch=>'Local',
+#			name=>'Meta::OpenFrame::Slot::Types',
+#			config=>{ directory=>$dir,aegis=>1 },
+#		},
+#	]
+#);
+#$config->setKey(DEBUG=>$debug);
 
-my($h)=OpenFrame::Server::HTTP->new(port=>$port);
-Meta::Utils::Output::print("contact me at [http://localhost:".$port."/]\n");
-$h->handle();
+#my($h)=OpenFrame::Server::HTTP->new(port=>$port);
+#Meta::Utils::Output::print("contact me at [http://localhost:".$port."/]\n");
+#$h->handle();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: elems_ofhttpd.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -78,6 +78,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 =head1 DESCRIPTION
 
 This program is the web server for the elems project.
+
+Security
+If you want to run this server securly I advise you to keep running it on a user
+port (port over 1024) like 8080. This way the server can run as a user process.
+The problem is that you have to either install a piece of software that runs as root
+and redicts port 80 to 8080 or to use feature in the OS which enables you to
+efficiently redirect one port to another. Linux has this feature in it's iptables
+subsystem.
 
 =head1 OPTIONS
 
@@ -145,10 +153,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), OpenFrame(3), OpenFrame::Server::HTTP(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), OpenFrame(3), strict(3)
 
 =head1 TODO
 

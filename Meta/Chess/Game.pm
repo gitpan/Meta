@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -39,9 +39,9 @@ $VERSION="0.27";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{BLACK}=defined;
 	$self->{WHITE}=defined;
 	$self->{DATE}=defined;
@@ -87,8 +87,8 @@ sub get_date($) {
 }
 
 sub set_site($$) {
-	my($self,$valx)=@_;
-	$self->{SITE}=$valx;
+	my($self,$val)=@_;
+	$self->{SITE}=$val;
 }
 
 sub get_site($) {
@@ -97,8 +97,8 @@ sub get_site($) {
 }
 
 sub set_event($$) {
-	my($self,$valx)=@_;
-	$self->{EVENT}=$valx;
+	my($self,$val)=@_;
+	$self->{EVENT}=$val;
 }
 
 sub get_event($) {
@@ -107,8 +107,8 @@ sub get_event($) {
 }
 
 sub set_round($$) {
-	my($self,$valx)=@_;
-	$self->{ROUND}=$valx;
+	my($self,$val)=@_;
+	$self->{ROUND}=$val;
 }
 
 sub get_round($) {
@@ -117,8 +117,8 @@ sub get_round($) {
 }
 
 sub set_result($$) {
-	my($self,$valx)=@_;
-	$self->{RESULT}=$valx;
+	my($self,$val)=@_;
+	$self->{RESULT}=$val;
 }
 
 sub get_result($) {
@@ -127,8 +127,8 @@ sub get_result($) {
 }
 
 sub set_timecontrol($$) {
-	my($self,$valx)=@_;
-	$self->{TIMECONTROL}=$valx;
+	my($self,$val)=@_;
+	$self->{TIMECONTROL}=$val;
 }
 
 sub get_timecontrol($) {
@@ -137,8 +137,8 @@ sub get_timecontrol($) {
 }
 
 sub set_extra($$) {
-	my($self,$valx)=@_;
-	$self->{EXTRA}=$valx;
+	my($self,$val)=@_;
+	$self->{EXTRA}=$val;
 }
 
 sub get_extra($) {
@@ -147,8 +147,8 @@ sub get_extra($) {
 }
 
 sub set_whiteelo($$) {
-	my($self,$valx)=@_;
-	$self->{WHITEELO}=$valx;
+	my($self,$val)=@_;
+	$self->{WHITEELO}=$val;
 }
 
 sub get_whiteelo($) {
@@ -157,8 +157,8 @@ sub get_whiteelo($) {
 }
 
 sub set_blackelo($$) {
-	my($self,$valx)=@_;
-	$self->{BLACKELO}=$valx;
+	my($self,$val)=@_;
+	$self->{BLACKELO}=$val;
 }
 
 sub get_blackelo($) {
@@ -197,53 +197,53 @@ sub pgn_read($$) {
 				$state="in_game";
 			} else {
 				if($curr=~/^\[.* \".*\"\]$/) {
-					my($keyx,$valx)=($curr=~/^\[(.*) \"(.*)\"\]$/);
+					my($key,$val)=($curr=~/^\[(.*) \"(.*)\"\]$/);
 					my($found)=0;
-					if($keyx eq "Event") {
-						$self->set_event($valx);
+					if($key eq "Event") {
+						$self->set_event($val);
 						$found=1;
 					}
-					if($keyx eq "Site") {
-						$self->set_site($valx);
+					if($key eq "Site") {
+						$self->set_site($val);
 						$found=1;
 					}
-					if($keyx eq "Date") {
-						$self->set_date($valx);
+					if($key eq "Date") {
+						$self->set_date($val);
 						$found=1;
 					}
-					if($keyx eq "Round") {
-						$self->set_round($valx);
+					if($key eq "Round") {
+						$self->set_round($val);
 						$found=1;
 					}
-					if($keyx eq "White") {
-						$self->set_white($valx);
+					if($key eq "White") {
+						$self->set_white($val);
 						$found=1;
 					}
-					if($keyx eq "Black") {
-						$self->set_black($valx);
+					if($key eq "Black") {
+						$self->set_black($val);
 						$found=1;
 					}
-					if($keyx eq "Result") {
-						$self->set_result($valx);
+					if($key eq "Result") {
+						$self->set_result($val);
 						$found=1;
 					}
-					if($keyx eq "WhiteElo") {
-						$self->set_whiteelo($valx);
+					if($key eq "WhiteElo") {
+						$self->set_whiteelo($val);
 						$found=1;
 					}
-					if($keyx eq "BlackElo") {
-						$self->set_blackelo($valx);
+					if($key eq "BlackElo") {
+						$self->set_blackelo($val);
 						$found=1;
 					}
-					if($keyx eq "TimeControl") {
-						$self->set_timecontrol($valx);
+					if($key eq "TimeControl") {
+						$self->set_timecontrol($val);
 						$found=1;
 					}
 					if(!$found) {
-						Meta::Utils::System::die("what kind of key is [".$keyx."]");
+						throw Meta::Error::Simple("what kind of key is [".$key."]");
 					}
 				} else {
-					Meta::Utils::System::die("what kind of line is [".$curr."]");
+					throw Meta::Error::Simple("what kind of line is [".$curr."]");
 				}
 			}
 		}
@@ -309,7 +309,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Game.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -513,6 +513,7 @@ None.
 	0.25 MV website construction
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 

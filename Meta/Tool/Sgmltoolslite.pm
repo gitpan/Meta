@@ -11,9 +11,12 @@ use Meta::Utils::File::Remove qw();
 use Meta::Utils::File::Move qw();
 use Meta::Utils::Utils qw();
 use Meta::Baseline::Utils qw();
+use Error qw(:try);
+use Meta::Error::FileNotFound qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw();
 
 #sub check($);
@@ -29,6 +32,15 @@ $VERSION="0.15";
 #sub TEST($);
 
 #__DATA__
+
+our($tool_path);
+our($prefix);
+
+sub BEGIN() {
+#	my($patho)=Meta::Utils::File::Patho->new_path();
+#	$tool_path=$patho->resolve("sgmltools");
+#	$prefix=$patho->path_to("sgmltools");
+}
 
 sub check($) {
 	my($buil)=@_;
@@ -79,7 +91,6 @@ sub c2pdfx($) {
 
 sub tool($$$) {
 	my($buil,$suff,$back)=@_;
-	my($prefix)="/local/tools";
 	my($modu)=$buil->get_modu();
 	my($srcx)=$buil->get_srcx();
 	my($targ)=$buil->get_targ();
@@ -89,9 +100,12 @@ sub tool($$$) {
 	Meta::Utils::File::Copy::copy($srcx,$file);
 #	Meta::Utils::Env::remove_nodie("SGML_CATALOG_FILES");
 	Meta::Utils::Env::set("SGML_CATALOG_FILES",$prefix."/share/sgml/stylesheets/sgmltools/sgmltools.cat");
-	Meta::Utils::Env::remove_nodie("SGML_PATH");
-	my($prog)="sgmltools";
-	#my($prog)="sgmltools.v1";
+	try {
+		Meta::Utils::Env::remove("SGML_PATH");
+	}
+	catch Error with {
+		# do nothing
+	}
 	my(@args);
 	push(@args,"--backend=".$back);
 	#push(@args,"--output=".$back);
@@ -135,12 +149,17 @@ sub tool($$$) {
 	push(@dirs,"-c/usr/share/sgml/docbook/dsssl-stylesheets/catalog");
 	push(@args,"--jade-opt=\'".join(" ",@dirs)."\'",$file);
 	my($text);
-	#Meta::Utils::Output::print("cmd line is [".CORE::join(",",$prog,@args)."]\n");
-	my($scod)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
+	#Meta::Utils::Output::print("cmd line is [".CORE::join(",",$tool_path,@args)."]\n");
+	my($scod)=Meta::Utils::System::system_err_nodie(\$text,$tool_path,\@args);
 	Meta::Utils::File::Remove::rm($file);
 	if(!$scod) {#code is bad (there should be no result but we rm it still)
 		Meta::Utils::Output::print($text);
-		Meta::Utils::File::Remove::rm_nodie($resu);
+		try {
+			Meta::Utils::File::Remove::rm($resu);
+		}
+		catch Meta::Error::FileNotFound with {
+			# do nothing
+		};
 	} else {
 		my($obj)=Meta::Utils::Text::Lines->new();
 		$obj->set_text($text,"\n");
@@ -195,7 +214,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgmltoolslite.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -325,10 +344,11 @@ None.
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
 	0.15 MV bring movie data
+	0.16 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Utils(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
+Error(3), Meta::Baseline::Utils(3), Meta::Error::FileNotFound(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Patho(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

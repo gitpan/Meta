@@ -9,10 +9,14 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 use Meta::Xml::LibXML qw();
 
-my($modu);
+my($modu,$validation,$pedantic_parser,$load_ext_dtd,$recover);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_modu("file","what file to check ?",undef,\$modu);
+$opts->def_bool("validation","should I validate ?",1,\$validation);
+$opts->def_bool("pedantic_parser","pedantic parser ?",1,\$pedantic_parser);
+$opts->def_bool("load_ext_dtd","load extenal dtds ?",1,\$load_ext_dtd);
+$opts->def_bool("recover","recover ?",0,\$recover);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
@@ -25,9 +29,12 @@ $opts->analyze(\@ARGV);
 #my($scod)=Meta::Lang::Xml::Xml::check($build);
 
 my($parser)=Meta::Xml::LibXML->new_aegis();
-$parser->validation(1);
-$parser->pedantic_parser(1);
-$parser->load_ext_dtd(1);
+#Meta::Utils::Output::print("got parser [".$parser."]\n");
+$parser->validation($validation);
+$parser->pedantic_parser($pedantic_parser);
+$parser->load_ext_dtd($load_ext_dtd);
+$parser->recover($recover);
+#my($scod)=$parser->parse_file($modu->get_abs_path());
 my($scod)=$parser->check_file($modu->get_abs_path());
 #Meta::Utils::Output::print("scod is [".$scod."]\n");
 
@@ -64,7 +71,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: xml_lint.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -119,6 +126,22 @@ show history and exit
 
 what file to check ?
 
+=item B<validation> (type: bool, default: 1)
+
+should I validate ?
+
+=item B<pedantic_parser> (type: bool, default: 1)
+
+pedantic parser ?
+
+=item B<load_ext_dtd> (type: bool, default: 1)
+
+load extenal dtds ?
+
+=item B<recover> (type: bool, default: 0)
+
+recover ?
+
 =back
 
 no free arguments are allowed
@@ -139,6 +162,7 @@ None.
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
 	0.02 MV teachers project
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

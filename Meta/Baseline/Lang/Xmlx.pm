@@ -28,7 +28,7 @@ use Meta::Development::Module qw();
 use Meta::Xml::LibXML qw();
 
 our($VERSION,@ISA);
-$VERSION="0.46";
+$VERSION="0.47";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -94,7 +94,7 @@ sub c2sgml($) {
 	#Meta::Utils::Output::print("type is [".$type."]\n");
 	if($type eq "def") {
 		my($obje)=Meta::Db::Def->new_file($srcx);
-		open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
+		open(FILE,"> ".$targ) || throw Meta::Error::Simple("unable to open file [".$targ."]");
 		# UNSAFE is bad but cant be helped since Xml::Writer refused to write mixed content
 		# elements in a safe mode if DATA_MODE is on and we have to have DATA_MODE on to keep
 		# the output readable.
@@ -103,7 +103,8 @@ sub c2sgml($) {
 		$writ->comment(Meta::Lang::Docb::Params::get_comment());
 		$writ->doctype(
 			"section",
-			Meta::Lang::Docb::Params::get_public()
+			Meta::Lang::Docb::Params::get_public(),
+			Meta::Lang::Docb::Params::get_system()
 		);
 		$writ->startTag("section");
 		$writ->startTag("sectioninfo");
@@ -115,7 +116,7 @@ sub c2sgml($) {
 		$obje->printd($writ);
 		$writ->endTag("section");
 		$writ->end();
-		close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
+		close(FILE) || throw Meta::Error::Simple("unable to close file [".$targ."]");
 		return(1);
 	}
 	if($type eq "connections") {
@@ -126,7 +127,7 @@ sub c2sgml($) {
 		Meta::Baseline::Utils::file_emblem($targ);
 		return(1);
 	}
-	Meta::Utils::System::die("what kind of xml type is [".$type."]");
+	throw Meta::Error::Simple("what kind of xml type is [".$type."]");
 	return(0);
 }
 
@@ -146,7 +147,7 @@ sub c2dbxx($) {
 		for(my($i)=0;$i<$cobj->size();$i++) {
 			my($ccon)=$cobj->elem($i);
 			#Meta::Utils::Output::print("creating database [".$i."]\n");
-			my($ccod)=Meta::Db::Ops::act($ccon,$odef);
+			my($ccod)=Meta::Db::Ops::create_db($ccon,$odef);
 			if(!$ccod) {
 				$scod=0;
 			}
@@ -167,7 +168,7 @@ sub c2dbxx($) {
 		}
 		return($scod);
 	}
-	Meta::Utils::System::die("what kind of xml type is [".$type."]");
+	throw Meta::Error::Simple("what kind of xml type is [".$type."]");
 	return(0);
 }
 
@@ -217,7 +218,7 @@ sub c2targ($) {
 		Meta::Utils::File::File::save($targ,$string);
 		return(1);
 	}
-	Meta::Utils::System::die("what kind of xml type is [".$type."]");
+	throw Meta::Error::Simple("what kind of xml type is [".$type."]");
 	return(0);
 }
 
@@ -227,7 +228,7 @@ sub c2rule($) {
 	my($modu)=$buil->get_modu();
 	my($targ)=$buil->get_targ();
 	my($path)=$buil->get_path();
-	open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
+	open(FILE,"> ".$targ) || throw Meta::Error::Simple("unable to open file [".$targ."]");
 	Meta::Baseline::Utils::cook_emblem_print(*FILE);
 	my($link)=Meta::Xml::Parsers::Links->new();
 	$link->parsefile($srcx);
@@ -292,7 +293,7 @@ sub c2rule($) {
 		print FILE "prm0=".$ejoi.";\n";
 		print FILE "prm1="."".";\n";
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
+	close(FILE) || throw Meta::Error::Simple("unable to close file [".$targ."]");
 	return(1);
 }
 
@@ -367,9 +368,9 @@ sub c2perl($) {
 		}
 		#external modules string.
 		my($ext_string);
-		while(my($keyx,$valx)=each(%$ext_modules)) {
-			my($version)=Meta::Lang::Perl::Perl::get_version_mm_unix($keyx);
-			my($module)=Meta::Lang::Perl::Deps::extfile_to_module($keyx);
+		while(my($key,$val)=each(%$ext_modules)) {
+			my($version)=Meta::Lang::Perl::Perl::get_version_mm_unix($key);
+			my($module)=Meta::Lang::Perl::Deps::extfile_to_module($key);
 			$ext_string.="\t\t'".$module."',".$version.",\n";
 		}
 		#add Makefile.PL
@@ -399,7 +400,7 @@ sub c2perl($) {
 		$archive->write($targ);
 		return(1);
 	}
-	Meta::Utils::System::die("what kind of xml type is [".$type."]");
+	throw Meta::Error::Simple("what kind of xml type is [".$type."]");
 	return(0);
 }
 
@@ -454,7 +455,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xmlx.pm
 	PROJECT: meta
-	VERSION: 0.46
+	VERSION: 0.47
 
 =head1 SYNOPSIS
 
@@ -596,6 +597,7 @@ None.
 	0.44 MV weblog issues
 	0.45 MV finish papers
 	0.46 MV teachers project
+	0.47 MV md5 issues
 
 =head1 SEE ALSO
 

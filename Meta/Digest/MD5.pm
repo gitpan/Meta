@@ -4,9 +4,10 @@ package Meta::Digest::MD5;
 
 use strict qw(vars refs subs);
 use Digest::MD5 qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Digest::MD5);
 
 #sub get_filename_digest($);
@@ -19,27 +20,27 @@ $VERSION="0.11";
 sub get_filename_digest($) {
 	my($name)=@_;
 	my($md)=Digest::MD5->new();
-	open(FILE,$name) || Meta::Utils::System::die("unable to open file [".$name."]");
-	$md->addfile(*FILE);
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$name."]");
+	my($io)=Meta::IO::File->new_reader($name);
+	$md->addfile($io);
+	$io->close();
 	return($md->digest());
 }
 
 sub get_filename_hexdigest($) {
 	my($name)=@_;
 	my($md)=Digest::MD5->new();
-	open(FILE,$name) || Meta::Utils::System::die("unable to open file [".$name."]");
-	$md->addfile(*FILE);
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$name."]");
+	my($io)=Meta::IO::File->new_reader($name);
+	$md->addfile($io);
+	$io->close();
 	return($md->hexdigest());
 }
 
 sub get_filename_b64digest($) {
 	my($name)=@_;
 	my($md)=Digest::MD5->new();
-	open(FILE,$name) || Meta::Utils::System::die("unable to open file [".$name."]");
-	$md->addfile(*FILE);
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$name."]");
+	my($io)=Meta::IO::File->new_reader($name);
+	$md->addfile($io);
+	$io->close();
 	return($md->b64digest());
 }
 
@@ -81,13 +82,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MD5.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Digest::MD5 qw();
-	my($result)=$object->method();
+	my($md5)=Meta::Digest::MD5->new();
+	my($digest_file)=$md5->get_filename_digest("/etc/passwd");
 
 =head1 DESCRIPTION
 
@@ -160,10 +162,11 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 
-Digest::MD5(3), strict(3)
+Digest::MD5(3), Meta::IO::File(3), strict(3)
 
 =head1 TODO
 

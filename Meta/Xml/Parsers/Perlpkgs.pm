@@ -11,7 +11,7 @@ use Meta::Development::PackModule qw();
 use Meta::Info::Credit qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Meta::Xml::Parsers::Author);
 
 #sub new($);
@@ -24,7 +24,7 @@ $VERSION="0.17";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 #	Meta::Utils::Output::print("before creating author\n");
 	my($self)=Meta::Xml::Parsers::Author->new();
 #	Meta::Utils::Output::print("before setting handlers\n");
@@ -38,7 +38,7 @@ sub new($) {
 	$self->{TEMP_TEST}=defined;
 	$self->{TEMP_FILE}=defined;
 	$self->{TEMP_CREDIT}=defined;
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -201,7 +201,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perlpkgs.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -291,6 +291,7 @@ None.
 	0.15 MV improve the movie db xml
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 

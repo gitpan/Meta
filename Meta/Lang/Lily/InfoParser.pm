@@ -9,7 +9,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::File::File qw();
 
 our($VERSION,@ISA,$grammar,$curr);
-$VERSION="0.02";
+$VERSION="0.03";
 @ISA=qw(Parser::RecDescent);
 
 #sub BEGIN();
@@ -49,12 +49,12 @@ sub BEGIN() {
 
 #sub new($) {
 #	#$Parse::RecDescent::skip='[ \t]+';
-#	my($clas)=@_;
+#	my($class)=@_;
 #	my($self)=Parse::RecDescent->new($grammar);;
 #	if(!$self) {
-#		Meta::Utils::System::die("unable to generate parser");
+#		throw Meta::Error::Simple("unable to generate parser");
 #	}
-#	bless($self,$clas);
+#	bless($self,$class);
 #	return($self);
 #}
 
@@ -64,12 +64,13 @@ sub parse($$) {
 	$Parse::RecDescent::skip='[ \v\t\n]*';
 	my($parser)=Parse::RecDescent->new($grammar);;
 	if(!$parser) {
-		Meta::Utils::System::die("unable to generate parser");
+		throw Meta::Error::Simple("unable to generate parser");
 	}
-	my($text)=Meta::Utils::File::File::load($file);
+	my($text);
+	Meta::Utils::File::File::load($file,\$text);
 	$curr=$self;
 	if(!$parser->lilyfile($text)) {
-		Meta::Utils::System::die("failed in parsing [".$file."]");
+		throw Meta::Error::Simple("failed in parsing [".$file."]");
 	}
 }
 
@@ -175,7 +176,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: InfoParser.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -290,6 +291,7 @@ None.
 	0.00 MV web site development
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

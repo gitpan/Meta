@@ -7,11 +7,13 @@ use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Text::Unique qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw();
 
+#sub BEGIN();
 #sub checksgml($);
 #sub checkhtml($);
 #sub checktxt($);
@@ -19,11 +21,17 @@ $VERSION="0.13";
 
 #__DATA__
 
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("aspell");
+}
+
 sub checksgml($) {
 	my($buil)=@_;
 	my($srcx)=$buil->get_srcx();
 	my($path)=$buil->get_path();
-	my($prog)="aspell";
 	my(@args);
 	#dont check tags and remarks in sgml - just data
 	push(@args,"--mode=sgml");
@@ -35,12 +43,10 @@ sub checksgml($) {
 	push(@args,"< ",$srcx);
 	#text to hold errors
 	my($text);
-	my($scod)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
+	Meta::Utils::System::system_err(\$text,$tool_path,\@args);
 	#aspell should always succeed (yes! even if there were spelling mistakes)
-	if(!$scod) {
-		Meta::Utils::System::die("strange error");
-	}
 	my($code);
+	#Meta::Utils::Output::print("out of here with text [".$text."]\n");
 	#the return code is determined according to the size of the output
 	if(length($text)>0) {
 		$text=Meta::Utils::Text::Unique::filter($text,"\n");
@@ -101,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aspell.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -117,6 +123,7 @@ from you.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	checksgml($)
 	checkhtml($)
 	checktxt($)
@@ -125,6 +132,10 @@ from you.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method to locate your aspell executable.
 
 =item B<checksgml($)>
 
@@ -190,10 +201,11 @@ None.
 	0.11 MV website construction
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Unique(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Unique(3), strict(3)
 
 =head1 TODO
 

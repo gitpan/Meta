@@ -4,34 +4,36 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::File::Remove qw();
+use Meta::Utils::File::Move qw();
 use Meta::Template::Sub qw();
+use Meta::Error::Simple qw();
 
 my($verb,$file,$local);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
-$opts->def_stri("file","what file to merge ?","[% home_dir %]/.eboard/mygames.pgn",\$file);
+$opts->def_bool("verbose","noisy or quiet ?",1,\$verb);
+$opts->def_file("file","what file to merge ?","[% home_dir %]/.eboard/mygames.pgn",\$file);
 $opts->def_devf("local","what local file to merge to ?","pgnx/games.pgn",\$local);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 $file=Meta::Template::Sub::interpolate($file);
 if(!(-e $file)) {
-	Meta::Utils::System::die("unable to find file [".$file."]");
+	throw Meta::Error::Simple("unable to find file [".$file."]");
 }
 
 # check the file out if needed
 if(!Meta::Baseline::Aegis::in_change($local)) {
-	if($verb) {
-		Meta::Utils::Output::print("checking out file");
-	}
+	Meta::Utils::Output::verbose($verb,"checking out file [".$local."]\n");
 	Meta::Baseline::Aegis::checkout_file($local);
 }
 my($curr)=Meta::Baseline::Aegis::which($local);
-Meta::Utils::Utils::cat($curr,$file,$curr);
+my($out)=Meta::Utils::Utils::get_temp_file();
+Meta::Utils::Utils::cat($curr,$file,$out);
+Meta::Utils::File::Move::mv($out,$curr);
 Meta::Utils::File::Remove::rm($file);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -64,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: chess_merge.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -116,11 +118,11 @@ show description and exit
 
 show history and exit
 
-=item B<verbose> (type: bool, default: 0)
+=item B<verbose> (type: bool, default: 1)
 
 noisy or quiet ?
 
-=item B<file> (type: stri, default: [% home_dir %]/.eboard/mygames.pgn)
+=item B<file> (type: file, default: [% home_dir %]/.eboard/mygames.pgn)
 
 what file to merge ?
 
@@ -146,10 +148,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV web site development
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Template::Sub(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Meta::Error::Simple(3), Meta::Template::Sub(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

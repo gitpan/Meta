@@ -6,22 +6,23 @@ use strict qw(vars refs subs);
 use File::stat qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub chown($$$);
 #sub chown_curr($);
-#sub mode($);
 #sub chmod_r($);
 #sub chmod_x($);
 #sub chmod_agw($);
 #sub chmod_rgw($);
 #sub same_mode($$);
-#sub is_r($);
-#sub size($);
 #sub stat($);
+#sub size($);
+#sub mode($);
+#sub is_r($);
 #sub TEST($);
 
 #__DATA__
@@ -29,7 +30,7 @@ $VERSION="0.30";
 sub chown($$$) {
 	my($uidx,$gidx,$file)=@_;
 	if(!CORE::chown($uidx,$gidx,$file)) {
-		Meta::Utils::System::die("unable to chown [".$file."] to [".$uidx.",".$gidx."]");
+		throw Meta::Error::Simple("unable to chown [".$file."] to [".$uidx.",".$gidx."]");
 	}
 }
 
@@ -38,42 +39,31 @@ sub chown_curr($) {
 	&chown(Meta::Utils::Utils::cuid(),Meta::Utils::Utils::cgid(),$file);
 }
 
-sub mode($) {
-	my($file)=@_;
-	my($sb)=File::stat::stat($file);
-	if(!$sb) {
-		Meta::Utils::System::die("unable to stat the file [".$file."]");
-	}
-	return($sb->mode);
-}
-
 sub chmod_r($) {
 	my($file)=@_;
 	if(!CORE::chmod(0444,$file)) {
-		Meta::Utils::System::die("unable to chmod file [".$file."] to [0444]");
+		throw Meta::Error::Simple("unable to chmod file [".$file."] to [0444]");
 	}
 }
 
 sub chmod_x($) {
 	my($file)=@_;
 	if(!CORE::chmod(0755,$file)) {
-		Meta::Utils::Output::print("unable to chmod file [".$file."] to [0755]\n");
-		return(0);
+		throw Meta::Error::Simple("unable to chmod file [".$file."] to [0755]\n");
 	}
-	return(1);
 }
 
 sub chmod_agw($) {
 	my($file)=@_;
 	if(!CORE::chmod(mode($file) | 00020,$file)) {
-		Meta::Utils::System::die("unable to chmod file [".$file."] to [| 00020]");
+		throw Meta::Error::Simple("unable to chmod file [".$file."] to [| 00020]");
 	}
 }
 
 sub chmod_rgw($) {
 	my($file)=@_;
 	if(!CORE::chmod(mode($file) & 07757,$file)) {
-		Meta::Utils::System::die("unable to chmod file [".$file."] to [& 07757]");
+		throw Meta::Error::Simple("unable to chmod file [".$file."] to [& 07757]");
 	}
 }
 
@@ -81,31 +71,32 @@ sub same_mode($$) {
 	my($fn1,$fn2)=@_;
 	my($mode)=&mode($fn1);
 	if(!CORE::chmod($mode,$fn2)) {
-		Meta::Utils::System::die("unable to chmod file [".$fn2."] to [".$mode."]");
+		throw Meta::Error::Simple("unable to chmod file [".$fn2."] to [".$mode."]");
 	}
-}
-
-sub is_r($) {
-	my($file)=@_;
-	return(mode($file)==444);
-}
-
-sub size($) {
-	my($file)=@_;
-	my($sb)=File::stat::stat($file);
-	if(!$sb) {
-		Meta::Utils::System::die("unable to stat the file [".$file."]");
-	}
-	return($sb->size);
 }
 
 sub stat($) {
 	my($file)=@_;
 	my($sb)=File::stat::stat($file);
 	if(!$sb) {
-		Meta::Utils::System::die("unable to stat the file [".$file."]");
+		throw Meta::Error::Simple("unable to stat the file [".$file."]");
 	}
 	return($sb);
+}
+
+sub size($) {
+	my($file)=@_;
+	return(&stat($file)->size());
+}
+
+sub mode($) {
+	my($file)=@_;
+	return(&stat($file)->mode());
+}
+
+sub is_r($) {
+	my($file)=@_;
+	return(&mode($file)==444);
 }
 
 sub TEST($) {
@@ -146,7 +137,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Prop.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -157,20 +148,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 =head1 DESCRIPTION
 
 This module eases setting permissions on files.
+This module provides method to:
+1. change ownerships on files.
+2. change read/write/execute permissions on files.
+3. get various pieces of info on the file using the stat function.
+and other things.
 
 =head1 FUNCTIONS
 
 	chown($$$)
 	chown_curr($)
-	mode($)
 	chmod_r($)
 	chmod_x($)
 	chmod_agw($)
 	chmod_rgw($)
 	same_mode($$)
-	is_r($)
-	size($)
 	stat($)
+	size($)
+	mode($)
+	is_r($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -186,12 +182,6 @@ to that uid and gid. The function dies if it cannot do so.
 
 Changes the owner id and group id of a certain file to the current group
 id and owner id.
-
-=item B<mode($)>
-
-This functions returns the current mode of a file.
-The function dies if it cannot stat the file (which means the file does not
-exist...).
 
 =item B<chmod_r($)>
 
@@ -214,17 +204,23 @@ This function adds a g-w permission to a file or a directory.
 This function gets two file names and makes the mode of the second be like
 the first.
 
-=item B<is_r($)>
+=item B<stat($)>
 
-This function tests whether a file is indeed read only.
+This method will stat the file and return the stat structure.
 
 =item B<size($)>
 
 This method returns the size of the file given.
 
-=item B<stat($)>
+=item B<mode($)>
 
-This method will stat the file and return the stat structure.
+This functions returns the current mode of a file.
+The function dies if it cannot stat the file (which means the file does not
+exist...).
+
+=item B<is_r($)>
+
+This function tests whether a file is indeed read only.
 
 =item B<TEST($)>
 
@@ -280,10 +276,11 @@ None.
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
 	0.30 MV web site development
+	0.31 MV md5 issues
 
 =head1 SEE ALSO
 
-File::stat(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
+Error(3), File::stat(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

@@ -13,12 +13,15 @@ use Meta::Utils::File::File qw();
 use Pod::POM qw();
 use Symbol qw();
 use Meta::Module::Info qw();
+use Meta::Utils::File::Patho qw();
+use Error qw(:try);
 #use Pod::POM::View::Pod qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.17";
 @ISA=qw();
 
+#sub BEGIN();
 #sub is_perl($);
 #sub is_lib($);
 #sub is_bin($);
@@ -56,9 +59,19 @@ $VERSION="0.16";
 #sub get_name($);
 #sub get_my_pod($);
 #sub get_my_name($);
+#sub get_use_text($);
+#sub get_use($);
 #sub TEST($);
 
 #__DATA__
+
+my($tool_path,$perldoc_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("perl");
+	$perldoc_path=$patho->resolve("perldoc");
+}
 
 sub is_perl($) {
 	my($file)=@_;
@@ -106,7 +119,7 @@ sub remove_prefix($) {
 	if(&is_bin($modu)) {
 		return(&remove_prefix_bin($modu));
 	}
-	Meta::Utils::System::die("what the hell is [".$modu."]");
+	throw Meta::Error::Simple("what the hell is [".$modu."]");
 }
 
 sub get_version_mm($) {
@@ -119,7 +132,7 @@ sub get_version_mm($) {
 	#my($version)=ExtUtils::MakeMaker->parse_version($file);
 	if(!defined($version)) {
 		return(0);
-		#Meta::Utils::System::die("what version is [".$file."]");
+		#throw Meta::Error::Simple('what version is [".$file."]");
 	} else {
 		#Meta::Utils::Output::print("got version [".$version."] for module [".$file."]\n");
 	}
@@ -131,7 +144,7 @@ sub get_version_mm_unix($) {
 	my($version)=ExtUtils::MM_Unix->parse_version($file);
 	if(!defined($version)) {
 		return(0);
-		#Meta::Utils::System::die("what version is [".$file."]");
+		#throw Meta::Error::Simple("what version is [".$file."]");
 	} else {
 		#Meta::Utils::Output::print("got version [".$version."] for module [".$file."]\n");
 	}
@@ -156,9 +169,9 @@ sub get_version_module($) {
 
 sub load_module($) {
 	my($module)=@_;
-	eval "require $module";
+	eval "require ".$module;
 	if($@) {
-		Meta::Utils::System::die("unable to load module [".$module."] with error [".$@."]");
+		throw Meta::Error::Simple("unable to load module [".$module."] with error [".$@."]");
 	}
 }
 
@@ -190,10 +203,7 @@ sub get_module_isa($) {
 sub get_module_see($) {
 	my($module)=@_;
 	my($mod)=Meta::Module::Info->new_from_module($module);
-	if(!$mod) {
-		Meta::Utils::System::die("unable to load module [".$module."]");
-	}
-	my(@used)=$mod->modules_used();
+	my(@used)=$mod->modules_used_sorted();
 	return(\@used);
 }
 
@@ -206,10 +216,7 @@ sub get_file_isa($) {
 sub get_file_see($) {
 	my($file)=@_;
 	my($mod)=Meta::Module::Info->new_from_file($file);
-	if(!$mod) {
-		Meta::Utils::System::die("unable to load file [".$file."]");
-	}
-	my(@used)=$mod->modules_used();
+	my(@used)=$mod->modules_used_sorted();
 	return(\@used);
 }
 
@@ -269,30 +276,30 @@ sub get_file_pod_see($) {
 
 sub run($) {
 	my($modu)=@_;
-	return(Meta::Utils::System::system_nodie("perl",[$modu]));
+	return(Meta::Utils::System::system_nodie($tool_path,[$modu]));
 }
 
 sub profile($) {
 	my($modu)=@_;
-	Meta::Utils::System::system_nodie("perl",["-d:DProf",$modu]);
+	Meta::Utils::System::system_nodie($tool_path,["-d:DProf",$modu]);
 	Meta::Utils::System::system_nodie("dprofpp",[]);
 	Meta::Utils::File::Remove::rm("tmon.out");
 }
 
 sub man($) {
 	my($modu)=@_;
-	return(Meta::Utils::System::system_nodie("perldoc",[$modu]));
+	return(Meta::Utils::System::system_nodie($perldoc_path,[$modu]));
 }
 
 sub man_file($) {
 	my($file)=@_;
-	return(Meta::Utils::System::system_nodie("perldoc",["-F",$file]));
+	return(Meta::Utils::System::system_nodie($perldoc_path,["-F",$file]));
 }
 
 sub man_deve($) {
 	my($deve)=@_;
 	my($file)=Meta::Baseline::Aegis::which($deve);
-	return(Meta::Utils::System::system_nodie("perldoc",["-F",$file]));
+	return(Meta::Utils::System::system_nodie($perldoc_path,["-F",$file]));
 }
 
 sub module_to_file($) {
@@ -381,7 +388,7 @@ sub get_pods_new($) {
 sub get_name($) {
 	my($text)=@_;
 	if($text!~/^\n.* - .*\.\n$/) {
-		Meta::Utils::System::die("bad NAME pod found [".$text."]");
+		throw Meta::Error::Simple("bad NAME pod found [".$text."]");
 	}
 	my($out)=($text=~/^\n.* - (.*)\.\n$/);
 	return($out);
@@ -390,7 +397,8 @@ sub get_name($) {
 sub get_my_pod($) {
 	my($pod_name)=@_;
 	my($prog)=Meta::Utils::Progname::fullname();
-	my($text)=Meta::Utils::File::File::load($prog);
+	my($text);
+	Meta::Utils::File::File::load($prog,\$text);
 	my($pods)=Meta::Lang::Perl::Perl::get_pods($text);
 	my($pod)=$pods->{$pod_name};
 	return($pod);
@@ -400,6 +408,28 @@ sub get_my_name() {
 	my($name_pod)=Meta::Lang::Perl::Perl::get_my_pod("NAME");
 	my($name)=Meta::Lang::Perl::Perl::get_name($name_pod);
 	return($name);
+}
+
+sub get_use_text($) {
+	my($text)=@_;
+	my(@lines)=split('\n',$text);
+	my($size)=$#lines+1;
+	my(@arra);
+	for(my($i)=0;$i<$size;$i++) {
+		my($line)=$lines[$i];
+		if($line=~/^\s*use .*\s+qw\(.*\)\s*;\s*$/) {
+			my($modu)=($line=~/^\s*use (.*)\s+qw\(.*\)\s*;\s*$/);
+			push(@arra,$modu);
+		}
+	}
+	return(\@arra);
+}
+
+sub get_use($) {
+	my($file)=@_;
+	my($text);
+	Meta::Utils::File::File::load($file,\$text);
+	return(&get_use_text($text));
 }
 
 sub TEST($) {
@@ -440,7 +470,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perl.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -455,6 +485,7 @@ This module eases interaction with the Perl language interpreter.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	is_perl($)
 	is_lib($)
 	is_bin($)
@@ -491,11 +522,17 @@ This module eases interaction with the Perl language interpreter.
 	get_pods_new($)
 	get_name($)
 	get_my_name($)
+	get_use_text($)
+	get_use($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method to find the perl interpreter for you.
 
 =item B<is_perl($)>
 
@@ -682,6 +719,19 @@ from the current scripts source code.
 This method is suitable for use by scripts who want to extract their name from their
 own source. No input is reqiured since current script is assumed.
 
+=item B<get_use_text($)>
+
+This method receives a piece of perl code and returns an array with all modules
+used by that code. The implementation currently consists of a simple parser and
+is probably incorrect but good enought for what I want for now. You are welcome
+to improve the implementation.
+
+=item B<get_use($)>
+
+This method receives a perl file name and returns an array with all the modules
+used by that perl file. The implementation simply loads the file into a string
+and calls the above get_use_text.
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -722,10 +772,11 @@ None.
 	0.14 MV improve the movie db xml
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV md5 issues
 
 =head1 SEE ALSO
 
-ExtUtils::MM_Unix(3), ExtUtils::MakeMaker(3), Meta::Module::Info(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::Progname(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Pod::POM(3), Symbol(3), strict(3)
+Error(3), ExtUtils::MM_Unix(3), ExtUtils::MakeMaker(3), Meta::Module::Info(3), Meta::Utils::File::File(3), Meta::Utils::File::Patho(3), Meta::Utils::File::Remove(3), Meta::Utils::Progname(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Pod::POM(3), Symbol(3), strict(3)
 
 =head1 TODO
 

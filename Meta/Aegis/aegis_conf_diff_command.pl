@@ -16,7 +16,13 @@ $opts->set_free_maxi(3);
 $opts->analyze(\@ARGV);
 
 my($original,$input,$output)=($ARGV[0],$ARGV[1],$ARGV[2]);
-my($scod)=Meta::Utils::System::system_nodie("fcomp",["-w",$original,$input,"-o",$output]);
+# test to see if input is binary
+my(@args);
+push(@args,"-What",$original,$input,"-Output",$output);
+if($input=~/\.bz2$/) {
+	push(@args,"--Binary");
+}
+my($scod)=Meta::Utils::System::system_nodie("fcomp",\@args);
 Meta::Utils::System::exit($scod);
 
 __END__
@@ -50,7 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: aegis_conf_diff_command.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -128,6 +134,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV web site development
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -9,7 +9,7 @@ $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: evolution_to.pl
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -130,6 +130,7 @@ None.
 	0.02 MV web site automation
 	0.03 MV SEE ALSO section fix
 	0.04 MV move tests to modules
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 

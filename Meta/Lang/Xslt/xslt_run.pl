@@ -6,6 +6,7 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 use XML::XSLT qw();
+use Error qw(:try);
 
 my($xslt_file,$dom,$variables,$base,$debug,$warnings,$indent,$indent_incr,$xml_file);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -39,12 +40,12 @@ my($xslt)=XML::XSLT->new(
 	indent_incr=>$indent_incr,
 );
 if(!$xslt) {
-	Meta::Utils::System::die("unable to create xslt object");
+	throw Meta::Error::Simple("unable to create xslt object");
 }
 my($result)=$xslt->serve(Source=>$xml_file);
 Meta::Utils::Output::print($result);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -77,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: xslt_run.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -184,10 +185,11 @@ None.
 
 	0.00 MV move tests to modules
 	0.01 MV web site development
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::XSLT(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::XSLT(3), strict(3)
 
 =head1 TODO
 

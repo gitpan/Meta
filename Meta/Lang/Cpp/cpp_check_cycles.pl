@@ -26,30 +26,31 @@ my($sour)=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,0);
 if($stat) {
 	Meta::Utils::Output::print("Constructing nodes...\n");
 }
-while(my($keyx,$valx)=each(%$sour)) {
-	if(Meta::Lang::Perl::Perl::is_perl($keyx)) {
-		$grap->node_insert($keyx);
+while(my($key,$val)=each(%$sour)) {
+	if(Meta::Lang::Perl::Perl::is_perl($key)) {
+		$grap->node_insert($key);
 	}
 }
 if($stat) {
 	Meta::Utils::Output::print("Got ".$grap->node_size()." nodes\n");
 	Meta::Utils::Output::print("Constructing edges...\n");
 }
-while(my($keyx,$valx)=each(%$sour)) {
-	if(Meta::Lang::Perl::Perl::is_perl($keyx)) {
-		my($basename)=File::Basename::basename($keyx,"\.pm","\.pl");
-		my($dirname)=File::Basename::dirname($keyx);
+while(my($key,$val)=each(%$sour)) {
+	if(Meta::Lang::Perl::Perl::is_perl($key)) {
+		my($basename)=File::Basename::basename($key,"\.pm","\.pl");
+		my($dirname)=File::Basename::dirname($key);
 		my($real)="deps/".$dirname."/".$basename.".deps";
-		my($load)=Meta::Utils::File::File::load_deve($real);
+		my($load);
+		Meta::Utils::File::File::load_deve($real,$load);
 		if(defined($load)) {
-			my($addx)=$load=~/^.*\ncascade $keyx=\n(.*);$/s;
+			my($addx)=$load=~/^.*\ncascade $key=\n(.*);$/s;
 			my(@allx)=split('\n',$addx);
 			for(my($i)=0;$i<=$#allx;$i++) {
 				my($curr)=$allx[$i];
 				#make sure we have the nodes
-				$grap->node_insert($keyx);
+				$grap->node_insert($key);
 				$grap->node_insert($curr);
-				$grap->edge_insert($keyx,$curr);
+				$grap->edge_insert($key,$curr);
 			}
 		}
 	}
@@ -101,7 +102,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: cpp_check_cycles.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -184,6 +185,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

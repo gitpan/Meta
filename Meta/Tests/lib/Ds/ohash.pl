@@ -33,7 +33,7 @@ Meta::Utils::Output::print("elem number is [".$hash->get_elem_number($string_mar
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -66,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: ohash.pl
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -154,6 +154,7 @@ None.
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
 	0.20 MV move tests to modules
+	0.21 MV md5 issues
 
 =head1 SEE ALSO
 

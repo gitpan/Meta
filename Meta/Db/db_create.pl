@@ -8,14 +8,16 @@ use Meta::Db::Connections qw();
 use Meta::Db::Dbi qw();
 use Meta::Db::Info qw();
 use Meta::Sql::Stats qw();
+use Error qw(:try);
 
-my($def_file,$connections_file,$name,$con_name);
+my($def_file,$connections_file,$name,$con_name,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_modu("def_file","which definition file to use ?","xmlx/def/contacts.xml",\$def_file);
+$opts->def_modu("def_file","which definition file to use ?",undef,\$def_file);
 $opts->def_modu("connections_file","which connections file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("name","which database name ?",undef,\$name);
 $opts->def_stri("con_name","which connection name ?",undef,\$con_name);
+$opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
@@ -37,15 +39,22 @@ $dbi->connect($connection);
 my($info)=Meta::Db::Info->new();
 $info->set_name($def->get_name());
 $info->set_type($connection->get_type());
+my($drop_stats)=Meta::Sql::Stats->new();
+try {
+	$def->getsql_drop($drop_stats,$info,1);
+	$dbi->execute($drop_stats,$connection,$info);
+}
+catch Error::Simple with {
+	Meta::Utils::Output::verbose($verbose,"Not dropping database since it doesnt exist.\n");
+};
 my($stats)=Meta::Sql::Stats->new();
-$def->getsql_drop($stats,$info,1);
 $def->getsql_create($stats,$info);
 #$stats->print(Meta::Utils::Output::get_file());
 $dbi->execute($stats,$connection,$info);
 
 $dbi->disconnect();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -78,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_create.pl
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -133,7 +142,7 @@ show description and exit
 
 show history and exit
 
-=item B<def_file> (type: modu, default: xmlx/def/contacts.xml)
+=item B<def_file> (type: modu, default: )
 
 which definition file to use ?
 
@@ -148,6 +157,10 @@ which database name ?
 =item B<con_name> (type: stri, default: )
 
 which connection name ?
+
+=item B<verbose> (type: bool, default: 1)
+
+should I be noisy ?
 
 =back
 
@@ -187,10 +200,11 @@ None.
 	0.18 MV SEE ALSO section fix
 	0.19 MV move tests to modules
 	0.20 MV teachers project
+	0.21 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Sql::Stats(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Sql::Stats(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

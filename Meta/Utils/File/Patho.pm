@@ -5,10 +5,9 @@ package Meta::Utils::File::Patho;
 use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 use Meta::Utils::Env qw();
-use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.08";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -18,6 +17,7 @@ $VERSION="0.07";
 #sub minimize($$$);
 #sub exists($$);
 #sub resolve($$);
+#sub path_to($$);
 #sub mtime($$);
 #sub append_data($$$);
 #sub append($$);
@@ -28,27 +28,27 @@ $VERSION="0.07";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Array->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
 sub new_data($$$) {
-	my($clas,$path,$sepa)=@_;
-	my($object)=&new($clas);
+	my($class,$path,$sepa)=@_;
+	my($object)=&new($class);
 	$object->append_data($path,$sepa);
 	return($object);
 }
 
 sub new_env($$$) {
-	my($clas,$var,$sepa)=@_;
-	return(&new_data($clas,Meta::Utils::Env::get($var),$sepa));
+	my($class,$var,$sepa)=@_;
+	return(&new_data($class,Meta::Utils::Env::get($var),$sepa));
 }
 
 sub new_path($) {
-	my($clas)=@_;
-	return(&new_env($clas,"PATH",':'));
+	my($class)=@_;
+	return(&new_env($class,"PATH",':'));
 }
 
 sub minimize($) {
@@ -72,11 +72,23 @@ sub resolve($$) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		my($curr)=$self->getx($i);
 		my($test)=$curr."/".$file;
-		if(-f $test) {
+		if(-x $test) {
 			return($test);
 		}
 	}
-	return(undef);
+	throw Meta::Error::Simple("path to [".$file."] not found");
+}
+
+sub path_to($$) {
+	my($self,$file)=@_;
+	for(my($i)=0;$i<$self->size();$i++) {
+		my($curr)=$self->getx($i);
+		my($test)=$curr."/".$file;
+		if(-x $test) {
+			return($curr);
+		}
+	}
+	throw Meta::Error::Simple("path to [".$file."] not found");
 }
 
 sub mtime($$) {
@@ -85,6 +97,7 @@ sub mtime($$) {
 	if(defined($resolved)) {
 		return(Meta::Utils::File::Time::mtime($resolved));
 	} else {
+		return(undef);
 	}
 }
 
@@ -108,7 +121,10 @@ sub check($) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		my($curr)=$self->getx($i);
 		if(!(-d $curr)) {
-			Meta::Utils::System::die("component [".$curr."] is not a directory");
+			throw Meta::Error::Simple("component [".$curr."] is not a directory");
+		}
+		if($curr=~/^\//) {
+			throw Meta::Error::Simple("component [".$curr."] is not absolute");
 		}
 	}
 }
@@ -156,7 +172,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Patho.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -186,6 +202,7 @@ operations.
 	minimize($)
 	exists($$)
 	resolve($$)
+	path_to($$)
 	mtime($$)
 	append_data($$$)
 	append($$)
@@ -231,6 +248,11 @@ be relative to the path.
 =item B<resolve($$)>
 
 This method will return a file resolved according to a path.
+
+=item B<path_to($$)>
+
+This method will return the path to a certain executable according to the current
+path object.
 
 =item B<mtime($$)>
 
@@ -283,10 +305,11 @@ None.
 	0.05 MV SEE ALSO section fix
 	0.06 MV web site development
 	0.07 MV teachers project
+	0.08 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Ds::Array(3), Meta::Utils::Env(3), Meta::Utils::System(3), strict(3)
+Meta::Ds::Array(3), Meta::Utils::Env(3), strict(3)
 
 =head1 TODO
 
@@ -295,3 +318,5 @@ Meta::Ds::Array(3), Meta::Utils::Env(3), Meta::Utils::System(3), strict(3)
 -write the minimize method.
 
 -in the minimize method convert the elements into some kind of cannonical representation so I'll know that two directory names are not the same name for the same directory.
+
+-write a method to find files in paths which are not executables.

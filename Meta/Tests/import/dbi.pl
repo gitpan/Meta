@@ -36,7 +36,7 @@ for(my($i)=0;$i<=$#driver_names;$i++) {
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbi.pl
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -158,6 +158,7 @@ None.
 	0.19 MV web site automation
 	0.20 MV SEE ALSO section fix
 	0.21 MV move tests to modules
+	0.22 MV md5 issues
 
 =head1 SEE ALSO
 

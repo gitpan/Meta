@@ -4,10 +4,10 @@ package Meta::Pdmt::Md5Node;
 
 use strict qw(vars refs subs);
 use Meta::Pdmt::Node qw();
-use Meta::Utils::System qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Pdmt::Node);
 
 #sub md5($);
@@ -17,7 +17,7 @@ $VERSION="0.00";
 
 sub md5($) {
 	my($self)=@_;
-	Meta::Utils::System::die("this md5 method is abstract and should not be called");
+	throw Meta::Error::Simple("this md5 method is abstract and should not be called");
 }
 
 sub TEST($) {
@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Md5Node.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -112,10 +112,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Pdmt::Node(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Pdmt::Node(3), strict(3)
 
 =head1 TODO
 

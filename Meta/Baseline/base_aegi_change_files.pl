@@ -19,9 +19,9 @@ $opts->def_bool("absolute","do you want absolute path names ?",0,\$abso);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($hash)=Meta::Baseline::Aegis::change_files_hash($newx,$move,$dele,$srcx,$test,$abso);
-Meta::Utils::Hash::print(Meta::Utils::Output::get_file(),$hash);
-Meta::Utils::System::exit(1);
+my($set)=Meta::Baseline::Aegis::change_files_set($newx,$move,$dele,$srcx,$test,$abso);
+$set->foreach(\&Meta::Utils::Output::println);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -54,7 +54,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_change_files.pl
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -174,6 +174,7 @@ None.
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
 	0.26 MV move tests to modules
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 

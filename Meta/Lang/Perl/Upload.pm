@@ -13,7 +13,7 @@ use Meta::Class::MethodMaker qw();
 use Meta::Lang::Perl::Perlpkgs qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.08";
 @ISA=qw(Meta::Development::Verbose);
 
 #sub BEGIN();
@@ -54,9 +54,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Development::Verbose->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -80,7 +80,7 @@ sub init($) {
 	if($self->get_do_ftp()) {
 		$self->ftp_init();
 	}
-	if(self->get_do_http()) {
+	if($self->get_do_http()) {
 		$self->http_init();
 	}
 }
@@ -144,18 +144,18 @@ sub ftp_init($) {
 	my($ftp)=Net::FTP->new($ftp_site,@args);
 	$self->verbose("ftp is [".$ftp."]\n");
 	if(!defined($ftp)) {
-		Meta::Utils::System::die("failed to connect to remote server: $!\n");
+		throw Meta::Error::Simple("failed to connect to remote server with error [".$!."]");
 	}
 	if(!$ftp->login($user,$self->get_ftp_password()))
 	{
 		$ftp->quit();
-		Meta::Utils::System::die("failed to login as user [".$self->get_ftp_user()."] and password [".$self->get_ftp_password()."] with message [".$ftp->message()."] and code [".$ftp->code()."]\n");
+		throw Meta::Error::Simple("failed to login as user [".$self->get_ftp_user()."] and password [".$self->get_ftp_password()."] with message [".$ftp->message()."] and code [".$ftp->code()."]");
 	}
 	$self->verbose("changing to [".$self->get_upload_dir()."] directory...\n");
 	if(!$ftp->cwd($self->get_upload_dir()))
 	{
 		$ftp->quit();
-		Meta::Utils::System::die("failed to change directory to ".$self->get_upload_dir()."!\n");
+		throw Meta::Error::Simple("failed to change directory to [".$self->get_upload_dir()."]");
 	}
 
 	$self->verbose("setting binary mode.\n");
@@ -163,7 +163,7 @@ sub ftp_init($) {
 	if(!$res)
 	{
 		$ftp->quit();
-		Meta::Utils::System::die("failed to change mode to 'binary' with message [".$ftp->message()."] and code [".$ftp->code()."]\n");
+		throw Meta::Error::Simple("failed to change mode to 'binary' with message [".$ftp->message()."] and code [".$ftp->code()."]");
 	}
 	$self->set_ftp($ftp);
 }
@@ -174,7 +174,7 @@ sub ftp_upload($$$) {
 	my($ftp)=$self->get_ftp();
 	my($res)=$ftp->put($file);
 	if(!defined($res)) {
-		Meta::Utils::System::die("failed to upload with message [".$ftp->message()."]\n");
+		throw Meta::Error::Simple("failed to upload with message [".$ftp->message()."]");
 	}
 }
 
@@ -184,7 +184,7 @@ sub ftp_finish($) {
 	$self->verbose("closing connection with FTP server\n");
 	my($res)=$ftp->quit();
 	if(!$res) {
-		Meta::Utils::System::die("failed to quit with message [".$ftp->message()."]\n");
+		throw Meta::Error::Simple("failed to quit with message [".$ftp->message()."]");
 	}
 }
 
@@ -199,10 +199,10 @@ sub http_upload($$$) {
 	$self->verbose("creating instance of LWP::UserAgent\n");
 	my($agent)=LWP::UserAgent->new();
 	if(!defined($agent)) {
-		Meta::Utils::System::die("Failed to create UserAgent: $!\n");
+		throw Meta::Error::Simple("Failed to create UserAgent with error [".$!."]");
 	}
 	$agent->agent($self->get_program()."/".$self->get_version());
-	$agent->from($pack->get_author()->get_cpanemail());
+	$agent->from($pack->get_author()->get_cpan_mail());
 	if($self->get_use_http_proxy()) {
 		$agent->proxy(['http'],$self->get_http_proxy());
 	}
@@ -211,31 +211,31 @@ sub http_upload($$$) {
 	# Create the request to add the file
 	my($request)=HTTP::Request::Common::POST($self->get_pause_add_uri(),
 		{
-			HIDDENNAME=>$pack->get_author()->get_cpanid(),
+			HIDDENNAME=>$pack->get_author()->get_cpan_user(),
 			pause99_add_uri_upload=>$basename,
 			SUBMIT_pause99_add_uri_upload=>" Upload the checked file "
 		}
 	);
-	my($auth_user)=$pack->get_author()->get_cpanid();
-	my($auth_password)=$pack->get_author()->get_cpanpassword();
+	my($auth_user)=$pack->get_author()->get_cpan_user();
+	my($auth_password)=$pack->get_author()->get_cpan_password();
 	$request->authorization_basic($auth_user,$auth_password);
 	$self->verbose("auth_user is [".$auth_user."]\n");
 	$self->verbose("auth_password is [".$auth_password."]\n");
 	$self->verbose("Request is [".$request."]\n");
 	# Make the request to the PAUSE web server
-	$self->verbose("POST upload for [".$file."]\n");
+	$self->verbose("POST upload for [".$file."] with basename [".$basename."]\n");
 	my($response)=$agent->request($request);
 	if(!defined($response)) {
-		Meta::Utils::System::die("Request completely failed - we got undef back: $!\n");
+		throw Meta::Error::Simple("request completely failed - we got undef back with error [".$!."]");
 	}
 	if($response->is_error()) {
 		if($response->code=="RC_NOT_FOUND") {
-			Meta::Utils::System::die("PAUSE's CGI for handling messages seems to have moved!\n".
+			throw Meta::Error::Simple("PAUSE's CGI for handling messages seems to have moved!".
 			"(HTTP response code of 404 from the PAUSE web server)\n".
 			"It used to be:\n\n\t".$self->get_pause_add_uri()."\n\n".
 			"Please inform the maintainer of this script\n");
 		} else {
-			Meta::Utils::System::die("request failed\n Error code: ".$response->code."\n Message: ".$response->message."\n");
+			throw Meta::Error::Simple("request failed with error [".$response->code."] and message [".$response->message."]");
 		}
 	} else {
 		$self->verbose("response is [".$response->as_string()."]\n");
@@ -285,7 +285,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Upload.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -442,6 +442,7 @@ None.
 	0.05 MV bring movie data
 	0.06 MV weblog issues
 	0.07 MV teachers project
+	0.08 MV md5 issues
 
 =head1 SEE ALSO
 

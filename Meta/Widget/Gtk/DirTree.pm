@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Gtk qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw(Gtk::Tree);
 
 #sub new($);
@@ -16,16 +16,16 @@ $VERSION="0.05";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Gtk::Tree->new();
 	$self->{ROOT}=defined;
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
 sub set_root($$) {
-	my($self,$valx)=@_;
-	$self->{ROOT}=$valx;
+	my($self,$val)=@_;
+	$self->{ROOT}=$val;
 	#lets add the root element
 	#$self->node_add($node,$self,$self);
 }
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: DirTree.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -129,6 +129,7 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV md5 issues
 
 =head1 SEE ALSO
 

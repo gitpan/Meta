@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -25,9 +25,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Connected->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -85,7 +85,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Member.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -164,6 +164,7 @@ None.
 	0.10 MV website construction
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -9,7 +9,7 @@ use Meta::Utils::Output qw();
 use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.03";
 @ISA=qw();
 
 #sub new($);
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: TestInfo.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -169,6 +169,7 @@ None.
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
 	0.02 MV teachers project
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

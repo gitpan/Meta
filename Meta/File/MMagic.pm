@@ -5,23 +5,40 @@ package Meta::File::MMagic;
 use strict qw(vars refs subs);
 use Meta::Baseline::Aegis qw();
 use File::MMagic qw();
+use Meta::Utils::File::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(File::MMagic);
 
 #sub new($);
+#sub checktype_filemagic($$);
+#sub checktype_filecontents($$);
 #sub is_image($$);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=File::MMagic->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->addFileExts('\.css$',"text/css");
 	return($self);
+}
+
+sub checktype_filemagic($$) {
+	my($self,$file)=@_;
+	my($data);
+	Meta::Utils::File::File::load($file,\$data);
+	return($self->checktype_magic($data));
+}
+
+sub checktype_filecontents($$) {
+	my($self,$file)=@_;
+	my($data);
+	Meta::Utils::File::File::load($file,\$data);
+	return($self->checktype_contents($data));
 }
 
 sub is_image($$) {
@@ -85,7 +102,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MMagic.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -102,6 +119,8 @@ until some improvements to that class are made.
 =head1 FUNCTIONS
 
 	new($)
+	checktype_filemagic($$)
+	checktype_filecontents($$)
 	is_image($$)
 	TEST($)
 
@@ -115,6 +134,18 @@ This is a constructor for the Meta::File::MMagic object.
 Currently it adds the ability to recognize css file types
 by using the addFileExts method.
 
+=item B<checktype_filemagic($$)>
+
+This method is a shortcut to run checktype_magic with a file.
+The method will read the file contents and will pass it on to
+checktype_magic.
+
+=item B<checktype_filecontents($$)>
+
+This method is a shortcut to run checktype_contents with a file.
+The method will read the file contents and will pass it on to
+checktype_contents.
+
 =item B<is_image($$)>
 
 This method will return whether the specified file is an
@@ -126,6 +157,8 @@ image. It finds the mime type and checks whether it has
 This is a testing suite for the Meta::File::MMagic module.
 This test is should be run by a higher level management system at integration
 or release time or just as a regular routine to check that all is well.
+
+The procedure currently tests two files for which I know the types for validity.
 
 =back
 
@@ -147,10 +180,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-File::MMagic(3), Meta::Baseline::Aegis(3), strict(3)
+File::MMagic(3), Meta::Baseline::Aegis(3), Meta::Utils::File::File(3), strict(3)
 
 =head1 TODO
 

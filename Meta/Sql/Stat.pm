@@ -7,7 +7,7 @@ use Meta::Types::String qw();
 use SQL::Statement qw();
 
 our($VERSION,@ISA);
-$VERSION="0.21";
+$VERSION="0.22";
 @ISA=qw(Meta::Types::String);
 
 #sub execute($$);
@@ -97,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stat.pm
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -192,6 +192,7 @@ None.
 	0.19 MV SEE ALSO section fix
 	0.20 MV weblog issues
 	0.21 MV more pdmt stuff
+	0.22 MV md5 issues
 
 =head1 SEE ALSO
 

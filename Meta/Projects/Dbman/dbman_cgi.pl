@@ -26,7 +26,7 @@ print $p->start_html();
 print $p->sql_table($stat,$def,$dbi,30);
 print $p->end_html();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbman_cgi.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -138,6 +138,7 @@ None.
 
 	0.00 MV download scripts
 	0.01 MV teachers project
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

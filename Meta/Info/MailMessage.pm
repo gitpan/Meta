@@ -10,7 +10,7 @@ use Meta::Baseline::Test qw();
 use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub BEGIN();
@@ -114,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MailMessage.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -211,6 +211,7 @@ None.
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
 	0.14 MV finish papers
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -59,7 +59,7 @@ Meta::Utils::Output::print("number of tickets is [".$tickets_number."]\n");
 Meta::Utils::Output::print("==========total===================\n");
 Meta::Utils::Output::print("total is [".($viewdetail_number+$viewdate_number+$views_number)."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -92,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: movie_stats.pl
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -191,6 +191,7 @@ None.
 	0.11 MV SEE ALSO section fix
 	0.12 MV move tests to modules
 	0.13 MV teachers project
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 

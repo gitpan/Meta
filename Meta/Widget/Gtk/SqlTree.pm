@@ -5,7 +5,7 @@ package Meta::Widget::Gtk::SqlTree;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub new($);
@@ -14,9 +14,9 @@ $VERSION="0.09";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: SqlTree.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -118,6 +118,7 @@ None.
 	0.07 MV website construction
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
+	0.10 MV md5 issues
 
 =head1 SEE ALSO
 

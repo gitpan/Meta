@@ -9,6 +9,8 @@ use Meta::Development::TestInfo qw();
 use Meta::Baseline::Test qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Development::Module qw();
+use Error qw(:try);
+use Meta::Types::Bool qw();
 
 my($verb,$block,$file,$all);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -50,7 +52,16 @@ for(my($i)=0;$i<=$#$files;$i++) {
 		if($block) {
 			Meta::Baseline::Test::redirect_on();
 		}
-		my($cres)=Meta::Lang::Perl::Perl::call_method($module,"TEST",[$info]);
+		my($cres);
+		try {
+			$cres=Meta::Lang::Perl::Perl::call_method($module,"TEST",[$info]);
+		}
+		catch Error with {
+			my($error)=shift;
+			$cres=0;
+			Meta::Utils::Output::print("cought exception from tested module:\n");
+			Meta::Utils::Output::print($error->stringify());
+		};
 		if($block) {
 			Meta::Baseline::Test::redirect_off();
 		}
@@ -58,7 +69,8 @@ for(my($i)=0;$i<=$#$files;$i++) {
 		#the unload doesn't work well since if I load a module afterwards
 		#that needs something that I'm now unloading it created problems.
 		#Meta::Lang::Perl::Perl::unload_module($module);
-		Meta::Utils::Output::print("[".Meta::Baseline::Test::code_to_string($res)."]\n");
+		my($bool)=Meta::Types::Bool->new_value($cres);
+		Meta::Utils::Output::print("[".$bool->get_version("of")."]\n");
 		if(!$cres) {
 			$res=0;
 		}
@@ -98,7 +110,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_test.pl
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -186,10 +198,11 @@ None.
 	0.02 MV download scripts
 	0.03 MV finish papers
 	0.04 MV teachers project
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Development::Module(3), Meta::Development::TestInfo(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Development::Module(3), Meta::Development::TestInfo(3), Meta::Lang::Perl::Perl(3), Meta::Types::Bool(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

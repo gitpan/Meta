@@ -44,14 +44,14 @@ my($fs)=$ftp->get_fs_1();
 
 #you can uncomment this for debu purposes
 #$fs->print();
-#Meta::Utils::System::exit(1);
+#Meta::Utils::System::exit_ok();
 
 #lets remove all the files
 if($remove_files) {
 	my(%listhash);
 	$fs->get_all_files_hash(\%listhash,"");
 	delete($listhash{"index.html"});
-	while(my($file,$valx)=each(%listhash)) {
+	while(my($file,$val)=each(%listhash)) {
 		if($verbose) {
 			Meta::Utils::Output::print("removing file [".$file."]\n");
 		}
@@ -73,7 +73,7 @@ if($remove_dirs) {
 	}
 }
 $ftp->do_logout();
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -106,7 +106,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: website_cleanout.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -208,6 +208,7 @@ None.
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
 	0.12 MV teachers project
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -59,17 +59,17 @@ sub select_row($$$$) {
 #	Meta::Utils::Output::print("trying to load [".$file."]\n");
 	my($pixi)=Gtk::Gdk::ImlibImage->load_file_to_pixmap($file);
 	if(!$pixi) {
-		Meta::Utils::System::die("unable to load file [".$file."]");
+		throw Meta::Error::Simple("unable to load file [".$file."]");
 	}
 	if(!defined($pic_window)) {
 #		Meta::Utils::Output::print("in here\n");
 		$pic_window=Gtk::Window->new();
 		if(!$pic_window) {
-			Meta::Utils::System::die("unable to build pic_window");
+			throw Meta::Error::Simple("unable to build pic_window");
 		}
 		$pix=Gtk::Pixmap->new($pixi,undef);
 		if(!$pix) {
-			Meta::Utils::System::die("unable to build pixmap [".$pix."]");
+			throw Meta::Error::Simple("unable to build pixmap [".$pix."]");
 		}
 		$pic_window->add($pix);
 
@@ -106,7 +106,7 @@ sub load_single($$) {
 		my($image)=Image::Magick->new();
 		my($ret)=$image->Read($name);
 		if($ret) {
-			Meta::Utils::System::die("unable to read image [".$name."]");
+			throw Meta::Error::Simple("unable to read image [".$name."]");
 		} else {
 			my($x_size,$y_size)=$image->Get('height','width');
 			push(@params,$x_size,$y_size);
@@ -163,7 +163,7 @@ $window->show_all();
 Gtk->idle_add(\&load_handler,$list,$prog_window,$bar);
 Gtk->main();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -196,7 +196,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_multi_view.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -283,6 +283,7 @@ None.
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
 	0.10 MV move tests to modules
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -8,6 +8,8 @@ use Meta::Utils::Color qw();
 use Meta::Baseline::Test qw();
 use Meta::Utils::Output qw();
 use Meta::Math::Pad qw();
+use Meta::IO::File qw();
+use Meta::Types::Bool qw();
 
 my($demo,$verb,$stop,$summ);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -23,21 +25,22 @@ $opts->set_free_maxi(4);
 $opts->analyze(\@ARGV);
 
 if($#ARGV==2) {
-	Meta::Utils::Output::print("no tests to run\n");
+	Meta::Utils::Output::verbose($verb,"no tests to run\n");
 	$ARGV[3]="";
 }
 my($outp,$sear,$exse,$test)=($ARGV[0],$ARGV[1],$ARGV[2],$ARGV[3]);
 my(@tsts)=split(" ",$test);
 my($scod)=1;
-open(FILE,"> ".$outp) || Meta::Utils::System::die("uable to open file [".$outp."]");
-print FILE "test_result=\n";
-print FILE "[\n";
+my($file)=Meta::IO::File->new_writer($outp);
+print $file "test_result=\n";
+print $file "[\n";
 my($summ_okxx,$summ_fail)=(0,0);
 my($numb)=$#tsts+1;
 for(my($i)=0;$i<$numb && !($stop && !$scod);$i++) {
 	my($curr)=$tsts[$i];
-	if($verb) {
-		my($base)=File::Basename::basename($curr);
+	my($base)=File::Basename::basename($curr);
+	my($numb)=Meta::Math::Pad::pad($i,3);
+	Meta::Utils::Output::verbose($verb,"running test [".$numb."] [".$base."]...");
 #		Meta::Utils::Color::set_color(*stderr,"blue");
 #		print stderr "running test ".$i." [";
 #		Meta::Utils::Color::set_color(*stderr,"red");
@@ -45,9 +48,6 @@ for(my($i)=0;$i<$numb && !($stop && !$scod);$i++) {
 #		Meta::Utils::Color::set_color(*stderr,"blue");
 #		print stderr "]...";
 #		Meta::Utils::Color::reset(*stderr);
-		my($numb)=Meta::Math::Pad::pad($i,3);
-		Meta::Utils::Output::print("running test [".$numb."] [".$base."]...");
-	}
 	my($ccod)=Meta::Utils::System::system_nodie($curr,[]);
 	if($ccod==0) {
 		$scod=0;
@@ -56,24 +56,22 @@ for(my($i)=0;$i<$numb && !($stop && !$scod);$i++) {
 		$summ_okxx++;
 	}
 	if($verb) {
-		my($stri)=Meta::Baseline::Test::code_to_string($ccod);
+		my($bool)=Meta::Types::Bool->new_value($ccod);
 #		Meta::Utils::Color::set_color(*stderr,"red");
 #		print stderr $stri."\n";
 #		Meta::Utils::Color::set_color(*stderr,"blue");
 #		Meta::Utils::Color::reset(*stderr);
-		Meta::Utils::Output::print($stri."\n");
+		Meta::Utils::Output::print($bool->get_version("of")."\n");
 	}
 	my($code)=Meta::Utils::Utils::bnot($ccod);
-	print FILE "\t{\n";
-	print FILE "\t\tfile_name=\"".$curr."\";\n";
-	print FILE "\t\texit_status=".$code.";\n";
-	print FILE "\t},\n";
+	print $file "\t{\n";
+	print $file "\t\tfile_name=\"".$curr."\";\n";
+	print $file "\t\texit_status=".$code.";\n";
+	print $file "\t},\n";
 }
-print FILE "];\n";
-close(FILE) || Meta::Utils::System::die("uable to close file [".$outp."]");
-if($summ) {
-	Meta::Utils::Output::print("total/ok/fail [".$numb."]/[".$summ_okxx."]/[".$summ_fail."] tests\n");
-}
+print $file "];\n";
+$file->close();
+Meta::Utils::Output::verbose($summ,"total/ok/fail [".$numb."]/[".$summ_okxx."]/[".$summ_fail."] tests\n");
 Meta::Utils::System::exit($scod);
 
 __END__
@@ -107,7 +105,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: aegis_conf_batch_test_command.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -192,10 +190,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV web site development
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), Meta::Baseline::Test(3), Meta::Math::Pad(3), Meta::Utils::Color(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+File::Basename(3), Meta::Baseline::Test(3), Meta::IO::File(3), Meta::Math::Pad(3), Meta::Types::Bool(3), Meta::Utils::Color(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

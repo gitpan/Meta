@@ -3,14 +3,15 @@
 package Meta::Utils::File::Mkdir;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
 use File::Path qw();
 use File::Basename qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.20";
+$VERSION="0.21";
 @ISA=qw();
 
+#sub mkdir($);
 #sub mkdir_check($);
 #sub mkdir_p_check($);
 #sub mkdir_p_check_file($);
@@ -18,12 +19,17 @@ $VERSION="0.20";
 
 #__DATA__
 
+sub mkdir($) {
+	my($dire)=@_;
+	if(!CORE::mkdir($dire)) {
+		throw Meta::Error::Simple("unable to create directory [".$dire."] with error [".$!."]");
+	}
+}
+
 sub mkdir_check($) {
 	my($dire)=@_;
 	if(!(-d $dire)) {
-		if(!CORE::mkdir($dire)) {
-			Meta::Utils::System::die("unable to create directory [".$dire."]");
-		}
+		&mkdir($dire);
 	}
 }
 
@@ -31,7 +37,7 @@ sub mkdir_p_check($) {
 	my($dire)=@_;
 	if(!(-d $dire)) {
 		if(!File::Path::mkpath($dire)) {
-			Meta::Utils::System::die("unable to create directory [".$dire."]");
+			throw Meta::Error::Simple("unable to create directory [".$dire."]");
 		}
 	}
 }
@@ -80,7 +86,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Mkdir.pm
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -94,6 +100,7 @@ This module takes care of making directories for you.
 
 =head1 FUNCTIONS
 
+	mkdir($)
 	mkdir_check($)
 	mkdir_p_check($)
 	mkdir_p_check_file($)
@@ -102,6 +109,11 @@ This module takes care of making directories for you.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<mkdir($)>
+
+This method will try to create the directory using the built in CORE::mkdir
+method and will throw an exception if it fails.
 
 =item B<mkdir_check($)>
 
@@ -166,10 +178,11 @@ None.
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
 	0.20 MV teachers project
+	0.21 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), File::Path(3), Meta::Utils::System(3), strict(3)
+Error(3), File::Basename(3), File::Path(3), strict(3)
 
 =head1 TODO
 

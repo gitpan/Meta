@@ -7,10 +7,11 @@ use Meta::Baseline::Aegis qw();
 use Meta::Math::Pad qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::Time qw();
-use Template qw();
+use Meta::Template qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub interpolate($);
@@ -28,17 +29,16 @@ sub interpolate($) {
 		"home_dir",Meta::Utils::Utils::get_home_dir(),
 		"time",Meta::Utils::Time::now_string(),
 	};
-	my($template)=Template->new();
+	my($template)=Meta::Template->new();
 	my($result);
-	my($res)=$template->process(\$string,$vars,\$result);
-	if(!$res) {
-		Meta::Utils::System::die("error in Template processing [".$template->error()."]");
-	}
+	$template->process(\$string,$vars,\$result);
 	return($result);
 }
 
 sub TEST($) {
 	my($context)=@_;
+	my($result)=&interpolate("[% project %]");
+	Meta::Utils::Output::print("result is [".$result."]\n");
 	return(1);
 }
 
@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sub.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -137,10 +137,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV web site development
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Math::Pad(3), Meta::Utils::Time(3), Meta::Utils::Utils(3), Template(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Math::Pad(3), Meta::Template(3), Meta::Utils::Output(3), Meta::Utils::Time(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

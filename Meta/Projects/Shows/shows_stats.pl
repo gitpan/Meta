@@ -38,7 +38,7 @@ for(my($i)=0;$i<$tickets->getLength();$i++) {
 Meta::Utils::Output::print("number of show is [".$show_number."]\n");
 Meta::Utils::Output::print("number of tickets is [".$tickets_number."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -71,7 +71,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: shows_stats.pl
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -156,6 +156,7 @@ None.
 	0.03 MV web site automation
 	0.04 MV SEE ALSO section fix
 	0.05 MV move tests to modules
+	0.06 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -3,18 +3,36 @@
 package Meta::Tool::Rpm;
 
 use strict qw(vars refs subs);
+use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
+#sub basename($);
 #sub TEST($);
 
 #__DATA__
 
+sub basename($) {
+	my($file)=@_;
+	if($file=~/^(.+)-(.+)-(.+)\.(.+)\.rpm/) {
+		my($name,$ver,$rev,$arch)=($file=~/^(.+)-(.+)-(.+)\.(.+)\.rpm/);
+		return($name);
+	} else {
+		throw EMeta::rror::Simple("unable to parse basename [".$file."]");
+	}
+}
+
 sub TEST($) {
 	my($context)=@_;
-	return(1);
+	my($test_name)="XFree86-W32-3.3.6-28mdk.i586.rpm";
+	my($base)=&basename($test_name);
+	if($base eq "XFree86-W32") {
+		return(1);
+	} else {
+		return(0);
+	}
 }
 
 1;
@@ -50,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Rpm.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -66,11 +84,17 @@ find out information for there (which packages are installed etc...).
 
 =head1 FUNCTIONS
 
+	basename($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<basename($)>
+
+This function will return the basename (the rpm cannonic name) of a file
+name of an RPM package given to it.
 
 =item B<TEST($)>
 
@@ -106,10 +130,11 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 
-strict(3)
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

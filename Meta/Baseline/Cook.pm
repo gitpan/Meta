@@ -13,9 +13,10 @@ use DB_File qw();
 use Meta::Utils::Output qw();
 use Meta::Baseline::Utils qw();
 use Meta::Development::Deps qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.49";
+$VERSION="0.50";
 @ISA=qw();
 
 #sub new($);
@@ -44,9 +45,9 @@ $VERSION="0.49";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	my($opts)=Meta::Utils::Options->new();
 	my($cook_opts)=Meta::Baseline::Aegis::which("data/baseline/cook/opts.txt");
 	$opts->read($cook_opts);
@@ -86,7 +87,7 @@ sub touch($$$$$) {
 	my($stat)="bad stat";
 	if(-e $fp) {
 		my(@arra);
-		tie(@arra,"DB_File",$fp,DB_File::O_RDWR,0666,$DB_File::DB_RECNO) or Meta::Utils::System::die("cannot tie [".$file."]");
+		tie(@arra,"DB_File",$fp,DB_File::O_RDWR,0666,$DB_File::DB_RECNO) || throw Meta::Error::Simple("cannot tie [".$file."]");
 		my($foun)=0;
 		for(my($i)=0;($i<=$#arra) && (!$foun);$i++) {
 			my($line)=$arra[$i];
@@ -100,7 +101,7 @@ sub touch($$$$$) {
 		} else {
 			$stat=".cook.fp didnt contain file";
 		}
-		untie(@arra) || Meta::Utils::System::die("cannot untie [".$file."]");
+		untie(@arra) || throw Meta::Error::Simple("cannot untie [".$file."]");
 	} else {
 		$stat=".cook.fp not found";
 	}
@@ -170,9 +171,9 @@ sub exec_development_build($$$$) {
 	my($opts)=$self->{OPTS};
 	my($size)=$opts->size();
 	for(my($i)=0;$i<$size;$i++) {
-		my($keyx)=$opts->keyx($i);
-		my($valx)=$opts->valx($i);
-		push(@args,$keyx."=".$valx);
+		my($key)=$opts->key($i);
+		my($val)=$opts->val($i);
+		push(@args,$key."=".$val);
 	}
 
 	my($base_cook_list)=$opts->get("base_cook_list");
@@ -240,9 +241,9 @@ sub print_deps_handle($$) {
 
 sub print_deps($$) {
 	my($deps,$targ)=@_;
-	open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
+	open(FILE,"> ".$targ) || throw Meta::Error::Simple("unable to open file [".$targ."]");
 	&print_deps_handle($deps,*FILE);
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
+	close(FILE) || throw Meta::Error::Simple("unable to close file [".$targ."]");
 	return(1);
 }
 
@@ -255,18 +256,17 @@ sub read_deps($$$) {
 	my($full)=Meta::Baseline::Aegis::which_nodie($exte);
 	if(defined($full)) {
 		my(@list);
-		open(FILE,$full) || Meta::Utils::System::die("unable to open file [".$full."]");
+		my($io)=Meta::IO::File->new_reader($full);
 		# read the first comment line.
-		my($line);
-		$line=<FILE>;
+		my($line)=$io->cgetline();
 		# if we have dep information
-		if($line=<FILE> || 0) {
-			chop($line);
+		if(!$io->eof()) {
+			# read the cascade line
+			$line=$io->cgetline();
 			my($new)=($line=~/^cascade (.*)=$/);
 			#Meta::Utils::Output::print("inserting node [".$new."]\n");
 			$deps->node_insert($new);
-			while($line=<FILE> || 0) {
-				chop($line);
+			while(!$io->eof()) {
 				if($line ne ";") {
 					if(!$deps->node_has($line)) {
 						push(@list,$line);
@@ -278,7 +278,7 @@ sub read_deps($$$) {
 				}
 			}
 		}
-		close(FILE) || Meta::Utils::System::die("unable to close file [".$full."]");
+		$io->close();
 		if($recu) {
 			for(my($i)=0;$i<=$#list;$i++) {
 				read_deps($deps,$list[$i],$recu);
@@ -356,7 +356,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cook.pm
 	PROJECT: meta
-	VERSION: 0.49
+	VERSION: 0.50
 
 =head1 SYNOPSIS
 
@@ -547,10 +547,11 @@ None.
 	0.47 MV SEE ALSO section fix
 	0.48 MV web site development
 	0.49 MV teachers project
+	0.50 MV md5 issues
 
 =head1 SEE ALSO
 
-DB_File(3), File::Basename(3), Meta::Baseline::Aegis(3), Meta::Baseline::Utils(3), Meta::Development::Deps(3), Meta::Utils::File::Purge(3), Meta::Utils::File::Touch(3), Meta::Utils::Options(3), Meta::Utils::Output(3), Meta::Utils::Time(3), strict(3)
+DB_File(3), File::Basename(3), Meta::Baseline::Aegis(3), Meta::Baseline::Utils(3), Meta::Development::Deps(3), Meta::IO::File(3), Meta::Utils::File::Purge(3), Meta::Utils::File::Touch(3), Meta::Utils::Options(3), Meta::Utils::Output(3), Meta::Utils::Time(3), strict(3)
 
 =head1 TODO
 

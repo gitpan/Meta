@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use DB_File qw();
 use Meta::Utils::System qw();
 use Meta::Utils::File::File qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub set_runline($$);
@@ -18,13 +19,14 @@ $VERSION="0.00";
 
 sub set_runline($$) {
 	my($file,$newline)=@_;
-	my($content)=Meta::Utils::File::File::load($file);
+	my($content);
+	Meta::Utils::File::File::load($file,\$content);
 	$content=~s/^#!.*\n/$newline\n/;
 	Meta::Utils::File::File::save($file,$content);
 #	my(@arra);
-#	tie(@arra,"DB_File",$file,$DB_File::O_RDWR,0666,$DB_File::DB_RECNO) or Meta::Utils::System::die("cannot tie [".$file."]");
+#	tie(@arra,"DB_File",$file,$DB_File::O_RDWR,0666,$DB_File::DB_RECNO) || throw Meta::Error::Simple("cannot tie [".$file."]");
 #	$arra[0]=$newline;
-#	untie(@arra) || Meta::Utils::System::die("cannot untie [".$file."]");
+#	untie(@arra) || throw Meta::Error::Simple("cannot untie [".$file."]");
 }
 
 sub TEST($) {
@@ -65,7 +67,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Scripts.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -117,10 +119,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV web site development
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-DB_File(3), Meta::Utils::File::File(3), Meta::Utils::System(3), strict(3)
+DB_File(3), Error(3), Meta::Utils::File::File(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

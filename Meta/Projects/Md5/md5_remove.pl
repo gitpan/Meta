@@ -107,19 +107,15 @@ while(!$iterator->get_over()) {
 			if($verb) {
 				Meta::Utils::Output::print("removing [".$curr."]\n");
 			}
-			my($res)=Meta::Utils::File::Remove::rm_nodie($curr);
-			if(!$res) {
-				Meta::Utils::Output::print("unable to remove file [".$curr."]\n");
-			} else {
-				$removed++;
-				if($leave_tag) {
-					my($content)="file removed and exists in [".$collection->get_file($sum)."]\n";
-					my($new_file)=$curr.$leave_suffix;
-					Meta::Utils::File::File::save($new_file,$content);
-				}
-				if($list) {
-					$array->push($curr);
-				}
+			Meta::Utils::File::Remove::rm($curr);
+			$removed++;
+			if($leave_tag) {
+				my($content)="file removed and exists in [".$collection->get_file($sum)."]\n";
+				my($new_file)=$curr.$leave_suffix;
+				Meta::Utils::File::File::save($new_file,$content);
+			}
+			if($list) {
+				$array->push($curr);
 			}
 		}
 	}
@@ -134,7 +130,7 @@ if($stats) {
 	Meta::Utils::Output::print("scanned is [".$scanned."]\n");
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -167,7 +163,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_remove.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -281,6 +277,7 @@ None.
 	0.04 MV download scripts
 	0.05 MV bring movie data
 	0.06 MV finish papers
+	0.07 MV md5 issues
 
 =head1 SEE ALSO
 

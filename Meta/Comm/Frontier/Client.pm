@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Frontier::Client qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Frontier::Client);
 
 #sub new($);
@@ -15,7 +15,7 @@ $VERSION="0.11";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($xmlrpc_proto)="http";
 	my($xmlrpc_host)="localhost";
 	my($xmlrpc_port)=1080;
@@ -24,7 +24,7 @@ sub new($) {
 	my($self)=Frontier::Client->new(
 		'url'=>$fullurl
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -66,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Client.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -128,6 +128,7 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests into modules
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -7,7 +7,7 @@ use Meta::Ds::Graph qw();
 use Meta::Xml::Parsers::Graph qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Meta::Ds::Graph);
 
 #sub new($);
@@ -16,12 +16,12 @@ $VERSION="0.11";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($file)=Meta::Baseline::Aegis::which("xmlx/graph/libs.xml");
 	my($parser)=Meta::Xml::Parsers::Graph->new();
 	$parser->parsefile($file);
 	my($self)=$parser->get_result();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Libs.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -125,6 +125,7 @@ None.
 	0.09 MV website construction
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

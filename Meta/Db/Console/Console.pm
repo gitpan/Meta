@@ -10,7 +10,7 @@ use Meta::Db::Def qw();
 use Meta::Db::Dbi qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Meta::Shell::Shell);
 
 #sub BEGIN();
@@ -107,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Console.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -196,6 +196,7 @@ None.
 	0.15 MV SEE ALSO section fix
 	0.16 MV download scripts
 	0.17 MV teachers project
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 

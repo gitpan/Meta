@@ -3,34 +3,40 @@
 package Meta::Ds::Set;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
+use Meta::IO::File qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.37";
+$VERSION="0.38";
 @ISA=qw();
 
 #sub new($);
 #sub clear($);
 #sub insert($$);
+#sub write($$);
 #sub remove($$);
 #sub has($$);
 #sub hasnt($$);
-#sub check_elem($$);
-#sub check_not_elem($$);
+#sub check_has($$);
+#sub check_hasnt($$);
 #sub read($$);
 #sub size($);
 #sub contained($$);
-#sub subtract($$);
+#sub set_add($$);
+#sub set_remove($$);
+#sub foreach($$);
 #sub get_hash($);
+#sub filter_regexp($$);
+#sub filter($$);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{HASH}={};
 	$self->{SIZE}=0;
 	return($self);
@@ -49,8 +55,18 @@ sub insert($$) {
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Set");
 #	Meta::Utils::Arg::check_arg($elem,"ANY");
 	if($self->has($elem)) {
-		Meta::Utils::System::die("elem [".$elem."] is a set element");
+		throw Meta::Error::Simple("elem [".$elem."] is a set element");
 	} else {
+		$self->{HASH}->{$elem}=defined;
+		$self->{SIZE}++;
+	}
+}
+
+sub write($$) {
+	my($self,$elem)=@_;
+#	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Set");
+#	Meta::Utils::Arg::check_arg($elem,"ANY");
+	if($self->hasnt($elem)) {
 		$self->{HASH}->{$elem}=defined;
 		$self->{SIZE}++;
 	}
@@ -64,7 +80,7 @@ sub remove($$) {
 		delete($self->{HASH}->{$elem});
 		$self->{SIZE}--;
 	} else {
-		Meta::Utils::System::die("elem [".$elem."] is not a set element");
+		throw Meta::Error::Simple("elem [".$elem."] is not a set element");
 	}
 }
 
@@ -90,21 +106,21 @@ sub hasnt($$) {
 	}
 }
 
-sub check_elem($$) {
+sub check_has($$) {
 	my($self,$elem)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Set");
 #	Meta::Utils::Arg::check_arg($elem,"ANY");
 	if($self->hasnt($elem)) {
-		Meta::Utils::System::die("elem [".$elem."] is not an element of the set");
+		throw Meta::Error::Simple("elem [".$elem."] is not an element of the set");
 	}
 }
 
-sub check_not_elem($$) {
+sub check_hasnt($$) {
 	my($self,$elem)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Set");
 #	Meta::Utils::Arg::check_arg($elem,"ANY");
 	if($self->has($elem)) {
-		Meta::Utils::System::die("elem [".$elem."] is an element of the set");
+		throw Meta::Error::Simple("elem [".$elem."] is an element of the set");
 	}
 }
 
@@ -112,15 +128,11 @@ sub read($$) {
 	my($self,$file)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Set");
 #	Meta::Utils::Arg::check_arg($file,"ANY");
-	my($io)=IO::File->new($file,"r");
-	if(!$io) {
-		Meta::Utils::System::die("unable to open file [".$file."] for reading");
-	}
-	my($line)=$io->getline();
+	my($io)=Meta::IO::File->new_reader($file);
 	while(!$io->eof()) {
+		my($line)=$io->getline();
 		chop($line);
 		$self->insert($line);
-		$line=$io->getline();
 	}
 	$io->close();
 }
@@ -135,37 +147,71 @@ sub contained($$) {
 	my($self,$other_set)=@_;
 	my($res)=1;
 	my($hash)=$self->{HASH};
-	while(my($keyx,$valx)=each(%$hash)) {
+	while(my($key,$val)=each(%$hash)) {
 # The next line which is more efficient isn't used cause
 # it wont put the internal hash iterator into starting position.
 # If there is a way to do that then we should bring this back
 # and do it at the end of the method
-#	while((my($keyx,$valx)=each(%$hash)) && $res) {
-		#Meta::Utils::Output::print("keyx is [".$keyx."]\n");
-		if($other_set->hasnt($keyx)) {
+#	while((my($key,$val)=each(%$hash)) && $res) {
+		#Meta::Utils::Output::print("key is [".$key."]\n");
+		if($other_set->hasnt($key)) {
 			$res=0;
 		}
 	}
 	return($res);
 }
 
-sub subtract($$) {
+sub set_add($$) {
 	my($self,$other_set)=@_;
-	my($res_set)=Meta::Ds::Set->new();
-	my($hash)=$self->{HASH};
-	while(my($keyx,$valx)=each(%$hash)) {
-#		Meta::Utils::Output::print("keyx is [".$keyx."]\n");
-		if($other_set->hasnt($keyx)) {
-#			Meta::Utils::Output::print("in here\n");
-			$res_set->insert($keyx);
-		}
+	my($hash)=$other_set->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		$self->add($key);
 	}
-	return($res_set);
+}
+
+sub set_remove($$) {
+	my($self,$other_set)=@_;
+	my($hash)=$other_set->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		$self->remove($key);
+	}
+}
+
+sub foreach($$) {
+	my($self,$code)=@_;
+	my($hash)=$self->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		&$code($key);
+	}
 }
 
 sub get_hash($) {
 	my($self)=@_;
 	return($self->{HASH});
+}
+
+sub filter_regexp($$) {
+	my($self,$re)=@_;
+	my($hash)=$self->{HASH};
+	my($ret)=ref($self)->new();
+	while(my($key,$val)=each(%$hash)) {
+		if($key=~/$re/) {
+			$ret->insert($key);
+		}
+	}
+	return($ret);
+}
+
+sub filter($$) {
+	my($self,$code)=@_;
+	my($hash)=$self->{HASH};
+	my($ret)=ref($self)->new();
+	while(my($key,$val)=each(%$hash)) {
+		if(\&code($key)) {
+			$ret->insert($key);
+		}
+	}
+	return($ret);
 }
 
 sub TEST($) {
@@ -209,7 +255,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Set.pm
 	PROJECT: meta
-	VERSION: 0.37
+	VERSION: 0.38
 
 =head1 SYNOPSIS
 
@@ -243,16 +289,21 @@ keys in the table.
 	new($)
 	clear($)
 	insert($$)
+	write($$)
 	remove($$)
 	has($$)
 	hasnt($$)
-	check_elem($$)
-	check_not_elem($$)
+	check_has($$)
+	check_hasnt($$)
 	read($$)
 	size($)
 	contained($$)
-	subtract($$)
+	set_add($$)
+	set_remove($$)
+	foreach($$)
 	get_hash($)
+	filter_regexp($$)
+	filter($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -269,7 +320,13 @@ This will clear the set (make it the empty set).
 
 =item B<insert($$)>
 
-Inserts a new element into the set.
+Inserts a new element into the set. If the element is already in the set then this method
+throws an exception.
+
+=item B<write($$)>
+
+Inserts a new element into the set. If the element is already in the set then this method
+does nothing.
 
 =item B<remove($$)>
 
@@ -283,7 +340,7 @@ Returns whether the current element is a member of the set.
 
 Returns whether the current element is not a member of the set.
 
-=item B<check_elem($$)>
+=item B<check_has($$)>
 
 Check that the element received is in the set and die if it is not.
 This method receives:
@@ -291,7 +348,7 @@ This method receives:
 1. The element to check for.
 This method does not return anything.
 
-=item B<check_not_elem($$)>
+=item B<check_hasnt($$)>
 
 Check that the element received is in not the set and die if it is.
 This method receives:
@@ -320,15 +377,36 @@ This method returns the size of the set object in question.
 This method will return a boolean value according to whether the current set
 is contained in another one supplied.
 
-=item B<subtract($$)>
+=item B<set_add($$)>
 
-This method will return the set which is the result of subtracting the current
-set from some other set.
+This method will add the elements of a set given to it to the current set.
+
+=item B<set_remove($$)>
+
+This method will remove from the current set any elements found in a set given
+to it.
+
+=item B<foreach($$)>
+
+This method will iterate over all elements of the set and will feed them to
+a user supplied function. The function should receive a single arguement
+and should do whatever it wants with it.
 
 =item B<get_hash($)>
 
 This method provides access to the underlying hash. Take heed. Use this for read
 only purposes.
+
+=item B<filter_regexp($$)>
+
+This method receives a regular expression and returns a set will all members of
+the original set which match the regular expression.
+
+=item B<filter($$)>
+
+This method receives a piece of code which gets a single argument. The method will
+run this code on each element of the set and will return only elements for which
+the code returned a value evaluated to true.
 
 =item B<TEST($)>
 
@@ -392,10 +470,11 @@ None.
 	0.35 MV SEE ALSO section fix
 	0.36 MV finish papers
 	0.37 MV teachers project
+	0.38 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Error::Simple(3), Meta::IO::File(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

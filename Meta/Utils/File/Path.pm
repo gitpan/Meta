@@ -3,12 +3,12 @@
 package Meta::Utils::File::Path;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::Utils qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub add_path($$$);
@@ -111,7 +111,7 @@ sub resolve($$$) {
 	my($path,$file,$sepa)=@_;
 	my($resu)=resolve_nodie($path,$file,$sepa);
 	if(!defined($resu)) {
-		Meta::Utils::System::die("unable to find file [".$file."] in path [".$path."]");
+		throw Meta::Error::Simple("unable to find file [".$file."] in path [".$path."]");
 	}
 	return($resu);
 }
@@ -135,7 +135,7 @@ sub resolve_dir($$$) {
 	my($path,$dire,$sepa)=@_;
 	my($resu)=resolve_dir_nodie($path,$dire,$sepa);
 	if(!defined($resu)) {
-		Meta::Utils::System::die("unable to find directory [".$dire."] in path [".$path."]");
+		throw Meta::Error::Simple("unable to find directory [".$dire."] in path [".$path."]");
 	}
 	return($resu);
 }
@@ -161,7 +161,7 @@ sub remove_path($$$) {
 			return(Meta::Utils::Utils::minus($file,$curr));
 		}
 	}
-	Meta::Utils::System::die("is not a prefix of any [".$path."] [".$sepa."] [".$file."]");
+	throw Meta::Error::Simple("is not a prefix of any [".$path."] [".$sepa."] [".$file."]");
 }
 
 sub remove_nonexist($$) {
@@ -197,10 +197,9 @@ sub check_flst($$) {
 	for(my($i)=0;$i<=$#fiel;$i++) {
 		my($curr)=$fiel[$i];
 		if(!(-f $curr)) {
-			$scod=0;
+			throw Meta::Error::Simple("file [".$curr."] bad");
 		}
 	}
-	return($scod);
 }
 
 sub TEST($) {
@@ -241,7 +240,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Path.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -405,10 +404,11 @@ None.
 	0.29 MV SEE ALSO section fix
 	0.30 MV move tests to modules
 	0.31 MV download scripts
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Error(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

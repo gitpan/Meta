@@ -3,9 +3,10 @@
 package Meta::Compress::Bzip2;
 
 use strict qw(vars refs subs);
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub FileToFileCompress($$);
@@ -15,11 +16,11 @@ $VERSION="0.00";
 
 sub FileToFileCompress($$) {
 	my($source,$target)=@_;
-	open(FILE,$source) || Meta::Utils::System::die("unable to open file [".$source."]");
-	my($line);
-	while($line=<FILE> || 0) {
+	my($io)=Meta::IO::File->new_reader($source);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$source."]");
+	$io->close();
 }
 
 sub TEST($) {
@@ -60,7 +61,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Bzip2.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -121,10 +122,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-strict(3)
+Meta::IO::File(3), strict(3)
 
 =head1 TODO
 

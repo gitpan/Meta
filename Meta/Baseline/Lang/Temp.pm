@@ -4,7 +4,7 @@ package Meta::Baseline::Lang::Temp;
 
 use strict qw(vars refs subs);
 use Meta::Baseline::Utils qw();
-use Template qw();
+use Meta::Template qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Tool::Aegis qw();
 use Meta::Utils::Hash qw();
@@ -18,7 +18,7 @@ use Meta::Utils::File::File qw();
 use Meta::Lang::Xml::Xml qw();
 
 our($VERSION,@ISA);
-$VERSION="0.21";
+$VERSION="0.22";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -96,7 +96,7 @@ sub get_vars($) {
 
 sub c2some($) {
 	my($buil)=@_;
-	my($template)=Template->new(
+	my($template)=Meta::Template->new(
 		INCLUDE_PATH=>Meta::Baseline::Aegis::search_path(),
 		RELATIVE=>1,
 		ABSOLUTE=>1,
@@ -105,11 +105,8 @@ sub c2some($) {
 	my($vars)=get_vars($modu);
 	# add target of the build for substitution
 	$vars->{"target"}=$buil->get_targ();
-	my($scod)=$template->process($buil->get_srcx(),$vars,$buil->get_targ());
-	if(!$scod) {
-		Meta::Utils::Output::print("error in Template processing of [".$modu."] error is [".$template->error()."]\n");
-	}
-	return($scod);
+	$template->process($buil->get_srcx(),$vars,$buil->get_targ());
+	return(1);
 }
 
 sub mac_docbook_trademarks($) {
@@ -151,8 +148,9 @@ sub mac_devlist_reg($) {
 	#$list=Meta::Utils::List::filter_regexp($list,$rege,1);
 	#return($list);
 	#Meta::Utils::Output::print("rege is [".$rege."]\n");
-	my($hash)=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,0);
-	$hash=Meta::Utils::Hash::filter_regexp($hash,$rege,1);
+	my($set)=Meta::Baseline::Aegis::source_files_set(1,1,0,1,1,0);
+	$set=$set->filter_regexp($rege);
+	#$hash=Meta::Utils::Hash::filter_regexp($hash,$rege,1);
 	#first version - just return the hash
 	#return(%$hash);
 	#second version - turn hash into a list
@@ -160,9 +158,10 @@ sub mac_devlist_reg($) {
 	#return($list);
 	#third version - return a list of modules
 	my(@list);
-	while(my($key,$val)=each(%$hash)) {
+	for(my($i)=0;$i<$set->size();$i++) {
+		my($value)=$set->elem($i);
 		my($curr)=Meta::Development::Module->new();
-		$curr->set_name($key);
+		$curr->set_name($value);
 		push(@list,$curr);
 	}
 	return(\@list);
@@ -194,17 +193,14 @@ sub my_file($$) {
 
 sub ram_process($$) {
 	my($modu,$file)=@_;
-	my($template)=Template->new(
+	my($template)=Meta::Template->new(
 		INCLUDE_PATH=>Meta::Baseline::Aegis::search_path(),
 		RELATIVE=>1,
 		ABSOLUTE=>1,
 	);
 	my($vars)=get_vars($modu);
 	my($ret);
-	my($scod)=$template->process($file,$vars,\$ret);
-	if(!$scod) {
-		Meta::Utils::System::die("error in Template processing [".$template->error()."]");
-	}
+	$template->process($file,$vars,\$ret);
 	return($ret);
 }
 
@@ -246,7 +242,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Temp.pm
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -380,10 +376,11 @@ None.
 	0.19 MV weblog issues
 	0.20 MV finish papers
 	0.21 MV teachers project
+	0.22 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Info::Authors(3), Meta::Lang::Tt::Tt(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aegis(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Text::Checker(3), Template(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Info::Authors(3), Meta::Lang::Tt::Tt(3), Meta::Lang::Xml::Xml(3), Meta::Template(3), Meta::Tool::Aegis(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Text::Checker(3), strict(3)
 
 =head1 TODO
 

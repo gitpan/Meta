@@ -3,7 +3,6 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Utils::Hash qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Tool::Editor qw();
 use Meta::Utils::File::File qw();
@@ -41,10 +40,14 @@ $opts->analyze(\@ARGV);
 
 my($rege)=$ARGV[0];
 if($lreg) {
-	$rege=Meta::Utils::File::File::load($rege);
+	my($temp);
+	Meta::Utils::File::File::load($rege,\$temp);
+	$rege=$temp;
 }
 if($lrep) {
-	$repe=Meta::Utils::File::File::load($repe);
+	my($temp);
+	Meta::Utils::File::File::load($repe,\$temp);
+	$repe=$temp;
 }
 my($show,$chec,$edit,$repl)=(0,0,0,0);
 if($action_enum->is_selected($acti,"none")) {
@@ -69,59 +72,49 @@ if($action_enum->is_selected($acti,"checkout_replace")) {
 	$chec=1;
 	$repl=1;
 }
-my($hash);
+my($set);
 if($type_enum->is_selected($type,"change")) {
-	$hash=Meta::Baseline::Aegis::change_files_hash(1,1,0,1,1,1);
+	$set=Meta::Baseline::Aegis::change_files_set(1,1,0,1,1,1);
 }
 if($type_enum->is_selected($type,"project")) {
-	$hash=Meta::Baseline::Aegis::project_files_hash(1,1,1);
+	$set=Meta::Baseline::Aegis::project_files_set(1,1,1);
 }
 if($type_enum->is_selected($type,"source")) {
-	$hash=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,1);
+	$set=Meta::Baseline::Aegis::source_files_set(1,1,0,1,1,1);
 }
 if($match) {
-	$hash=Meta::Utils::Hash::filter_regexp($hash,$freg,1);
-	$hash=Meta::Utils::Hash::filter_file_sing_regexp($hash,$rege,$show);
+	$set=$set->filter_regexp($freg);
+	$set=$set->filter_content($rege);
 }
 if($verb) {
-	my($numb)=Meta::Utils::Hash::size($hash);
-	if($prin) {
-		Meta::Utils::Output::print("doing [".$numb."] files\n");
-	}
-	Meta::Utils::Hash::print(Meta::Utils::Output::get_file(),$hash);
+	my($numb)=$set->size();
+	Meta::Utils::Output::verbose($prin,"doing [".$numb."] files\n");
+	$set->foreach(\&Meta::Utils::Output::println);
 }
 if($chec) {
 	if(!$demo) {
-		my($change)=Meta::Baseline::Aegis::change_files_hash(1,1,0,1,1,1);
-		my($baseline_hash)=Meta::Utils::Hash::dup($hash);
-		Meta::Utils::Hash::remove_hash($baseline_hash,$change,0);
-		if(Meta::Utils::Hash::notempty($baseline_hash)) {
-			Meta::Baseline::Aegis::checkout_hash($baseline_hash);
-		}
+		my($change)=Meta::Baseline::Aegis::change_files_set(1,1,0,1,1,1);
+		my($baseline_set)=$set->clone();
+		$baseline_set->remove_set($change);
+		Meta::Baseline::Aegis::checkout_set($baseline_set);
 	}
 }
 if($edit) {
 	if(!$demo) {
-		my($list)=Meta::Utils::Hash::to_list($hash);
-		if(Meta::Utils::List::notempty($list)) {
-			Meta::Tool::Editor::edit_mult($list);
-		}
+		Meta::Tool::Editor::edit_set_pat($set,$rege);
 	}
 }
 if($repl) {
 	if(!$demo) {
-		while(my($keyx,$valx)=each(%$hash)) {
-			if($verb) {
-				Meta::Utils::Output::print("doing [".$keyx."]\n");
-			}
-			my($count)=Meta::Utils::File::File::subst($keyx,$rege,$repe);
-			if($verb) {
-				Meta::Utils::Output::print("replaced [".$count."]\n");
-			}
+		for(my($i)=0;$i<$set->size();$i++) {
+			my($curr)=$set->elem($i);
+			Meta::Utils::Output::verbose($verb,"doing [".$curr."]\n");
+			my($count)=Meta::Utils::File::File::subst($curr,$rege,$repe);
+			Meta::Utils::Output::verbose($verb,"replaced [".$count."]\n");
 		}
 	}
 }
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -154,7 +147,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool_grep.pl
 	PROJECT: meta
-	VERSION: 0.36
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -331,10 +324,11 @@ None.
 	0.34 MV bring movie data
 	0.35 MV finish papers
 	0.36 MV teachers project
+	0.37 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Info::Enum(3), Meta::Tool::Editor(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Info::Enum(3), Meta::Tool::Editor(3), Meta::Utils::File::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Utils::Arg qw();
 use Meta::Utils::Hash qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.38";
+$VERSION="0.39";
 @ISA=qw();
 
 #sub size($);
@@ -236,7 +237,7 @@ sub filter_which($$$) {
 			if(-e $bast) {
 				push(@inte,$bast);
 			} else {
-				Meta::Utils::System::die("cannot find file in change or baseline [".$curr."]");
+				throw Meta::Error::Simple("cannot find file in change or baseline [".$curr."]");
 			}
 		}
 	}
@@ -261,13 +262,12 @@ sub read($) {
 	my($file)=@_;
 #	Meta::Utils::Arg::check_arg($file,"ANY");
 	my(@list);
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line);
-	while($line=<FILE> || 0) {
-		CORE::chop($line);
+	my($io)=Meta::IO::File->new_reader($file);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
 		push(@list,$line);
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 	return(\@list);
 }
 
@@ -350,7 +350,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: List.pm
 	PROJECT: meta
-	VERSION: 0.38
+	VERSION: 0.39
 
 =head1 SYNOPSIS
 
@@ -583,10 +583,11 @@ None.
 	0.36 MV website construction
 	0.37 MV web site automation
 	0.38 MV SEE ALSO section fix
+	0.39 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Arg(3), Meta::Utils::Hash(3), Meta::Utils::Output(3), strict(3)
+Error(3), Meta::Utils::Arg(3), Meta::Utils::Hash(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

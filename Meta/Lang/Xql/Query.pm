@@ -4,9 +4,10 @@ package Meta::Lang::Xql::Query;
 
 use strict qw(vars refs subs);
 use XML::XQL qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(XML::XQL::Query);
 
 #sub solve_single_string($$);
@@ -19,7 +20,7 @@ sub solve_single_string($$) {
 	my(@res)=$self->solve($dom);
 	my($size)=$#res+1;
 	if($size!=1) {
-		Meta::Utils::System::die("got more [".$size."] > 1 results");
+		throw Meta::Error::Simple("got more [".$size."] > 1 results");
 	}
 	return($res[0]->xql_toString());
 }
@@ -62,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Query.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -118,10 +119,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-XML::XQL(3), strict(3)
+Error(3), XML::XQL(3), strict(3)
 
 =head1 TODO
 

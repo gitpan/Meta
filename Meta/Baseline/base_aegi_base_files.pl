@@ -15,9 +15,9 @@ $opts->def_bool("absolute","show absolute pathnames ?",0,\$abso);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($hash)=Meta::Baseline::Aegis::base_files_hash($dele,$abso);
-Meta::Utils::Hash::print(Meta::Utils::Output::get_file(),$hash);
-Meta::Utils::System::exit(1);
+my($set)=Meta::Baseline::Aegis::base_files_set($dele,$abso);
+$set->foreach(\&Meta::Utils::Output::println);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -50,7 +50,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_base_files.pl
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -153,6 +153,7 @@ None.
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
 	0.25 MV move tests to modules
+	0.26 MV md5 issues
 
 =head1 SEE ALSO
 

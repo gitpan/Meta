@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 use Meta::Ds::Map qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sbu BEGIN();
@@ -27,9 +28,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	CORE::bless($self,$clas);
+	CORE::bless($self,$class);
 	$self->set_map_a_b(Meta::Ds::Map->new());
 	$self->set_map_a_c(Meta::Ds::Map->new());
 	$self->set_map_b_c(Meta::Ds::Map->new());
@@ -42,13 +43,13 @@ sub insert($$$$) {
 	my($map_a_c)=$self->get_map_a_c();
 	my($map_b_c)=$self->get_map_b_c();
 	if($map_a_b->has_a($a)) {
-		Meta::Utils::System::die("has elem a [".$a."]");
+		throw Meta::Error::Simple("has elem a [".$a."]");
 	}
 	if($map_a_b->has_b($b)) {
-		Meta::Utils::System::die("has elem b [".$b."]");
+		throw Meta::Error::Simple("has elem b [".$b."]");
 	}
 	if($map_a_c->has_b($c)) {
-		Meta::Utils::System::die("has elem c [".$c."]");
+		throw Meta::Error::Simple("has elem c [".$c."]");
 	}
 	$map_a_b->insert($a,$b);
 	$map_a_c->insert($a,$c);
@@ -99,7 +100,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Map3.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -179,10 +180,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Ds::Map(3), Meta::Utils::Output(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Ds::Map(3), Meta::Error::Simple(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -102,7 +102,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_notify.pl
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -207,6 +207,7 @@ None.
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
 	0.27 MV move tests to modules
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 

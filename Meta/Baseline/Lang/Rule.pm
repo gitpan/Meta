@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Utils qw();
 use Meta::Utils::Options qw();
 use Meta::Baseline::Lang qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.25";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -42,8 +43,8 @@ sub c2deps($) {
 	my($prm2)=$opti->getd("prm2","");
 	my($prm3)=$opti->getd("prm3","");
 	my($modu)=($srcx=~/^(.*)\.tg$/);
-	open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
-	Meta::Baseline::Utils::cook_emblem_print(*FILE);
+	my($file)=Meta::IO::File->new_writer($targ);
+	Meta::Baseline::Utils::cook_emblem_print($file);
 	my(@trgs);
 	if($trg0 ne "") {
 		push(@trgs,$trg0);
@@ -70,11 +71,11 @@ sub c2deps($) {
 	if($src3 ne "") {
 		push(@srcs,$src3);
 	}
-	print FILE join(" ",@trgs)." : ".join(" ",@srcs)."\n";
-	print FILE "\t[base_rule_tool_exec_depx]\n";
-	print FILE "\thost-binding [base_host_scr]\n";
-	print FILE "{\n";
-	print FILE "\tfunction base_doit [base_rule_tool_exec] ";
+	print $file join(" ",@trgs)." : ".join(" ",@srcs)."\n";
+	print $file "\t[base_rule_tool_exec_depx]\n";
+	print $file "\thost-binding [base_host_scr]\n";
+	print $file "{\n";
+	print $file "\tfunction base_doit [base_rule_tool_exec] ";
 	my(@args);
 	push(@args,"--proc \"".$proc."\"");
 	if($trg0 ne "") {
@@ -114,9 +115,9 @@ sub c2deps($) {
 		push(@args,"--prm3 [unsplit \":\" ".$prm3."]");
 	}
 	push(@args,"--path [base_search_path]");
-	print FILE CORE::join(" ",@args).";\n}\n";
-	print FILE "base_rule_file_objx+=".join(" ",@trgs).";\n";
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
+	print $file CORE::join(" ",@args).";\n}\n";
+	print $file "base_rule_file_objx+=".join(" ",@trgs).";\n";
+	$file->close();
 	return(1);
 }
 
@@ -167,7 +168,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Rule.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -247,10 +248,11 @@ None.
 	0.22 MV website construction
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
+	0.25 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Utils::Options(3), strict(3)
+Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::IO::File(3), Meta::Utils::Options(3), strict(3)
 
 =head1 TODO
 

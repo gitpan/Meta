@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use File::stat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub time($);
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Time.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -143,6 +143,7 @@ None.
 	0.10 MV SEE ALSO section fix
 	0.11 MV bring movie data
 	0.12 MV teachers project
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 

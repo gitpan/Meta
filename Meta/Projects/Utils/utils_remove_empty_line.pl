@@ -31,7 +31,7 @@ sub double_lines($) {
 }
 
 double_lines($file);
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -64,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_remove_empty_line.pl
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -141,6 +141,7 @@ None.
 	0.03 MV web site automation
 	0.04 MV SEE ALSO section fix
 	0.05 MV move tests to modules
+	0.06 MV md5 issues
 
 =head1 SEE ALSO
 

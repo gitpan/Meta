@@ -9,15 +9,24 @@ use Meta::Baseline::Utils qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::Options qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw();
 
+#sub BEGIN();
 #sub run($);
 #sub TEST($);
 
 #__DATA__
+
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("c_incl");
+}
 
 sub run($) {
 	my($buil)=@_;
@@ -29,7 +38,10 @@ sub run($) {
 	my($file)=Meta::Baseline::Aegis::which("data/baseline/cook/ccxx.txt");
 	my($options)=Meta::Utils::Options->new();
 	$options->read($file);
-	my($einc)=$options->get("base_cook_lang_ccxx_incl");
+	my($einc)=join(':',
+		$options->get("base_cook_lang_ccxx_incl"),
+		$options->get("base_cook_lang_ccxx_incl_base")
+	);
 	my($elib)=$options->get("base_cook_lang_ccxx_link");
 	#extract epth
 	my(@edir)=split(":",$einc);
@@ -94,8 +106,7 @@ sub run($) {
 #	Meta::Utils::Output::print("this is the list of args:\n");
 #	Meta::Utils::List::print(Meta::Utils::Output::get_file(),\@args);
 #	Meta::Utils::Output::print("this is the end of the argument list\n");
-	my($prog)="/local/tools/bin/c_incl";
-	my($scod)=Meta::Utils::System::system_nodie($prog,\@args);
+	my($scod)=Meta::Utils::System::system_nodie($tool_path,\@args);
 	if(!$scod) {
 #		Meta::Utils::Output::print("failed - removing target [".$targ."]\n");
 		Meta::Utils::File::Remove::rm($targ);
@@ -141,7 +152,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cincl.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -158,12 +169,17 @@ you could use.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	run($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+A bootstrap method to find where your c_incl is.
 
 =item B<run($)>
 
@@ -341,10 +357,11 @@ None.
 	0.12 MV website construction
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Utils(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Options(3), Meta::Utils::Output(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Utils(3), Meta::Utils::File::Patho(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Options(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -6,6 +6,7 @@ use Meta::Utils::Opts::Opts qw();
 use Image::Magick qw();
 use Image::Size qw();
 use Meta::Info::Enum qw();
+use Meta::Utils::Output qw();
 
 my($enum)=Meta::Info::Enum->new();
 $enum->insert("magick","use Image::Magick to do the work");
@@ -20,23 +21,23 @@ $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($curr_x,$curr_y);
+my($size_x,$size_y);
 if($enum->is_selected($method,"magick")) {
 	my($image)=Image::Magick->new();
 	my($ret)=$image->Read($file);
 	if($ret) {
-		Meta::Utils::System::die("unable to read image [".$file."]");
+		throw Meta::Error::Simple("unable to read image [".$file."]");
 	}
 	#$image->Display();
-	($curr_x,$curr_y)=$image->Get('height','width');
+	($size_x,$size_y)=$image->Get('height','width');
 }
 if($enum->is_selected($method,"imagesize")) {
-	($curr_x,$curr_y)=Image::Size::imgsize($file);
+	($size_x,$size_y)=Image::Size::imgsize($file);
 }
-Meta::Utils::Output::print("x is [".$curr_x."]\n");
-Meta::Utils::Output::print("y is [".$curr_y."]\n");
+Meta::Utils::Output::print("x is [".$size_x."]\n");
+Meta::Utils::Output::print("y is [".$size_y."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -69,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_info.pl
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -79,6 +80,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 This program reads an image file and provides you with info about it.
 The info includes width, height and other info.
+
+Currently it just provides size info (x and y).
 
 =head1 OPTIONS
 
@@ -153,10 +156,11 @@ None.
 	0.01 MV bring movie data
 	0.02 MV finish papers
 	0.03 MV teachers project
+	0.04 MV md5 issues
 
 =head1 SEE ALSO
 
-Image::Magick(3), Image::Size(3), Meta::Info::Enum(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Image::Magick(3), Image::Size(3), Meta::Info::Enum(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

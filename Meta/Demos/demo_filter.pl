@@ -4,7 +4,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use IO::Filter::gunzip qw();
-use IO::File qw();
+use Meta::IO::File qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 
@@ -15,7 +15,7 @@ $opts->analyze(\@ARGV);
 
 my($filename)="gzxx/xmlx/author/author.xml.gz";
 my($file)=Meta::Baseline::Aegis::which($filename);
-my($fh)=IO::File->new($file,"r");
+my($fh)=Meta::IO::File->new($file,"r");
 my($fio)=IO::Filter::gunzip->new($fh,"r");
 
 my($buffer);
@@ -26,7 +26,7 @@ Meta::Utils::Output::print("[".$buffer."]");
 #	Meta::Utils::Output::print("[".$line."]");
 #}
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: demo_filter.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -127,10 +127,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV finish papers
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-IO::File(3), IO::Filter::gunzip(3), Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+IO::Filter::gunzip(3), Meta::Baseline::Aegis(3), Meta::IO::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -65,7 +65,8 @@ while(!($iter->get_over())) {
 	if($verb) {
 		Meta::Utils::Output::print("importing [".$curr."]\n");
 	}
-	my($data)=Meta::Utils::File::File::load($curr);
+	my($data);
+	Meta::Utils::File::File::load($curr,\$data);
 	my($image)=Meta::Image::Magick->new(magick=>'jpg');
 	$image->BlobToImage($data);
 	my($x,$y)=$image->Get('width','height');
@@ -75,33 +76,33 @@ while(!($iter->get_over())) {
 	my($rv1)=$prep->bind_param(1,$dbi->quote($thumb,DBI::SQL_BINARY),{ TYPE=>"SQL_BINARY" });
 	#my($rv1)=$prep->bind_param(1,$thumb);
 	if(!$rv1) {
-		Meta::Utils::System::die("unable to bind param 1");
+		throw Meta::Error::Simple("unable to bind param 1");
 	}
 	my($rv2)=$prep->bind_param(2,$dbi->quote($checksum,DBI::SQL_BINARY),{ TYPE=>"SQL_BINARY" });
 	#my($rv2=$prep->bind_param(2,$checksum);
 	if(!$rv2) {
-		Meta::Utils::System::die("unable to bind param 2");
+		throw Meta::Error::Simple("unable to bind param 2");
 	}
 	my($rv3)=$prep->bind_param(3,$x);
 	if(!$rv3) {
-		Meta::Utils::System::die("unable to bind param 3");
+		throw Meta::Error::Simple("unable to bind param 3");
 	}
 	my($rv4)=$prep->bind_param(4,$y);
 	if(!$rv4) {
-		Meta::Utils::System::die("unable to bind param 4");
+		throw Meta::Error::Simple("unable to bind param 4");
 	}
 	my($rv5)=$prep->bind_param(5,$curr);
 	if(!$rv5) {
-		Meta::Utils::System::die("unable to bind param 5");
+		throw Meta::Error::Simple("unable to bind param 5");
 	}
 	my($rv6)=$prep->bind_param(6,$dbi->quote($data,DBI::SQL_BINARY),{ TYPE=>"SQL_BINARY" });
 	#my($rv6)=$prep->bind_param(6,$data);
 	if(!$rv6) {
-		Meta::Utils::System::die("unable to bind param 6");
+		throw Meta::Error::Simple("unable to bind param 6");
 	}
 	my($prv)=$prep->execute();
 	if(!$prv) {
-		Meta::Utils::System::die("unable to execute statement here");
+		throw Meta::Error::Simple("unable to execute statement here");
 	}
 	$iter->next();
 }
@@ -110,7 +111,7 @@ $iter->fini();
 $dbi->commit();
 $dbi->disconnect();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -143,7 +144,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_import.pl
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -269,6 +270,7 @@ None.
 	0.14 MV SEE ALSO section fix
 	0.15 MV move tests to modules
 	0.16 MV web site development
+	0.17 MV md5 issues
 
 =head1 SEE ALSO
 

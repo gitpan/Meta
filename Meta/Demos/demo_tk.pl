@@ -26,7 +26,7 @@ $butt->pack();
 Tk->MainLoop();
 
 Meta::Utils::Output::print("before final exit\n");
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: demo_tk.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -128,6 +128,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV finish papers
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

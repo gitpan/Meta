@@ -4,11 +4,11 @@ package Meta::LWP::Simple;
 
 use strict qw(vars refs subs);
 use Meta::Projects::Webcache::Content qw();
-use Meta::Utils::System qw();
 use LWP::Simple qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(LWP::Simple);
 
 #sub get_cache($$);
@@ -20,7 +20,7 @@ sub get_cache($$) {
 	my($self,$url)=@_;
 	my(@data)=Meta::Projects::Webcache::Content->search(url=>$url);
 	if($#data>0) {
-		Meta::Utils::System::die("something terribyl wrong happened");
+		throw Meta::Error::Simple("something terribyl wrong happened");
 	} else {
 		if($#data==-1) {
 			return($self->SUPER::get($url));
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Simple.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -125,10 +125,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV more pdmt stuff
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-LWP::Simple(3), Meta::Projects::Webcache::Content(3), Meta::Utils::System(3), strict(3)
+Error(3), LWP::Simple(3), Meta::Projects::Webcache::Content(3), strict(3)
 
 =head1 TODO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.36";
+$VERSION="0.37";
 @ISA=qw();
 
 #sub BEGIN();
@@ -23,19 +23,19 @@ sub BEGIN() {
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_type",
+		-java=>"_use_host",
 		-java=>"_host",
+		-java=>"_use_port",
 		-java=>"_port",
+		-java=>"_use_user",
 		-java=>"_user",
+		-java=>"_use_password",
 		-java=>"_password",
+		-java=>"_use_default_db",
+		-java=>"_default_db",
+		-java=>"_use_extra_options",
+		-java=>"_extra_options",
 	);
-	Meta::Class::MethodMaker->print([
-		"name",
-		"type",
-		"host",
-		"port",
-		"user",
-		"password"
-	]);
 }
 
 sub is_postgres($) {
@@ -50,27 +50,30 @@ sub is_mysql($) {
 
 sub get_dsn($$) {
 	my($self,$name)=@_;
-	my($dsnx);
+	my(@elems);
+	push(@elems,"dbi");
+	push(@elems,$self->get_type());
+	if($self->get_use_host()) {
+		push(@elems,"host=".$self->get_host());
+	}
+	if($self->get_use_port()) {
+		push(@elems,"port=".$self->get_port());
+	}
 	if($self->is_postgres()) {
-		#$dsnx="dbi:".$self->get_type().":dbname=".$name.";host=".$self->get_host();
-		$dsnx="dbi:".$self->get_type().":dbname=".$name;
+		push(@elems,"dbname=".$name);
 	}
 	if($self->is_mysql()) {
-		$dsnx="dbi:".$self->get_type().":host=".$self->get_host().":database=".$name;
+		push(@elems,"database=".$name);
 	}
-	return($dsnx);
+	if($self->get_use_extra_options()) {
+		push(@elems,$self->get_extra_options());
+	}
+	return(CORE::join(':',@elems));
 }
 
 sub get_dsn_nodb($) {
 	my($self)=@_;
-	my($dsnx);
-	if($self->is_postgres()) {
-		$dsnx="dbi:".$self->get_type().":";
-	}
-	if($self->is_mysql()) {
-		$dsnx="dbi:".$self->get_type().":host=".$self->get_host();
-	}
-	return($dsnx);
+	return($self->get_dsn($self->get_default_db()));
 }
 
 sub TEST($) {
@@ -111,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connection.pm
 	PROJECT: meta
-	VERSION: 0.36
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -220,6 +223,7 @@ None.
 	0.34 MV SEE ALSO section fix
 	0.35 MV move tests to modules
 	0.36 MV download scripts
+	0.37 MV md5 issues
 
 =head1 SEE ALSO
 

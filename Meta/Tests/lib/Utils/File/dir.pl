@@ -36,7 +36,7 @@ Meta::Utils::Output::print("relative is [".$relative."]\n");
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dir.pl
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -152,6 +152,7 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV move tests to modules
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -13,7 +13,7 @@ use Data::Dumper qw();
 use Meta::Ds::Ohash qw();
 
 our($VERSION,@ISA);
-$VERSION="0.21";
+$VERSION="0.22";
 @ISA=qw();
 
 #sub BEGIN();
@@ -301,7 +301,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Author.pm
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -533,6 +533,7 @@ None.
 	0.19 MV weblog issues
 	0.20 MV finish papers
 	0.21 MV teachers project
+	0.22 MV md5 issues
 
 =head1 SEE ALSO
 

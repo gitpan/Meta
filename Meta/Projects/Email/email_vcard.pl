@@ -15,7 +15,7 @@ $opts->analyze(\@ARGV);
 
 my($author)=Meta::Info::Author->new_modu($file);
 Meta::Utils::Output::print($author->get_vcard());
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: email_vcard.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -132,6 +132,7 @@ None.
 	0.08 MV move tests to modules
 	0.09 MV bring movie data
 	0.10 MV teachers project
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 

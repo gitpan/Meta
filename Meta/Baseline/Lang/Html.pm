@@ -9,7 +9,7 @@ use Meta::Lang::Html::Html qw();
 use Meta::Tool::Aspell qw();
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.25";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -97,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Html.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -184,6 +184,7 @@ None.
 	0.22 MV website construction
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
+	0.25 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -8,26 +8,30 @@ use Meta::Ds::Array qw();
 use Meta::Types::String qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::String qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.33";
 @ISA=qw();
 
 #sub BEGIN();
-#sub keyx($$);
-#sub valx($$);
 #sub new($);
 #sub clear($);
 #sub insert($$);
 #sub remove($$);
 #sub has($$);
 #sub hasnt($$);
-#sub check_elem($$);
-#sub check_not_elem($$);
-#sub print($$);
+#sub check_has($$);
+#sub check_hasnt($$);
 #sub size($);
 #sub elem($$);
 #sub sort($$);
+#sub filter($$);
+#sub clone($);
+#sub add_set($$);
+#sub remove_set($$);
+#sub foreach($$);
+#sub add_prefix($$);
 #sub TEST($);
 
 #__DATA__
@@ -40,20 +44,10 @@ sub BEGIN() {
 	);
 }
 
-sub keyx($$) {
-	my($self,$elem)=@_;
-	return("bug");
-}
-
-sub valx($$) {
-	my($self,$elem)=@_;
-	return("bug");
-}
-
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{HASH}={};
 	$self->{LIST}=Meta::Ds::Array->new();
 	return($self);
@@ -116,30 +110,22 @@ sub hasnt($$) {
 	}
 }
 
-sub check_elem($$) {
+sub check_has($$) {
 	my($self,$elem)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Oset");
 #	Meta::Utils::Arg::check_arg($elem,"ANY");
 	if($self->hasnt($elem)) {
-		Meta::Utils::System::die("elem [".$elem."] is not an element");
+		throw Meta::Error::Simple("elem [".$elem."] is not an element");
 	}
 }
 
-sub check_not_elem($$) {
+sub check_hasnt($$) {
 	my($self,$elem)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Oset");
 #	Meta::Utils::Arg::check_arg($elem,"ANY");
 	if($self->has($elem)) {
-		Meta::Utils::System::die("elem [".$elem."] is an element");
+		throw Meta::Error::Simple("elem [".$elem."] is an element");
 	}
-}
-
-sub print($$) {
-	my($self,$file)=@_;
-#	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Oset");
-#	Meta::Utils::Arg::check_arg($file,"ANY");
-	my($list)=$self->{LIST};
-	$list->print($file);
 }
 
 sub size($) {
@@ -158,6 +144,63 @@ sub elem($$) {
 sub sort($$) {
 	my($self,$ref)=@_;
 	$self->{LIST}->sort($ref);
+}
+
+sub filter($$) {
+	my($self,$code)=@_;
+	# next line clones the input type
+	my($ret)=ref($self)->new();
+	my($hash)=$self->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		if(&$code($key)) {
+			$ret->insert($key);
+		}
+	}
+	return($ret);
+}
+
+sub clone($) {
+	my($self)=@_;
+	my($ret)=ref($self)->new();
+	my($hash)=$self->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		$ret->insert($key);
+	}
+	return($ret);
+}
+
+sub add_set($$) {
+	my($self,$set)=@_;
+	for(my($i)=0;$i<$set->size();$i++) {
+		my($curr)=$set->elem($i);
+		$self->insert($curr);
+	}
+}
+
+sub remove_set($$) {
+	my($self,$set)=@_;
+	for(my($i)=0;$i<$set->size();$i++) {
+		my($curr)=$set->elem($i);
+		$self->remove($curr);
+	}
+}
+
+sub foreach($$) {
+	my($self,$code)=@_;
+	for(my($i)=0;$i<$self->size();$i++) {
+		my($curr)=$self->elem($i);
+		&$code($curr);
+	}
+}
+
+sub add_prefix($$) {
+	my($self,$prefix)=@_;
+	my($ret)=ref($self)->new();
+	for(my($i)=0;$i<$self->size();$i++) {
+		my($curr)=$self->elem($i);
+		$ret->insert($prefix.$curr);
+	}
+	return($ret);
 }
 
 sub TEST($) {
@@ -214,7 +257,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Oset.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.33
 
 =head1 SYNOPSIS
 
@@ -239,12 +282,17 @@ the Meta::Ds::Set class.
 	remove($$)
 	has($$)
 	hasnt($$)
-	check_elem($$)
-	check_not_elem($$)
-	print($$)
+	check_has($$)
+	check_hasnt($$)
 	size($)
 	elem($$)
 	sort($$)
+	filter($$)
+	clone($)
+	add_set($$)
+	remove_set($$)
+	foreach($$)
+	add_prefix($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -281,7 +329,7 @@ This returns whether a specific element is a member of the set.
 
 This returns whether a specific element is not a member of the set.
 
-=item B<check_elem($$)>
+=item B<check_has($$)>
 
 Thie method receives:
 0. An Oset object.
@@ -289,17 +337,13 @@ Thie method receives:
 This method makes sure that the element is a member of the set and
 dies if it is not.
 
-=item B<check_not_elem($$)>
+=item B<check_hasnt($$)>
 
 Thie method receives:
 0. An Oset object.
 1. An element to check fore.
 This method makes sure that the element is a member of the set and
 dies if it is not.
-
-=item B<print($$)>
-
-This will print the Oset object to the specified file for you.
 
 =item B<size($)>
 
@@ -318,6 +362,37 @@ This method receives:
 0. An Oset object.
 1. A comparison function.
 And sorts the set according to the comparison function.
+
+=item B<filter($$)>
+
+This method receives:
+0. An Oset object.
+1. A code reference.
+The method will run the code reference on each element of the
+set and will return a new set which only has the elements for
+which the code reference returned a value which evaluated to
+true.
+
+=item B<clone($)>
+
+This metho clones the current object.
+
+=item B<add_set($$)>
+
+This method will add a set to the current set.
+
+=item B<remove_set($$)>
+
+This method will remove a set from the current set.
+
+=item B<foreach($$)>
+
+This method will run a piece of code given to it on every element in the set.
+
+=item B<add_prefix($$)>
+
+This method creates and returns a new set which has all the elements of the old
+set with some prefix added.
 
 =item B<TEST($)>
 
@@ -376,13 +451,12 @@ None.
 	0.30 MV download scripts
 	0.31 MV finish papers
 	0.32 MV more pdmt stuff
+	0.33 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Ds::Array(3), Meta::Types::String(3), Meta::Utils::Output(3), Meta::Utils::String(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Ds::Array(3), Meta::Error::Simple(3), Meta::Types::String(3), Meta::Utils::Output(3), Meta::Utils::String(3), strict(3)
 
 =head1 TODO
 
--how can we ease the performance penalties of the removal of elements ?
-
--why not inherit from Array ?
+-implement this as a two way map and get much better performance. The sort method may have difficulties.

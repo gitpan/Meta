@@ -6,6 +6,7 @@ use Meta::Utils::Opts::Opts qw();
 use Gtk qw();
 use Gtk::Gdk::ImlibImage qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Error::Simple qw();
 
 my($deve,$file);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -30,11 +31,11 @@ if($deve) {
 }
 my($pixi)=Gtk::Gdk::ImlibImage->load_file_to_pixmap($file);
 if(!$pixi) {
-	Meta::Utils::System::die("unable to load file [".$file."]");
+	throw Meta::Error::Simple("unable to load file [".$file."]");
 }
 my($pix)=Gtk::Pixmap->new($pixi,undef);
 if(!$pix) {
-	Meta::Utils::System::die("unable to build pixmap [".$pixi."]");
+	throw Meta::Error::Simple("unable to build pixmap [".$pixi."]");
 }
 $window->add($pix);
 #my($image)=Gtk::Gdk::ImlibImage->load_image($file);
@@ -49,7 +50,7 @@ $window->add($pix);
 $window->show_all();
 Gtk->main();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -82,7 +83,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_single_view.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -168,10 +169,11 @@ None.
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
 	0.10 MV move tests to modules
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 
-Gtk(3), Gtk::Gdk::ImlibImage(3), Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Gtk(3), Gtk::Gdk::ImlibImage(3), Meta::Baseline::Aegis(3), Meta::Error::Simple(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -11,7 +11,7 @@ use URI qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.18";
+$VERSION="0.19";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sbu BEGIN();
@@ -35,17 +35,17 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=XML::Parser::Expat->new(ParseParamEnt=>0);
 	$self->{ROOT}=defined;
 	if(!$self) {
-		Meta::Utils::System::die("couldn't get a parser");
+		throw Meta::Error::Simple("couldn't get a parser");
 	}
 	$self->setHandlers(
 		'Doctype'=>\&handle_doctype,
 		'ExternEnt'=>\&handle_externent,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	$self->set_deps(Meta::Development::Deps->new());
 	return($self);
 }
@@ -56,9 +56,9 @@ sub get_root($) {
 }
 
 sub set_root($$) {
-	my($self,$valx)=@_;
-	$self->{ROOT}=$valx;
-	$self->get_deps()->node_insert($valx);
+	my($self,$val)=@_;
+	$self->{ROOT}=$val;
+	$self->get_deps()->node_insert($val);
 }
 
 sub handle_doctype($$$$$) {
@@ -142,7 +142,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Deps.pm
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -246,6 +246,7 @@ None.
 	0.16 MV SEE ALSO section fix
 	0.17 MV finish papers
 	0.18 MV teachers project
+	0.19 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -4,15 +4,25 @@ package Meta::Tool::Ps2Pdf;
 
 use strict qw(vars refs subs);
 use Meta::Baseline::Utils qw();
+use Meta::Utils::System qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
+#sub BEGIN();
 #sub c2pdfx($);
 #sub TEST($);
 
 #__DATA__
+
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("ps2pdf");
+}
 
 sub c2pdfx($) {
 	my($buil)=@_;
@@ -20,7 +30,7 @@ sub c2pdfx($) {
 	push(@args,"-dCompatibility=1.3");# 1.3 pdf compatibility
 	push(@args,$buil->get_srcx());
 	push(@args,$buil->get_targ());
-	return(Meta::Utils::System::system_err_silent_nodie("ps2pdf",\@args));
+	return(Meta::Utils::System::system_err_silent_nodie($tool_path,\@args));
 	#Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	#return(1);
 }
@@ -63,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ps2Pdf.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -77,12 +87,17 @@ This module is here to run ps2pdf tool for you.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	c2pdfx($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method to find the path to ps2pdf.
 
 =item B<c2pdfx($)>
 
@@ -115,10 +130,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Utils(3), strict(3)
+Meta::Baseline::Utils(3), Meta::Utils::File::Patho(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

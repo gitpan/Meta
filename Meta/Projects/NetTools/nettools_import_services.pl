@@ -3,34 +3,43 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Baseline::Test qw();
-use Meta::Utils::Utils qw();
 use Meta::Utils::Output qw();
+use Meta::IO::File qw();
 
+my($services,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
+$opts->def_file("services","where is your services file ?","/etc/services",\$services);
+$opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-Meta::Baseline::Test::redirect_on();
+my($io)=Meta::IO::File->new($services,"r");
+my($line)=$io->getline();
+while(!$io->eof()) {
+	chop($line);
+	# parse the line
+	# the line is not a comment
+	if($line=~/^#/) {
+		$line=$io->getline();
+		next;
+	}
+	if($line eq "") {
+		$line=$io->getline();
+		next;
+	}
+	Meta::Utils::Output::verbose($verbose,"got [".$line."]\n");
+	$line=$io->getline();
+}
+$io->close();
 
-Meta::Utils::Output::print(Meta::Utils::Utils::get_home_dir()."\n");
-Meta::Utils::Output::print(Meta::Utils::Utils::get_user_home_dir("root")."\n");
-Meta::Utils::Output::print(Meta::Utils::Utils::remove_comments("kuku /* mark */ fufu")."\n");
-Meta::Utils::Output::print(Meta::Utils::Utils::pwd()."\n");
-Meta::Utils::Output::print(Meta::Utils::Utils::get_suffix("foo.bar")."\n");
-Meta::Utils::Output::print(Meta::Utils::Utils::basename("/etc/passwd.txt")."\n");
-Meta::Utils::Output::print(Meta::Utils::Utils::remove_suf("/etc/passwd.txt",".txt")."\n");
-
-Meta::Baseline::Test::redirect_off();
-
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
 =head1 NAME
 
-utils.pl - testing program for the Meta::Utils::Utils.pm module.
+nettools_import_services.pl - import services data from /etc/services to an RDBMS.
 
 =head1 COPYRIGHT
 
@@ -55,17 +64,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-	MANIFEST: utils.pl
+	MANIFEST: nettools_import_services.pl
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.00
 
 =head1 SYNOPSIS
 
-	utils.pl
+	nettools_import_services.pl [options]
 
 =head1 DESCRIPTION
 
-This is a test suite for the Meta::Utils::Utils.pm package.
+This script will read the /etc/services file found on a standard UNIX system, will parse
+it and will store it in an RDBMS which has the particular set of tables designed
+to store this information. Why is this good for ?!? For working with the data in an RDBMS
+and not in some text file which you need to build a parser for.
 
 =head1 OPTIONS
 
@@ -107,6 +119,14 @@ show description and exit
 
 show history and exit
 
+=item B<services> (type: file, default: /etc/services)
+
+where is your services file ?
+
+=item B<verbose> (type: bool, default: 1)
+
+should I be noisy ?
+
 =back
 
 no free arguments are allowed
@@ -124,33 +144,12 @@ None.
 
 =head1 HISTORY
 
-	0.00 MV put ALL tests back and light the tree
-	0.01 MV silense all tests
-	0.02 MV more perl code quality
-	0.03 MV make lilypond work
-	0.04 MV perl code quality
-	0.05 MV more perl quality
-	0.06 MV more perl quality
-	0.07 MV revision change
-	0.08 MV languages.pl test online
-	0.09 MV perl packaging
-	0.10 MV license issues
-	0.11 MV md5 project
-	0.12 MV database
-	0.13 MV perl module versions in files
-	0.14 MV thumbnail user interface
-	0.15 MV more thumbnail issues
-	0.16 MV website construction
-	0.17 MV improve the movie db xml
-	0.18 MV more web page stuff
-	0.19 MV web site automation
-	0.20 MV SEE ALSO section fix
-	0.21 MV move tests to modules
+	0.00 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Test(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Meta::IO::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
--get a random user name for testing here (from /etc/passwd ?).
+Nothing.

@@ -3,10 +3,10 @@
 package Meta::Utils::Arg;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub check_arg_num($$);
@@ -19,14 +19,14 @@ sub check_arg_num($$) {
 	my($arra,$numx)=@_;
 	my($size)=$#$arra+1;
 	if($size!=$numx) {
-		Meta::Utils::System::die("number of arguments is wrong [".$size."] and not [".$numx."]");
+		throw Meta::Error::Simple("number of arguments is wrong [".$size."] and not [".$numx."]");
 	}
 }
 
 sub check_arg($$) {
 	my($varx,$type)=@_;
 	if(!defined($varx)) {
-		Meta::Utils::System::die("undefined variable");
+		throw Meta::Error::Simple("undefined variable");
 	}
 	if(defined($type)) {
 		if($type eq "ANY") {
@@ -37,7 +37,7 @@ sub check_arg($$) {
 			if($ref eq "") {
 				return(1);
 			} else {
-				Meta::Utils::System::die("what kind of SCALAR is [".$ref."]");
+				throw Meta::Error::Simple("what kind of SCALAR is [".$ref."]");
 			}
 		}
 		if($type eq "SCALARref") {
@@ -45,7 +45,7 @@ sub check_arg($$) {
 			if($ref eq "SCALAR") {
 				return(1);
 			} else {
-				Meta::Utils::System::die("what kind of SCALARref is [".$ref."]");
+				throw Meta::Error::Simple("what kind of SCALARref is [".$ref."]");
 			}
 		}
 		if($type eq "ARRAYref") {
@@ -53,7 +53,7 @@ sub check_arg($$) {
 			if($ref eq "ARRAY") {
 				return(1);
 			} else {
-				Meta::Utils::System::die("what kind of ARRAYref is [".$ref."]");
+				throw Meta::Error::Simple("what kind of ARRAYref is [".$ref."]");
 			}
 		}
 		if($type eq "HASHref") {
@@ -61,25 +61,25 @@ sub check_arg($$) {
 			if($ref eq "HASH") {
 				return(1);
 			} else {
-				Meta::Utils::System::die("what kind of HASHref is [".$ref."]");
+				throw Meta::Error::Simple("what kind of HASHref is [".$ref."]");
 			}
 		}
 		if(UNIVERSAL::isa($varx,$type)) {
 			return(1);
 		} else {
-			Meta::Utils::System::die("variable [".$varx."] is not of type [".$type."]");
+			throw Meta::Error::Simple("variable [".$varx."] is not of type [".$type."]");
 		}
 	} else {
-		Meta::Utils::System::die("why is type undef ?");
+		throw Meta::Error::Simple("why is type undef ?");
 		return(0);
 	}
 #	my($resu)=ref($varx);
 #	if(defined($resu)) {
 #		if($resu ne $type) {
-#			Meta::Utils::System::die("variable is not of type [".$varx."] but of type [".$resu."]");
+#			throw Meta::Error::Simple("variable is not of type [".$varx."] but of type [".$resu."]");
 #		}
 #	} else {
-#		Meta::Utils::System::die("ref didn't return defined value");
+#		throw Meta::Error::Simple("ref didn't return defined value");
 #	}
 }
 
@@ -121,7 +121,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Arg.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -186,25 +186,12 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Error(3), strict(3)
 
 =head1 TODO
 
--implement the get_temp_dir routine better... (is there a way of officialy getting such a directory ?).
-
--is there a better way to implement the get_temp_dire routine ?
-
--move the get_home_dir and the other function built to some library.
-
--maybe there is a better way to get my home directory than from the environment ?
-
--The is suffix routine and is prefix routines should be fixed for cases where the string they match has special (regexp type) characters in it. Watch the example in cook_touch.
-
--more routines should be moved to their own modules...
-
--reimplement the home directory of the current user just like any others.
-
--fix the cgid routine... (isnt there a better way to do it ?!?...)
+Nothing.

@@ -9,13 +9,13 @@ $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
 =head1 NAME
 
-soap_client.pl - what does your program do.
+soap_client.pl - run a perl SOAP client software.
 
 =head1 COPYRIGHT
 
@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: soap_client.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -50,7 +50,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put your programs description here.
+This program will run a SOAP client server in perl.
 
 =head1 OPTIONS
 
@@ -110,6 +110,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -13,11 +13,13 @@ use Meta::Utils::Options qw();
 use Meta::Lang::Cpp::Libs qw();
 use Meta::Utils::File::Patho qw();
 use Meta::Development::Module qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw();
 
+#sub BEGIN();
 #sub get_path();
 #sub get_version();
 #sub get_dom($);
@@ -28,13 +30,23 @@ $VERSION="0.27";
 
 #__DATA__
 
+our($gcc_compiler,$gcc_path,$gpp_compiler,$gpp_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$gcc_compiler=$patho->resolve("gcc");
+	$gcc_path=$patho->path_to("gcc");
+	$gpp_compiler=$patho->resolve("g++");
+	$gpp_path=$patho->path_to("g++");
+	#$gcc_path="/usr/bin";
+}
+
 sub get_path() {
-	my($patho)=Meta::Utils::File::Patho->new_env("PATH",":");
-	return($patho->resolve("gcc"));
+	return($gcc_path);
 }
 
 sub get_version() {
-	my($output)=Meta::Utils::System::system_out(get_path(),["--version"]);
+	my($output)=Meta::Utils::System::system_out($gcc_compiler,["--version"]);
 	chop($$output);
 	return($$output);
 }
@@ -69,9 +81,9 @@ sub get_dom($) {
 		$el_error->appendChild($el_text);
 		my(@fields)=split(':',$curr);
 		if($#fields!=2) {
-			#Meta::Utils::Output::print("what line is [".$curr."]\n");
+#			throw Meta::Error::Simple("what line is [".$curr."]\n");
 			next;
-#			Meta::Utils::System::die("what kind of gcc output is [".$curr."]");
+#			throw Meta::Error::Simple("what kind of gcc output is [".$curr."]");
 		}
 		my($file)=$fields[0];
 		my($line)=$fields[1];
@@ -140,6 +152,7 @@ sub link($$$$$$$$$$$$$$$$) {
 	my($os)=$arch->get_os();
 	my($os_version)=$arch->get_os_version();
 	my($compiler)=$arch->get_compiler();
+	#Meta::Utils::Output::print("compiler is [".$compiler."]\n");
 	my($compiler_version)=$arch->get_compiler_version();
 	my($flagset_primary)=$arch->get_flagset_primary();
 	my($flagset_secondary)=$arch->get_flagset_secondary();
@@ -208,7 +221,7 @@ sub link($$$$$$$$$$$$$$$$) {
 				}
 			}
 			if(!$found) {
-				Meta::Utils::System::die("cant match library [".$clib."]");
+				throw Meta::Error::Simple("cant match library [".$clib."]");
 			}
 		}
 	}
@@ -244,7 +257,7 @@ sub link($$$$$$$$$$$$$$$$) {
 			Meta::Utils::Output::print("arg [".$i."] is ".$args[$i]."\n");
 		}
 	}
-	my($scod)=Meta::Utils::System::system_nodie("/local/tools/bin/".$prog,\@args);
+	my($scod)=Meta::Utils::System::system_nodie($gcc_path."/".$prog,\@args);
 	return($scod);
 }
 
@@ -290,7 +303,7 @@ sub compile($) {
 		}
 	}
 	if(!$foun) {
-		Meta::Utils::System::die("what exactly do you want me to compile ?");
+		throw Meta::Error::Simple("what exactly do you want me to compile ?");
 	}
 
 	my($os)=$arch_o->get_os();
@@ -340,7 +353,8 @@ sub compile($) {
 			push(@args,"-Wpointer-arith");
 			push(@args,"-Wmissing-declarations");
 			push(@args,"-Wmissing-prototypes");
-			push(@args,"-Wid-clash-16");
+#	no longer supported by gcc (as of 3.2)
+#			push(@args,"-Wid-clash-16");
 			push(@args,"-Wstrict-prototypes");
 			push(@args,"-Wnested-externs");
 			push(@args,"-Wwrite-strings");
@@ -422,13 +436,16 @@ sub compile($) {
 #	Meta::Utils::Output::print("path is [".$path."]\n");
 #	Meta::Utils::Output::print("einc is [".$einc."]\n");
 #	Meta::Utils::Output::print("elib is [".$elib."]\n");
+	my($exe)=$gcc_path."/".$prog;
+#	Meta::Utils::Output::print("exe is [".$exe."]\n");
 #	for(my($i)=0;$i<=$#args;$i++) {
 #		Meta::Utils::Output::print("arg [".$i."] is [".$args[$i]."]\n");
 #	}
 	my($text);
-	my($scod)=Meta::Utils::System::system_err_nodie(\$text,"/local/tools/bin/".$prog,\@args);
+	my($scod)=Meta::Utils::System::system_err_nodie(\$text,$exe,\@args);
 	if(!$scod) {
-		my($dom)=Meta::Tool::Gcc::get_dom($text);
+		Meta::Utils::Output::print("errors are [".$text."]\n");
+		#my($dom)=Meta::Tool::Gcc::get_dom($text);
 		#Meta::Utils::Output::print($dom->toString());
 	}
 	return($scod);
@@ -474,7 +491,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Gcc.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -502,6 +519,7 @@ Other uses may be colorizing the output on the console screen.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	get_path()
 	get_version()
 	get_dom($)
@@ -513,6 +531,10 @@ Other uses may be colorizing the output on the console screen.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Setup method for this class which sets up the path to gcc.
 
 =item B<get_path()>
 
@@ -609,10 +631,11 @@ None.
 	0.25 MV SEE ALSO section fix
 	0.26 MV bring movie data
 	0.27 MV teachers project
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Arch(3), Meta::Development::Module(3), Meta::Lang::Cpp::Libs(3), Meta::Tool::Gcc(3), Meta::Utils::File::Patho(3), Meta::Utils::Options(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Unix(3), XML::DOM(3), strict(3)
+Error(3), Meta::Baseline::Arch(3), Meta::Development::Module(3), Meta::Lang::Cpp::Libs(3), Meta::Tool::Gcc(3), Meta::Utils::File::Patho(3), Meta::Utils::Options(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Unix(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 

@@ -3,10 +3,10 @@
 package Meta::Math::Pad;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw();
 
 #sub pad_easy($$);
@@ -28,7 +28,7 @@ sub pad_easy($$) {
 sub pad($$) {
 	my($numb,$digi)=@_;
 	if(length($numb)>$digi) {
-		Meta::Utils::System::die("length of number received already more than required number of digits [".$numb."] [".$digi."]");
+		throw Meta::Error::Simple("length of number received already more than required number of digits [".$numb."] [".$digi."]");
 	}
 	return(&pad_easy($numb,$digi));
 }
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pad.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -164,10 +164,11 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV weblog issues
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Error(3), strict(3)
 
 =head1 TODO
 

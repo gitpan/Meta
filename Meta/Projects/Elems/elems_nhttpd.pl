@@ -9,7 +9,7 @@ $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: elems_nhttpd.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -111,6 +111,7 @@ None.
 
 	0.00 MV download scripts
 	0.01 MV bring movie data
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -36,7 +36,7 @@ $dbi->connect_name($connection,$name);
 Meta::Db::Ops::export_file($dbi,$def,$out,$connection);
 $dbi->disconnect();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_export.pl
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -175,6 +175,7 @@ None.
 	0.14 MV SEE ALSO section fix
 	0.15 MV move tests to modules
 	0.16 MV teachers project
+	0.17 MV md5 issues
 
 =head1 SEE ALSO
 

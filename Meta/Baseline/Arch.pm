@@ -7,13 +7,13 @@ use Meta::Ds::Dhash qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
+use Meta::Development::Assert qw();
 
 our($VERSION,@ISA);
-$VERSION="0.33";
+$VERSION="0.34";
 @ISA=qw();
 
 #sub BEGIN();
-#sub init($);
 #sub analyze($$);
 #sub get_string($);
 #sub get_dire($);
@@ -25,8 +25,10 @@ $VERSION="0.33";
 
 #__DATA__
 
+our($hash);
+
 sub BEGIN() {
-	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->new("new");
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_cpu",
 		-java=>"_os",
@@ -36,22 +38,15 @@ sub BEGIN() {
 		-java=>"_flagset_primary",
 		-java=>"_flagset_secondary",
 	);
-}
-
-sub init($) {
-	my($self)=@_;
 	my($file)=Meta::Baseline::Aegis::which("data/baseline/arch/data.txt");
-	my($hash)=Meta::Ds::Dhash->new();
+	$hash=Meta::Ds::Dhash->new();
 	$hash->read($file);
-	$self->{HASH}=$hash;
 }
 
 sub analyze($$) {
 	my($self,$arch)=@_;
 	my(@fiel)=split('-',$arch);
-	if($#fiel!=6) {
-		Meta::Utils::System::die("bad architecture string [".$arch."]");
-	}
+	Meta::Development::Assert::assert_eq($#fiel,6,"6 fields in architecture expected");
 	$self->set_cpu($fiel[0]);
 	$self->set_os($fiel[1]);
 	$self->set_os_version($fiel[2]);
@@ -77,12 +72,12 @@ sub get_string($) {
 
 sub get_dire($) {
 	my($self)=@_;
-	return($self->{HASH}->get_a($self->get_string()));
+	return($hash->get_a($self->get_string()));
 }
 
 sub from_dire($$) {
 	my($self,$dire)=@_;
-	my($arch)=$self->{HASH}->get_b($dire);
+	my($arch)=$hash->get_b($dire);
 	$self->analyze($arch);
 }
 
@@ -125,7 +120,7 @@ sub get_bin_directory($) {
 sub TEST($) {
 	my($context)=@_;
 	my($arch)=Meta::Baseline::Arch->new();
-	$arch->analyze("i686-linux-2.2.17-g++-2.95.2-obj-dbg");
+	$arch->analyze("pentium3-linux-2.4.19-g++-3.2-obj-dbg");
 	Meta::Utils::Output::dump($arch);
 	$arch->from_dire("bins/reg.cxx.bin.dbg");
 	Meta::Utils::Output::dump($arch);
@@ -165,7 +160,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Arch.pm
 	PROJECT: meta
-	VERSION: 0.33
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
@@ -183,7 +178,6 @@ from them.
 =head1 FUNCTIONS
 
 	BEGIN()
-	init($)
 	analyze($$)
 	get_string($)
 	get_dire($)
@@ -209,10 +203,6 @@ compiler: compiler that did the compilation.
 compiler_version: version of the compiler that did the compilation.
 flagset_primary: which flag set was used (primary).
 flagset_secondary: which flag set was used (secondary).
-
-=item B<init($)>
-
-This method does initialization stuff. This is mostly internal.
 
 =item B<analyze($$)>
 
@@ -307,10 +297,11 @@ None.
 	0.31 MV web site automation
 	0.32 MV SEE ALSO section fix
 	0.33 MV teachers project
+	0.34 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Dhash(3), Meta::Utils::Output(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Development::Assert(3), Meta::Ds::Dhash(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
@@ -329,3 +320,5 @@ Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Dhash(3), Meta:
 -think more about if we really need the name "CPU" here or maybe just make this an array of components which are of interest ?
 
 -move this out of this directory and into Development or something....
+
+-turn the input file for this class to be xml based.

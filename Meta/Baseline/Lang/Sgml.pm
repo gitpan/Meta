@@ -7,7 +7,7 @@ use Meta::Baseline::Utils qw();
 use Meta::Baseline::Lang qw();
 use Meta::Tool::Onsgmls qw();
 use Meta::Tool::Aspell qw();
-use Meta::Tool::Sgmltoolslite qw();
+#use Meta::Tool::Sgmltoolslite qw();
 use Meta::Tool::Sgmltools qw();
 use Meta::Lang::Xml::Xml qw();
 use Meta::Lang::Sgml::Sgml qw();
@@ -15,13 +15,14 @@ use Meta::Baseline::Cook qw();
 use Meta::Tool::Sgml2 qw();
 use Meta::Tool::Docbook2 qw();
 use Meta::Tool::Openjade qw();
+use Meta::Xml::LibXML qw();
 
 #tools that we are currently not using
 #use Meta::Tool::Jade qw();
 #use Meta::Tool::Nsgmls qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -48,22 +49,35 @@ $VERSION="0.17";
 sub c2chec($) {
 	my($buil)=@_;
 	my($resu)=1;
-	#my($cod0)=Meta::Tool::Nsgmls::dochec($buil->get_srcx(),$buil->get_path());
-	#if(!$cod0) {
-	#	$resu=0;
-	#}
-	my($cod1)=Meta::Tool::Onsgmls::dochec($buil);
+	my($cod0)=Meta::Tool::Onsgmls::dochec($buil);
+	if(!$cod0) {
+		$resu=0;
+	}
+	# check spelling using aspell sgml mode
+	my($cod1)=Meta::Tool::Aspell::checksgml($buil);
 	if(!$cod1) {
 		$resu=0;
 	}
-	my($cod2)=Meta::Tool::Aspell::checksgml($buil);
-	if(!$cod2) {
-		$resu=0;
-	}
-	my($cod3)=Meta::Tool::Sgmltoolslite::check($buil);
-	if(!$cod3) {
-		$resu=0;
-	}
+	# check correctness usign XML
+	#my($parser)=Meta::Xml::LibXML->new_aegis();
+	#$parser->validation(1);
+	#$parser->pedantic_parser(1);
+	#$parser->load_ext_dtd(1);
+	#my($cod0)=$parser->check_file($buil->get_srcx());
+	#if(!$cod0) {
+	#	$resu=0;
+	#}
+	# check sgml using onsgmls
+	# check sgml using nsgmls
+	#my($cod2)=Meta::Tool::Nsgmls::dochec($buil->get_srcx(),$buil->get_path());
+	#if(!$cod2) {
+	#	$resu=0;
+	#}
+	# check sgml using sgmltoolslite
+	#my($cod4)=Meta::Tool::Sgmltoolslite::check($buil);
+	#if(!$cod4) {
+	#	$resu=0;
+	#}
 	if($resu) {
 		Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	}
@@ -79,50 +93,50 @@ sub c2deps($) {
 
 sub c2texx($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2texx($buil));
-#	return(Meta::Tool::Openjade::c2texx($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2texx($buil));
+	return(Meta::Tool::Openjade::c2texx($buil));
 }
 
 sub c2dvix($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2dvix($buil));
-#	return(Meta::Tool::Openjade::c2dvix($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2dvix($buil));
+	return(Meta::Tool::Openjade::c2dvix($buil));
 }
 
 sub c2psxx($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2psxx($buil));
-#	return(Meta::Tool::Openjade::c2psxx($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2psxx($buil));
+	return(Meta::Tool::Openjade::c2psxx($buil));
 }
 
 sub c2txtx($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2txtx($buil));
-#	return(Meta::Tool::Openjade::c2txtx($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2txtx($buil));
+	return(Meta::Tool::Openjade::c2txtx($buil));
 }
 
 sub c2html($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2html($buil));
-#	return(Meta::Tool::Openjade::c2html($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2html($buil));
+	return(Meta::Tool::Openjade::c2html($buil));
 }
 
 sub c2rtfx($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2rtfx($buil));
-#	return(Meta::Tool::Openjade::c2rtfx($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2rtfx($buil));
+	return(Meta::Tool::Openjade::c2rtfx($buil));
 }
 
 sub c2manx($) {
 	my($buil)=@_;
-	return(Meta::Tool::Docbook2::c2manx($buil));
-#	return(Meta::Tool::Openjade::c2rtfx($buil));
+#	return(Meta::Tool::Docbook2::c2manx($buil));
+	return(Meta::Tool::Openjade::c2rtfx($buil));
 }
 
 sub c2mifx($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2mifx($buil));
-#	return(Meta::Tool::Openjade::c2mifx($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2mifx($buil));
+	return(Meta::Tool::Openjade::c2mifx($buil));
 }
 
 sub c2info($) {
@@ -134,8 +148,8 @@ sub c2info($) {
 
 sub c2pdfx($) {
 	my($buil)=@_;
-	return(Meta::Tool::Sgmltoolslite::c2pdfx($buil));
-#	return(Meta::Tool::Openjade::c2pdfx($buil));
+#	return(Meta::Tool::Sgmltoolslite::c2pdfx($buil));
+	return(Meta::Tool::Openjade::c2pdfx($buil));
 }
 
 sub c2chun($) {
@@ -207,7 +221,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -368,10 +382,11 @@ None.
 	0.15 MV SEE ALSO section fix
 	0.16 MV bring movie data
 	0.17 MV finish papers
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Lang::Sgml::Sgml(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aspell(3), Meta::Tool::Docbook2(3), Meta::Tool::Onsgmls(3), Meta::Tool::Openjade(3), Meta::Tool::Sgml2(3), Meta::Tool::Sgmltools(3), Meta::Tool::Sgmltoolslite(3), strict(3)
+Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Lang::Sgml::Sgml(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aspell(3), Meta::Tool::Docbook2(3), Meta::Tool::Onsgmls(3), Meta::Tool::Openjade(3), Meta::Tool::Sgml2(3), Meta::Tool::Sgmltools(3), Meta::Xml::LibXML(3), strict(3)
 
 =head1 TODO
 

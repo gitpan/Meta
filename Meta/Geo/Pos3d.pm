@@ -7,7 +7,7 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.09";
 @ISA=qw();
 
 #sub BEGIN();
@@ -42,10 +42,10 @@ sub sub($$) {
 }
 
 sub mul($$) {
-	my($self,$valx)=@_;
-	$self->set_x($self->get_x()*$valx);
-	$self->set_y($self->get_y()*$valx);
-	$self->set_z($self->get_z()*$valx);
+	my($self,$val)=@_;
+	$self->set_x($self->get_x()*$val);
+	$self->set_y($self->get_y()*$val);
+	$self->set_z($self->get_z()*$val);
 }
 
 sub TEST($) {
@@ -96,7 +96,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pos3d.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -175,6 +175,7 @@ None.
 	0.06 MV web site automation
 	0.07 MV SEE ALSO section fix
 	0.08 MV teachers project
+	0.09 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -4,7 +4,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use XML::Writer qw();
-use IO qw();
+use Meta::IO::File qw();
 
 my($inpu,$outp,$xmlx,$doct);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -16,7 +16,7 @@ $opts->def_bool("doctype","should I put a DOCTYPE header ?",1,\$doct);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($output)=IO::File->new("> ".$outp);
+my($output)=Meta::IO::File->new_writer($outp);
 my($writer)=XML::Writer->new(OUTPUT=>$output,DATA_MODE=>1,DATA_INDENT=>8);
 if($xmlx) {
 	$writer->xmlDecl();
@@ -26,22 +26,21 @@ if($doct) {
 }
 $writer->startTag("todo");
 $writer->startTag("items");
-open(FILE,$inpu) || Meta::Utils::System::die("unable to open file [".$inpu."]");
-my($line);
-while($line=<FILE> || 0) {
-	chop($line);
+my($io)=Meta::IO::File->new_reader($inpu);
+while(!$io->eof()) {
+	my($line)=$io->cgetline();
 	$writer->startTag("item");
 	$writer->dataElement("subject","");
 	$writer->dataElement("text",$line);
 	$writer->endTag("item");
 }
-close(FILE) || Meta::Utils::System::die("unable to close file [".$inpu."]");
+$io->close();
 $writer->endTag("items");
 $writer->endTag("todo");
 $writer->end();
 $output->close();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -74,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: todo_txt2todo.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -169,10 +168,11 @@ None.
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
 	0.10 MV move tests to modules
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 
-IO(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), XML::Writer(3), strict(3)
+Meta::IO::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), XML::Writer(3), strict(3)
 
 =head1 TODO
 

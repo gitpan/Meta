@@ -3,15 +3,17 @@
 package Meta::Utils::Utils;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
 use Meta::Utils::Env qw();
 use Meta::Utils::File::File qw();
-use IO::File qw();
+use Meta::Utils::Chdir qw();
+use Meta::IO::File qw();
 use POSIX qw();
 use Cwd qw();
+use Error qw(:try);
+use File::Basename qw();
 
 our($VERSION,@ISA);
-$VERSION="0.44";
+$VERSION="0.45";
 @ISA=qw();
 
 #sub bnot($);
@@ -30,19 +32,18 @@ $VERSION="0.44";
 #sub cgid();
 #sub get_home_dir();
 #sub get_user_home_dir($);
-#sub pwd();
 #sub remove_comments($);
-#sub chdir($);
 #sub cat($$$);
 #sub is_absolute($);
 #sub is_relative($);
+#sub to_absolute($);
 #sub TEST($);
 
 #__DATA__
 
 sub bnot($) {
-	my($valx)=@_;
-	if($valx==0) {
+	my($val)=@_;
+	if($val==0) {
 		return(1);
 	} else {
 		return(0);
@@ -54,7 +55,7 @@ sub minus($$) {
 	if(substr($full,0,length($partial)) eq $partial) {
 		return(substr($full,length($partial),length($full)));
 	} else {
-		Meta::Utils::System::die("partial is [".$partial."] and full is [".$full."]\n");
+		throw Meta::Error::Simple("partial is [".$partial."] and full is [".$full."]\n");
 	}
 }
 
@@ -81,14 +82,19 @@ sub get_temp_file() {
 #	do {
 #		$name=POSIX::tmpnam();
 #	}
-#	until($fh=IO::File->new($name,IO::File::O_RDWR|IO::File::O_CREAT|IO::File::O_EXCL));
+#	until($fh=Meta::IO::File->new($name,Meta::IO::File::O_RDWR|Meta::IO::File::O_CREAT|Meta::IO::File::O_EXCL));
 #	return($name);
 }
 
 sub replace_suffix($$) {
 	my($file,$suff)=@_;
-	$file=~s/\..*/$suff/;
-	return($file);
+	my($base)=File::Basename::basename($file);
+	my($dir)=File::Basename::dirname($file);
+	$base=~s/\..*/$suff/;
+	return($dir."/".$base);
+	#the old code which is bad since it does not handle files
+	#which have "." in the directory part.
+	#$file=~s/\..*/$suff/;
 }
 
 sub remove_suffix($) {
@@ -101,7 +107,7 @@ sub remove_suf($$) {
 	if(substr($full,length($full)-length($partial),length($partial)) eq $partial) {
 		return(substr($full,0,length($full)-length($partial)));
 	} else {
-		Meta::Utils::System::die("partial is [".$partial."] and full is [".$full."]\n");
+		throw Meta::Error::Simple("partial is [".$partial."] and full is [".$full."]\n");
 	}
 }
 
@@ -164,13 +170,9 @@ sub get_user_home_dir($) {
 	my($user)=@_;
 	my($resu)=((POSIX::getpwnam($user))[7]);
 	if(!defined($resu)) {
-		Meta::Utils::System::die("user [".$user."] unknown");
+		throw Meta::Error::Simple("user [".$user."] unknown");
 	}
 	return($resu);
-}
-
-sub pwd() {
-	return(Cwd::cwd());
 }
 
 sub remove_comments($) {
@@ -179,20 +181,31 @@ sub remove_comments($) {
 	return($text);
 }
 
-sub chdir($) {
-	my($dire)=@_;
-	if(!CORE::chdir($dire)) {
-		Meta::Utils::Sysmte::die("unable to change directory to [".$dire."]");
-	}
-}
-
 sub cat($$$) {
 	my($f1,$f2,$out)=@_;
-	my($text_f1)=Meta::Utils::File::File::load($f1);
-	my($text_f2)=Meta::Utils::File::File::load($f2);
-	my($text_out)=$text_f1.$text_f2;
-	Meta::Utils::File::File::save($out,$text_out);
-	return(1);
+	if($f1 eq $out || $f2 eq $out) {
+		throw Meta::Error::Simple("bad files given");
+	}
+	my($io_out)=Meta::IO::File->new_writer($out);
+	my($io_f1)=Meta::IO::File->new_reader($f1);
+	while(!$io_f1->eof()) {
+		my($line)=$io_f1->getline();
+		print $io_out $line;
+	}
+	$io_f1->close();
+	my($io_f2)=Meta::IO::File->new_reader($f2);
+	while(!$io_f2->eof()) {
+		my($line)=$io_f2->getline();
+		print $io_out $line;
+	}
+	$io_f2->close();
+	$io_out->close();
+	#older implementation which is much less efficient
+	#my($text_f1,$text_f2);
+	#Meta::Utils::File::File::load($f1,\$text_f1);
+	#Meta::Utils::File::File::load($f2,\$text_f2);
+	#my($text_out)=$text_f1.$text_f2;
+	#Meta::Utils::File::File::save($out,$text_out);
 }
 
 sub is_absolute($) {
@@ -205,8 +218,23 @@ sub is_relative($) {
 	return($fn!~/^\//);
 }
 
+sub to_absolute($) {
+	my($fn)=@_;
+	if(is_absolute($fn)) {
+		return($fn);
+	} else {
+		return(Meta::Utils::Chdir::get_cwd()."/".$fn);
+	}
+}
+
 sub TEST($) {
 	my($context)=@_;
+	Meta::Utils::Output::print(get_home_dir()."\n");
+	Meta::Utils::Output::print(get_user_home_dir("root")."\n");
+	Meta::Utils::Output::print(remove_comments("kuku /* mark */ fufu")."\n");
+	Meta::Utils::Output::print(get_suffix("foo.bar")."\n");
+	Meta::Utils::Output::print(basename("/etc/passwd.txt")."\n");
+	Meta::Utils::Output::print(remove_suf("/etc/passwd.txt",".txt")."\n");
 	return(1);
 }
 
@@ -243,7 +271,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Utils.pm
 	PROJECT: meta
-	VERSION: 0.44
+	VERSION: 0.45
 
 =head1 SYNOPSIS
 
@@ -272,12 +300,11 @@ This is a general utility module for either miscelleneous commands which are har
 	cgid()
 	get_home_dir()
 	get_user_home_dir($)
-	pwd()
 	remove_comments($)
-	chdir($)
 	cat($$$)
 	is_absolute($)
 	is_relative($)
+	to_absolute($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -365,28 +392,18 @@ out using POSIX::getpwnam does not work.
 This routine returns the home dir of the user that is given to it as the
 argument.
 
-=item B<pwd()>
-
-This returns the current working directory.
-This is currently implemented as getting the "PWD" variable out of the
-environment. There should be a better way to do that since the system
-knows which is your current working directory so there should be a system
-call to find this out...
-
 =item B<remove_comments($)>
 
 This routine will receive a text and will remove all comments from it.
 The idea here is C/C++ style comments : /* sdfdaf */
 
-=item B<chdir($)>
-
-This routine will change the current working directory by calling the builtin
-function "chdir". It will die if it cannot change the directory.
-
 =item B<cat($$$)>
 
 This function receives the names of two files and write the content of the
-two fles into the third one.
+two fles into the third one. If one of the input files is the output file
+then this function will throw an exception. In the future the function may
+be able to deal with such cases by moving the info through an intermediate
+file.
 
 =item B<is_absolute($)>
 
@@ -395,6 +412,11 @@ This function will return whether the file name it received is an absolute file 
 =item B<is_relative($)>
 
 This function will return whether the file name it received is a relative file name.
+
+=item B<to_absolute($)>
+
+This function will convert a relative file name to an absolute one. It use
+Meta::Utils::Chdir::pwd to do it's thing.
 
 =item B<TEST($)>
 
@@ -464,10 +486,11 @@ None.
 	0.42 MV move tests to modules
 	0.43 MV web site development
 	0.44 MV finish papers
+	0.45 MV md5 issues
 
 =head1 SEE ALSO
 
-Cwd(3), IO::File(3), Meta::Utils::Env(3), Meta::Utils::File::File(3), Meta::Utils::System(3), POSIX(3), strict(3)
+Cwd(3), Error(3), File::Basename(3), Meta::IO::File(3), Meta::Utils::Chdir(3), Meta::Utils::Env(3), Meta::Utils::File::File(3), POSIX(3), strict(3)
 
 =head1 TODO
 
@@ -484,3 +507,7 @@ Cwd(3), IO::File(3), Meta::Utils::Env(3), Meta::Utils::File::File(3), Meta::Util
 -the remove_suffix function is a little slow (uses replace suffix). Make it just do it's thing.
 
 -do the basename more efficiently using regexps. (experimental code is there but doesnt work)
+
+-improve the cat method to deal with the case where the one of the input files is also the output.
+
+-improve the cat method to check for cannonical file names and not just the ones given.

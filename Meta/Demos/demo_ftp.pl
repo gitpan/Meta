@@ -42,7 +42,7 @@ for(my($i)=0;$i<=$#list;$i++) {
 Meta::Utils::Output::print("logging out\n");
 $ftp->quit();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: demo_ftp.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -159,6 +159,7 @@ None.
 
 	0.00 MV finish papers
 	0.01 MV teachers project
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -3,19 +3,33 @@
 package Meta::Tool::Tar;
 
 use strict qw(vars refs subs);
+use Meta::Utils::File::Patho qw();
+#use Meta::Utils::Chdir qw();
+use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
-#sub your_proc($);
+#sub BEGIN();
+#sub unpack($$);
 #sub TEST($);
 
 #__DATA__
 
-sub your_proc($) {
-	my($proc)=@_;
-	return(0);
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("tar");
+}
+
+sub unpack($$) {
+	my($package,$target_dir)=@_;
+	my($abs_package)=Meta::Utils::Utils::to_absolute($package);
+#	Meta::Utils::Chdir::chdir($target_dir);
+	Meta::Utils::System::system($tool_path,["--extract","--bzip2","--directory=".$target_dir,"--file",$abs_package]);
+#	Meta::Utils::Chdir::popd();
 }
 
 sub TEST($) {
@@ -56,13 +70,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Tar.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Tool::Tar qw();
-	my($code)=Meta::Tool::Tar::your_proc($proc);
+	Meta::Tool::Tar::unpack("myfile.tar.gz","/tmp");
 
 =head1 DESCRIPTION
 
@@ -71,21 +85,30 @@ do whatever you want with them.
 
 =head1 FUNCTIONS
 
-	your_proc($)
+	BEGIN()
+	unpack($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<your_proc($)>
+=item B<BEGIN()>
 
-This routine will return "yes" if the procedure which is given to it is one
-which is handled by this module.
+Bootstrap method to find your tar executable.
+
+=item B<unpack($$)>
+
+Give this method a package name (file name) and a destination directory and the
+package will unpack the package into that directory.
 
 =item B<TEST($)>
 
 Test suite for this module.
+This method should be called by some higher level to perform full regression
+testing for the entire software package this class comes with.
+This method can also be call by the user to make sure that this package
+functions properly.
 
 =back
 
@@ -117,10 +140,11 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 
-strict(3)
+Meta::Utils::File::Patho(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

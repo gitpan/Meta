@@ -8,9 +8,10 @@ use Meta::Utils::System qw();
 use Meta::Utils::File::Fs qw();
 use Meta::Utils::Output qw();
 use Meta::Class::MethodMaker qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw();
 
 #sub BEGIN();
@@ -44,13 +45,13 @@ sub do_login($) {
 	my($self)=@_;
 	my($ftp)=Net::FTP->new($self->get_site(),Debug=>$self->get_debu());
 	if(!$ftp) {
-		Meta::Utils::System::die("unable to create ftp object with error [".$@."]");
+		throw Meta::Error::Simple("unable to create ftp object with error [".$@."]");
 	}
 	$self->set_ftpx($ftp);
 	$self->get_ftpx()->type($self->get_mode());
 	my($code)=$self->get_ftpx()->login($self->get_name(),$self->get_password());
 	if(!$code) {
-		Meta::Utils::System::die("unable to login with error [".$self->get_ftpx()->message()."]");
+		throw Meta::Error::Simple("unable to login with error [".$self->get_ftpx()->message()."]");
 	}
 }
 
@@ -58,7 +59,7 @@ sub do_logout($) {
 	my($self)=@_;
 	my($code)=$self->get_ftpx()->quit();
 	if(!$code) {
-		Meta::Utils::System::die("unable to quit with message [".$self->get_ftpx()->message()."]");
+		throw Meta::Error::Simple("unable to quit with message [".$self->get_ftpx()->message()."]");
 	}
 }
 
@@ -68,12 +69,12 @@ sub do_put_mkdir($$$) {
 	if($dire ne "") {
 		my($cod0)=$self->get_ftpx()->mkdir($dire,1);
 	if(!$cod0) {
-		Meta::Utils::System::die("unable to mkdir [".$dire."] with message [".$self->get_ftpx()->message()."]");
+		throw Meta::Error::Simple("unable to mkdir [".$dire."] with message [".$self->get_ftpx()->message()."]");
 		}
 	}
 	my($cod1)=$self->get_ftpx()->put($abso,$file);
 	if(!$cod1) {
-		Meta::Utils::System::die("unable to put [".$file."] with message [".$self->get_ftpx()->message()."]");
+		throw Meta::Error::Simple("unable to put [".$file."] with message [".$self->get_ftpx()->message()."]");
 	}
 }
 
@@ -186,22 +187,22 @@ sub get_fs_3($) {
 sub get_mdtm($$$) {
 	my($self,$fsxx,$pref)=@_;
 	for(my($i)=0;$i<$fsxx->size();$i++) {
-		my($keyx)=$fsxx->keyx($i);
-		my($valx)=$fsxx->valx($i);
+		my($key)=$fsxx->key($i);
+		my($val)=$fsxx->val($i);
 		my($curr);
 		if($pref ne "") {
-			$curr=$pref."/".$keyx;
+			$curr=$pref."/".$key;
 		} else {
-			$curr=$keyx;
+			$curr=$key;
 		}
 		#Meta::Utils::Output::print("curr is [".$curr."]\n");
-		if($valx->is_file()) {
+		if($val->is_file()) {
 			my($time)=$self->get_ftpx()->mdtm($curr);
 			#Meta::Utils::Output::print("time is [".$time."]\n");
-			$valx->set_modi($time);
+			$val->set_modi($time);
 		}
-		if($valx->is_dire()) {
-			$self->get_mdtm($valx,$curr);
+		if($val->is_dire()) {
+			$self->get_mdtm($val,$curr);
 		}
 	}
 }
@@ -210,7 +211,7 @@ sub do_delete($$) {
 	my($self,$file)=@_;
 	my($resu)=$self->get_ftpx()->delete($file);
 	if(!$resu) {
-		Meta::Utils::System::die("unable to remove file [".$file."]");
+		throw Meta::Error::Simple("unable to remove file [".$file."]");
 	}
 }
 
@@ -218,7 +219,7 @@ sub do_rmdir($$) {
 	my($self,$dire)=@_;
 	my($resu)=$self->get_ftpx()->rmdir($dire);
 #	if(!$resu) {
-#		Meta::Utils::System::die("unable to remove directory [".$dire."]");
+#		throw Meta::Error::Simple("unable to remove directory [".$dire."]");
 #	}
 }
 
@@ -226,7 +227,7 @@ sub do_cwd($$) {
 	my($self,$dire)=@_;
 	my($resu)=$self->get_ftpx()->cwd($dire);
 	if(!$resu) {
-		Meta::Utils::System::die("unable to cwd to directory [".$dire."]");
+		throw Meta::Error::Simple("unable to cwd to directory [".$dire."]");
 	}
 }
 
@@ -268,7 +269,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ftp.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -425,10 +426,11 @@ None.
 	0.13 MV web site development
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
+	0.16 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Utils::File::Fs(3), Meta::Utils::Output(3), Meta::Utils::System(3), Net::FTP(3), strict(3)
+Error(3), Meta::Class::MethodMaker(3), Meta::Utils::File::Fs(3), Meta::Utils::Output(3), Meta::Utils::System(3), Net::FTP(3), strict(3)
 
 =head1 TODO
 

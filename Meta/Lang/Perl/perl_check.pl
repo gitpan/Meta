@@ -6,42 +6,49 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Lang::Perl qw();
 use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
+use Error qw(:try);
 
 my($enum)=Meta::Baseline::Aegis::get_enum();
 
-my($type);
+my($type,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_enum("type","what source files to take ?","change",\$type,$enum);
+$opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($list);
+my($fileset);
 if($enum->is_selected($type,"change")) {
-	$list=Meta::Baseline::Aegis::change_files_list(1,1,1,1,1,0);
+	$fileset=Meta::Baseline::Aegis::change_files_hash(1,1,1,1,1,0);
 }
 if($enum->is_selected($type,"project")) {
-	$list=Meta::Baseline::Aegis::project_files_list(1,1,0);
+	$fileset=Meta::Baseline::Aegis::project_files_hash(1,1,0);
 }
 if($enum->is_selected($type,"source")) {
-	$list=Meta::Baseline::Aegis::source_files_list(1,1,0,1,1,0);
+	$fileset=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,0);
 }
-for(my($i)=0;$i<=$#$list;$i++) {
-	my($modu)=$list->[$i];
-	if(Meta::Baseline::Lang::Perl->source_file($modu)) {
-		Meta::Utils::Output::print("checking [".$modu."]...\n");
+for(my($i)=0;$i<$fileset->size();$i++) {
+	my($modu)=$fileset->key($i);
+	try {
+		Meta::Baseline::Lang::Perl->source_file($modu);
+		Meta::Utils::Output::verbose($verbose,"checking [".$modu."]...");
 		my($srcx)=Meta::Baseline::Aegis::which($modu);
 		my($path)=Meta::Baseline::Aegis::search_path();
 		my($resu)=Meta::Baseline::Lang::Perl::check($modu,$srcx,$path);
 		if($resu) {
-			Meta::Utils::Output::print("ok\n");
+			Meta::Utils::Output::verbose($verbose,"ok\n");
 		} else {
-			Meta::Utils::Output::print("fail\n");
+			Meta::Utils::Output::verbose($verbose,"fail\n");
 		}
+	}
+	# do nothing since we dont care if the check fails or this is
+	# not a perl source file.
+	catch Error with {
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -74,7 +81,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_check.pl
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -134,6 +141,10 @@ options:
 	project - just files from the current baseline
 	source - complete source manifest
 
+=item B<verbose> (type: bool, default: 1)
+
+should I be noisy ?
+
 =back
 
 no free arguments are allowed
@@ -156,10 +167,11 @@ None.
 	0.02 MV bring movie data
 	0.03 MV finish papers
 	0.04 MV teachers project
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -3,9 +3,12 @@
 package Meta::Ds::Dhash;
 
 use strict qw(vars refs subs);
+use Meta::Error::Simple qw();
+use Meta::IO::File qw();
+use Meta::Development::Assert qw();
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub new($);
@@ -25,9 +28,9 @@ $VERSION="0.31";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{HASH_A}={};
 	$self->{HASH_B}={};
 	$self->{SIZE}=0;
@@ -54,16 +57,31 @@ sub insert($$$) {
 sub remove_a($$) {
 	my($self,$elem_a)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Dhash");
+#	Meta::Utils::Arg::check_arg($elem_a,"ANY");
 	my($hash_a)=$self->{HASH_A};
 	my($hash_b)=$self->{HASH_B};
 	if(!$self->has_a($elem_a)) {
-		return(0);
+		throw Meta::Error::Simple("hash has no element [".$elem_a."]");
 	}
 	my($elem_b)=$self->get_a($elem_a);
 	delete($hash_a->{$elem_a});
 	delete($hash_b->{$elem_b});
 	$self->{SIZE}--;
-	return(1);
+}
+
+sub remove_b($$) {
+	my($self,$elem_b)=@_;
+#	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Dhash");
+#	Meta::Utils::Arg::check_arg($elem_b,"ANY");
+	my($hash_a)=$self->{HASH_A};
+	my($hash_b)=$self->{HASH_B};
+	if(!$self->has_b($elem_b)) {
+		throw Meta::Error::Simple("hash has no element [".$elem_b."]");
+	}
+	my($elem_a)=$self->get_a($elem_b);
+	delete($hash_a->{$elem_a});
+	delete($hash_b->{$elem_b});
+	$self->{SIZE}--;
 }
 
 sub size($) {
@@ -79,13 +97,26 @@ sub has_a($$) {
 	return(exists($hash_a->{$elem_a}));
 }
 
+sub has_b($$) {
+	my($self,$elem_b)=@_;
+#	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Dhash");
+	my($hash_b)=$self->{HASH_B};
+	return(exists($hash_b->{$elem_b}));
+}
+
 sub get_a($$) {
 	my($self,$elem_a)=@_;
+	if(!$self->has_a($elem_a)) {
+		throw Meta::Error::Simple("hash has no element [".$elem_a."]");
+	}
 	return($self->{HASH_A}->{$elem_a});
 }
 
 sub get_b($$) {
 	my($self,$elem_b)=@_;
+	if(!$self->has_b($elem_b)) {
+		throw Meta::Error::Simple("hash has no element [".$elem_b."]");
+	}
 	return($self->{HASH_B}->{$elem_b});
 }
 
@@ -101,27 +132,25 @@ sub print($$) {
 
 sub read($$) {
 	my($self,$file)=@_;
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line)=0;
-	while($line=<FILE> || 0) {
+	my($io)=Meta::IO::File->new_reader($file);
+	while(!$io->eof()) {
+		my($line)=$io->getline();
 		chop($line);
 		my(@fiel)=split(" ",$line);
-		if($#fiel!=1) {
-			Meta::Utils::System::die("how many filelds are in line [".$line."] ?");
-		}
+		Meta::Development::Assert::assert_eq($#fiel,1,"two fields per line expected");
 		$self->insert($fiel[0],$fiel[1]);
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 }
 
 sub write($$) {
 	my($self,$file)=@_;
-	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
+	my($io)=Meta::IO::File->new_writer($file);
 	my($hash_a)=$self->{HASH_A};
 	while(my($elem_a,$elem_b)=each(%$hash_a)) {
-		print FILE $elem_a." ".$elem_b."\n";
+		print $io $elem_a." ".$elem_b."\n";
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 }
 
 sub TEST($) {
@@ -162,7 +191,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dhash.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -214,11 +243,19 @@ This returns whether the value was actually inserted.
 
 =item B<remove_a($$)>
 
-Remove an element from the 1-1.
+Remove an element from the a side of the 1-1.
 This receives:
 0. Dhash object.
 1. Element to remove.
-This returns whether the value was actually removed.
+This method throws an exception if the value is not in the hash.
+
+=item B<remove_b($$)>
+
+Remove an element from the b side of the 1-1.
+This receives:
+0. Dhash object.
+1. Element to remove.
+This method throws an exception if the value is not in the hash.
 
 =item B<size($)>
 
@@ -227,6 +264,14 @@ This receives:
 0. Dhash object.
 
 =item B<has_a($$)>
+
+Returns a boolean value according to whether the specified element is
+in the hash or not.
+This receives:
+0. Dhash object.
+1. Element_a to check for.
+
+=item B<has_b($$)>
 
 Returns a boolean value according to whether the specified element is
 in the hash or not.
@@ -321,10 +366,11 @@ None.
 	0.29 MV website construction
 	0.30 MV web site automation
 	0.31 MV SEE ALSO section fix
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-strict(3)
+Meta::Development::Assert(3), Meta::Error::Simple(3), Meta::IO::File(3), strict(3)
 
 =head1 TODO
 

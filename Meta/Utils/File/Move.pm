@@ -4,42 +4,31 @@ package Meta::Utils::File::Move;
 
 use strict qw(vars refs subs);
 use File::Copy qw();
-use Meta::Utils::System qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw();
 
-#sub mv_nodie($$);
 #sub mv($$);
 #sub mv_noov($$);
 #sub TEST($);
 
 #__DATA__
 
-sub mv_nodie($$) {
-	my($fil1,$fil2)=@_;
-	if(!File::Copy::move($fil1,$fil2)) {
-		return(0);
-	} else {
-		return(1);
-	}
-}
-
 sub mv($$) {
 	my($fil1,$fil2)=@_;
-	my($scod)=mv_nodie($fil1,$fil2);
-	if(!$scod) {
-		Meta::Utils::System::die("unable to move [".$fil1."] to [".$fil2."]");
+	if(!File::Copy::move($fil1,$fil2)) {
+		throw Meta::Error::Simple("unable to move [".$fil1."] to [".$fil2."]");
 	}
 }
 
 sub mv_noov($$) {
 	my($fil1,$fil2)=@_;
 	if(-f $fil2) {
-		Meta::Utils::System::die("file [".$fil2."] exists");
+		throw Meta::Error::Simple("file [".$fil2."] exists");
 	}
-	return(&mv($fil1,$fil2));
+	mv($fil1,$fil2);
 }
 
 sub TEST($) {
@@ -80,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Move.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -97,7 +86,6 @@ case the move fails ? What if you don't want to do that in your code ?
 
 =head1 FUNCTIONS
 
-	mv_nodie($$)
 	mv($$)
 	mv_noov($$)
 	TEST($)
@@ -105,10 +93,6 @@ case the move fails ? What if you don't want to do that in your code ?
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
-
-=item B<mv_nodie($$)>
-
-This function moves a file to another and does not die if it fails.
 
 =item B<mv($$)>
 
@@ -174,10 +158,11 @@ None.
 	0.29 MV website construction
 	0.30 MV web site automation
 	0.31 MV SEE ALSO section fix
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Copy(3), Meta::Utils::System(3), strict(3)
+Error(3), File::Copy(3), strict(3)
 
 =head1 TODO
 

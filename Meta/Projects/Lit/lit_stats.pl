@@ -54,7 +54,7 @@ Meta::Utils::Output::print("number of books is [".$book_number."]\n");
 Meta::Utils::Output::print("number of reads is [".$reads_number."]\n");
 Meta::Utils::Output::print("number of haves is [".$haves_number."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: lit_stats.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -186,6 +186,7 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

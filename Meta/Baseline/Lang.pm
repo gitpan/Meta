@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.20";
+$VERSION="0.21";
 @ISA=qw();
 
 #sub new($);
@@ -16,9 +16,9 @@ $VERSION="0.20";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -65,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Lang.pm
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -140,6 +140,7 @@ None.
 	0.18 MV website construction
 	0.19 MV web site automation
 	0.20 MV SEE ALSO section fix
+	0.21 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -7,7 +7,7 @@ use Meta::Ds::Ochash qw();
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.33";
+$VERSION="0.34";
 @ISA=qw(Meta::Ds::Ochash Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -31,9 +31,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Ochash->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -147,7 +147,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Set.pm
 	PROJECT: meta
-	VERSION: 0.33
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
@@ -279,6 +279,7 @@ None.
 	0.31 MV website construction
 	0.32 MV web site automation
 	0.33 MV SEE ALSO section fix
+	0.34 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -3,10 +3,10 @@
 package Meta::Chess::Piece;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
+use Meta::Ds::Hash qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw();
 
 #sub BEGIN();
@@ -21,27 +21,26 @@ $VERSION="0.17";
 our($piece_hash);
 
 sub BEGIN() {
-	$piece_hash->{"Pawn"}="";
-	$piece_hash->{"Rook"}="R";
-	$piece_hash->{"Knight"}="N";
-	$piece_hash->{"Bishop"}="B";
-	$piece_hash->{"King"}="K";
-	$piece_hash->{"Queen"}="Q";
+	$piece_hash=Meta::Ds::Hash->new();
+	$piece_hash->insert("Pawn","");
+	$piece_hash->insert("Rook","R");
+	$piece_hash->insert("Pawn","N");
+	$piece_hash->insert("Pawn","B");
+	$piece_hash->insert("Pawn","K");
+	$piece_hash->insert("Queen","Q");
 }
 
 sub new($) {
-	my($clas)=@_;
-	my($self)=Meta::Ds::Array->new();
-	bless($self,$clas);
+	my($class)=@_;
+	my($self)={};
+	bless($self,$class);
 	$self->{NAME}=defined;
 	return($self);
 }
 
 sub set_name($$) {
 	my($self,$name)=@_;
-	if(!exists($piece_hash->{$name})) {
-		Meta::Utils::System::die("what kind of piece is [".$name."]");
-	}
+	$piece_hash->check_exists($name);
 	$self->{NAME}=$name;
 }
 
@@ -52,7 +51,7 @@ sub get_name($) {
 
 sub get_shortcut($) {
 	my($self)=@_;
-	return($piece_hash->{$self->get_name()});
+	return($piece_hash->get($self->get_name()));
 }
 
 sub TEST($) {
@@ -93,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Piece.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -187,11 +186,12 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Meta::Ds::Hash(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-get MethodMaker for the getset methods.

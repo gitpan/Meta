@@ -9,7 +9,7 @@ use Meta::Utils::Utils qw();
 use Meta::Ds::Ohash qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub new_file($$);
@@ -36,14 +36,15 @@ sub new_modu($$) {
 sub read($$) {
 	my($self,$file)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Utils::Options");
-	my($text)=Meta::Utils::File::File::load($file);
+	my($text);
+	Meta::Utils::File::File::load($file,\$text);
 	$text=Meta::Utils::Utils::remove_comments($text);
 	my(@line)=split(/;/,$text);
 	for(my($i)=0;$i<=$#line;$i++) {
 		my($current)=$line[$i];
 		if($current=~/=/) {
-			my($elem,$valx)=($current=~/^\s*(\S+)\s*=\s*(.*)\s*$/);
-			$self->insert($elem,$valx);
+			my($elem,$val)=($current=~/^\s*(\S+)\s*=\s*(.*)\s*$/);
+			$self->insert($elem,$val);
 		}
 	}
 	return(1);
@@ -107,7 +108,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Options.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -214,6 +215,7 @@ None.
 	0.33 MV SEE ALSO section fix
 	0.34 MV bring movie data
 	0.35 MV teachers project
+	0.36 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -7,6 +7,7 @@ use Meta::Baseline::Test qw();
 use Meta::Utils::Dos qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::File::Remove qw();
+use Meta::IO::File qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -20,11 +21,11 @@ my($file_dosx)=Meta::Utils::Utils::get_temp_file();
 my($file_unix)=Meta::Utils::Utils::get_temp_file();
 my($file_visu)=Meta::Utils::Utils::get_temp_file();
 
-open(FILE,"> ".$file_orig) || Meta::Utils::System::die("unable to open file [".$file_orig."]");
-print FILE "this is the first line\n";
-print FILE "this is the second line\n";
-print FILE "this is the third line\n";
-close(FILE) || Meta::Utils::System::die("unable to close file [".$file_orig."]");
+my($io)=Meta::IO::File->new_writer($file_orig);
+print $io "this is the first line\n";
+print $io "this is the second line\n";
+print $io "this is the third line\n";
+$io->close();
 
 Meta::Utils::Dos::to_dosx_file($file_orig,$file_dosx,0);
 Meta::Utils::Dos::to_unix_file($file_dosx,$file_unix,0);
@@ -37,7 +38,7 @@ Meta::Utils::File::Remove::rm($file_visu);
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -70,7 +71,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dos.pl
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -159,10 +160,11 @@ None.
 	0.19 MV web site automation
 	0.20 MV SEE ALSO section fix
 	0.21 MV move tests to modules
+	0.22 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Test(3), Meta::Utils::Dos(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Meta::Baseline::Test(3), Meta::IO::File(3), Meta::Utils::Dos(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

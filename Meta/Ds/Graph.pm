@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Ds::Oset qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::Arg qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.36";
+$VERSION="0.37";
 @ISA=qw();
 
 #sub new($);
@@ -36,10 +37,10 @@ $VERSION="0.36";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
-#	Meta::Utils::Arg::check_arg($clas,"SCALAR");
+	my($class)=@_;
+#	Meta::Utils::Arg::check_arg($class,"SCALAR");
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{NODE}=Meta::Ds::Oset->new();
 	$self->{EDGE}=Meta::Ds::Oset->new();
 	$self->{EDGE_OU}={};
@@ -125,8 +126,8 @@ sub edge_has($$$) {
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Graph");
 #	Meta::Utils::Arg::check_arg($nod1,"ANY");
 #	Meta::Utils::Arg::check_arg($nod2,"ANY");
-	$self->{NODE}->check_elem($nod1);
-	$self->{NODE}->check_elem($nod2);
+	$self->{NODE}->check_has($nod1);
+	$self->{NODE}->check_has($nod2);
 	my($newe)=$nod1.$;.$nod2;
 	return($self->{EDGE}->has($newe));
 }
@@ -137,8 +138,8 @@ sub edge_insert($$$) {
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Graph");
 #	Meta::Utils::Arg::check_arg($nod1,"ANY");
 #	Meta::Utils::Arg::check_arg($nod2,"ANY");
-	$self->{NODE}->check_elem($nod1);
-	$self->{NODE}->check_elem($nod2);
+	$self->{NODE}->check_has($nod1);
+	$self->{NODE}->check_has($nod2);
 	if(!$self->edge_has($nod1,$nod2)) {
 		my($newe)=$nod1.$;.$nod2;
 		$self->{EDGE}->insert($newe);
@@ -157,10 +158,10 @@ sub edge_remove($$$) {
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Graph");
 #	Meta::Utils::Arg::check_arg($nod1,"ANY");
 #	Meta::Utils::Arg::check_arg($nod2,"ANY");
-	$self->{NODE}->check_elem($nod1);
-	$self->{NODE}->check_elem($nod2);
+	$self->{NODE}->check_has($nod1);
+	$self->{NODE}->check_has($nod2);
 	my($newe)=$nod1.$;.$nod2;
-	$self->{EDGE}->check_elem($newe);
+	$self->{EDGE}->check_has($newe);
 	$self->{EDGE}->remove($newe);
 	$self->{EDGE_OU}->{$nod1}->remove($nod2);
 	$self->{EDGE_IN}->{$nod2}->remove($nod1);
@@ -257,7 +258,7 @@ sub all_ou($$$$) {
 #	Meta::Utils::Arg::check_arg($hash,"HASHref");
 #	Meta::Utils::Arg::check_arg($list,"ARRAYref");
 	if(!$self->node_has($node)) {
-		Meta::Utils::System::die("don't have the node [".$node."]\n");
+		throw Meta::Error::Simple("don't have the node [".$node."]\n");
 	}
 	my($edge_ou)=$self->edge_ou($node);
 	for(my($i)=0;$i<$edge_ou->size();$i++) {
@@ -337,7 +338,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.36
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -529,10 +530,11 @@ None.
 	0.34 MV web site automation
 	0.35 MV SEE ALSO section fix
 	0.36 MV teachers project
+	0.37 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Ds::Oset(3), Meta::Utils::Arg(3), Meta::Utils::Output(3), strict(3)
+Meta::Ds::Oset(3), Meta::Error::Simple(3), Meta::Utils::Arg(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Utils::Utils qw();
 use Meta::Utils::File::File qw();
 use Meta::Utils::Output qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.34";
+$VERSION="0.35";
 @ISA=qw();
 
 #sub size($);
@@ -17,7 +18,6 @@ $VERSION="0.34";
 #sub read($);
 #sub read_exe($);
 #sub cmp($$$$$);
-#sub print($$);
 #sub to_list($);
 #sub add_hash($$);
 #sub remove_hash($$$);
@@ -53,33 +53,21 @@ sub cmp($$$$$) {
 #	Meta::Utils::Arg::check_arg($nam1,"SCALAR");
 #	Meta::Utils::Arg::check_arg($has2,"HASH");
 #	Meta::Utils::Arg::check_arg($nam2,"SCALAR");
-	my($name,$valx);
+	my($name,$val);
 	my($stat)=0;
-	while(($name,$valx)=each(%$has1)) {
+	while(($name,$val)=each(%$has1)) {
 		if(!exists($has2->{$name})) {
-			if($verb) {
-				Meta::Utils::Output::print("[".$name."] in [".$nam1."] and not in [".$nam2."]\n");
-			}
+			Meta::Utils::Output::verbose($verb,"[".$name."] in [".$nam1."] and not in [".$nam2."]\n");
 			$stat=1;
 		}
 	}
-	while(($name,$valx)=each(%$has2)) {
+	while(($name,$val)=each(%$has2)) {
 		if(!exists($has1->{$name})) {
-			if($verb) {
-				Meta::Utils::Output::print("[".$name."] in [".$nam2."] and not in [".$nam1."]\n");
-			}
+			Meta::Utils::Output::verbose($verb,"[".$name."] in [".$nam2."] and not in [".$nam1."]\n");
 			$stat=1;
 		}
 	}
 	return(!$stat);
-}
-
-sub print($$) {
-	my($file,$hash)=@_;
-#	Meta::Utils::Arg::check_arg($hash,"HASH");
-	while(my($key,$val)=each(%$hash)) {
-		print $file $key."\n";
-	}
 }
 
 sub to_list($) {
@@ -105,12 +93,12 @@ sub remove_hash($$$) {
 	my($from,$hash,$stri)=@_;
 #	Meta::Utils::Arg::check_arg($from,"HASH");
 #	Meta::Utils::Arg::check_arg($hash,"HASH");
-	while(my($keyx,$valx)=each(%$hash)) {
-		if(exists($from->{$keyx})) {
-			delete($from->{$keyx});
+	while(my($key,$val)=each(%$hash)) {
+		if(exists($from->{$key})) {
+			delete($from->{$key});
 		} else {
 			if($stri) {
-				Meta::Utils::System::die("elem [".$keyx."] is a bad value");
+				throw Meta::Error::Simple("elem [".$key."] is a bad value");
 			}
 		}
 	}
@@ -163,13 +151,12 @@ sub add_key_suffix($$) {
 sub read($) {
 	my($file)=@_;
 	my(%hash);
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line);
-	while($line=<FILE> || 0) {
-		chop($line);
+	my($io)=Meta::IO::File->new_reader($file);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
 		$hash{$line}=defined;
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 	return(\%hash);
 }
 
@@ -194,14 +181,14 @@ sub filter_prefix_add($$$$) {
 #	Meta::Utils::Arg::check_arg($pref,"SCALAR");
 #	Meta::Utils::Arg::check_arg($posi,"SCALAR");
 #	Meta::Utils::Arg::check_arg($retu,"HASH");
-	while(my($keyx,$valx)=each(%$hash)) {
-		if(Meta::Utils::Utils::is_prefix($keyx,$pref)) {
+	while(my($key,$val)=each(%$hash)) {
+		if(Meta::Utils::Utils::is_prefix($key,$pref)) {
 			if($posi) {
-				$retu->{$keyx}=$valx;
+				$retu->{$key}=$val;
 			}
 		} else {
 			if(!$posi) {
-				$retu->{$keyx}=$valx;
+				$retu->{$key}=$val;
 			}
 		}
 	}
@@ -260,14 +247,14 @@ sub filter_regexp_add($$$$)
 #	Meta::Utils::Arg::check_arg($rege,"SCALAR");
 #	Meta::Utils::Arg::check_arg($posi,"SCALAR");
 #	Meta::Utils::Arg::check_arg($retu,"HASH");
-	while(my($keyx,$valx)=each(%$hash)) {
-		if($keyx=~/$rege/) {
+	while(my($key,$val)=each(%$hash)) {
+		if($key=~/$rege/) {
 			if($posi) {
-				$retu->{$keyx}=$valx;
+				$retu->{$key}=$val;
 			}
 		} else {
 			if(!$posi) {
-				$retu->{$keyx}=$valx;
+				$retu->{$key}=$val;
 			}
 		}
 	}
@@ -289,9 +276,7 @@ sub system($$$$) {
 	my($hash,$syst,$demo,$verb)=@_;
 #	Meta::Utils::Arg::check_arg($hash,"HASH");
 	while(my($key,$val)=each(%$hash)) {
-		if($verb) {
-			Meta::Utils::Output::print("doing [".$syst."] [".$key."]\n");
-		}
+		Meta::Utils::Output::verbose($verb,"doing [".$syst."] [".$key."]\n");
 		if(!$demo) {
 			Meta::Utils::System::system($syst,[$key]);
 		}
@@ -337,8 +322,8 @@ sub filter_notexists($) {
 	my($hash)=@_;
 #	Meta::Utils::Arg::check_arg($hash,"HASH");
 	my(%inte);
-	while(my($keyx,$valx)=each(%$hash)) {
-		my($curr)=$keyx;
+	while(my($key,$val)=each(%$hash)) {
+		my($curr)=$key;
 		if(!(-e $curr)) {
 			$inte{$curr}=defined;
 		}
@@ -358,7 +343,16 @@ sub load($$) {
 
 sub TEST($) {
 	my($context)=@_;
-	return(1);
+	my(%hash);
+	$hash{"mark"}="veltzer";
+	$hash{"linus"}="torvalds";
+	my($size)=Meta::Utils::Hash::size(\%hash);
+	Meta::Utils::Output::print("size is [".$size."]\n");
+	if($size eq 2) {
+		return(1);
+	} else {
+		return(0);
+	}
 }
 
 1;
@@ -394,14 +388,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Hash.pm
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Utils::Hash qw();
 	my(%hash);
-	Meta::Utils::Hash::print(*FILE,\%hash);
+	my($size)=Meta::Utils::Hash::size(\%hash);
+	# $size should now be 0
 
 =head1 DESCRIPTION
 
@@ -418,7 +413,6 @@ whereever possible.
 	read($)
 	read_exe($)
 	cmp($$$$$)
-	print($$)
 	to_list($)
 	add_hash($$)
 	remove_hash($$$)
@@ -452,11 +446,6 @@ This functions compares two hashes according to keys and prints the values
 which exists in any of them but not in the other
 The return value is a boolean which is true iff the two hashes are equal.
 The routine also receives a boolean value telling it to be verbose or not.
-
-=item B<print($$)>
-
-This prints out the hash given to it.
-The first argument is a file.
 
 =item B<to_list($)>
 
@@ -614,6 +603,8 @@ This routine loads the entire hash from a disk file.
 =item B<TEST($)>
 
 Test suite for this module.
+Currently this test creates a small hash table and checks that the size
+method of this package works.
 
 =back
 
@@ -669,14 +660,13 @@ None.
 	0.32 MV web site automation
 	0.33 MV SEE ALSO section fix
 	0.34 MV bring movie data
+	0.35 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
+Meta::IO::File(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
-
--improve the print routine by adding modifiers to the output.
 
 -cant we do the size more efficiently ?
 

@@ -8,7 +8,7 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.06";
+$VERSION="0.07";
 @ISA=qw();
 
 #sub catalog_setup();
@@ -78,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml.pm
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -149,6 +149,7 @@ None.
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
 	0.06 MV finish papers
+	0.07 MV md5 issues
 
 =head1 SEE ALSO
 

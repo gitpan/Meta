@@ -8,7 +8,7 @@ use Time::Local qw();
 use Date::Manip qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub tm_to_string($);
@@ -112,7 +112,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Time.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -237,6 +237,7 @@ None.
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
 	0.27 MV weblog issues
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 

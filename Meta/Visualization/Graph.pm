@@ -5,9 +5,10 @@ package Meta::Visualization::Graph;
 use strict qw(vars refs subs);
 use Meta::Info::Enum qw();
 use GraphViz qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.08";
 @ISA=qw(GraphViz);
 
 #sub BEGIN();
@@ -117,7 +118,7 @@ sub as_type($$$) {
 	if($type eq "plain") {
 		return($self->as_plain($file));
 	}
-	Meta::Utils::System::die("you shouldnt be here");
+	throw Meta::Error::Simple("you shouldnt be here");
 }
 
 sub TEST($) {
@@ -158,7 +159,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -231,10 +232,11 @@ None.
 	0.05 MV SEE ALSO section fix
 	0.06 MV finish papers
 	0.07 MV teachers project
+	0.08 MV md5 issues
 
 =head1 SEE ALSO
 
-GraphViz(3), Meta::Info::Enum(3), strict(3)
+Error(3), GraphViz(3), Meta::Info::Enum(3), strict(3)
 
 =head1 TODO
 

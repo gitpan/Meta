@@ -7,6 +7,7 @@ use Meta::Baseline::Test qw();
 use XML::Parser qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -46,7 +47,7 @@ Meta::Baseline::Test::redirect_on();
 my($file)=Meta::Baseline::Aegis::which("xmlx/def/chess.xml");
 my($parser)=XML::Parser->new(ErrorContext=>2);
 if(!$parser) {
-	Meta::Utils::System::die("didnt get a parser");
+	throw Meta::Error::Simple("didnt get a parser");
 }
 $parser->setHandlers(
 	Init=>\&handle_init,
@@ -59,7 +60,7 @@ $parser->parsefile($file);
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -92,7 +93,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: parser.pl
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -186,10 +187,11 @@ None.
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
 	0.26 MV move tests to modules
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::Parser(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::Parser(3), strict(3)
 
 =head1 TODO
 

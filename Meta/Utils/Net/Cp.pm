@@ -4,9 +4,10 @@ package Meta::Utils::Net::Cp;
 
 use strict qw(vars refs subs);
 use Expect qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub doit($$$$$$$$);
@@ -18,30 +19,30 @@ sub doit($$$$$$$$) {
 	my($verb,$demo,$name,$user,$pass,$sour,$targ,$perm)=@_;
 	my($time)=20;
 	my($sess)=Expect->spawn("ftp ".$name);
-	$sess->expect($time,"-re",'Name (.*): ') || Meta::Utils::System::die("never got name prompt on [".$name."],[".$sess->exp_error()."]");
+	$sess->expect($time,"-re",'Name (.*): ') || throw Meta::Error::Simple("never got name prompt on [".$name."],[".$sess->exp_error()."]");
 	print $sess $user."\r";
-	$sess->expect($time,"Password:") || Meta::Utils::System::die("never got password prompt on [".$name."],[".$sess->exp_error()."]");
+	$sess->expect($time,"Password:") || throw Meta::Error::Simple("never got password prompt on [".$name."],[".$sess->exp_error()."]");
 	print $sess $pass."\r";
 	my($matc)=$sess->expect($time,"Login incorrect","ftp>");
 	if($matc==1) {
-		Meta::Utils::System::die("connection closed");
+		throw Meta::Error::Simple("connection closed");
 	}
 	print $sess "binary\r";
 	$matc=$sess->expect($time,"ftp>");
 	if($matc==0) {
-		Meta::Utils::System::die("connection closed");
+		throw Meta::Error::Simple("connection closed");
 	}
 	print $sess "prompt\r";
 	$matc=$sess->expect($time,"ftp>");
 	if($matc==0) {
-		Meta::Utils::System::die("connection closed");
+		throw Meta::Error::Simple("connection closed");
 	}
 	my(@list)=split("/",$targ);
 	for(my($i)=0;$i<$#list;$i++) {
 		print $sess "mkdir ".join("/",@list[0..$i])."\r";
 		my($matc)=$sess->expect($time,"ftp>");
 		if($matc==0) {
-			Meta::Utils::System::die("connection closed");
+			throw Meta::Error::Simple("connection closed");
 		}
 	}
 	print $sess "put ".$sour." ".$targ."\r";
@@ -49,12 +50,12 @@ sub doit($$$$$$$$) {
 		print $sess "chmod 755 ".$targ."\r";
 		my($matc)=$sess->expect($time,"ftp>");
 		if($matc==0) {
-			Meta::Utils::System::die("connection closed");
+			throw Meta::Error::Simple("connection closed");
 		}
 	}
 	$matc=$sess->expect($time,"ftp>");
 	if($matc==0) {
-		Meta::Utils::System::die("connection closed");
+		throw Meta::Error::Simple("connection closed");
 	}
 	print $sess "exit\r";
 	$sess->hard_close();
@@ -99,7 +100,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cp.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -107,7 +108,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 	use Meta::Utils::Net::Cp qw();
 	my($stat)=Meta::Utils::Net::Cp::doit([params]);
 	if(!$stat) {
-		Meta::Utils::System::die("unable to copy file to remote machine");
+		throw Meta::Error::Simple("unable to copy file to remote machine");
 	}
 
 =head1 DESCRIPTION
@@ -180,10 +181,11 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV md5 issues
 
 =head1 SEE ALSO
 
-Expect(3), strict(3)
+Error(3), Expect(3), strict(3)
 
 =head1 TODO
 

@@ -7,6 +7,7 @@ use Meta::Db::Dbi qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::System qw();
 use CGI qw();
+use Error qw(:try);
 
 my($p)=CGI->new();
 my($name)=$p->param('name');;
@@ -26,13 +27,13 @@ $dbi->Meta::Db::Dbi::connect_xml($connections,$database);
 my($stat)="SELECT content FROM elems WHERE name='".$name."'";
 my($res)=$dbi->execute_arrayref($stat);
 if($#$res!=0) {
-	Meta::Utils::System::die("could not get field from db");
+	throw Meta::Error::Simple("could not get field from db");
 }
 my($content)=$res->[0][0];
 print $p->header();
 print $content;
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -65,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: elems_cgi.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -146,10 +147,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-CGI(3), Meta::Baseline::Aegis(3), Meta::Db::Dbi(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+CGI(3), Error(3), Meta::Baseline::Aegis(3), Meta::Db::Dbi(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

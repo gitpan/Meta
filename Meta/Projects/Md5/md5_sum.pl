@@ -19,13 +19,13 @@ for(my($i)=0;$i<=$#files;$i++) {
 	my($curr)=$files[$i];
 	my($sum)=Meta::Digest::MD5::get_filename_hexdigest($curr);
 	if($compat) {
-		Meta::Utils::Output::print("$sum\ \ $curr\n");
+		Meta::Utils::Output::print($sum."\ \ ".$curr."\n");
 	} else {
 		Meta::Utils::Output::print("md5sum of [".$curr."] is [".$sum."]\n");
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 

@@ -6,9 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 use Meta::Distrib::Machine qw();
 use Meta::Utils::Output qw();
+use Meta::Development::Assert qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -18,23 +20,21 @@ $VERSION="0.28";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Array->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
 sub read($$) {
 	my($self,$file)=@_;
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line);
-	while($line=<FILE> || 0) {
+	my($io)=Meta::IO::File->new_reader($file);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
 		chop($line);
 #		Meta::Utils::Output::print("in here with line [".$line."]\n");
 		my(@fiel)=split("\t",$line);
-		if($#fiel!=6) {
-			Meta::Utils::System::die("wrong number of fields in line [".$line."]".$#fiel);
-		}
+		Meta::Development::Assert::assert_eq($#fiel+1,7,"number of fields is wrong");
 		my($name)=$fiel[0];
 		my($user)=$fiel[5];
 		my($pass)=$fiel[6];
@@ -44,7 +44,7 @@ sub read($$) {
 		$obje->set_password($pass);
 		$self->push($obje);
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 }
 
 sub TEST($) {
@@ -85,7 +85,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Machines.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -168,10 +168,11 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Distrib::Machine(3), Meta::Ds::Array(3), Meta::Utils::Output(3), strict(3)
+Meta::Development::Assert(3), Meta::Distrib::Machine(3), Meta::Ds::Array(3), Meta::IO::File(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

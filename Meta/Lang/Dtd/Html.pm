@@ -4,13 +4,16 @@ package Meta::Lang::Dtd::Html;
 
 use strict qw(vars refs subs);
 use XML::Handler::Dtd2Html qw();
-use XML::Parser::PerlSAX qw();
 use Meta::Utils::File::File qw();
 use Meta::Lang::Xml::Resolver qw();
 use Meta::Utils::Utils qw();
+#use XML::SAX::PurePerl qw();
+#use XML::LibXML::SAX qw();
+#use XML::SAX::Expat qw();
+use XML::Parser::PerlSAX qw();
 
 our($VERSION,@ISA);
-$VERSION="0.03";
+$VERSION="0.04";
 @ISA=qw();
 
 #sub c2html($);
@@ -21,20 +24,37 @@ $VERSION="0.03";
 
 sub c2html($) {
 	my($build)=@_;
-	my($srcx)=$build->get_srcx();
+	my($src)=$build->get_srcx();
 	my($targ)=$build->get_targ();
-	return(c2html_basic($srcx,$targ));
+	return(c2html_basic($src,$targ));
 }
 
 sub c2html_basic($$) {
-	my($srcx,$targ)=@_;
+	my($src,$targ)=@_;
 	my($handler)=XML::Handler::Dtd2Html->new();
 	my($resolver)=Meta::Lang::Xml::Resolver->new();
+#	my($parser)=XML::SAX::PurePerl->new(
+#		Handler=>$handler,
+#		ParseParamEnt=>1,
+#		EntityResolver=>$resolver,
+#	);
+#	my($parser)=XML::LibXML::SAX->new(
+#		Handler=>$handler,
+#		ParseParamEnt=>1,
+#		EntityResolver=>$resolver,
+#	);
+#	my($parser)=XML::SAX::Expat->new(
+#		Handler=>$handler,
+#		ParseParamEnt=>1,
+#		EntityResolver=>$resolver,
+#	);
 	my($parser)=XML::Parser::PerlSAX->new(
 		Handler=>$handler,
+		ParseParamEnt=>1,
 		EntityResolver=>$resolver,
-		ParseParamEnt=>1);
-	my($content)=Meta::Utils::File::File::load($srcx);
+	);
+	my($content);
+	Meta::Utils::File::File::load($src,\$content);
 	my($string)=$content=~m/EMPTY\n([[:ascii:]\n]*)\n-->$/;
 	my($opts_t)=undef;
 	my($opts_s)=undef;
@@ -57,11 +77,14 @@ sub c2html_basic($$) {
 		$opts_M,#no multi comments (just single comment per element)
 		$opts_Z,#do not delete zombi elements
 	);
-	return(1);
 }
 
 sub TEST($) {
 	my($context)=@_;
+	my($source)="dtdx/temp/dtdx/deve/xml/def.dtd";
+	my($out)=Meta::Utils::Utils::get_temp_file();
+	&c2html_basic($source,$out);
+	Meta::Utils::File::Remove::rm($out);
 	return(1);
 }
 
@@ -98,7 +121,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Html.pm
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -163,6 +186,7 @@ None.
 	0.01 MV weblog issues
 	0.02 MV teachers project
 	0.03 MV more pdmt stuff
+	0.04 MV md5 issues
 
 =head1 SEE ALSO
 

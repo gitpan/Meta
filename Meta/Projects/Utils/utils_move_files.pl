@@ -5,58 +5,44 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::File::Move qw();
-use File::Basename qw();
-use Meta::Info::Enum qw();
-use Meta::Utils::String qw();
+use Meta::File::MMagic qw();
+use Meta::Utils::Utils qw();
+use Meta::Utils::File::Iterator qw();
 
-my($enum)=Meta::Info::Enum->new();
-$enum->insert("rename","rename the files");
-$enum->insert("process","process the files");
-$enum->set_default("rename");
-my($verbose,$demo,$from,$to,$filter);
+my($verbose,$type,$suffix,$directories);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("verbose","should I be noisy ?",0,\$verbose);
-$opts->def_bool("demo","should I just fake it ?",0,\$demo);
-$opts->def_stri("from","what suffix to move from ?",".JPG",\$from);
-$opts->def_stri("to","what suffix to move to ?",".jpg",\$to);
-$opts->def_enum("filter","what filter to apply to the files ?","rename",\$filter,$enum);
-$opts->set_free_allo(1);
-$opts->set_free_stri("[files]");
-$opts->set_free_mini(1);
-$opts->set_free_noli(1);
+$opts->def_stri("type","what type to look for ?","image/jpeg",\$type);
+$opts->def_stri("suffix","what suffix to give ?",".jpg",\$suffix);
+$opts->def_dlst("directories","what directories to process ?",".",\$directories);
+$opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-for(my($i)=0;$i<=$#ARGV;$i++) {
-	my($curr)=$ARGV[$i];
-	if($verbose) {
-		Meta::Utils::Output::print("doing [".$curr."]\n");
-	}
-	my($new);
-	my($doit)=0;
-	if($enum->is_selected($filter,"rename")) {
-		my($name,$path,$suffix)=File::Basename::fileparse($curr,$from);
-		if($suffix eq $from) {
-			if($verbose) {
-				Meta::Utils::Output::print("doing [".$curr."]\n");
-			}
-			$new=$path."/".$name.$to;
-			$doit=1;
+my($mm)=Meta::File::MMagic->new();
+
+my($iterator)=Meta::Utils::File::Iterator->new();
+$iterator->add_directories($directories,':');
+$iterator->set_want_dirs(0);
+$iterator->set_want_files(1);
+$iterator->start();
+while(!$iterator->get_over()) {
+	my($curr)=$iterator->get_curr();
+	Meta::Utils::Output::verbose($verbose,"considering [".$curr."]\n");
+	if(!Meta::Utils::Utils::is_suffix($curr,$suffix)) {
+		my($c_type)=$mm->checktype_filename($curr);
+		Meta::Utils::Output::verbose($verbose,"c_type is [".$c_type."]\n");
+		if($c_type eq $type) {
+			my($new)=Meta::Utils::Utils::replace_suffix($curr,$suffix);
+			Meta::Utils::Output::verbose($verbose,"moving [".$curr."] to [".$new."]\n");
+			Meta::Utils::File::Move::mv_noov($curr,$new);
 		}
 	}
-	if($enum->is_selected($filter,"process")) {
-		$doit=1;
-		$new=Meta::Utils::String::separate($curr);
-	}
-	if($verbose) {
-		Meta::Utils::Output::print("moving [".$curr."] to [".$new."]\n");
-	}
-	if(!$demo) {
-		Meta::Utils::File::Move::mv_noov($curr,$new);
-	}
+	$iterator->next();
 }
+$iterator->fini();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -89,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_move_files.pl
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -145,30 +131,21 @@ show history and exit
 
 should I be noisy ?
 
-=item B<demo> (type: bool, default: 0)
+=item B<type> (type: stri, default: image/jpeg)
 
-should I just fake it ?
+what type to look for ?
 
-=item B<from> (type: stri, default: .JPG)
+=item B<suffix> (type: stri, default: .jpg)
 
-what suffix to move from ?
+what suffix to give ?
 
-=item B<to> (type: stri, default: .jpg)
+=item B<directories> (type: dlst, default: .)
 
-what suffix to move to ?
-
-=item B<filter> (type: enum, default: rename)
-
-what filter to apply to the files ?
-
-options:
-	rename - rename the files
-	process - process the files
+what directories to process ?
 
 =back
 
-minimum of [1] free arguments required
-no maximum limit on number of free arguments placed
+no free arguments are allowed
 
 =head1 BUGS
 
@@ -192,11 +169,12 @@ None.
 	0.06 MV bring movie data
 	0.07 MV finish papers
 	0.08 MV teachers project
+	0.09 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), Meta::Info::Enum(3), Meta::Utils::File::Move(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::String(3), Meta::Utils::System(3), strict(3)
+Meta::File::MMagic(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Move(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 
--add more filters.
+Nothing.

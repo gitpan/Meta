@@ -13,7 +13,7 @@ $opts->def_bool("demo","play around or do it for real ?",0,\$demo);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($scod)=Meta::Utils::File::Remove::rmmult_demo_verb($demo,$verb);
+my($scod)=Meta::Utils::File::Remove::rmmult(\*STDIN);
 Meta::Utils::System::exit($scod);
 
 __END__
@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_rm.pl
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -62,7 +62,7 @@ stroke of an "rm" command. The idea is to feed this command with a standard
 input where every line is a name of a file to be removed and this command
 will do it. This should be faster than running a lot of rm's since it doesnt
 load the rm binary and run a different process for each rm.
-This is just a peep hole to the rmmult_demo_verb function in
+This is just a peep hole to the rmmult function in
 Meta::Utils::File::Remove. See that functions documentation for more
 details about the inner workings of this.
 
@@ -139,6 +139,7 @@ None.
 	0.05 MV web site automation
 	0.06 MV SEE ALSO section fix
 	0.07 MV move tests to modules
+	0.08 MV md5 issues
 
 =head1 SEE ALSO
 

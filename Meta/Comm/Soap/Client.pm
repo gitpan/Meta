@@ -8,7 +8,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw(SOAP::Lite);
 
 #sub new($);
@@ -17,14 +17,14 @@ $VERSION="0.10";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	Meta::Utils::Output::print("in 1\n");
 	my($self)=SOAP::Lite->uri('http://localhost/Meta::Info::Author');
 	Meta::Utils::Output::print("in 2\n");
 	if(!defined($self)) {
-		Meta::Utils::System::die("cant get object");
+		throw Meta::Error::Simple("cant get object");
 	}
-	#bless($self,$clas);# this prevents the client from running
+	#bless($self,$class);# this prevents the client from running
 	#$self->uri("uri");
 	Meta::Utils::Output::print("in 3\n");
 	$self->proxy("tcp://localhost:10001");
@@ -70,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Client.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -130,6 +130,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 

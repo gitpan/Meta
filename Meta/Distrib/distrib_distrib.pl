@@ -12,7 +12,7 @@ $opts->def_devf("desc","XML description of distribution requirements file",undef
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -45,7 +45,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: distrib_distrib.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -128,6 +128,7 @@ None.
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
 	0.10 MV move tests to modules
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 

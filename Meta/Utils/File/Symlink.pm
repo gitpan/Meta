@@ -6,11 +6,15 @@ use strict qw(vars refs subs);
 use Meta::Utils::File::Copy qw();
 use File::Find qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw();
 
+#sub is_symlink($);
+#sub check_symlink($);
+#sub check_valid_symlink($);
 #sub check_doit();
 #sub check($$);
 #sub replace_doit();
@@ -21,21 +25,44 @@ $VERSION="0.27";
 
 #__DATA__
 
+sub is_symlink($) {
+	my($file)=@_;
+	if(-l $file) {
+		return(1);
+	} else {
+		return(0);
+	}
+}
+
+sub check_symlink($) {
+	my($file)=@_;
+	if(!is_symlink($file)) {
+		throw Meta::Error::Simple("file [".$file."] is not a symlink");
+	}
+}
+
+sub check_valid_symlink($) {
+	my($file)=@_;
+	check_symlink($file);
+	my($real)=CORE::readlink($file);
+	if(!-e $real) {
+		throw Meta::Error::Simple("cant readlink [".$real."]");
+	}
+}
+
 sub check_doit($) {
 	my($curr)=@_;
 	my($full)=$File::Find::name;
 	my($dire)=$File::Find::dir;
 	my($verb)=0;
 	if(-l $curr) {
-		if($verb) {
-			Meta::Utils::Output::print("checking [".$full."]\n");
-		}
-		my($read)=readlink($curr);
+		Meta::Utils::Output::verbose($verb,"checking [".$full."]\n");
+		my($read)=CORE::readlink($curr);
 		if(!$read) {
-			Meta::Utils::System::die("cant readlink [".$full."]");
+			throw Meta::Error::Simple("cant readlink [".$full."]");
 		}
 		if(!-e $read) {
-			Meta::Utils::Output::print("test failed for [".$full."]\n");
+			throw Meta::Error::Simple("test failed for [".$full."]\n");
 		}
 	}
 }
@@ -52,15 +79,13 @@ sub replace_doit() {
 	my($verb)=0;
 	my($demo)=0;
 	if(-l $curr) {
-		if($verb) {
-			Meta::Utils::Output::print("replacing [".$full."]\n");
-		}
+		Meta::Utils::Output::verbose($verb,"replacing [".$full."]\n");
 		if(!$demo) {
-			my($read)=readlink($curr);
+			my($read)=CORE::readlink($curr);
 			if($read) {
 				Meta::Utils::File::Copy::copy_unlink($read,$curr);
 			} else {
-				Meta::Utils::System::die("unable to replace symlink [".$full."]");
+				throw Meta::Error::Simple("unable to replace symlink [".$full."]");
 			}
 		}
 	}
@@ -74,14 +99,14 @@ sub replace($$$) {
 sub symlink($$) {
 	my($oldx,$newx)=@_;
 	if(!CORE::symlink($oldx,$newx)) {
-		Meta::Utils::System::die("unable to create symlink from [".$oldx."] to [".$newx."]");
+		throw Meta::Error::Simple("unable to create symlink from [".$oldx."] to [".$newx."]");
 	}
 }
 
 sub link($$) {
 	my($oldx,$newx)=@_;
 	if(!CORE::link($oldx,$newx)) {
-		Meta::Utils::System::die("unable to create link from [".$oldx."] to [".$newx."]");
+		throw Meta::Error::Simple("unable to create link from [".$oldx."] to [".$newx."]");
 	}
 }
 
@@ -123,7 +148,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Symlink.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -135,7 +160,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This is a library enabling you to basically do two things:
+This library helps you with handling symbolic links.
+It has easy to use function to tell you if a file is a symbolic link,
+find out if a symbolic link is pointing at a valid file and the like.
+
+There are two higher level services that this library provides:
 1. scan directories in recursive fashion to check that all symlinks in
 	those directories are valid.
 2. scan directories in recursive fashion to replace all symlinks with the
@@ -144,6 +173,9 @@ This module uses File::Find extensivly.
 
 =head1 FUNCTIONS
 
+	is_symlink($)
+	check_symlink($)
+	check_valid_symlink($)
 	check_doit($)
 	check($$)
 	replace_doit()
@@ -155,6 +187,20 @@ This module uses File::Find extensivly.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<is_symlink($)>
+
+This function will return true iff the file given to it is a symlink.
+
+=item B<check_symlink($)>
+
+This function will check that a file given to it is a symlink. If it
+is not it will throw an exception.
+
+=item B<check_valid_symlink($)>
+
+This function will check that a file given to it is a symlink and also
+points to a valid file. If there is an error it will throw an exception.
 
 =item B<check_doit($)>
 
@@ -240,10 +286,11 @@ None.
 	0.25 MV website construction
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Find(3), Meta::Utils::File::Copy(3), Meta::Utils::Output(3), strict(3)
+Error(3), File::Find(3), Meta::Utils::File::Copy(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

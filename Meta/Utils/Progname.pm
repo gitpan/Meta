@@ -4,9 +4,10 @@ package Meta::Utils::Progname;
 
 use strict qw(vars refs subs);
 use File::Basename qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.25";
 @ISA=qw();
 
 #sub basename();
@@ -20,7 +21,7 @@ sub basename() {
 	my($prog)=progname();
 	my($base)=($prog=~/^(.*)\.pl$/);
 	if(!defined($base)) {
-		Meta::Utils::System::die("unable to extract name from script [".$prog."]");
+		throw Meta::Error::Simple("unable to extract name from script [".$prog."]");
 	}
 	return($base);
 }
@@ -77,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Progname.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -175,10 +176,11 @@ None.
 	0.22 MV website construction
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
+	0.25 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), strict(3)
+Error(3), File::Basename(3), strict(3)
 
 =head1 TODO
 

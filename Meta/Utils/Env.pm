@@ -3,25 +3,22 @@
 package Meta::Utils::Env;
 
 use strict qw(vars refs subs);
-use Meta::Utils::Hash qw();
+#use Meta::Utils::Hash qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw();
 
-#sub get_nodie($);
 #sub get($);
 #sub has($);
 #sub check_in($);
 #sub check_out($);
 #sub remove($);
-#sub remove_nodie($);
 #sub set($$);
 #sub set_in($$);
 #sub set_out($$);
-#sub add($$$);
-#sub pmini($$);
 #sub save($);
 #sub load($);
 #sub bash($);
@@ -30,139 +27,81 @@ $VERSION="0.30";
 
 #__DATA__
 
-sub get_nodie($) {
-	my($keyx)=@_;
-	if(exists($ENV{$keyx})) {
-		return($ENV{$keyx});
-	} else {
-		return(undef);
-	}
-}
-
 sub get($) {
-	my($keyx)=@_;
-	my($resu)=get_nodie($keyx);
-	if(defined($resu)) {
-		return($resu);
+	my($key)=@_;
+	if(exists($ENV{$key})) {
+		return($ENV{$key});
 	} else {
-		Meta::Utils::System::die("unable to find [".$keyx."] in environment");
+		throw Meta::Error::Simple("unable to find [".$key."] in environment");
 	}
 }
 
 sub has($) {
-	my($keyx)=@_;
-	return(exists($ENV{$keyx}));
+	my($key)=@_;
+	return(exists($ENV{$key}));
 }
 
 sub check_in($) {
-	my($keyx)=@_;
-	if(!has($keyx)) {
-		Meta::Utils::System::die("cant find [".$keyx."] in the environment");
+	my($key)=@_;
+	if(!has($key)) {
+		throw Meta::Error::Simple("cant find [".$key."] in the environment");
 	}
 }
 
 sub check_out($) {
-	my($keyx)=@_;
-	if(has($keyx)) {
-		Meta::Utils::System::die("cant find [".$keyx."] in the environment");
+	my($key)=@_;
+	if(has($key)) {
+		throw Meta::Error::Simple("cant find [".$key."] in the environment");
 	}
 }
 
 sub remove($) {
-	my($keyx)=@_;
-	check_in($keyx);
-	&remove_nodie($keyx);
-}
-
-sub remove_nodie($) {
-	my($keyx)=@_;
-	delete $ENV{$keyx};
+	my($key)=@_;
+	if(has($key)) {
+		delete $ENV{$key};
+	} else {
+		throw Meta::Error::Simple("environment does not have [".$key."] in environment");
+	}
 }
 
 sub set($$) {
-	my($keyx,$valx)=@_;
-	$ENV{$keyx}=$valx;
+	my($key,$val)=@_;
+	$ENV{$key}=$val;
 }
 
 sub set_in($$) {
-	my($keyx,$valx)=@_;
-	check_in($keyx);
-	set($keyx,$valx);
+	my($key,$val)=@_;
+	check_in($key);
+	set($key,$val);
 }
 
 sub set_out($$) {
-	my($keyx,$valx)=@_;
-	check_out($keyx);
-	set($keyx,$valx);
-}
-
-sub add($$$) {
-	my($varx,$sepa,$valx)=@_;
-	my($curr)=get_nodie($varx);
-	my($nval);
-	if(defined($curr)) {
-		if($curr eq "") {
-			$nval=$valx;
-		} else {
-			$nval=join($sepa,$valx,$curr);
-		}
-	} else {
-		$nval=$valx;
-	}
-	my($mini)=pmini($nval,$sepa);
-	&set($varx,$mini);
-}
-
-sub pmini($$) {
-	my($valx,$sepa)=@_;
-	my(@arra)=split($sepa,$valx);
-	my(%hash);
-	my(@narr);
-	for(my($i)=0;$i<=$#arra;$i++) {
-		my($curr)=$arra[$i];
-		if(!exists($hash{$curr})) {
-			push(@narr,$curr);
-			$hash{$curr}=defined;
-		}
-	}
-	my($resu)=join($sepa,@narr);
-	return($resu);
+	my($key,$val)=@_;
+	check_out($key);
+	set($key,$val);
 }
 
 sub save($) {
 	my($file)=@_;
-	Meta::Utils::Hash::save(\%ENV,$file);
+#	Meta::Utils::Hash::save(\%ENV,$file);
 }
 
 sub load($) {
 	my($file)=@_;
-	Meta::Utils::Hash::load(\%ENV,$file);
-}
-
-sub bash($) {
-	my($file)=@_;
-	my(%hash);
-	Meta::Utils::Hash::load(\%hash,$file);
-	while(my($keyx,$valx)=each(%hash)) {
-		Meta::Utils::Output::print("export \$".$keyx."=\"".$valx."\"\n");
-	}
-}
-
-sub bash_cat($) {
-	my($hash)=@_;
-	while(my($keyx,$valx)=each(%$hash)) {
-		Meta::Utils::Output::print("if [ -z \"\$".$keyx."\" ]\n");
-		Meta::Utils::Output::print("then\n");
-		Meta::Utils::Output::print("\texport ".$keyx."=\"".$valx."\"\n");
-		Meta::Utils::Output::print("else\n");
-		Meta::Utils::Output::print("\texport ".$keyx."=\"".$valx.":\$".$keyx."\"\n");
-		Meta::Utils::Output::print("fi\n");
-	}
+#	Meta::Utils::Hash::load(\%ENV,$file);
 }
 
 sub TEST($) {
 	my($context)=@_;
-	return(1);
+	my($scod);
+	try {
+		Meta::Utils::Env::get("FOO");
+		$scod=0;
+	}
+	catch Error with {
+		$scod=1;
+	};
+	return($scod);
 }
 
 1;
@@ -198,7 +137,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Env.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -226,39 +165,27 @@ need to basis.
 
 =head1 FUNCTIONS
 
-	get_nodie($)
 	get($)
 	has($)
 	check_in($)
 	check_out($)
 	remove($)
-	remove_nodie($)
 	set($$)
 	set_in($$)
 	set_out($$)
-	add($$$)
-	pmini($$)
 	save($)
 	load($)
-	bash($)
-	bash_cat($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<get_nodie($)>
-
-This gives you an element of the environment.
-If the element does not exist this routine does not die but rather returns
-the "undef" value.
-The implementation just gets the value from the "ENV" hash table (perl builtin).
-
 =item B<get($)>
 
 This gives you an element of the environment and dies if it cannot find
-it in the environment. This uses the get_nodie routine.
+it in the environment.
+The implementation just gets the value from the "ENV" hash table (perl builtin).
 
 =item B<has($)>
 
@@ -280,11 +207,6 @@ This dies if the environment variable is already in the environment.
 This will remove an environment variable (this is different from setting
 it to "").
 
-=item B<remove_nodie($)>
-
-This will remove an environment variable and will not die if the variable
-is not there.
-
 =item B<set($$)>
 
 This sets an element in the environment.
@@ -300,15 +222,6 @@ already exist in the environment.
 This does a set but dies if the environment key in question was already in
 the environment.
 
-=item B<add($$$)>
-
-This will add to a current env var as if it was a path.
-It receives a separator, a variable name and a value to add.
-
-=item B<pmini($$)>
-
-This returns a minimal path.
-
 =item B<save($)>
 
 This routine saves all environment variables into a file. The idea is to
@@ -322,22 +235,11 @@ restore it back. You may find other uses.
 This routine loads the entire environment from a disk. See the save routine
 for more details.
 
-=item B<bash($)>
-
-This routine gives you a bash script to set variables accroding to a hash
-table saved on disk.
-
-=item B<bash_cat($)>
-
-This takes a hash by refrence.
-This assumes the keys in the hash are names of environment paths.
-This assumes the values of the keys are values to be added at the head of
-the paths.
-This produces a bash script to do it.
-
 =item B<TEST($)>
 
 Test suite for this module.
+Currently it just tries to get a bogus environment variable and make sure
+that it fails doing that.
 
 =back
 
@@ -389,13 +291,12 @@ None.
 	0.28 MV website construction
 	0.29 MV web site automation
 	0.30 MV SEE ALSO section fix
+	0.31 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Hash(3), Meta::Utils::Output(3), strict(3)
+Error(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
--add some more bash routines, improve them names, and maybe get them the hell out of here.
-
--get the pmini routine out of here and use the path module instead.
+Nothing.

@@ -10,6 +10,8 @@ use Meta::Ds::Hash qw();
 use Heap::Fibonacci qw();
 use Heap::Elem::NumRev qw();
 use Heap::Elem::Num qw();
+use Meta::Utils::File::Dir qw();
+#use Meta::Template qw();
 
 my($dire,$pattern,$num_pattern,$hi_pattern);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -21,18 +23,14 @@ $opts->def_stri("hi_pattern","pattern to identify numbers",'^series(\d+).*$',\$h
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-opendir(DIRE,$dire) || Meta::Utils::System::die("cannot opendir [".$dire."]");
-my(@file)=readdir(DIRE);
-closedir(DIRE) || Meta::Utils::System::die("cannot closedir [".$dire."]");
-
-my($num)=$#file+1;
+my($files)=Meta::Utils::File::Dir::file_list($dire);
 
 my($check)=0;
 my($hash)=Meta::Ds::Hash->new();
 my($heap)=Heap::Fibonacci->new();
 my($minmax)=Meta::Math::MinMax->new();
-for(my($k)=0;$k<$num;$k++) {
-	my($curr)=$file[$k];
+for(my($k)=0;$k<$files->size();$k++) {
+	my($curr)=$files->get($k);
 	my($curr_num)=($curr=~/$hi_pattern/);
 	if(defined($curr_num)) {
 		my($unpad_num)=Meta::Math::Pad::unpad($curr_num);
@@ -58,12 +56,9 @@ for(my($i)=0;$i<$max;$i++) {
 #		"num_pad_3",Meta::Math::Pad::pad_easy($i,3),
 #		"num_pad_4",Meta::Math::Pad::pad_easy($i,4),
 #	};
-#	my($template)=Template->new();
+#	my($template)=Meta::Template->new();
 #	my($out);
-#	my($res_val)=$template->process(\$num_pattern,$vars,\$out);
-#	if(!$res_val) {
-#		Meta::Utils::System::die("error in Template processing [".$template->error()."]");
-#	}
+#	$template->process(\$num_pattern,$vars,\$out);
 	if($hash->hasnt($i)) {
 		my($elem)=Heap::Elem::Num->new($i);
 		$missing_heap->add($elem);
@@ -88,7 +83,7 @@ while(defined($missing_elem) && !$over) {
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -121,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_find_holes.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -211,10 +206,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV weblog issues
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Heap::Elem::Num(3), Heap::Elem::NumRev(3), Heap::Fibonacci(3), Meta::Ds::Hash(3), Meta::Math::MinMax(3), Meta::Math::Pad(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Heap::Elem::Num(3), Heap::Elem::NumRev(3), Heap::Fibonacci(3), Meta::Ds::Hash(3), Meta::Math::MinMax(3), Meta::Math::Pad(3), Meta::Utils::File::Dir(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

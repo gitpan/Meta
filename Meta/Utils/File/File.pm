@@ -6,27 +6,29 @@ use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
 #require 'sys/ioctl.ph';
+use Meta::IO::File qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub check_mult_regexp($$$);
 #sub check_sing_regexp($$$);
-#sub save_nodie($$);
 #sub save($$);
-#sub load_nodie($$);
 #sub old_load($);
-#sub load($);
-#sub load_deve($);
+#sub load($$);
+#sub load_deve($$);
 #sub load_line($$);
 #sub cmp($$);
 #sub exist($);
-#sub exec($);
 #sub notexist($);
+#sub exec($);
+#sub notexec($);
 #sub check_exist($);
 #sub check_notexist($);
 #sub check_exec($);
+#sub check_notexec($);
 #sub create_new($);
 #sub subst($$$);
 #sub TEST($);
@@ -35,67 +37,52 @@ $VERSION="0.31";
 
 sub check_mult_regexp($$$) {
 	my($file,$rege,$prin)=@_;
-#	check_arg($file,"");
-#	check_arg($rege,"ARRAY");
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line);
+	my($sing)=0;
+	my($io)=Meta::IO::File->new_reader($file);
 	my($result)=0;
-	while($line=<FILE> || 0) {
+	while(!$io->eof() && (!$sing && !$result)) {
+		my($line)=$io->cgetline();
 		my($curr);
 		for $curr (@$rege) {
+			# the \b are to do it right
 			if($line=~/\b$curr\b/) {
-				if($prin) {
-					Meta::Utils::Output::print($file.":".$line);
-				}
+				Meta::Utils::Output::verbose($prin,$file.":".$io->input_line_number().":".$line."\n");
 				$result=1;
 			}
 		}
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 	return($result);
 }
 
 sub check_sing_regexp($$$) {
 	my($file,$rege,$prin)=@_;
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
+	my($sing)=0;
+	my($io)=Meta::IO::File->new_reader($file);
 #	Meta::Utils::Output::print("rege is [".$rege."]\n");
-	my($line);
 	my($result)=0;
-	while($line=<FILE> || 0) {
-#		if($line=~/$rege/o) {
-#		Meta::Utils::Output::print("line is [".$line."]\n");
-		if($line=~/$rege/) {
-			if($prin) {
-				Meta::Utils::Output::print($file.":".$line);
-			}
-#			Meta::Utils::Output::pinrt("in here\n");
+	while(!$io->eof() && (!$sing && !$result)) {
+		my($line)=$io->cgetline();
+		# the \b are to do it right
+		if($line=~/\b$rege\b/) {
+			Meta::Utils::Output::verbose($prin,$file.":".$io->input_line_number().":".$line."\n");
 			$result=1;
 		}
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 	return($result);
-}
-
-sub save_nodie($$) {
-	my($file,$text)=@_;
-	open(FILE,"> $file") || return(0);
-	print FILE $text;
-	close(FILE) || return(0);
-	return(1);
 }
 
 sub save($$) {
 	my($file,$text)=@_;
-	open(FILE,"> $file") || Meta::Utils::System::die("unable to open file [".$file."]");
-	print FILE $text;
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	my($io)=Meta::IO::File->new_writer($file);
+	print $io $text;
+	$io->close();
 }
 
-sub load_nodie($$) {
+sub load($$) {
 	my($file,$text)=@_;
-	if(!open(FILE,$file)) {
-		return(0);
-	}
+	open(FILE,$file) || throw Meta::Error::Simple("unable to open file [".$file."]");
 	binmode(FILE);
 	#find out how many bytes to read
 	my($size);
@@ -104,56 +91,36 @@ sub load_nodie($$) {
 	$size=unpack("L",$size);
 	my($ret)=read(FILE,$$text,$size);
 	if($ret!=$size) {
-		Meta::Utils::System::die("very strange error");
+		throw Meta::Error::Simple("could not read file");
 	}
-# this is old code which reads line by line
-#	$$text="";
-#	my($line);
-#	while($line=<FILE> || 0) {
-#		$$text.=$line;
-#	}
-	if(!close(FILE)) {
-		return(0);
-	}
-	return(1);
+	close(FILE) || throw Meta::Error::Simple("unable to close file [".$file."]");
 }
 
-sub old_load($) {
-	my($file)=@_;
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
+sub old_load($$) {
+	my($file,$text)=@_;
+	$$text="";
+	open(FILE,$file) || throw Meta::Error::Simple("unable to open file [".$file."]");
 	binmode(FILE);
-	my($resu);
 	my($line);
 	while($line=<FILE> || 0) {
-		$resu.=$line;
+		$$text.=$line;
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
-	return($resu);
+	close(FILE) || throw Meta::Error::Simple("unable to close file [".$file."]");
 }
 
-sub load($) {
-	my($file)=@_;
-	my($text);
-	if(!load_nodie($file,\$text)) {
-		Meta::Utils::System::die("unable to read file [".$file."]");
-	}
-	return($text);
-}
-
-sub load_deve($) {
-	my($file)=@_;
-	return(&load(Meta::Baseline::Aegis::which($file)));
+sub load_deve($$) {
+	my($file,$content)=@_;
+	&load(Meta::Baseline::Aegis::which($file),$content);
 }
 
 sub load_line($$) {
 	my($file,$numb)=@_;
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	binmode(FILE);
+	my($io)=Meta::IO::File->new_reader($file);
 	my($over)=0;
-	my($line);
 	my($coun)=0;
 	my($resu);
-	while(($line=<FILE> || 0) && (!$over)) {
+	while(!$io->eof() && !$over) {
+		my($line)=$io->cgetline();
 		if($coun==$numb) {
 			$resu=$line;
 			chop($resu);
@@ -162,28 +129,22 @@ sub load_line($$) {
 			$coun++;
 		}
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
+	if(!$over) {
+		throw Meta::Error::Simple("file [".$file."] has no line number [".$numb."]");
+	}
 	return($resu);
 }
 
 sub cmp($$) {
 	my($file,$comp)=@_;
-	my($leng)=length($comp);
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
 	my($buff);
-	my($result);
-	my($res)=read(FILE,$buff,$leng);
-	if(!$res) {
-		$result=0;
+	&load($file,\$buff);
+	if($buff eq $comp) {
+		return(1);
 	} else {
-		if($buff ne $comp) {
-			$result=0;
-		} else {
-			$result=1;
-		}
+		return(0);
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
-	return($result);
 }
 
 sub exist($) {
@@ -195,6 +156,11 @@ sub exist($) {
 	}
 }
 
+sub notexist($) {
+	my($file)=@_;
+	return(!exist($file));
+}
+
 sub exec($) {
 	my($file)=@_;
 	if(-x $file) {
@@ -204,37 +170,48 @@ sub exec($) {
 	}
 }
 
-sub notexist($) {
+sub notexec($) {
 	my($file)=@_;
-	return(!exist($file));
+	if(-x $file) {
+		return(0);
+	} else {
+		return(1);
+	}
 }
 
 sub check_exist($) {
 	my($file)=@_;
 	if(!exist($file)) {
-		Meta::Utils::System::die("file [".$file."] does not exist and it should");
+		throw Meta::Error::Simple("file [".$file."] does not exist and it should");
 	}
 }
 
 sub check_notexist($) {
 	my($file)=@_;
 	if(!notexist($file)) {
-		Meta::Utils::System::die("file [".$file."] does exist and it should not");
+		throw Meta::Error::Simple("file [".$file."] does exist and it should not");
 	}
 }
 
 sub check_exec($) {
 	my($file)=@_;
 	if(!exec($file)) {
-		Meta::Utils::System::die("file [".$file."] is not executable as it should");
+		throw Meta::Error::Simple("file [".$file."] is not executable as it should");
+	}
+}
+
+sub check_notexec($) {
+	my($file)=@_;
+	if(!notexec($file)) {
+		throw Meta::Error::Simple("file [".$file."] is unexecutable as it should");
 	}
 }
 
 sub create_new($) {
 	my($file)=@_;
 	check_notexist($file);
-	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	open(FILE,"> ".$file) || throw Meta::Error::Simple("unable to open file [".$file."]");
+	close(FILE) || throw Meta::Error::Simple("unable to close file [".$file."]");
 }
 
 sub subst($$$) {
@@ -245,7 +222,8 @@ sub subst($$$) {
 		Meta::Utils::Output::print("sour is [".$sour."]\n");
 		Meta::Utils::Output::print("targ is [".$targ."]\n");
 	}
-	my($text)=load($file);
+	my($text);
+	load($file,\$text);
 	if($text=~/$sour/) {
 		if($verb) {
 			Meta::Utils::Output::print("text is [".$text."]\n");
@@ -296,7 +274,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: File.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -318,16 +296,15 @@ For instance: check if a file exists, compare two files etc...
 
 	check_mult_regexp($$$)
 	check_sing_regexp($$$)
-	save_nodie($$)
 	save($$)
-	load_nodie($$)
 	old_load($)
 	load($)
-	load_deve($)
+	load_deve($$)
 	load_line($$)
 	cmp($$)
 	exist($)
 	notexist($)
+	exec($)
 	check_exist($)
 	check_notexist($)
 	check_exec($)
@@ -353,34 +330,26 @@ is present in the file given to it.
 This also receives a variable telling it whether to print the matched lines
 or not.
 
-=item B<save_nodie($$)>
-
-This does exactly the same as B<save> but does not die if something goes
-wrong and instead returns a valid error bit.
-
 =item B<save($$)>
 
 This routine receives a file name and text to write into it.
 The routine assumes that it has permissions, and writes a new file (recreates
 it) and writes the string into it, and then closes the file.
-The routine dies if something goes wrong.
-
-=item B<load_nodie($$)>
-
-This routine receives a file name and a reference to a string.
-The routine loads the file into the string. If the routine fails
-somewhere then it return a valid error bit.
+The routine throws an exception if something goes wrong.
 
 =item B<old_load($)>
 
 This is the old implementation of the load routine which gulps the file
 down one line at a time.
 
-=item B<load($)>
+=item B<load($$)>
 
 This routine loads up a files into a single string and gives it to you.
+The routine will throw an exception if something goes wrong.
+The implementation finds what the size of the file is and then reads
+that amount from the file.
 
-=item B<load_deve($)>
+=item B<load_deve($$)>
 
 This method loads a file from a development framework.
 
@@ -402,12 +371,19 @@ comparison...
 This routine returns whether a cetain file is a regular file
 I cannot just return the result of "-f $file" since it will be
 nothing (which is not good for boolean arithmetic) if the file is not there.
+This means that I need the if switch there.
 
 =item B<notexist($)>
 
-This routine returns whether a certain file not exist as a regular file
+This routine returns whether a certain file does not exist as a regular file
+Same notes as for "exist" apply.
+
+=item B<exec($)>
+
+This routine returns whether a certain file is executable or not.
 I cannot just return the result of "-x $file" since it will be
 nothing (which is not good for boolean arithmetic) if the file is not there.
+This means that I need the if switch there.
 
 =item B<check_exist($)>
 
@@ -492,18 +468,17 @@ None.
 	0.29 MV move tests to modules
 	0.30 MV download scripts
 	0.31 MV finish papers
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Output(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::IO::File(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
 -Cant the load() fundtion return a reference to the data instead of the actual data ? (the return value may be long...). (The same goes for load_line...).
 
 -Do the create_new function more effiently (isnt there a perl function for it?).
-
--make the load routine prototype be the same as the load_nodie prototype. (its cleaner that way...).
 
 -stop using the hardcoded hexa value in ioctl (I only did it because of error in requiring the required ph files).
 

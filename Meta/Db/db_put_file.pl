@@ -33,23 +33,16 @@ $dbi->Meta::Db::Dbi::connect_xml($connections,$database);
 
 # get the content of the field from the file
 
-my($content)=Meta::Utils::File::File::load($file);
+my($content);
+Meta::Utils::File::File::load($file,\$content);
 
 # now save it in the database
 
 my($stat2)="UPDATE ".$table." SET ".$field."=".$dbi->quote_simple($content)." WHERE ".$select_field."=".$dbi->quote_simple($select_value);
-if($verbose) {
-	Meta::Utils::Output::print("stat2 is [".$stat2."]\n");
-}
-my($res)=$dbi->execute_single($stat2);
-if($res!=1) {
-	Meta::Utils::System::die("unable to update field");
-}
-if($verbose) {
-	Meta::Utils::Output::print("res is [".$res."]\n");
-}
+Meta::Utils::Output::verbose($verbose,"stat2 is [".$stat2."]\n");
+$dbi->execute_single($stat2);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -82,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_put_file.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -197,6 +190,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

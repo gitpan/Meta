@@ -26,7 +26,7 @@ my($parser)=Meta::Lang::Lily::InfoParser->new();
 $parser->parse($file);
 $parser->print(Meta::Utils::Output::get_file());
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: lilypond_parse.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -137,6 +137,7 @@ None.
 
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

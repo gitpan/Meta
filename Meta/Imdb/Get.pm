@@ -16,7 +16,7 @@ use Meta::Lang::Html::Html qw();
 use Meta::Lang::Xql::Cache qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw(LWP::UserAgent);
 
 #sub new($);
@@ -53,9 +53,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=LWP::UserAgent->new();
-	bless($self,$clas);
+	bless($self,$class);
 	#$self->agent($self->get_agent());
 	return($self);
 }
@@ -65,7 +65,8 @@ sub get_page_form($$$) {
 	my($url)="http://us.imdb.com/List";
 	my($file)="html/import/projects/Imdb/list.html";
 	$file=Meta::Baseline::Aegis::which($file);
-	my($html)=Meta::Utils::File::File::load($file);
+	my($html);
+	Meta::Utils::File::File::load($file,\$html);
 	my(@forms)=HTML::Form->parse($html,$url);
 	my($form)=$forms[1];
 	$form->value(words=>$name);
@@ -75,7 +76,7 @@ sub get_page_form($$$) {
 	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
-		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
+		throw Meta::Error::Simple("unable to get url [".$url."] with error [".$res->status_line()."]");
 	}
 	return($res->content());
 }
@@ -87,7 +88,7 @@ sub get_page($$$) {
 	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
-		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
+		throw Meta::Error::Simple("unable to get url [".$url."] with error [".$res->status_line()."]");
 	}
 	return($res->content());
 }
@@ -99,7 +100,7 @@ sub get_title_html($$) {
 	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
-		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
+		throw Meta::Error::Simple("unable to get url [".$url."] with error [".$res->status_line()."]");
 	}
 	return($res->content());
 }
@@ -145,7 +146,7 @@ sub get_director_id($$$) {
 	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
-		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
+		throw Meta::Error::Simple("unable to get url [".$url."] with error [".$res->status_line()."]");
 	}
 	return($res->content());
 }
@@ -156,7 +157,8 @@ sub get_director_id_form($$$) {
 	my($url)="http://us.imdb.com/search";
 	my($file)="html/import/projects/Imdb/search.html";
 	$file=Meta::Baseline::Aegis::which($file);
-	my($html)=Meta::Utils::File::File::load($file);
+	my($html);
+	Meta::Utils::File::File::load($file,\$html);
 	my(@forms)=HTML::Form->parse($html,$url);
 	my($form)=$forms[3];
 	$form->value(name=>$name);
@@ -168,7 +170,7 @@ sub get_director_id_form($$$) {
 #	Meta::Utils::Output::print("req is ".$req->as_string()."\n");
 	my($res)=$self->request($req);
 	if($res->is_error()) {
-		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
+		throw Meta::Error::Simple("unable to get url [".$url."] with error [".$res->status_line()."]");
 	}
 	return($res->content());
 }
@@ -180,7 +182,7 @@ sub get_search_page($) {
 	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
-		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
+		throw Meta::Error::Simple("unable to get url [".$url."] with error [".$res->status_line()."]");
 	}
 	return($res->content());
 }
@@ -191,9 +193,7 @@ sub get_birth_name($$$) {
 	my($dom)=Meta::Lang::Html::Html::c2dom($page);
 	my(@result)=$dom->xql("html/body/table/tr/td/div/table/tr/td/dl/dd");
 	#there must be 3 items here
-	if($#result!=2) {
-		Meta::Utils::System::die("problem since result is not a 3-tuple");
-	}
+	Meta::Development::Assert::assert_eq($#result+1,3,"not enough items in page");
 	my($node)=$result[0]->getFirstChild();
 	#the node must be a text node
 	if($node->getNodeType()==XML::DOM::TEXT_NODE) {
@@ -242,7 +242,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Get.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -364,6 +364,7 @@ None.
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
 	0.14 MV teachers project
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 

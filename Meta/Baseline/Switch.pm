@@ -67,9 +67,10 @@ use Meta::Utils::Output qw();
 use Meta::Pdmt::BuildInfo qw();
 use Meta::Tool::Gzip qw();
 use Meta::Tool::Ps2Pdf qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.56";
+$VERSION="0.57";
 @ISA=qw();
 
 #sub get_count($);
@@ -180,7 +181,7 @@ sub get_module($) {
 			return($curr);
 		}
 	}
-	Meta::Utils::System::die("havent found module for [".$modu."]");
+	throw Meta::Error::Simple("havent found module for [".$modu."]");
 	return(undef);
 }
 
@@ -707,7 +708,7 @@ sub run_module($$$$$$) {
 	if($lang eq "lyxx") {
 	}
 	if(!$foun) {
-		Meta::Utils::System::die("havent found module [".$lang."][".$type."]");
+		throw Meta::Error::Simple("havent found module [".$lang."][".$type."]");
 	}
 	return($scod);
 }
@@ -762,7 +763,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Switch.pm
 	PROJECT: meta
-	VERSION: 0.56
+	VERSION: 0.57
 
 =head1 SYNOPSIS
 
@@ -896,10 +897,11 @@ None.
 	0.54 MV move tests to modules
 	0.55 MV finish papers
 	0.56 MV teachers project
+	0.57 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Lang::Aegi(3), Meta::Baseline::Lang::Ascx(3), Meta::Baseline::Lang::Aspe(3), Meta::Baseline::Lang::Awkx(3), Meta::Baseline::Lang::Bdbx(3), Meta::Baseline::Lang::Bins(3), Meta::Baseline::Lang::Ccxx(3), Meta::Baseline::Lang::Chec(3), Meta::Baseline::Lang::Chun(3), Meta::Baseline::Lang::Clas(3), Meta::Baseline::Lang::Conf(3), Meta::Baseline::Lang::Cook(3), Meta::Baseline::Lang::Cssx(3), Meta::Baseline::Lang::Cxxx(3), Meta::Baseline::Lang::Data(3), Meta::Baseline::Lang::Dbxx(3), Meta::Baseline::Lang::Deps(3), Meta::Baseline::Lang::Dirx(3), Meta::Baseline::Lang::Dlls(3), Meta::Baseline::Lang::Dslx(3), Meta::Baseline::Lang::Dtdx(3), Meta::Baseline::Lang::Dvix(3), Meta::Baseline::Lang::Epsx(3), Meta::Baseline::Lang::Gzxx(3), Meta::Baseline::Lang::Html(3), Meta::Baseline::Lang::Info(3), Meta::Baseline::Lang::Java(3), Meta::Baseline::Lang::Jpgx(3), Meta::Baseline::Lang::Late(3), Meta::Baseline::Lang::Libs(3), Meta::Baseline::Lang::Lily(3), Meta::Baseline::Lang::Lyxx(3), Meta::Baseline::Lang::Manx(3), Meta::Baseline::Lang::Midi(3), Meta::Baseline::Lang::Mifx(3), Meta::Baseline::Lang::Nrfx(3), Meta::Baseline::Lang::Objs(3), Meta::Baseline::Lang::Pack(3), Meta::Baseline::Lang::Patc(3), Meta::Baseline::Lang::Pdfx(3), Meta::Baseline::Lang::Perl(3), Meta::Baseline::Lang::Pgnx(3), Meta::Baseline::Lang::Pngx(3), Meta::Baseline::Lang::Psxx(3), Meta::Baseline::Lang::Pyob(3), Meta::Baseline::Lang::Pyth(3), Meta::Baseline::Lang::Rcxx(3), Meta::Baseline::Lang::Rtfx(3), Meta::Baseline::Lang::Rule(3), Meta::Baseline::Lang::Sgml(3), Meta::Baseline::Lang::Swig(3), Meta::Baseline::Lang::Targ(3), Meta::Baseline::Lang::Temp(3), Meta::Baseline::Lang::Texx(3), Meta::Baseline::Lang::Txtx(3), Meta::Baseline::Lang::Xmlx(3), Meta::Baseline::Lang::Xslt(3), Meta::Ds::Array(3), Meta::Info::Enum(3), Meta::Pdmt::BuildInfo(3), Meta::Tool::Gzip(3), Meta::Tool::Ps2Pdf(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Baseline::Lang::Aegi(3), Meta::Baseline::Lang::Ascx(3), Meta::Baseline::Lang::Aspe(3), Meta::Baseline::Lang::Awkx(3), Meta::Baseline::Lang::Bdbx(3), Meta::Baseline::Lang::Bins(3), Meta::Baseline::Lang::Ccxx(3), Meta::Baseline::Lang::Chec(3), Meta::Baseline::Lang::Chun(3), Meta::Baseline::Lang::Clas(3), Meta::Baseline::Lang::Conf(3), Meta::Baseline::Lang::Cook(3), Meta::Baseline::Lang::Cssx(3), Meta::Baseline::Lang::Cxxx(3), Meta::Baseline::Lang::Data(3), Meta::Baseline::Lang::Dbxx(3), Meta::Baseline::Lang::Deps(3), Meta::Baseline::Lang::Dirx(3), Meta::Baseline::Lang::Dlls(3), Meta::Baseline::Lang::Dslx(3), Meta::Baseline::Lang::Dtdx(3), Meta::Baseline::Lang::Dvix(3), Meta::Baseline::Lang::Epsx(3), Meta::Baseline::Lang::Gzxx(3), Meta::Baseline::Lang::Html(3), Meta::Baseline::Lang::Info(3), Meta::Baseline::Lang::Java(3), Meta::Baseline::Lang::Jpgx(3), Meta::Baseline::Lang::Late(3), Meta::Baseline::Lang::Libs(3), Meta::Baseline::Lang::Lily(3), Meta::Baseline::Lang::Lyxx(3), Meta::Baseline::Lang::Manx(3), Meta::Baseline::Lang::Midi(3), Meta::Baseline::Lang::Mifx(3), Meta::Baseline::Lang::Nrfx(3), Meta::Baseline::Lang::Objs(3), Meta::Baseline::Lang::Pack(3), Meta::Baseline::Lang::Patc(3), Meta::Baseline::Lang::Pdfx(3), Meta::Baseline::Lang::Perl(3), Meta::Baseline::Lang::Pgnx(3), Meta::Baseline::Lang::Pngx(3), Meta::Baseline::Lang::Psxx(3), Meta::Baseline::Lang::Pyob(3), Meta::Baseline::Lang::Pyth(3), Meta::Baseline::Lang::Rcxx(3), Meta::Baseline::Lang::Rtfx(3), Meta::Baseline::Lang::Rule(3), Meta::Baseline::Lang::Sgml(3), Meta::Baseline::Lang::Swig(3), Meta::Baseline::Lang::Targ(3), Meta::Baseline::Lang::Temp(3), Meta::Baseline::Lang::Texx(3), Meta::Baseline::Lang::Txtx(3), Meta::Baseline::Lang::Xmlx(3), Meta::Baseline::Lang::Xslt(3), Meta::Ds::Array(3), Meta::Info::Enum(3), Meta::Pdmt::BuildInfo(3), Meta::Tool::Gzip(3), Meta::Tool::Ps2Pdf(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

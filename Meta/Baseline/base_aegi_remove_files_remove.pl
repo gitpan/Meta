@@ -8,11 +8,11 @@ use Meta::Utils::File::Remove qw();
 use Meta::Utils::File::Purge qw();
 
 my($dire,$abso,$demo,$verb);
-#$dire=Meta::Baseline::Aegis::development_directory();
-$dire=".";
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devd("directory","in which directory ?",$dire,\$dire);
+# in the next line we cannot give the aegis development directory because
+# then the documentation will become change dependant.
+$opts->def_devd("directory","in which directory ?",".",\$dire);
 $opts->def_bool("absolute","do it with absolute paths ?",0,\$abso);
 $opts->def_bool("demo","do it for real or just play ?",0,\$demo);
 $opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
@@ -20,7 +20,7 @@ $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($hash)=Meta::Baseline::Aegis::change_files_hash(0,0,1,1,1,$abso);
-Meta::Utils::File::Remove::rmhash_demo_verb($hash,$demo,$verb);
+Meta::Utils::File::Remove::rmhash($hash);
 my($done);
 my($scod)=Meta::Utils::File::Purge::purge($dire,$demo,$verb,\$done);
 Meta::Utils::System::exit($scod);
@@ -56,7 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_remove_files_remove.pl
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -167,6 +167,7 @@ None.
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
 	0.26 MV move tests to modules
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -15,9 +15,9 @@ $VERSION="0.17";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Array->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Tuple.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -126,6 +126,7 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 

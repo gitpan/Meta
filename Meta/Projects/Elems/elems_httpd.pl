@@ -13,6 +13,7 @@ use Meta::Class::DBI qw();
 use Meta::Projects::Elems::Elems qw();
 #use Meta::Projects::Elems::Views qw();
 use Meta::Db::Connections qw();
+use Error qw(:try);
 
 my($verbose,$connections_file,$con_name,$name,$url,$port);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -42,7 +43,7 @@ my($d)=HTTP::Daemon->new(
 	LocalPort=>$port,
 );
 if(!defined($d)) {
-	Meta::Utils::System::die("unable to create HTTP::Daemon");
+	throw Meta::Error::Simple("unable to create HTTP::Daemon");
 }
 if($verbose) {
 	Meta::Utils::Output::print("Please contact me at: [".$d->url()."]\n");
@@ -117,7 +118,7 @@ while(my($c)=$d->accept()) {
 #	undef($c);
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -150,7 +151,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: elems_httpd.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -250,10 +251,11 @@ None.
 
 	0.00 MV download scripts
 	0.01 MV teachers project
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
-HTTP::Daemon(3), HTTP::Headers(3), HTTP::Response(3), HTTP::Status(3), Meta::Class::DBI(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Projects::Elems::Elems(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), HTTP::Daemon(3), HTTP::Headers(3), HTTP::Response(3), HTTP::Status(3), Meta::Class::DBI(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Projects::Elems::Elems(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

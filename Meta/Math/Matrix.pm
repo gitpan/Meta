@@ -5,9 +5,10 @@ package Meta::Math::Matrix;
 use strict qw(vars refs subs);
 use Meta::Geo::Pos2d qw();
 use Meta::Utils::Output qw();
+use Meta::Development::Assert qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw();
 
 #sub new($);
@@ -20,9 +21,9 @@ $VERSION="0.19";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{HASH}={};
 	$self->{SIZE}=defined;
 	return($self);
@@ -47,18 +48,10 @@ sub get_elem($$) {
 
 sub check_pos($$) {
 	my($self,$posx)=@_;
-	if($posx->get_x()<0) {
-		Meta::Utils::System::die("negative value [".$posx->get_x()."] for x position");
-	}
-	if($posx->get_x()>=$self->{SIZE}->get_x()) {
-		Meta::Utils::System::die("excessive value [".$posx->get_x()."] for x position");
-	}
-	if($posx->get_y()<0) {
-		Meta::Utils::System::die("negative value [".$posx->get_y()."] for y position");
-	}
-	if($posx->get_y()>=$self->{SIZE}->get_y()) {
-		Meta::Utils::System::die("excessive value [".$posx->get_y()."] for y position");
-	}
+	Meta::Development::Assert::assert_ge($posx->get_x(),0,"x position needs to be positive");
+	Meta::Development::Assert::assert_lt($posx->get_x(),$self->{SIZE}->get_x(),"x position too big");
+	Meta::Development::Assert::assert_ge($posx->get_y(),0,"y position needs to be positive");
+	Meta::Development::Assert::assert_lt($posx->get_y(),$self->{SIZE}->get_y(),"y posision too big");
 }
 
 sub TEST($) {
@@ -116,7 +109,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Matrix.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -215,10 +208,11 @@ None.
 	0.17 MV web site automation
 	0.18 MV SEE ALSO section fix
 	0.19 MV teachers project
+	0.20 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Geo::Pos2d(3), Meta::Utils::Output(3), strict(3)
+Meta::Development::Assert(3), Meta::Geo::Pos2d(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

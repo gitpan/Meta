@@ -8,7 +8,7 @@ use Meta::Pdmt::Nodes::PerlPod qw();
 use Meta::Lang::Perl::Perl qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Pdmt::Handler);
 
 #sub add_node($$$);
@@ -46,7 +46,7 @@ __END__
 
 =head1 NAME
 
-Meta::Pdmt::Handlers::PerlPod - what does your module/class do.
+Meta::Pdmt::Handlers::PerlPod - PDMT module to handle pod files.
 
 =head1 COPYRIGHT
 
@@ -73,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: PerlPod.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -84,7 +84,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put a lot of documentation here to show what your class does.
+This module is a PDMT handler for POD files (Plain Old Documentation).
 
 =head1 FUNCTIONS
 
@@ -130,6 +130,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

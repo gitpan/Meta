@@ -7,20 +7,29 @@ use Meta::Utils::Utils qw();
 use Meta::Utils::File::File qw();
 use Meta::Utils::System qw();
 use Meta::Utils::File::Remove qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.04";
+$VERSION="0.05";
 @ISA=qw();
 
+#sub BEGIN();
 #sub show_file($);
 #sub show_data($);
 #sub TEST($);
 
 #__DATA__
 
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("less");
+}
+
 sub show_file($) {
 	my($file)=@_;
-	Meta::Utils::System::system("less",["-csi",$file]);
+	Meta::Utils::System::system($tool_path,["-csi",$file]);
 }
 
 sub show_data($) {
@@ -69,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Less.pm
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -85,6 +94,7 @@ yourself - give this module the job.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	show_file($)
 	show_data($)
 	TEST($)
@@ -92,6 +102,10 @@ yourself - give this module the job.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method to find the path to your less executable.
 
 =item B<show_file($)>
 
@@ -129,10 +143,11 @@ None.
 	0.02 MV website construction
 	0.03 MV web site automation
 	0.04 MV SEE ALSO section fix
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Meta::Utils::File::File(3), Meta::Utils::File::Patho(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

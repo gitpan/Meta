@@ -10,6 +10,7 @@ use Meta::Utils::Hash qw();
 use Meta::Utils::List qw();
 use Meta::Tool::Editor qw();
 use Meta::Utils::Output qw();
+#use Error qw(:try);
 
 my($verb,$demo,$logx,$acti);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -44,7 +45,7 @@ while(!$pars->get_over()) {
 				my($curr)=Meta::Baseline::Aegis::which($cfil);
 				$hash{$curr}=defined;
 			} else {
-#				Meta::Utils::System::die("error not in a file [".$line."]");
+#				throw Meta::Error::Simple("error not in a file [".$line."]");
 			}
 		}
 	}
@@ -69,7 +70,7 @@ if($enum->is_selected($acti,"edit")) {
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -102,7 +103,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool_log_do.pl
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -220,6 +221,7 @@ None.
 	0.22 MV bring movie data
 	0.23 MV finish papers
 	0.24 MV teachers project
+	0.25 MV md5 issues
 
 =head1 SEE ALSO
 

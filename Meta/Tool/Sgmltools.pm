@@ -10,9 +10,10 @@ use Meta::Utils::File::Copy qw();
 use Meta::Utils::File::Remove qw();
 use Meta::Utils::File::Move qw();
 use Meta::Utils::Utils qw();
+use Meta::Utils::Chdir qw();
 
 our($VERSION,@ISA);
-$VERSION="0.20";
+$VERSION="0.21";
 @ISA=qw();
 
 #sub check($$);
@@ -148,12 +149,18 @@ sub tool($$$$) {
 	push(@args,"--pass=\'".join(" ",@dirs)."\'",$file);
 	my($text);
 	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
-	Meta::Utils::Utils::chdir("/tmp");
-	my($scod)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
+	Meta::Utils::Chdir::chdir("/tmp");
+	my($scod)=Meta::Utils::System::system_err(\$text,$prog,\@args);
+	Meta::Utils::Chdir::popd();
 	Meta::Utils::File::Remove::rm($file);
 	if(!$scod) {#code is bad (there should be no result but we rm it still)
 		Meta::Utils::Output::print($text);
-		Meta::Utils::File::Remove::rm_nodie($resu);
+		try {
+			Meta::Utils::File::Remove::rm($resu);
+		}
+		catch Meta::Error::FileNotFound with {
+			#dont do anything
+		}
 	} else {
 		my($obj)=Meta::Utils::Text::Lines->new();
 		$obj->set_text($text,"\n");
@@ -208,7 +215,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgmltools.pm
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -357,10 +364,11 @@ None.
 	0.18 MV website construction
 	0.19 MV web site automation
 	0.20 MV SEE ALSO section fix
+	0.21 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
+Meta::Utils::Chdir(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

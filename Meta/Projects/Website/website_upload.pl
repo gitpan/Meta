@@ -75,7 +75,7 @@ $ftp->get_mdtm($fs,"");
 
 #you can uncomment this for debug purposes
 #$fs->print();
-#Meta::Utils::System::exit(1);
+#Meta::Utils::System::exit_ok();
 
 if($upload && $doit) {
 	for(my($i)=0;$i<=$#$files;$i++) {
@@ -124,7 +124,7 @@ if($remove && $doit) {
 	my(%listhash);
 	$fs->get_all_files_hash(\%listhash,"");
 	Meta::Utils::Hash::remove_hash(\%listhash,$hash,1);
-	while(my($file,$valx)=each(%listhash)) {
+	while(my($file,$val)=each(%listhash)) {
 		if($verbose) {
 			Meta::Utils::Output::print("removing file [".$file."]\n");
 		}
@@ -145,7 +145,7 @@ if($empty_dir && $doit) {
 	}
 }
 $ftp->do_logout();
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -178,7 +178,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: website_upload.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -320,6 +320,7 @@ None.
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
 	0.12 MV teachers project
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -15,9 +15,10 @@ use Gtk qw();
 use Meta::Utils::Output qw();
 use Meta::Class::MethodMaker qw();
 use Meta::Info::Enum qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.49";
+$VERSION="0.50";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub BEGIN();
@@ -93,9 +94,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Ohash->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->set_color(1);
 	$self->set_free_allo(0);
 	$self->set_free_stri("unknown");
@@ -296,7 +297,7 @@ sub analyze($) {
 			chop($line);
 			Meta::Utils::List::add_star(\@ARGV,$line);
 		}
-		close(FILE) || Meta::Utils::System::die("unable to close file [".$rcfile."]");
+		close(FILE) || throw Meta::Error::Simple("unable to close file [".$rcfile."]");
 	}
 	my($resu)=Getopt::Long::GetOptions(\%hash,@list);
 	if(!$resu) {
@@ -323,7 +324,7 @@ sub analyze($) {
 		$self->man($file);
 	}
 	if($self->get_valu("quit")==1) {
-		Meta::Utils::System::exit(1);
+		Meta::Utils::System::exit_ok();
 	}
 	if($self->get_valu("gtk")==1) {
 		Gtk->init();
@@ -334,38 +335,39 @@ sub analyze($) {
 		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("LICENSE");
 		$pod=CORE::substr($pod,1);
 		Meta::Utils::Output::print($pod);
-		Meta::Utils::System::exit(1);
+		Meta::Utils::System::exit_ok();
 	}
 	if($self->get_valu("copyright")==1) {
 		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("COPYRIGHT");
 		$pod=CORE::substr($pod,1);
 		Meta::Utils::Output::print($pod);
-		Meta::Utils::System::exit(1);
+		Meta::Utils::System::exit_ok();
 	}
 	if($self->get_valu("description")==1) {
 		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("DESCRIPTION");
 		$pod=CORE::substr($pod,1);
 		Meta::Utils::Output::print($pod);
-		Meta::Utils::System::exit(1);
+		Meta::Utils::System::exit_ok();
 	}
 	if($self->get_valu("history")==1) {
 		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("HISTORY");
 		$pod=CORE::substr($pod,1);
 		Meta::Utils::Output::print($pod);
-		Meta::Utils::System::exit(1);
+		Meta::Utils::System::exit_ok();
 	}
 	# sanity check for sanity types
 	for(my($i)=0;$i<$self->size();$i++) {
 		my($sobj)=$self->elem($i);
-		my($erro);
-		my($res)=$sobj->verify(\$erro);
-#		Meta::Utils::Output::print("res is [".$res."]\n");
-		if(!$res) {
-#			Meta::Utils::Output::print("in here\n");
+		#$sobj->verify();
+		try {
+			$sobj->verify();
+			}
+		catch Error with {
+			my($e)=shift;
 			$self->use_color($file,"red");
-			print $file $prog.": ".$erro."\n";
+			print $file $prog.": ".$e->text()."\n";
 			$self->usag($file);
-		}
+		};
 	}
 	# pass values to the pointers requested
 	for(my($i)=0;$i<$self->size();$i++) {
@@ -421,7 +423,7 @@ sub usag($$) {
 	print $file $prog.": where options are:\n";
 	my($size)=$self->size();
 	for(my($i)=0;$i<$size;$i++) {
-		my($sobj)=$self->valx($i);
+		my($sobj)=$self->val($i);
 		my($curr_name)=$sobj->get_name();
 		my($curr_desc)=$sobj->get_description();
 		my($curr_type)=$sobj->get_type();
@@ -439,12 +441,13 @@ sub usag($$) {
 		if($curr_type eq "enum" || $curr_type eq "setx") {
 			my(@arra);
 			for(my($j)=0;$j<$curr_enum->size();$j++) {
-				push(@arra,$curr_enum->keyx($j));
+				push(@arra,$curr_enum->key($j));
 			}
 			print $file $prog.":\t\toptions [".join(",",@arra)."]\n";
 		}
 	}
 	if($self->get_free_allo()) {
+		print $file $prog.": free arguments allowed [".$self->get_free_stri()."]\n";
 		print $file $prog.": minimum of [".$self->get_free_mini()."] free arguments required\n";
 		if($self->get_free_noli()) {
 			print $file $prog.": no maximum limit on number of free arguments placed\n";
@@ -455,7 +458,7 @@ sub usag($$) {
 		print $file $prog.": no free arguments are allowed\n";
 	}
 	$self->use_color_rese($file);
-	Meta::Utils::System::exit(1);
+	Meta::Utils::System::exit_ok();
 }
 
 sub pod($$) {
@@ -463,7 +466,7 @@ sub pod($$) {
 	my($size)=$self->size();
 	print $file "=over 4\n\n";
 	for(my($i)=0;$i<$size;$i++) {
-		my($sobj)=$self->valx($i);
+		my($sobj)=$self->val($i);
 		my($curr_name)=$sobj->get_name();
 		my($curr_desc)=$sobj->get_description();
 		my($curr_type)=$sobj->get_type();
@@ -476,9 +479,9 @@ sub pod($$) {
 		if($curr_type eq "enum" || $curr_type eq "setx") {
 			print $file "options:\n";
 			for(my($j)=0;$j<$curr_enum->size();$j++) {
-				my($keyx)=$curr_enum->keyx($j);
-				my($valx)=$curr_enum->valx($j);
-				print $file "\t".$keyx." - ".$valx."\n";
+				my($key)=$curr_enum->key($j);
+				my($val)=$curr_enum->val($j);
+				print $file "\t".$key." - ".$val."\n";
 			}
 			#print $file "options [".join(",",@arra)."]\n\n";
 			print $file "\n";
@@ -496,14 +499,14 @@ sub pod($$) {
 		print $file "no free arguments are allowed\n";
 	}
 	#print $file "\n";
-	Meta::Utils::System::exit(1);
+	Meta::Utils::System::exit_ok();
 }
 
 sub man($$) {
 	my($self,$file)=@_;
 	my($prog)=Meta::Utils::Progname::fullname();
 	Meta::Lang::Perl::Perl::man_file($prog);
-	Meta::Utils::System::exit(1);
+	Meta::Utils::System::exit_ok();
 }
 
 sub get_valu($$) {
@@ -740,7 +743,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Opts.pm
 	PROJECT: meta
-	VERSION: 0.49
+	VERSION: 0.50
 
 =head1 SYNOPSIS
 
@@ -1068,10 +1071,11 @@ None.
 	0.47 MV web site development
 	0.48 MV finish papers
 	0.49 MV teachers project
+	0.50 MV md5 issues
 
 =head1 SEE ALSO
 
-Getopt::Long(3), Gtk(3), Meta::Class::MethodMaker(3), Meta::Ds::Ohash(3), Meta::Info::Enum(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Color(3), Meta::Utils::List(3), Meta::Utils::Opts::Sopt(3), Meta::Utils::Output(3), Meta::Utils::Progname(3), Meta::Utils::System(3), strict(3)
+Error(3), Getopt::Long(3), Gtk(3), Meta::Class::MethodMaker(3), Meta::Ds::Ohash(3), Meta::Info::Enum(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Color(3), Meta::Utils::List(3), Meta::Utils::Opts::Sopt(3), Meta::Utils::Output(3), Meta::Utils::Progname(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

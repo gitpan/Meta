@@ -7,13 +7,13 @@ use Meta::Utils::Opts::Opts qw();
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->set_free_allo(1);
-$opts->set_free_stri("[clas]");
+$opts->set_free_stri("[class]");
 $opts->set_free_mini(1);
 $opts->set_free_maxi(1);
 $opts->analyze(\@ARGV);
 
-my($clas)=($ARGV[0]);
-my($scod)=Meta::Utils::System::system_nodie("jdb",[$clas]);
+my($class)=($ARGV[0]);
+my($scod)=Meta::Utils::System::system_nodie("jdb",[$class]);
 Meta::Utils::System::exit($scod);
 
 __END__
@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: java_debug.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -120,6 +120,7 @@ None.
 
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

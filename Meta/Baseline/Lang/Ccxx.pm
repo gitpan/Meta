@@ -9,7 +9,7 @@ use Meta::Tool::Cincl qw();
 use Meta::Tool::Gcc qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -100,7 +100,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ccxx.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -207,6 +207,7 @@ None.
 	0.28 MV website construction
 	0.29 MV web site automation
 	0.30 MV SEE ALSO section fix
+	0.31 MV md5 issues
 
 =head1 SEE ALSO
 

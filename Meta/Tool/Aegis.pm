@@ -7,27 +7,35 @@ use Meta::Revision::Revision qw();
 use Meta::Revision::Entry qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw();
 
+#sub BEGIN();
 #sub history($$);
 #sub history_add($$);
 #sub TEST($);
 
 #__DATA__
 
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("aegis");
+}
+
 sub history($$) {
 	my($file,$authors)=@_;
 	my(@args);
-	my($prog)="/local/tools/bin/aegis";
 	push(@args,"-Report");
 	push(@args,"-File");
 	push(@args,Meta::Baseline::Aegis::which("aegi/repo/file_hstry.rpt"));
 	push(@args,$file);
 	push(@args,"-TERse");
-	my($text)=Meta::Utils::System::system_out($prog,\@args);
+	my($text)=Meta::Utils::System::system_out($tool_path,\@args);
 #	Meta::Utils::Output::print("text is [".$$text."]\n");
 	my(@lines)=split("\n",$$text);
 	my($revision)=Meta::Revision::Revision->new();
@@ -107,7 +115,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aegis.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -127,6 +135,7 @@ source files.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	history($$)
 	history_add($$)
 	TEST($)
@@ -134,6 +143,10 @@ source files.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method to locate your aegis executable.
 
 =item B<history($$)>
 
@@ -187,10 +200,11 @@ None.
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
 	0.17 MV bring movie data
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Revision::Entry(3), Meta::Revision::Revision(3), Meta::Utils::Output(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Revision::Entry(3), Meta::Revision::Revision(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

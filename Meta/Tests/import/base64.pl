@@ -7,6 +7,7 @@ use Meta::Baseline::Test qw();
 use MIME::Base64 qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Digest::MD5 qw();
+use Meta::Development::Assert qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -20,13 +21,11 @@ my($sum)=Meta::Digest::MD5::get_filename_digest($file);
 my($encode)=MIME::Base64::encode($sum);
 Meta::Utils::Output::print("encode is [".$encode."]\n");
 my($decode)=MIME::Base64::decode($encode);
-if($decode ne $sum) {
-	Meta::Utils::System::die("decode and sum are not equal");
-}
+Meta::Development::Assert::assert_seq($decode,$sum,"decode and sum are not equal");
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base64.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -141,10 +140,11 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 
-MIME::Base64(3), Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Digest::MD5(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+MIME::Base64(3), Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Development::Assert(3), Meta::Digest::MD5(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

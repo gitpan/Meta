@@ -58,17 +58,17 @@ sub select_row($$$$) {
 	#This is the direct way which dumps core
 	#my($pixi)=Gtk::Gdk::ImlibImage->data_to_pixmap($data);
 	if(!$pixi) {
-		Meta::Utils::System::die("unable to create pixmap");
+		throw Meta::Error::Simple("unable to create pixmap");
 	}
 	if(!defined($pic_window)) {
 	#	Meta::Utils::Output::print("in here\n");
 		$pic_window=Gtk::Window->new();
 		if(!$pic_window) {
-			Meta::Utils::System::die("unable to build pic_window");
+			throw Meta::Error::Simple("unable to build pic_window");
 		}
 		$pix=Gtk::Pixmap->new($pixi,undef);
 		if(!$pix) {
-			Meta::Utils::System::die("unable to build pixmap [".$pix."]");
+			throw Meta::Error::Simple("unable to build pixmap [".$pix."]");
 		}
 		$pic_window->add($pix);
 	} else {
@@ -111,7 +111,7 @@ Gtk->main();
 
 $dbi->disconnect();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -144,7 +144,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: thumbnail_gtk_ui.pl
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -223,6 +223,7 @@ None.
 	0.07 MV SEE ALSO section fix
 	0.08 MV move tests to modules
 	0.09 MV teachers project
+	0.10 MV md5 issues
 
 =head1 SEE ALSO
 

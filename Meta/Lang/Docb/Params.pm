@@ -5,12 +5,13 @@ package Meta::Lang::Docb::Params;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.17";
 @ISA=qw();
 
 #sub get_encoding();
 #sub get_public();
 #sub get_system();
+#sub get_xsystem();
 #sub get_comment();
 #sub get_extra();
 #sub TEST($);
@@ -27,8 +28,13 @@ sub get_public() {
 }
 
 sub get_system() {
-	return("docbook.dtd");
+	return("impo/sgml/docbook.dtd");
+#	return("docbook.dtd");
 #	return(undef);
+}
+
+sub get_xsystem() {
+	return("docbookx.dtd");
 }
 
 sub get_comment() {
@@ -78,7 +84,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Params.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -100,6 +106,7 @@ currently supported are:
 	get_encoding()
 	get_public()
 	get_system()
+	get_xsystem()
 	get_comment()
 	get_extra()
 	TEST($)
@@ -119,6 +126,10 @@ This method will give you the public id of the document dtd we are using.
 =item B<get_system()>
 
 This method will give you the file name of the document dtd we are using.
+
+=item B<get_xsystem()>
+
+This method will give you the file name of the document XML dtd we are using.
 
 =item B<get_comment()>
 
@@ -168,6 +179,7 @@ None.
 	0.14 MV website construction
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV md5 issues
 
 =head1 SEE ALSO
 

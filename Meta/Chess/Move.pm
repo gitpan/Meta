@@ -4,9 +4,10 @@ package Meta::Chess::Move;
 
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
+use Meta::Development::Assert qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw();
 
 #sub new($);
@@ -27,9 +28,9 @@ $VERSION="0.17";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{FROM}=defined;
 	$self->{TO}=defined;
 	$self->{CORONATION}=0;
@@ -56,11 +57,9 @@ sub get_to($) {
 }
 
 sub set_coronation($$) {
-	my($self,$valx)=@_;
-	if($self->get_to()->get_y() ne "7" && $self->get_to()->get_y() ne "0") {
-		Meta::Utils::System::die("problem with coronation");
-	}
-	$self->{CORONATION}=$valx;
+	my($self,$val)=@_;
+	Meta::Development::Assert::assert_true($self->get_to()->get_y() eq "7" || $self->get_to()->get_y() eq "0","problem with coronation");
+	$self->{CORONATION}=$val;
 }
 
 sub get_coronation($) {
@@ -70,9 +69,7 @@ sub get_coronation($) {
 
 sub set_coronation_piece($$) {
 	my($self,$piece)=@_;
-	if(!$self->get_coronation()) {
-		Meta::Utils::System::die("cannot set coronation piece with no coronation");
-	}
+	Meta::Development::Assert::assert_true($self->get_coronation(),"cannot set coronation piece with no coronation");
 	$self->{CORONATION_PIECE}=$piece;
 }
 
@@ -82,8 +79,8 @@ sub get_coronation_piece($) {
 }
 
 sub set_small_castle($$) {
-	my($self,$valx)=@_;
-	$self->{SMALL_CASTLE}=$valx;
+	my($self,$val)=@_;
+	$self->{SMALL_CASTLE}=$val;
 }
 
 sub get_small_castle($) {
@@ -92,8 +89,8 @@ sub get_small_castle($) {
 }
 
 sub set_large_castle($$) {
-	my($self,$valx)=@_;
-	$self->{LARGE_CASTLE}=$valx;
+	my($self,$val)=@_;
+	$self->{LARGE_CASTLE}=$val;
 }
 
 sub get_large_castle($) {
@@ -155,7 +152,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Move.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -283,10 +280,11 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Meta::Development::Assert(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

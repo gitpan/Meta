@@ -14,9 +14,7 @@ $opts->def_devf("module","which module to check ?",undef,\$modu);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-if(!Meta::Baseline::Lang::Perl->source_file($modu)) {
-	Meta::Utils::System::die("module [".$modu."] is not a perl module.");
-}
+Meta::Baseline::Lang::Perl->source_file($modu);
 my($path)=Meta::Baseline::Aegis::search_path();
 my($srcx)=Meta::Baseline::Aegis::which($modu);
 my($resu)=Meta::Baseline::Lang::Perl::check($modu,$srcx,$path);
@@ -26,7 +24,7 @@ if($resu) {
 	Meta::Utils::Output::print("fail\n");
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +57,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_check_single.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -133,6 +131,7 @@ None.
 
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -17,16 +17,16 @@ $opts->analyze(\@ARGV);
 
 my($file)=Meta::Baseline::Aegis::which("data/baseline/aegis/remove_file.txt");
 my($hash)=Meta::Baseline::Aegis::change_files_hash(0,0,1,1,1,1);
-while(my($keyx,$valx)=each(%$hash)) {
+while(my($key,$val)=each(%$hash)) {
 	if($verb) {
-		Meta::Utils::Output::print("restoring [".$keyx."]\n");
+		Meta::Utils::Output::print("restoring [".$key."]\n");
 	}
 	if(!$demo) {
-		Meta::Utils::File::Copy::copy_mkdir($file,$keyx);
+		Meta::Utils::File::Copy::copy_mkdir($file,$key);
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_remove_files_restore.pl
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -161,6 +161,7 @@ None.
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
 	0.25 MV move tests to modules
+	0.26 MV md5 issues
 
 =head1 SEE ALSO
 

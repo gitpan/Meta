@@ -7,7 +7,7 @@ use Meta::Ds::MapM1 qw();
 use Meta::Digest::MD5 qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw(Meta::Ds::MapM1);
 
 #sub insert_file($$);
@@ -83,7 +83,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Collection.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -162,6 +162,7 @@ None.
 	0.03 MV download scripts
 	0.04 MV bring movie data
 	0.05 MV more pdmt stuff
+	0.06 MV md5 issues
 
 =head1 SEE ALSO
 

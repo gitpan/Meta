@@ -5,9 +5,10 @@ package Meta::Ds::Stack;
 use strict qw(vars refs subs);
 use Meta::Ds::Set qw();
 use Meta::Utils::Arg qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw();
 
 #sub new($);
@@ -24,15 +25,15 @@ $VERSION="0.35";
 
 #sub join($$);
 
-#sub print($$);
+#sub foreach($$);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{NUMB}=0;
 	$self->{ARRA}=[];
 	return($self);
@@ -46,7 +47,7 @@ sub top($) {
 		my($arra)=$self->{ARRA};
 		return($$arra[$#$arra]);
 	} else {
-		Meta::Utils::System::die("no elements in the stack for top operation");
+		throw Meta::Error::Simple("no elements in the stack for top operation");
 		return(-1);
 	}
 }
@@ -79,7 +80,7 @@ sub pop($) {
 		my($arra)=$self->{ARRA};
 		return(pop(@$arra));
 	} else {
-		Meta::Utils::System::die("no more elements to pop in stack");
+		throw Meta::Error::Simple("no more elements to pop in stack");
 		return(-1);
 	}
 }
@@ -109,14 +110,15 @@ sub join($$) {
 	return(CORE::join($string,@$array));
 }
 
-sub print($$) {
-	my($self,$file)=@_;
+sub foreach($$) {
+	my($self,$code)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Stack");
 #	Meta::Utils::Arg::check_arg($file,"ANY");
 	my($coun)=$self->size();
 	my($arra)=$self->{ARRA};
 	for(my($i)=0;$i<$coun;$i++) {
-		print $file $i.": ".$arra->[$i]."\n";
+		my($curr)=$arra->[$i];
+		&$code($curr);
 	}
 }
 
@@ -158,7 +160,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stack.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -193,7 +195,7 @@ to the reader (just kidding).
 	empty($)
 	notempty($)
 	join($$)
-	print($$)
+	foreach($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -237,10 +239,12 @@ Tell me if the stack is notempty or not.
 
 This method will return the result of join on the elements of the stack.
 
-=item B<print($$)>
+=item B<foreach($$)>
 
-Print the current stack to a file.
-This also receives the file to while to print.
+This method will iterate over all elements of the stack and will run a subroutine
+supplied to it on them. The subroutine should only accept a single argument
+which is the current element. Currently no guarantees on the order of traversal
+of the elements is given.
 
 =item B<TEST($)>
 
@@ -301,10 +305,11 @@ None.
 	0.33 MV SEE ALSO section fix
 	0.34 MV move tests to modules
 	0.35 MV more pdmt stuff
+	0.36 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Ds::Set(3), Meta::Utils::Arg(3), strict(3)
+Meta::Ds::Set(3), Meta::Error::Simple(3), Meta::Utils::Arg(3), strict(3)
 
 =head1 TODO
 

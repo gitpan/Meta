@@ -5,125 +5,117 @@ package Meta::Utils::File::Remove;
 use strict qw(vars refs subs);
 use File::Find qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
+use Meta::Error::FileNotFound qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.30";
 @ISA=qw();
 
-#sub rm_nodie($);
 #sub rm($);
-#sub rm_demo_verb($$$);
-#sub rm_rmdir($);
 #sub rmdir($);
-#sub rmdir_demo_verb($$$$);
-#sub rmall();
+#sub rmall($);
+#sub rmrmdir($);
 #sub rmrecursive($);
-#sub rmhash_demo_verb($$$);
-#sub rmlist_demo_verb($$$);
-#sub rmmult_demo_verb($$);
+#sub rmhash($);
+#sub rmlist($);
+#sub rmmult($);
 #sub TEST($);
 
 #__DATA__
 
-sub rm_nodie($) {
-	my($file)=@_;
-	return(CORE::unlink($file));
-}
-
 sub rm($) {
 	my($file)=@_;
-	my($resu)=rm_nodie($file);
+	if(!-f $file) {
+		throw Meta::Error::FileNotFound($file);
+	}
+	my($resu)=CORE::unlink($file);
 	if($resu!=1) {
-		Meta::Utils::System::die("unable to remove [".$file."]");
+		throw Meta::Error::Simple("unable to remove [".$file."]");
 	}
 }
 
-sub rm_demo_verb($$$) {
-	my($file,$demo,$verb)=@_;
-	if($verb) {
-		Meta::Utils::Output::print("removing file [".$file."]\n");
+sub rmdir($) {
+	my($directory)=@_;
+	if(!-d $directory) {
+		throw Meta::Error::FileNotFound($directory);
 	}
-	if($demo) {
-		return(1);
-	} else {
-		return(&rm($file));
+	my($resu)=CORE::rmdir($directory);
+	if(!$resu) {
+		throw Meta::Error::Simple("unable to remove directory [".$directory."]");
 	}
 }
 
-sub rm_rmdir($) {
+sub rmall($) {
+#	my($unkn)=@_;
+	my($unkn)=$File::Find::name;
+	if(-f $unkn) {
+		&rm($unkn);
+		return;
+	}
+	if(-d $unkn) {
+		&rmdir($unkn);
+		return;
+	}
+	throw Meta::Error::FileNotFound($unkn);
+}
+
+sub rmrmdir($) {
 	my($file)=@_;
-	rm($file);
+	&rm($file);
 	my($dire)=dirname($file);
 	if(dir_empty($dire)) {
 		&rmdir($dire);
 	}
 }
 
-sub rmdir($) {
-	my($dire)=@_;
-	my($resu)=CORE::rmdir($dire);
-	if(!$resu) {
-		Meta::Utils::System::die("unable to remove directory [".$dire."]");
-	}
-}
-
-sub rmdir_demo_verb($$$$) {
-	my($dire,$prin,$demo,$verb)=@_;
-	if($verb) {
-		Meta::Utils::Output::print("removing dir [".$prin."]\n");
-	}
-	if($demo) {
-		return(1);
-	} else {
-		return(&rmdir($dire));
-	}
-}
-
-sub rmall() {
-	my($unkn)=$File::Find::name;
-	if(-d $unkn) {
-		&rmdir($unkn);
-	} else {
-		&rm($unkn);
-	}
-}
-
 sub rmrecursive($) {
 	my($dir)=@_;
-	File::Find::finddepth(\&rmall,$dir);
+	File::Find::find({wanted=>\&rmall,nochdir=>1,bydepth=>1},$dir);
 }
 
-sub rmhash_demo_verb($$$) {
-	my($hash,$demo,$verb)=@_;
+sub rmhash($) {
+	my($hash)=@_;
 	my($resu)=1;
-	while(my($keyx,$valx)=each(%$hash)) {
-		my($tmpr)=rm_demo_verb($keyx,$demo,$verb);
-		$resu=$resu && $tmpr;
+	while(my($key,$val)=each(%$hash)) {
+		my($curr_resu)=&rm($key);
+		$resu=$resu && $curr_resu;
 	}
 	return($resu);
 }
 
-sub rmlist_demo_verb($$$) {
-	my($list,$demo,$verb)=@_;
+sub rmlist($) {
+	my($list)=@_;
+	my($resu)=1;
 	for(my($i)=0;$i<=$#$list;$i++) {
-		rm_demo_verb($list->[$i],$demo,$verb);
+		my($curr_resu)=&rm($list->[$i]);
+		$resu=$resu && $curr_resu;
 	}
+	return($resu);
 }
 
-sub rmmult_demo_verb($$) {
-	my($demo,$verb)=@_;
+sub rmmult($) {
+	my($file)=@_;
 	my($line);
 	my($resu)=1;
-	while($line=<> || 0) {
+	while($line=<$file> || 0) {
 		chop($line);
-		$resu=$resu && Meta::Utils::File::Remove::rm_demo_verb($line,$demo,$verb);
+		my($curr_resu)=&rm($line);
+		$resu=$resu && $curr_resu;
 	}
 	return($resu);
 }
 
 sub TEST($) {
 	my($context)=@_;
-	return(1);
+	my($scod)=0;
+	try {
+		&rm("/tmp/dgfgdfg");
+	}
+	catch Meta::Error::FileNotFound with {
+		$scod=1;
+	};
+	return($scod);
 }
 
 1;
@@ -159,7 +151,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Remove.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -177,61 +169,46 @@ it dies on you but hey - thats the price you got to pay...
 
 =head1 FUNCTIONS
 
-	rm_nodie($)
 	rm($)
-	rm_demo_verb($$$)
-	rm_rmdir($)
 	rmdir($)
-	rmdir_demo_verb($$$$)
-	rmall()
+	rmall($)
+	rmrmdir($)
 	rmrecusrive($)
-	rmhash_demo_verb($$$)
-	rmlist_demo_verb($$$)
-	rmmult_demo_verb($$)
+	rmhash($)
+	rmlist($)
+	rmmult($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<rm_nodie($)>
-
-This function removes a single file and does not do anything if it does not
-exist. This function returns whether it managed to do it or not...
-
 =item B<rm($)>
 
-This function removes a single file and dies if it cannot do so.
-It does not return a value.
+This function removes a single file and throws an exception if it cannot do so.
+This function does not return a value.
 
-=item B<rm_demo_verb($$$)>
+=item B<rmdir($)>
 
-This function removes a file only if the demo is false and also emits a
-message if the verbose flag is true
+This function removes a directory and throws an exception if it cannot do so.
+This function does not return a value.
 
-=item B<rm_rmdir($)>
+=item B<rmall($)>
+
+This function assumes that you dont know if what you're looking to remove
+is a file or a directory and removes whichever this is...
+It dies if it cannot perform.
+The function tries to test if the unknown is a file first since it assumes
+that most stuff that will need delting is files (I hope I'm right here...:).
+If the unknown is neither a file nor a directory then the function will
+throw an exception.
+
+=item B<rmrmdir($)>
 
 This function removes a file and then removes the directory in which it is
 located if it remains empty.
 Actually this function should continues going higher....:) up the directory
 tree.
-
-=item B<rmdir($)>
-
-This function removes a directory and dies if it cannot do so.
-This function does not return a value.
-
-=item B<rmdir_demo_verb($$$$)>
-
-This function removes a directory only if the demo flag is false.
-The function also emits a message about the directories being removed
-if the verbose flag is true.
-
-=item B<rmall()>
-
-This function assumes that you dont know if what you're looking to remove
-is a file or a directory and removes whichever this is...
-It dies if it cannot perform.
 
 =item B<rmrecusive($)>
 
@@ -240,17 +217,17 @@ It uses the File::Find function to achieve this (unlinking dirs is not
 good...:)
 It also uses the rmall function to achieve this (nice trick...).
 
-=item B<rmhash_demo_verb($$$)>
+=item B<rmhash($)>
 
 This routine removes a whole hash. As expected, demo and verbose arguments
 are also allowed.
 
-=item B<rmlist_demo_verb($$$)>
+=item B<rmlist($)>
 
 This routine removes a whole list. As expected, demo and verbose arguments
 are also allowed.
 
-=item B<rmmult_demo_verb($$)>
+=item B<rmmult($)>
 
 This function receives the regular demo and verbose variables and treats the
 standard input as a source for lines, each representing a file to be removed.
@@ -260,6 +237,10 @@ The function returns whether all the removals were successful or not.
 =item B<TEST($)>
 
 Test suite for this module.
+This suite should be called by a higher level to test the functionality of
+this module.
+Currently this test suite tries to remove a non existant file and catches
+the error.
 
 =back
 
@@ -310,17 +291,14 @@ None
 	0.27 MV website construction
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
+	0.30 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Find(3), Meta::Utils::Output(3), strict(3)
+Error(3), File::Find(3), Meta::Error::FileNotFound(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
 -rm_rmdir should climb higher and keep removing dirs (its not doing that right now...).
 
--add a die parameter to the rm($) function and propagate it up.
-
--add an option to the rmmult_demo_verb function to remove files from any file source (not just stdin...).
-
--stop the demo verb propagation and start using a parameter module.
+-start using a parameter module to determine things like verbosity and demo mode (where we dont really do the removing but rather just climb back on top).

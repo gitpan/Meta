@@ -7,7 +7,7 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw();
 
 #sub BEGIN();
@@ -27,19 +27,19 @@ sub BEGIN() {
 
 sub build($$) {
 	my($self,$pdmt)=@_;
-	Meta::Utils::System::die("this build method must be over ridden");
+	throw Meta::Error::Simple("this build method must be over ridden");
 	return(1);
 }
 
 sub uptodate($$) {
 	my($self,$pdmt)=@_;
-	Meta::Utils::System::die("this uptodate method must be over ridden");
+	throw Meta::Error::Simple("this uptodate method must be over ridden");
 	return(1);
 }
 
 sub mtime($) {
 	my($self)=@_;
-	Meta::Utils::System::die("this mtime method must be over ridden");
+	throw Meta::Error::Simple("this mtime method must be over ridden");
 	return(1);
 }
 
@@ -81,7 +81,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Node.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -177,6 +177,7 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV teachers project
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

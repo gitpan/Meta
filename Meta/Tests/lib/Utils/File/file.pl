@@ -18,12 +18,14 @@ my($file)="xmlx/README.dir";
 my($abs)=Meta::Baseline::Aegis::which($file);
 
 Meta::Utils::Output::print("reading with load_deve\n");
-my($text1)=Meta::Utils::File::File::load_deve($file);
+my($text1);
+Meta::Utils::File::File::load_deve($file,\$text1);
 #Meta::Utils::Output::print("text is [".$text1."]\n");
 Meta::Utils::Output::print("size is [".length($text1)."]\n");
 
 Meta::Utils::Output::print("reading with load\n");
-my($text2)=Meta::Utils::File::File::load($abs);
+my($text2);
+Meta::Utils::File::File::load($abs,\$text2);
 #Meta::Utils::Output::print("text is [".$text2."]\n");
 Meta::Utils::Output::print("size is [".length($text2)."]\n");
 
@@ -34,13 +36,14 @@ Meta::Utils::File::File::load_nodie($abs,\$text3);
 Meta::Utils::Output::print("size is [".length($text3)."]\n");
 
 Meta::Utils::Output::print("reading with old_load\n");
-my($text4)=Meta::Utils::File::File::old_load($abs);
+my($text4);
+Meta::Utils::File::File::old_load($abs,\$text4);
 #Meta::Utils::Output::print("text is [".$text4."]\n");
 Meta::Utils::Output::print("size is [".length($text4)."]\n");
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -73,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: file.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -143,6 +146,7 @@ None.
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
 	0.02 MV move tests to modules
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

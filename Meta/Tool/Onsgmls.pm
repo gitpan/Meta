@@ -6,21 +6,29 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 use Meta::Lang::Docb::Params qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw();
 
+#sub BEGIN();
 #sub dochec($);
 #sub TEST($);
 
 #__DATA__
 
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("onsgmls");
+}
+
 sub dochec($) {
 	my($buil)=@_;
 	my($srcx)=$buil->get_srcx();
 	my($path)=$buil->get_path();
-	my($prog)="/local/tools/bin/onsgmls";
 	my(@args);
 	push(@args,"--no-output");#do not use onsgmls as convertor but as checker
 	push(@args,"--warning=all");#all warnings
@@ -58,15 +66,17 @@ sub dochec($) {
 	push(@args,$srcx);
 	my($text);
 #	Meta::Utils::Output::print("args are [".join(",",@args)."]\n");
-	my($code)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
+	my($code)=Meta::Utils::System::system_err(\$text,$tool_path,\@args);
 #	Meta::Utils::Output::print("text is [".$text."]\n");
 	#make sure that no errors are printed (even if exit code is good).
 	if($code) {
 		if($text ne "") {
+			Meta::Utils::Output::print("onsgml failed\n");
 			Meta::Utils::Output::print($text);
 			$code=0;
 		}
 	} else {
+		Meta::Utils::Output::print("onsgml failed\n");
 		Meta::Utils::Output::print($text);
 	}
 	return($code);
@@ -110,7 +120,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Onsgmls.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -121,16 +131,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This module will ease the work of running onsgmls for you.
+This module will ease the work of running onsgmls for you. The current purpose
+is to validate SGML documents but more uses may be added in the future.
+
+The onsgmls that this runs is the one supplied with recent versions of opensp
+and NOT openjade. This means that you need opensp installed and your path
+to point to the opensp version of onsgmls which has a DIFFERENT command line
+interface than the openjade interface.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	dochec($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+A bootstrap method to find your version of onsgmls.
 
 =item B<dochec($)>
 
@@ -176,10 +197,11 @@ None.
 	0.13 MV website construction
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
+	0.16 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Lang::Docb::Params(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Lang::Docb::Params(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -8,9 +8,10 @@ use Meta::Lang::Xql::Query qw();
 use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 use Meta::Class::MethodMaker qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub BEGIN();
@@ -45,7 +46,7 @@ sub insert($$$) {
 	my($self,$name,$xql)=@_;
 	my($query);
 	if($self->get_map_name()->has_a($name)) {
-		Meta::Utils::System::die("name [".$name."] already exists");
+		throw Meta::Error::Simple("name [".$name."] already exists");
 	}
 	if($self->get_map_xql()->has_a($xql)) {
 		$query=$self->get_map_xql()->get($xql);
@@ -132,7 +133,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cache.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -228,10 +229,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Ds::Map(3), Meta::Lang::Xql::Query(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Class::MethodMaker(3), Meta::Ds::Map(3), Meta::Lang::Xql::Query(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -7,7 +7,7 @@ use Meta::Info::Enum qw();
 use Meta::Xml::Parsers::Collector qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Xml::Parsers::Collector);
 
 #sub new($);
@@ -20,13 +20,13 @@ $VERSION="0.00";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
-	my($self)=Meta::Xml::Parsers::Collector::new($clas);
+	my($class)=@_;
+	my($self)=Meta::Xml::Parsers::Collector::new($class);
 	$self->setHandlers(
 		'Start'=>\&handle_start,
 		'End'=>\&handle_end,
 	);
-	#bless($self,$clas);
+	#bless($self,$class);
 	$self->{TEMP_ENUM}=defined;
 	return($self);
 }
@@ -114,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Enum.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -188,6 +188,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
@@ -195,4 +196,4 @@ Meta::Info::Enum(3), Meta::Xml::Parsers::Collector(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-fix the constructor here or else explain in the code why is it so weird. Or maybe that this is the best way to do the constructor and we should change all the others to match ?!?

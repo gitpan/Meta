@@ -8,9 +8,10 @@ use File::Copy qw();
 use File::Basename qw();
 use File::Path qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub copy($$);
@@ -26,11 +27,9 @@ $VERSION="0.31";
 sub copy($$) {
 	my($fil1,$fil2)=@_;
 	my($verb)=0;
-	if($verb) {
-		Meta::Utils::Output::print("copying [".$fil1."] to [".$fil2."]\n");
-	}
+	Meta::Utils::Output::verbose($verb,"copying [".$fil1."] to [".$fil2."]\n");
 	if(!File::Copy::copy($fil1,$fil2)) {
-		Meta::Utils::System::die("unable to copy [".$fil1."] to [".$fil2."]");
+		throw Meta::Error::Simple("unable to copy [".$fil1."] to [".$fil2."]");
 	}
 	return(1);
 }
@@ -38,11 +37,9 @@ sub copy($$) {
 sub syscopy($$) {
 	my($fil1,$fil2)=@_;
 	my($verb)=0;
-	if($verb) {
-		Meta::Utils::Output::print("copying [".$fil1."] to [".$fil2."]\n");
-	}
+	Meta::Utils::Output::verbose($verb,"copying [".$fil1."] to [".$fil2."]\n");
 	if(!File::Copy::syscopy($fil1,$fil2)) {
-		Meta::Utils::System::die("unable to copy [".$fil1."] to [".$fil2."]");
+		throw Meta::Error::Simple("unable to copy [".$fil1."] to [".$fil2."]");
 	}
 	return(1);
 }
@@ -91,9 +88,7 @@ sub syscopy_mkdir($$) {
 	my($dire)=File::Basename::dirname($fil2);
 	if(!(-e $dire)) {
 		my($verb)=0;
-		if($verb) {
-			Meta::Utils::Output::print("making directory [".$dire."]\n");
-		}
+		Meta::Utils::Output::verbose($verb,"making directory [".$dire."]\n");
 		if(!File::Path::mkpath($dire)) {
 			return(0);
 		}
@@ -139,7 +134,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Copy.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -249,10 +244,11 @@ None.
 	0.29 MV web site automation
 	0.30 MV SEE ALSO section fix
 	0.31 MV web site development
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), File::Copy(3), File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), strict(3)
+Error(3), File::Basename(3), File::Copy(3), File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

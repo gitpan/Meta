@@ -18,11 +18,11 @@ $opts->analyze(\@ARGV);
 
 my($graph)=Meta::Visualization::Graph->new(width=>8.5,height=>11);
 my($sour)=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,0);
-while(my($keyx,$valx)=each(%$sour)) {
-	if(Meta::Lang::Perl::Perl::is_lib($keyx)) {
-		my($module)=Meta::Lang::Perl::Perl::file_to_module($keyx);
+while(my($key,$val)=each(%$sour)) {
+	if(Meta::Lang::Perl::Perl::is_lib($key)) {
+		my($module)=Meta::Lang::Perl::Perl::file_to_module($key);
 		$graph->add_node($module);
-		my($isa)=Meta::Lang::Perl::Perl::get_isa($keyx);
+		my($isa)=Meta::Lang::Perl::Perl::get_isa($key);
 		for(my($i)=0;$i<=$#$isa;$i++) {
 			my($curr)=$isa->[$i];
 			#Meta::Utils::Output::print("curr is [".$curr."]\n");
@@ -37,7 +37,7 @@ $graph->as_type($type,$outfile);
 #Meta::Visualization::Graph::as_type($g,$type,$outfile);
 #$g->as_png($outfile);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -70,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_graph.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -173,6 +173,7 @@ None.
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
 	0.02 MV finish papers
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

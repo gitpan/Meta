@@ -16,7 +16,7 @@ use Meta::Development::Module qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.48";
+$VERSION="0.49";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -29,14 +29,14 @@ $VERSION="0.48";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Xml::Parsers::Base->new();
 	$self->setHandlers(
 		"Start"=>\&handle_start,
 		"End"=>\&handle_end,
 		"Char"=>\&handle_char,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -271,7 +271,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.48
+	VERSION: 0.49
 
 =head1 SYNOPSIS
 
@@ -406,6 +406,7 @@ None.
 	0.46 MV download scripts
 	0.47 MV web site development
 	0.48 MV teachers project
+	0.49 MV md5 issues
 
 =head1 SEE ALSO
 

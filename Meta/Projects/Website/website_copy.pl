@@ -13,63 +13,56 @@ use Meta::Utils::File::Prop qw();
 use Meta::Lang::Perl::Perl qw();
 use Meta::Development::Scripts qw();
 use XML::XPath qw();
+use Meta::Tool::Perl qw();
 
 my($modules,$targ,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_modu("modules","XML modules file to copy","xmlx/modules/website.xml",\$modules);
-$opts->def_dire("directory","directory to copy to","/local/tools/htdocs",\$targ);
+$opts->def_dire("directory","directory to copy to","/var/www/html",\$targ);
 $opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($par)=XML::Parser->new();
 if(!defined($par)) {
-	Meta::Utils::System::die("unable to create XML::Parser");
+	throw Meta::Error::Simple("unable to create XML::Parser");
 }
 my($parser)=XML::XPath::XMLParser->new(filename=>$modules->get_abs_path(),parser=>$par);
 if(!defined($parser)) {
-	Meta::Utils::System::die("unable to create XML::XPath::XMLParser");
+	throw Meta::Error::Simple("unable to create XML::XPath::XMLParser");
 }
 my($root_node)=$parser->parse();
 my($set)=Meta::Ds::Oset->new();
 my($nodes)=$root_node->find('/modules/module/name');
 foreach my $node ($nodes->get_nodelist()) {
 	my($name)=$node->getChildNode(1)->getValue();
-	if($verbose) {
-		Meta::Utils::Output::print("inserting [".$name."]\n");
-	}
+	Meta::Utils::Output::verbose($verbose,"inserting [".$name."]\n");
 	$set->insert($name);
 }
 
-if($verbose) {
-	Meta::Utils::Output::print("reading dependendencies...\n");
-}
+Meta::Utils::Output::verbose($verbose,"reading dependendencies...\n");
 my($graph)=Meta::Baseline::Cook::read_deps_set($set);
 my($output_set)=Meta::Ds::Oset->new();
-if($verbose) {
-	Meta::Utils::Output::print("getting span...\n");
-}
+Meta::Utils::Output::verbose($verbose,"getting span...\n");
 $graph->all_ou_new($set,$output_set);
 
 for(my($i)=0;$i<$output_set->size();$i++) {
 	my($curr)=$output_set->elem($i);
 	if(Meta::Utils::Utils::is_relative($curr)) {
-		if($verbose) {
-			Meta::Utils::Output::print("working on [".$curr."]\n");
-		}
+		Meta::Utils::Output::verbose($verbose,"working on [".$curr."]\n");
 		my($real)=Meta::Baseline::Aegis::which($curr);
 		my($outf)=$targ."/".$curr;
 		Meta::Utils::File::Copy::syscopy_mkdir($real,$outf);
 		#Meta::Utils::File::Prop::same_mode($real,$outf);
 		if(Meta::Lang::Perl::Perl::is_bin($curr)) {
-			Meta::Development::Scripts::set_runline($outf,"#!/local/tools/bin/perl -I".$targ."/perl/lib");
+			Meta::Development::Scripts::set_runline($outf,"#!".$Meta::Tool::Perl::tool_path." -I".$targ."/perl/lib");
 			Meta::Utils::File::Prop::chmod_x($outf);
 		}
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -102,7 +95,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: website_copy.pl
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -161,7 +154,7 @@ show history and exit
 
 XML modules file to copy
 
-=item B<directory> (type: dire, default: /local/tools/htdocs)
+=item B<directory> (type: dire, default: /var/www/html)
 
 directory to copy to
 
@@ -191,10 +184,11 @@ None.
 	0.02 MV move tests to modules
 	0.03 MV web site development
 	0.04 MV weblog issues
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Development::Scripts(3), Meta::Ds::Oset(3), Meta::Lang::Perl::Perl(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Prop(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), XML::XPath(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Development::Scripts(3), Meta::Ds::Oset(3), Meta::Lang::Perl::Perl(3), Meta::Tool::Perl(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Prop(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), XML::XPath(3), strict(3)
 
 =head1 TODO
 

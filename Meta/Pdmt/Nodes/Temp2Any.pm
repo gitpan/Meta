@@ -5,7 +5,7 @@ package Meta::Pdmt::Nodes::Temp2Any;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub build($$);
@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Temp2Any.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -108,6 +108,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV more pdmt stuff
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

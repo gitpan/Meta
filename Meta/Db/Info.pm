@@ -5,7 +5,7 @@ package Meta::Db::Info;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub new($);
@@ -20,11 +20,11 @@ $VERSION="0.10";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
 	$self->{TYPE}=defined;
 	$self->{NAME}=defined;
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -34,8 +34,8 @@ sub get_type($) {
 }
 
 sub set_type($$) {
-	my($self,$valx)=@_;
-	$self->{TYPE}=$valx;
+	my($self,$val)=@_;
+	$self->{TYPE}=$val;
 }
 
 sub get_name($) {
@@ -44,8 +44,8 @@ sub get_name($) {
 }
 
 sub set_name($$) {
-	my($self,$valx)=@_;
-	$self->{NAME}=$valx;
+	my($self,$val)=@_;
+	$self->{NAME}=$val;
 }
 
 sub is_postgres($) {
@@ -96,7 +96,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Info.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -186,6 +186,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 

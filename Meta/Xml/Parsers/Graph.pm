@@ -7,7 +7,7 @@ use Meta::Ds::Graph qw();
 use XML::Parser::Expat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(XML::Parser::Expat);
 
 #sub new($);
@@ -20,17 +20,17 @@ $VERSION="0.11";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=XML::Parser::Expat->new();
 	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
+		throw Meta::Error::Simple("didn't get a parser");
 	}
 	$self->setHandlers(
 		"Start"=>\&handle_start,
 		"End"=>\&handle_end,
 		"Char"=>\&handle_char,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -110,7 +110,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -202,6 +202,7 @@ None.
 	0.09 MV website construction
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

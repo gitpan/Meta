@@ -6,15 +6,15 @@ use strict qw(vars refs subs);
 use Meta::Ds::Hash qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw(Meta::Ds::Hash);
 
 #sub new($);
 #sub insert($$$);
 #sub remove($$);
 #sub elem($$);
-#sub keyx($$);
-#sub valx($$);
+#sub key($$);
+#sub val($$);
 #sub print($$);
 #sub get_elem_number($$);
 #sub TEST($);
@@ -22,9 +22,9 @@ $VERSION="0.14";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Hash->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{KEYX}=[];
 	$self->{VALX}=[];
 	$self->{OHASH}={};
@@ -32,16 +32,16 @@ sub new($) {
 }
 
 sub insert($$$) {
-	my($self,$keyx,$valx)=@_;
+	my($self,$key,$val)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Ochash");
-	if($self->Meta::Ds::Hash::insert($keyx,$valx)) {
+	if($self->Meta::Ds::Hash::insert($key,$val)) {
 		my($list)=$self->{KEYX};
-		my($num1)=push(@$list,$keyx);
+		my($num1)=push(@$list,$key);
 		my($tsil)=$self->{VALX};
-		my($num2)=push(@$tsil,$valx);
-		$valx->set_container($self);
+		my($num2)=push(@$tsil,$val);
+		$val->set_container($self);
 		my($numb)=$num1-1;#arbitrary
-		$self->{OHASH}->{$keyx}=$numb;
+		$self->{OHASH}->{$key}=$numb;
 		return(1);
 	} else {
 		return(0);
@@ -65,12 +65,12 @@ sub elem($$) {
 	return($self->{VALX}->[$elem]);
 }
 
-sub keyx($$) {
+sub key($$) {
 	my($self,$elem)=@_;
 	return($self->{KEYX}->[$elem]);
 }
 
-sub valx($$) {
+sub val($$) {
 	my($self,$elem)=@_;
 	return($self->{VALX}->[$elem]);
 }
@@ -80,10 +80,10 @@ sub print($$) {
 	my($list)=$self->{LIST};
 	my($size)=$self->size();
 	for(my($i)=0;$i<$size;$i++) {
-		my($keyx)=$self->keyx($i);
-		my($valx)=$self->valx($i);
-		print $file "[".$keyx."]\n";
-		$valx->print($file);
+		my($key)=$self->key($i);
+		my($val)=$self->val($i);
+		print $file "[".$key."]\n";
+		$val->print($file);
 	}
 }
 
@@ -130,7 +130,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ochash.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -149,8 +149,8 @@ to retrieve its parent.
 	insert($$$)
 	remove($$)
 	elem($$)
-	keyx($$)
-	valx($$)
+	key($$)
+	val($$)
 	print($$)
 	get_elem_number($$)
 	TEST($)
@@ -179,11 +179,11 @@ list if it was successful.
 
 This returns a specific element in the hash.
 
-=item B<keyx($$)>
+=item B<key($$)>
 
 This returns the key with the specified number.
 
-=item B<valx($$)>
+=item B<val($$)>
 
 This returns the value with the specified number.
 
@@ -233,6 +233,7 @@ None.
 	0.12 MV website construction
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -5,6 +5,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Projects::Dbman::Section qw();
 use Meta::Projects::Dbman::Page qw();
+use Error qw(:try);
 
 my($file,$section);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -17,16 +18,13 @@ $opts->analyze(\@ARGV);
 #check that the section is ok
 my($section)=Meta::Projects::Dbman::Section->search("name",$section);
 if(!(defined($section))) {
-	Meta::Utils::System::die("section [".$section."] does not exist");
+	throw Meta::Error::Simple("section [".$section."] does not exist");
 }
 #create the new page row and commit it
 my($page)=Meta::Projects::Dbman::Page->create({});
 $page->section($section);
 
-#check the commit for errors
-my($scod)=1;
-
-Meta::Utils::System::exit($scod);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +57,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbman_install.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -161,10 +159,11 @@ None.
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
 	0.06 MV move tests to modules
+	0.07 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Projects::Dbman::Page(3), Meta::Projects::Dbman::Section(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Projects::Dbman::Page(3), Meta::Projects::Dbman::Section(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -7,7 +7,7 @@ use Meta::Utils::File::Remove qw();
 use File::Find qw();
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.25";
 @ISA=qw();
 
 #sub init($$$);
@@ -30,7 +30,7 @@ sub doit() {
 	my($dirx)=$File::Find::dir;
 	if(-d $curr) {
 		if(Meta::Utils::File::Dir::empty($curr)) {
-			Meta::Utils::File::Remove::rmdir_demo_verb($curr,$curr,$demo,$verb);
+			Meta::Utils::File::Remove::rmdir($curr);
 			$$done++;
 		}
 	}
@@ -81,7 +81,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Purge.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -187,6 +187,7 @@ None.
 	0.22 MV website construction
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
+	0.25 MV md5 issues
 
 =head1 SEE ALSO
 

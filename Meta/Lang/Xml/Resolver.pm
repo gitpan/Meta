@@ -6,10 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 use Data::Dumper qw();
 use Meta::Baseline::Aegis qw();
-use IO::File qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub new($);
@@ -19,16 +19,16 @@ $VERSION="0.00";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	CORE::bless($self,$clas);
+	CORE::bless($self,$class);
 	return($self);
 }
 
 sub resolve_entity($$) {
 	my($self,$hash)=@_;
-#	Meta::Utils::Output::print("self is [".$self."]");
-#	Meta::Utils::Output::print("hash is [".$hash."]");
+	Meta::Utils::Output::print("self is [".$self."]");
+	Meta::Utils::Output::print("hash is [".$hash."]");
 #	print Data::Dumper::Dumper($hash);
 #	print Data::Dumper::Dumper($self);
 	my($SystemId)=$hash->{"SystemId"};
@@ -36,7 +36,7 @@ sub resolve_entity($$) {
 	my($resolved)=Meta::Baseline::Aegis::which($full);
 #	The following line does not work (not yet imlemented).
 #	return(Source=>{SystemId=>$resolved});
-	my($io)=IO::File->new($resolved,"r");
+	my($io)=Meta::IO::File->new_reader($resolved);
 	return(Source=>{ByteStream=>$io});
 #	return(undef);
 }
@@ -79,7 +79,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Resolver.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -138,10 +138,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests into modules
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Data::Dumper(3), IO::File(3), Meta::Baseline::Aegis(3), Meta::Utils::Output(3), strict(3)
+Data::Dumper(3), Meta::Baseline::Aegis(3), Meta::IO::File(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

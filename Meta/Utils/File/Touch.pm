@@ -4,9 +4,10 @@ package Meta::Utils::File::Touch;
 
 use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub date($$$$);
@@ -17,13 +18,11 @@ $VERSION="0.25";
 
 sub date($$$$) {
 	my($file,$time,$demo,$verb)=@_;
-	if($verb) {
-		Meta::Utils::Output::print("touching file [".$file."]\n");
-	}
+	Meta::Utils::Output::verbose($verb,"touching file [".$file."]\n");
 	if(!$demo) {
 		my($atime,$mtime)=(stat($file))[8,9];
 		if(!utime($atime,$time,$file)) {
-			Meta::Utils::System::die("cannot utime [".$file."]");
+			throw Meta::Error::Simple("cannot utime [".$file."]");
 			return(0);
 		}
 	}
@@ -74,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Touch.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -165,10 +164,11 @@ None.
 	0.23 MV website construction
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
+	0.26 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Output(3), strict(3)
+Error(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -5,31 +5,30 @@ package Meta::Ds::String;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.27";
 @ISA=qw();
 
 #sub new($);
 #sub new_stri($);
 #sub get_text($);
 #sub set_text($$);
-#sub print($$);
 #sub cmp($$);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{TEXT}=defined;
 	return($self);
 }
 
 sub new_stri($$) {
-	my($clas,$text)=@_;
+	my($class,$text)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{TEXT}=$text;
 	return($self);
 }
@@ -42,11 +41,6 @@ sub get_text($) {
 sub set_text($$) {
 	my($self,$text)=@_;
 	$self->{TEXT}=$text;
-}
-
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "string text is [".$self->get_text()."]\n";
 }
 
 sub cmp($$) {
@@ -92,7 +86,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: String.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -111,7 +105,6 @@ This is a library to let you create a set like data structure.
 	new_stri($)
 	get_text($)
 	set_text($$)
-	print($$)
 	cmp($$)
 	TEST($)
 
@@ -135,10 +128,6 @@ This returns the text of the current string.
 =item B<set_text($$)>
 
 This will set the text of the current string.
-
-=item B<print($$)>
-
-This will print the current string to the specified file.
 
 =item B<cmp($$)>
 
@@ -194,6 +183,7 @@ None.
 	0.24 MV website construction
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 

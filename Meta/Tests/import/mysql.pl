@@ -30,7 +30,7 @@ my($mysql_pass)=$connection->get_password();
 
 my($db)=DBI->connect($dsnx,$mysql_user,$mysql_pass);
 if(!$db) {
-	Meta::Utils::System::die("error in connect [".$DBI::errstr."]");
+	throw Meta::Error::Simple("error in connect [".$DBI::errstr."]");
 }
 my($ref)=$db->selectall_arrayref("show databases");
 for(my($i)=0;$i<=$#$ref;$i++) {
@@ -38,12 +38,12 @@ for(my($i)=0;$i<=$#$ref;$i++) {
 }
 my($res)=$db->disconnect();
 if(!$res) {
-	Meta::Utils::System::die("error in disconnect");
+	throw Meta::Error::Simple("error in disconnect");
 }
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -76,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: mysql.pl
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.23
 
 =head1 SYNOPSIS
 
@@ -166,6 +166,7 @@ None.
 	0.20 MV SEE ALSO section fix
 	0.21 MV move tests to modules
 	0.22 MV teachers project
+	0.23 MV md5 issues
 
 =head1 SEE ALSO
 

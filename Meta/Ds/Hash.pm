@@ -3,10 +3,12 @@
 package Meta::Ds::Hash;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
+use Meta::IO::File qw();
+use Meta::Error::Simple qw();
+use Meta::Error::NoSuchElement qw();
 
 our($VERSION,@ISA);
-$VERSION="0.40";
+$VERSION="0.41";
 @ISA=qw();
 
 #sub new($);
@@ -17,77 +19,82 @@ $VERSION="0.40";
 #sub size($);
 #sub has($$);
 #sub hasnt($$);
-#sub check_elem($$);
+#sub check_has($$);
+#sub check_hasnt($$);
 #sub get($$);
-#sub print($$);
-#sub read($$);
-#sub write($$);
+#sub load($$);
+#sub save($$);
 #sub clear($);
+#sub filter($$);
+#sub foreach($$);
+#sub add_hash($$);
+#sub remove_hash($$);
+#sub add_key_prefix($$);
+#sub internal_hash($);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{HASH}={};
 	$self->{SIZE}=0;
 	return($self);
 }
 
 sub insert($$$) {
-	my($self,$keyx,$valx)=@_;
+	my($self,$key,$val)=@_;
 #	Meta::Utils::Arg::check_arg_num(\@_,3);
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
-#	Meta::Utils::Arg::check_arg($keyx,"ANY");
-#	Meta::Utils::Arg::check_arg($valx,"ANY");
-	if($self->has($keyx)) {
-		$self->overwrite($keyx,$valx);
+#	Meta::Utils::Arg::check_arg($key,"ANY");
+#	Meta::Utils::Arg::check_arg($val,"ANY");
+	if($self->has($key)) {
+		$self->overwrite($key,$val);
 		return(0);
 	} else {
-		$self->put($keyx,$valx);
+		$self->put($key,$val);
 		return(1);
 	}
 }
 
 sub put($$$) {
-	my($self,$keyx,$valx)=@_;
+	my($self,$key,$val)=@_;
 #	Meta::Utils::Arg::check_arg_num(\@_,3);
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
-#	Meta::Utils::Arg::check_arg($keyx,"ANY");
-#	Meta::Utils::Arg::check_arg($valx,"ANY");
+#	Meta::Utils::Arg::check_arg($key,"ANY");
+#	Meta::Utils::Arg::check_arg($val,"ANY");
 	my($hash)=$self->{HASH};
-	if(exists($hash->{$keyx})) {
-		Meta::Utils::System::die("already have element [".$keyx."]");
+	if(exists($hash->{$key})) {
+		throw Meta::Error::Simple("already have element [".$key."]");
 	}
-	$hash->{$keyx}=$valx;
+	$hash->{$key}=$val;
 	$self->{SIZE}++;
 }
 
 sub overwrite($$$) {
-	my($self,$keyx,$valx)=@_;
+	my($self,$key,$val)=@_;
 #	Meta::Utils::Arg::check_arg_num(\@_,3);
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
-#	Meta::Utils::Arg::check_arg($keyx,"ANY");
-#	Meta::Utils::Arg::check_arg($valx,"ANY");
+#	Meta::Utils::Arg::check_arg($key,"ANY");
+#	Meta::Utils::Arg::check_arg($val,"ANY");
 	my($hash)=$self->{HASH};
-	if(!exists($hash->{$keyx})) {
-		Meta::Utils::System::die("dont have element [".$keyx."]");
+	if(!exists($hash->{$key})) {
+		throw Meta::Error::Simple("dont have element [".$key."]");
 	}
-	$hash->{$keyx}=$valx;
+	$hash->{$key}=$val;
 }
 
 sub remove($$) {
-	my($self,$keyx)=@_;
+	my($self,$key)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
 	my($hash)=$self->{HASH};
-	if(exists($hash->{$keyx})) {
-		delete($hash->{$keyx});
+	if($self->has($key)) {
+		delete($hash->{$key});
 		$self->{SIZE}--;
-		return(1);
 	} else {
-		return(0);
+		throw Meta::Error::Simple("unable to remove element [".$key."] from hash");
 	}
 }
 
@@ -98,10 +105,10 @@ sub size($) {
 }
 
 sub has($$) {
-	my($self,$keyx)=@_;
+	my($self,$key)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
 	my($hash)=$self->{HASH};
-	if(exists($hash->{$keyx})) {
+	if(exists($hash->{$key})) {
 		return(1);
 	} else {
 		return(0);
@@ -109,59 +116,53 @@ sub has($$) {
 }
 
 sub hasnt($$) {
-	my($self,$keyx)=@_;
-	return(!$self->has($keyx));
+	my($self,$key)=@_;
+	return(!$self->has($key));
 }
 
-sub check_elem($$) {
-	my($self,$keyx)=@_;
-	if(!($self->has($keyx))) {
-		Meta::Utils::System::die("elem [".$keyx."] is not a member of the hash");
+sub check_has($$) {
+	my($self,$key)=@_;
+	if($self->hasnt($key)) {
+		throw Meta::Error::Simple("hash doesnt have key [".$key."]");
+	}
+}
+
+sub check_hasnt($$) {
+	my($self,$key)=@_;
+	if($self->has($key)) {
+		throw Meta::Error::Simple("hash has key [".$key."]");
 	}
 }
 
 sub get($$) {
-	my($self,$keyx)=@_;
-	if(!$self->has($keyx)) {
-		Meta::Utils::System::die("I dont have an elem [".$keyx."]");
+	my($self,$key)=@_;
+	if(!$self->has($key)) {
+		throw Meta::Error::NoSuchElement("I dont have an elem [".$key."]");
 	}
-	return($self->{HASH}->{$keyx});
+	return($self->{HASH}->{$key});
 }
 
-sub print($$) {
+sub load($$) {
 	my($self,$file)=@_;
-#	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
-#	Meta::Utils::Arg::check_arg($file,"ANY");
-	my($hash)=$self->{HASH};
-	while(my($keyx,$valx)=each(%$hash)) {
-		print $file "[".$keyx."]\n";
-		$valx->print($file);
-	}
-}
-
-sub read($$) {
-	my($self,$file)=@_;
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line)=0;
-	while($line=<FILE> || 0) {
+	my($io)=Meta::IO::File->new_reader($file);
+	while(!$io->eof()) {
+		my($line)=$io->getline();
 		chop($line);
-		my(@fiel)=split(" ",$line);
-		if($#fiel!=1) {
-			Meta::Utils::System::die("number of fields is not 1 in line [".$line."]");
-		}
+		my(@fiel)=split(' ',$line);
+		Meta::Develop::Assert::assert_eq($#fiel+1,2);
 		$self->insert($fiel[0],$fiel[1]);
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 }
 
-sub write($$) {
+sub save($$) {
 	my($self,$file)=@_;
-	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
+	my($io)=Meta::IO::File->new_writer($file);
 	my($hash)=$self->{HASH};
-	while(my($keyx,$valx)=each(%$hash)) {
-		print FILE $keyx." ".$valx."\n";
+	while(my($key,$val)=each(%$hash)) {
+		print $io join(' ',$key,$val)."\n";
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 }
 
 sub clear($) {
@@ -170,8 +171,67 @@ sub clear($) {
 	$self->{SIZE}=0;
 }
 
+sub filter($$) {
+	my($self,$code)=@_;
+	my($ret)=Meta::Ds::Hash->new();
+	my($hash)=$self->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		try {
+			&$code($key,$val);
+			$ret->insert($key,$val);
+		}
+	}
+	return($ret);
+}
+
+sub foreach($$) {
+	my($self,$code)=@_;
+	my($hash)=$self->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		&$code($key,$val);
+	}
+}
+
+sub add_hash($$) {
+	my($self,$hash)=@_;
+	my($hash)=$hash->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		$self->insert($key,$val);
+	}
+}
+
+sub remove_hash($$) {
+	my($self,$hash)=@_;
+	my($hash)=$hash->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		# we do not care if the elements are not in the hash
+		try {
+			$self->remove($key);
+		}
+	}
+}
+
+sub add_key_prefix($$) {
+	my($self,$pref)=@_;
+	my($hash)=$self->{HASH};
+	my($other)=Meta::Ds::Hash->new();#FIXME this needs to be a clone of the current object
+	while(my($key,$val)=each(%$hash)) {
+		$other->insert($pref.$key,$val);
+	}
+	return($other);
+}
+
+sub internal_hash($) {
+	my($self)=@_;
+	return($self->{HASH});
+}
+
 sub TEST($) {
 	my($context)=@_;
+	my($hash)=Meta::Ds::Hash->new();
+	$hash->insert("mark","veltzer");
+	$hash->insert("linus","torvalds");
+	Meta::Utils::Output::dump($hash);
 	return(1);
 }
 
@@ -208,18 +268,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Hash.pm
 	PROJECT: meta
-	VERSION: 0.40
+	VERSION: 0.41
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Ds::Hash qw();
+	use Error qw(:try);
 	my($hash)=Meta::Ds::Hash->new();
 	$hash->insert("mark","veltzer");
 	$hash->insert("linus","torvals");
 	$hash->remove("mark");
 	if($hash->has("mark")) {
-		Meta::Utils::System::die("error");
+		throw Meta::Error::Simple("error");
 	}
 
 =head1 DESCRIPTION
@@ -242,12 +303,18 @@ so it effectivly acts as a set.
 	size($)
 	has($$)
 	hasnt($$)
-	check_elem($$)
+	check_has($$)
+	check_hasnt($$)
 	get($$)
-	print($$)
-	read($$)
-	write($$)
+	load($$)
+	save($$)
 	clear($)
+	filter($$)
+	foreach($$)
+	add_hash($$)
+	remove_hash($$)
+	add_key_prefix($$)
+	internal_hash($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -291,7 +358,8 @@ Remove an element from the hash.
 This receives:
 0. Hash object.
 1. Element to remove.
-This returns whether the value was actually removed.
+The method will throw an exception if the element does not exist
+in the current hash.
 
 =item B<size($)>
 
@@ -315,27 +383,29 @@ This receives:
 0. Hash object.
 1. Element to check for.
 
-=item B<check_elem($$)>
+=item B<check_has($$)>
 
-This method will verify that a certain element is indeed a member of the hash.
-If it is not - the method will raise an exception.
+This method will throw an exception if the key passed to it does not
+exist in the hash.
+The method receives:
+0. Hash object.
+1. Element to check for.
+
+=item B<check_hasnt($$)>
+
+This method does the exact opposite of check_has.
 
 =item B<get($$)>
 
 This returns a certain element from the hash.
 
-=item B<print($$)>
-
-This will print the hash while running the print routine on each of the sub
-elemes.
-
-=item B<read($$)>
+=item B<load($$)>
 
 This will read a hash from a file assuming that file has an entry for the
 hash as two string separated by a space on each line until the end of the
 file.
 
-=item B<write($$)>
+=item B<save($$)>
 
 This will write a hash table as in the read method. See that methods
 documentation for details.
@@ -344,9 +414,51 @@ documentation for details.
 
 This method will clear all elements in the hash. It is fast.
 
+=item B<filter($$)>
+
+This method receives a hash table and some code reference.
+The method will return a hash which has all the elements in the
+original hash for which the code did not throw any exceptions.
+
+=item B<foreach($$)>
+
+This method will iterate over all elements of the hash and will
+run a user given function on everyone of them. The function should
+receive two inputs: a key and a value. The function can do just about
+anything you like.
+
+=item B<add_hash($$)>
+
+This method adds a hash to the current one by iterating over
+it's elements and adding them one by one.
+
+=item B<remove_hash($$)>
+
+This method removes a give hash from the current one.
+It does so by iterating over the given hashs elements and removing
+them one by one from the current hash.
+This method receives:
+0. Hash object.
+1. Hash object which contains elements to be removed.
+
+=item B<add_key_prefix($$)>
+
+This method will return a new hash which will be exactly like the original
+except every key will be prefixed by the prefix you give.
+
+=item B<internal_hash($)>
+
+This method will give you the internal hash that this data structure uses.
+Be careful and use it read only or you risk rendering this data structure
+unusable.
+
 =item B<TEST($)>
 
 Test suite for this module.
+This test suite is can be called directly to test very basic functionality of
+this class or by a higher level test code to test the entire functionality of
+a class library this class is provided with.
+Currently this test only creates a small hash and dumps it.
 
 =back
 
@@ -408,10 +520,11 @@ None.
 	0.38 MV move tests to modules
 	0.39 MV weblog issues
 	0.40 MV teachers project
+	0.41 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Meta::Error::NoSuchElement(3), Meta::Error::Simple(3), Meta::IO::File(3), strict(3)
 
 =head1 TODO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Oset qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Meta::Ds::Oset);
 
 #sub TEST($);
@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Handlers.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -108,6 +108,7 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV teachers project
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -4,9 +4,10 @@ package Meta::Utils::Pc;
 
 use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
+use Meta::Utils::File::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub clean($);
@@ -115,9 +116,7 @@ sub make_perl_inte($$$) {
 sub writ_perl_inte($$$$) {
 	my($comm,$file,$scri,$curr)=@_;
 	my($data)=make_perl_inte($comm,$file,$curr);
-	open(FILE,"> $scri") || Meta::Utils::System::die("cannot open [".$scri."]");
-	print FILE $data;
-	close(FILE) || Meta::Utils::System::die("cannot close [".$scri."]");
+	Meta::Utils::File::File::save($scri,$data);
 }
 
 sub get_temp_dir() {
@@ -170,7 +169,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pc.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -298,10 +297,11 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Output(3), strict(3)
+Meta::Utils::File::File(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

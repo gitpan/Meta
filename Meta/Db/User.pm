@@ -7,7 +7,7 @@ use Meta::Ds::Connected qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.36";
+$VERSION="0.37";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -110,7 +110,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: User.pm
 	PROJECT: meta
-	VERSION: 0.36
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -234,6 +234,7 @@ None.
 	0.34 MV web site development
 	0.35 MV web site automation
 	0.36 MV SEE ALSO section fix
+	0.37 MV md5 issues
 
 =head1 SEE ALSO
 

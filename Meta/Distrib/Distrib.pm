@@ -12,7 +12,7 @@ use Meta::Utils::Net::Md qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub act($$$$$$$$$);
@@ -42,10 +42,7 @@ sub act($$$$$$$$$) {
 			if($verb) {
 				Meta::Utils::Output::print("doing aeb of [".join(",",@list)."]\n");
 			}
-			my($code)=Meta::Utils::System::system_nodie("aegis",["-Build",@list]);
-			if($code) {
-				Meta::Utils::System::die("build failed for target and so I cannot distribute");
-			}
+			Meta::Utils::System::system("aegis",["-Build",@list]);
 		}
 	}
 	if($md) {
@@ -78,15 +75,13 @@ sub act($$$$$$$$$) {
 			my($curr_mach_name)=$curr_mach->get_name();
 			my($curr_mach_user)=$curr_mach->get_user();
 			my($curr_mach_pass)=$curr_mach->get_password();
-			if($verb) {
-				Meta::Utils::Output::print("distributing to machine [".$curr_mach_name."]\n");
-			}
+			Meta::Utils::Output::verbose($verb,"distributing to machine [".$curr_mach_name."]\n");
 			for(my($j)=0;$j<$o_files->size();$j++) {
 				my($curr_file)=$o_files->getx($j);
 				my($curr_file_phys)=$curr_file->get_phys();
 				my($curr_file_targ)=$curr_file->get_targ();
 				my($curr_file_perm)=$curr_file->get_perm();
-				my($code)=Meta::Utils::Net::Cp::doit(
+				Meta::Utils::Net::Cp::doit(
 					$verb,
 					$demo,
 					$curr_mach_name,
@@ -96,9 +91,6 @@ sub act($$$$$$$$$) {
 					$curr_file_targ,
 					$curr_file_perm,
 				);
-				if(!$code) {
-					Meta::Utils::System::die("unable to distribute. data=[".join(",",$verb,$demo,$curr_mach_name,$curr_mach_user,$curr_mach_pass,$curr_file_phys,$curr_file_targ,$curr_file_perm)."]");
-				}
 			}
 		}
 	}
@@ -146,7 +138,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Distrib.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -230,6 +222,7 @@ None.
 	0.25 MV website construction
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 

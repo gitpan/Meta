@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Geo::Pos2d qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Meta::Geo::Pos2d);
 
 #sub BEGIN();
@@ -61,9 +61,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Geo::Pos2d->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -73,11 +73,9 @@ sub cget_x($) {
 }
 
 sub cset_x($$) {
-	my($self,$valx)=@_;
-	if(!exists($hash_horz->{$valx})) {
-		Meta::Utils::System::die("what kind of x position is [".$valx."]");
-	}
-	$self->set_x($hash_horz->{$valx});
+	my($self,$val)=@_;
+	Meta::Development::Assert::assert_true(exists($hash_horz->{$val}),"position not valid");
+	$self->set_x($hash_horz->{$val});
 }
 
 sub cget_y($) {
@@ -86,11 +84,9 @@ sub cget_y($) {
 }
 
 sub cset_y($$) {
-	my($self,$valx)=@_;
-	if(!exists($hash_vert->{$valx})) {
-		Meta::Utils::System::die("what kind of x position is [".$valx."]");
-	}
-	$self->set_y($hash_vert->{$valx});
+	my($self,$val)=@_;
+	Meta::Development::Assert::assert_true(exists($hash_vert->{$val}),"position not valid");
+	$self->set_y($hash_vert->{$val});
 }
 
 sub cprint($$) {
@@ -136,7 +132,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Position.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -243,6 +239,7 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 

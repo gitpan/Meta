@@ -5,26 +5,32 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Tool::Nm qw();
 use Meta::Utils::Output qw();
+use Meta::File::MMagic qw();
 
-my($symbol);
+my($symbol,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_stri("symbol","what symbol should I search for ?",undef,\$symbol);
+$opts->def_bool("verbose","should I be noisy ?",0,\$verbose);
 $opts->set_free_allo(1);
 $opts->set_free_stri("[args]");
 $opts->set_free_mini(1);
 $opts->set_free_noli(1);
 $opts->analyze(\@ARGV);
 
+my($mm)=Meta::File::MMagic->new();
 for(my($i)=0;$i<=$#ARGV;$i++) {
 	my($curr)=$ARGV[$i];
-	my($hash)=Meta::Tool::Nm::read($curr);
-	if(exists($hash->{$symbol})) {
-		Meta::Utils::Output::print("file [".$curr."] contains the symbol\n");
+	Meta::Utils::Output::verbose($verbose,"doing [".$curr."]\n");
+	if($mm->checktype_filename($curr) eq "application/octet-stream") {
+		my($set)=Meta::Tool::Nm::read($curr);
+		if($set->has($symbol)) {
+			Meta::Utils::Output::print("file [".$curr."] contains the symbol\n");
+		}
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -57,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: develop_find_sym.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -113,6 +119,10 @@ show history and exit
 
 what symbol should I search for ?
 
+=item B<verbose> (type: bool, default: 0)
+
+should I be noisy ?
+
 =back
 
 minimum of [1] free arguments required
@@ -132,10 +142,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Tool::Nm(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::File::MMagic(3), Meta::Tool::Nm(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

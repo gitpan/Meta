@@ -38,15 +38,13 @@ $iterator->start();
 
 while(!$iterator->get_over()) {
 	my($curr)=$iterator->get_curr();
-	if($verbose) {
-		Meta::Utils::Output::print("doing [".$curr."]\n");
-	}
+	Meta::Utils::Output::verbose($verbose,"doing [".$curr."]\n");
 	my($curr_x,$curr_y);
 	if($enum->is_selected($method,"magick")) {
 		my($image)=Image::Magick->new();
 		my($ret)=$image->Read($curr);
 		if($ret) {
-			Meta::Utils::System::die("unable to read image [".$curr."]");
+			throw Meta::Error::Simple("unable to read image [".$curr."]");
 		}
 		#$image->Display();
 		($curr_x,$curr_y)=$image->Get('height','width');
@@ -56,9 +54,7 @@ while(!$iterator->get_over()) {
 	}
 	#Meta::Utils::Output::print("x is [".$curr_x."] y is [".$curr_y."]\n");
 	if(($curr_x<$x_size) || ($curr_y<$y_size)) {
-		if($verbose) {
-			Meta::Utils::Output::print("removing [".$curr."]\n");
-		}
+		Meta::Utils::Output::verbose($verbose,"removing [".$curr."]\n");
 		$found++;
 		if(!$demo) {
 			Meta::Utils::File::Remove::rm($curr);
@@ -75,7 +71,7 @@ if($summ) {
 	Meta::Utils::Output::print("removed [".$remove."] images\n");
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -108,7 +104,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_remove_small.pl
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -232,6 +228,7 @@ None.
 	0.12 MV bring movie data
 	0.13 MV finish papers
 	0.14 MV teachers project
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 

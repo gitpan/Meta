@@ -6,103 +6,10 @@ use Meta::Utils::Opts::Opts qw();
 use POSIX qw();
 use File::Basename qw();
 use Meta::Utils::File::File qw();
+use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
-
-sub develop_syst_runx($) {
-	my($comm)=@_;
-	my($text);
-	open(FILE,$comm." |") || Meta::Utils::System::die("unable to run [".$comm."]");
-	my($line);
-	while($line=<FILE> || 0) {
-		$text.=$line;
-	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$comm."]");
-	chop($text);
-	return($text);
-}
-
-sub develop_file_temp() {
-	return(POSIX::tmpnam());
-}
-
-sub develop_aegi_vars($$$) {
-	my($verb,$pprj,$pchn)=@_;
-	my($uid)=POSIX::getuid();
-	my($home)=(POSIX::getpwuid($uid))[7];
-	my($file)=$home."/.aegisrc";
-	my($text);
-	open(FILE,$file) || Meta::Utils::System::die("unable to open [$file]");
-	my($line);
-	while($line=<FILE> || 0) {
-		$text.=$line;
-	}
-	close(FILE) || Meta::Utils::System::die("unable to close [$file]");
-	my(@stat)=split(";",$text);
-	my(%hash);
-	for(my($i)=0;$i<=$#stat;$i++) {
-		my($curr)=$stat[$i];
-		if($verb) {
-			print "curr is [$curr]\n";
-		}
-		if(!($curr=~/^s*$/)) {
-			my($varx,$valx)=($curr=~/^\s*(.*)\s*=\s*(.*)\s*$/);
-			$hash{$varx}=$valx;
-		}
-	}
-	$$pprj=$hash{"default_project_name"};
-	$$pchn=$hash{"default_change_number"};
-	$$pprj=substr($$pprj,1,length($$pprj)-2);
-}
-
-sub develop_aegi_subx($$$$) {
-	my($aesu,$proj,$chan,$para)=@_;
-	my($args)=$aesu." --Project \"".$proj."\" --Change ".$chan." ".$para." |";
-	my($text);
-	open(FILE,$args) || Meta::Utils::System::die("unable to sub [$para]");
-	my($line);
-	while($line=<FILE> || 0) {
-		$text.=$line;
-	}
-	close(FILE) || Meta::Utils::System::die("unable to close file");
-	chop($text);
-	return($text);
-}
-
-sub develop_aegi_chan($$$) {
-	my($aesu,$proj,$chan)=@_;
-	return(develop_aegi_subx($aesu,$proj,$chan,"\\\${Development_Directory}"));
-}
-
-sub develop_aegi_inte($$$) {
-	my($aesu,$proj,$chan)=@_;
-	return(develop_aegi_subx($aesu,$proj,$chan,"\\\${Integration_Directory}"));
-}
-
-sub develop_aegi_base($$$) {
-	my($aesu,$proj,$chan)=@_;
-	return(develop_aegi_subx($aesu,$proj,$chan,"\\\${Baseline}"));
-}
-
-sub develop_aegi_stat($$$) {
-	my($aesu,$proj,$chan)=@_;
-	return(develop_aegi_subx($aesu,$proj,$chan,"\\\${State}"));
-}
-
-sub develop_aegi_sear($$$) {
-	my($aesu,$proj,$chan)=@_;
-	return(develop_aegi_subx($aesu,$proj,$chan,"\\\${Search_Path}"));
-}
-
-sub develop_aegi_inch($$$) {
-	my($aesu,$proj,$chan)=@_;
-	my($stat)=develop_aegi_stat($aesu,$proj,$chan);
-	return(
-		($stat eq "being_developed") ||
-		($stat eq "being_integrated") ||
-		($stat eq "being_reviewed") ||
-		($stat eq "awaiting_integration")
-	);
-}
+use Meta::Ds::Ohash qw();
+use Error qw(:try);
 
 sub develop_path_addx($$$) {
 	my($onex,$twox,$sepa)=@_;
@@ -122,8 +29,8 @@ sub develop_path_addx($$$) {
 }
 
 sub develop_path_mini($$) {
-	my($valx,$sepa)=@_;
-	my(@arra)=split($sepa,$valx);
+	my($val,$sepa)=@_;
+	my(@arra)=split($sepa,$val);
 	my(%hash);
 	my(@narr);
 	for(my($i)=0;$i<=$#arra;$i++) {
@@ -137,51 +44,46 @@ sub develop_path_mini($$) {
 	return($resu);
 }
 
-sub develop_envx_getx($) {
-	my($varx)=@_;
-	if(!exists($ENV{$varx})) {
-#		Meta::Utils::System::die("unable to find [".$varx."] in the envrionment");
-		return(undef);
+sub develop_envx_addx($$$$$) {
+	my($varx,$sepa,$val,$star,$env)=@_;
+	my($curr);
+	if($env->has($varx)) {
+		$curr=$env->get($varx);
 	} else {
-		return($ENV{$varx});
+		try {
+			$curr=Meta::Utils::Env::get($varx);
+		}
+		catch Error with {
+			$curr="";
+		};
 	}
-}
-
-sub develop_envx_setx($$) {
-	my($varx,$valx)=@_;
-	$ENV{$varx}=$valx;
-}
-
-sub develop_envx_addx($$$$) {
-	my($varx,$sepa,$valx,$star)=@_;
-	my($curr)=develop_envx_getx($varx);
 	my($nval);
 	if(defined($curr)) {
 		if($curr eq "") {
-			$nval=$valx;
+			$nval=$val;
 		} else {
 			if($star) {
-				$nval=join($sepa,$valx,$curr);
+				$nval=join($sepa,$val,$curr);
 			} else {
-				$nval=join($sepa,$curr,$valx);
+				$nval=join($sepa,$curr,$val);
 			}
 		}
 	} else {
-		$nval=$valx;
+		$nval=$val;
 	}
 	my($mini)=develop_path_mini($nval,$sepa);
-	develop_envx_setx($varx,$mini);
+	$env->insert($varx,$mini);
 }
 
-sub develop_envx_addx_mult($$$$$) {
-	my($varx,$sepa,$list,$suff,$star)=@_;
-	my(@vals)=split(":",$list);
+sub develop_envx_addx_mult($$$$$$) {
+	my($varx,$sepa,$list,$suff,$star,$env)=@_;
+	my(@vals)=split($sepa,$list);
 	my(@resu);
 	for(my($i)=0;$i<=$#vals;$i++) {
 		push(@resu,$vals[$i].$suff);
 	}
 	my($resx)=join($sepa,@resu);
-	develop_envx_addx($varx,$sepa,$resx,$star);
+	develop_envx_addx($varx,$sepa,$resx,$star,$env);
 }
 
 sub develop_scri_addx($$) {
@@ -205,8 +107,8 @@ $opts->def_path("sgpi","extra path for the sgml path","",\$sgpi);
 $opts->def_stri("bplt","what is the binary platform you are working on","reg.cpp.bin.dbg",\$bplt);
 $opts->def_stri("dplt","what is the dll platform you are working on","reg.cpp.dll.dbg",\$dplt);
 $opts->def_stri("shel","what is your shell","bash2",\$shel);
-$opts->def_bool("tbin","do you want to set PATH for tools",1,\$tbin);
-$opts->def_bool("tldx","do you want to set LD_LIBRARY_PATH for tools",1,\$tldx);
+$opts->def_bool("tbin","do you want to set PATH for tools",0,\$tbin);
+$opts->def_bool("tldx","do you want to set LD_LIBRARY_PATH for tools",0,\$tldx);
 $opts->def_bool("tman","do you want to set MANPATH for tools",1,\$tman);
 $opts->def_bool("tinf","do you want to set INFOPATH for tools",1,\$tinf);
 $opts->def_bool("txml","do you want to set XML_CATALOG_FILES for tools",0,\$txml);
@@ -226,10 +128,10 @@ $opts->def_bool("pyth","do you want to set PYTHONPATH for tools",1,\$pyth);
 $opts->def_bool("base","do you want perl baseline executables settings (this is for libs and bins)",1,\$base);
 $opts->def_bool("cdpa","do you want to set the CDPATH for development",1,\$cdpa);
 $opts->def_bool("cdch","do you want to cd to your change on login",1,\$cdch);
-$opts->def_bool("colo","do you want ls coloring",1,\$colo);
-$opts->def_bool("lsco","do you want ls color aliasing",1,\$lsco);
+$opts->def_bool("colo","do you want ls baseline coloring",0,\$colo);
+$opts->def_bool("lsco","do you want ls standard coloring",0,\$lsco);
 $opts->def_bool("long","do you want --long opt for ls coloring",1,\$long);
-$opts->def_bool("pete","do you want aegis type (Peter) shortcuts (only valid for bash)",1,\$pete);
+$opts->def_bool("pete","do you want aegis type (Peter) shortcuts (only valid for bash)",0,\$pete);
 $opts->def_bool("nprj","do you want to set your AEGIS_PROJECT from your aegis prefs",1,\$nprj);
 $opts->def_bool("nchn","do you want to set your AEGIS_CHANGE from your aegis prefs",1,\$nchn);
 $opts->def_bool("blxx","do you want to set the BL environment variable to point to the baseline",1,\$blxx);
@@ -242,34 +144,25 @@ $opts->def_bool("verb","do you want verbosity",0,\$verb);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-# First lets get the aesub and aegis programs
+# prepare the environment hash
 
-my($progaesu)=$aegi."/aesub";
-my($progaegi)=$aegi."/aegis";
+my($env)=Meta::Ds::Ohash->new();
 
-# Lets find out if they are there...
+# read the project hash table
 
-Meta::Utils::File::File::check_exec($progaesu);
-Meta::Utils::File::File::check_exec($progaegi);
-
-# Lets get the project and change from the aegis file
-
-my($proj,$chan);
-develop_aegi_vars(0,\$proj,\$chan);
+my($hash)=Meta::Baseline::Aegis::rc_set();
 
 # Lets get the change directory,baseline directory and search path
 # from the aesub program
 
-my($aegi_base)=develop_aegi_base($progaesu,$proj,$chan);
-my($aegi_stat)=develop_aegi_stat($progaesu,$proj,$chan);
-my($aegi_sear)=develop_aegi_sear($progaesu,$proj,$chan);
-my($aegi_inch)=develop_aegi_inch($progaesu,$proj,$chan);
-
-# Lets print out the current state of the change and its number
-
-print "current project is [".$proj."]\n";
-print "current change is [".$chan."]\n";
-print "current state is [".$aegi_stat."]\n";
+my($aegi_proj)=Meta::Baseline::Aegis::project();
+my($aegi_chan)=Meta::Baseline::Aegis::change();
+my($aegi_base)=Meta::Baseline::Aegis::baseline();
+my($aegi_stat)=Meta::Baseline::Aegis::state();
+my($aegi_sear)=Meta::Baseline::Aegis::search_path();
+my($aegi_inch)=Meta::Baseline::Aegis::inside_change();
+my($aegi_change_dir)=Meta::Baseline::Aegis::work_dir();
+my($aegi_baseline_dir)=Meta::Baseline::Aegis::baseline();
 
 # Lets declare the script variable to hold the script
 
@@ -277,64 +170,63 @@ my(@scri);
 
 # Lets give MANPATH its own value so we could (potentially) change it
 
-my($mpth)=develop_syst_runx("man --path");
-develop_envx_setx("MANPATH",$mpth);
-develop_envx_setx("INFOPATH","/usr/share/info");
+my($mpth)=Meta::Utils::System::system_out("man",["--path"]);
+$env->insert("MANPATH",$$mpth);
+$env->insert("INFOPATH","/usr/share/info");
 
 # Lets start handling of the options.
 
 if($binx) {
-	develop_envx_addx_mult("PATH",":",$aegi_sear,"/bins/".$bplt,1);
+	develop_envx_addx_mult("PATH",":",$aegi_sear,"/bins/".$bplt,1,$env);
 }
 if($ldxx) {
-	develop_envx_addx_mult("LD_LIBRARY_PATH",":",$aegi_sear,"/dlls/".$dplt,1);
+	develop_envx_addx_mult("LD_LIBRARY_PATH",":",$aegi_sear,"/dlls/".$dplt,1,$env);
 }
 if($manx) {
-	develop_envx_addx_mult("MANPATH",":",$aegi_sear,"/manx",1);
+	develop_envx_addx_mult("MANPATH",":",$aegi_sear,"/manx",1,$env);
 }
 if($info) {
-	develop_envx_addx_mult("INFOPATH",":",$aegi_sear,"/info",1);
+	develop_envx_addx_mult("INFOPATH",":",$aegi_sear,"/info",1,$env);
 }
 if($java) {
-	develop_envx_addx_mult("CLASSPATH",":",$aegi_sear,"/objs/java/lib",1);
+	develop_envx_addx_mult("CLASSPATH",":",$aegi_sear,"/objs/java/lib",1,$env);
 }
 if($perl) {
-	develop_envx_addx_mult("PERL5LIB",":",$aegi_sear,"/perl/lib",1);
+	develop_envx_addx_mult("PERL5LIB",":",$aegi_sear,"/perl/lib",1,$env);
 }
 if($txml) {
-	develop_envx_addx_mult("XML_CATALOG_FILES",":",$aegi_sear,"/dtdx/CATALOG",1);
+	develop_envx_addx_mult("XML_CATALOG_FILES",":",$aegi_sear,"/dtdx/CATALOG",1,$env);
 }
 if($sgml) {
-	develop_envx_addx_mult("SGML_CATALOG_FILES",":",$aegi_sear,"/dtdx/CATALOG",1);
+	develop_envx_addx_mult("SGML_CATALOG_FILES",":",$aegi_sear,"/dtdx/CATALOG",1,$env);
 }
 if($sgpl) {
-	develop_envx_addx_mult("SGML_SEARCH_PATH",":",$aegi_sear,"/dtdx",1);
+	develop_envx_addx_mult("SGML_SEARCH_PATH",":",$aegi_sear,"/dtdx",1,$env);
 }
 if($pyth) {
-	develop_envx_addx_mult("PYTHONPATH",":",$aegi_sear,"/pyth/lib",1);
+	develop_envx_addx_mult("PYTHONPATH",":",$aegi_sear,"/pyth/lib",1,$env);
 }
 if($base) {
-	develop_envx_addx_mult("PERL5LIB",":",$aegi_sear,"/perl/lib",1);
-	develop_envx_addx_mult("PATH",":",$aegi_sear,"/perl/bin/Meta/Baseline",1);
+	develop_envx_addx_mult("PERL5LIB",":",$aegi_sear,"/perl/lib",1,$env);
+	develop_envx_addx_mult("PATH",":",$aegi_sear,"/perl/bin/Meta/Baseline",1,$env);
 }
 if($cdpa) {
-	develop_envx_addx_mult("CDPATH",":",$aegi_sear,"",1);
-	develop_envx_addx("CDPATH",":",".",1);
+	develop_envx_addx_mult("CDPATH",":",$aegi_sear,"",1,$env);
+	develop_envx_addx("CDPATH",":",".",1,$env);
 }
 if($cdch) {
 	if($aegi_inch) {
-		my($chan)=develop_aegi_chan($progaesu,$proj,$chan);
-		develop_scri_addx(\@scri,"cd ".$chan);
+		develop_scri_addx(\@scri,"cd ".$aegi_change_dir);
 	}
 }
 if($colo) {
-#	my($scri)=develop_aegi_find($progaesu,$proj,$chan,"perl/bin/Meta/Baseline/develop_cook_colors.pl");
-#	my($opt);
-#	if($long) {
-#		$opt="--longopt";
-#	} else {
-#		$opt="--nolongopt";
-#	}
+	my($scri)=Meta::Baseline::Aegis::which("perl/bin/Meta/Baseline/develop_cook_colors.pl");
+	my($opt);
+	if($long) {
+		$opt="--longopt";
+	} else {
+		$opt="--nolongopt";
+	}
 #	FIXME
 #	my($colors)=$(develop_aegi_find "perl/bin/Meta/Baseline/develop_cook_colors.pl")
 #	eval $($colors $opt)
@@ -354,59 +246,57 @@ if($pete) {
 	develop_scri_addx(\@scri,"fi");
 }
 if($nprj) {
-	develop_envx_setx("AEGIS_PROJECT",$proj);
+	$env->insert("AEGIS_PROJECT",$aegi_proj);
 }
 if($nchn) {
 	if($aegi_inch) {
-		develop_envx_setx("AEGIS_CHANGE",$chan);
+		$env->insert("AEGIS_CHANGE",$aegi_chan);
 	}
 }
 if($blxx) {
-	develop_envx_setx("BL",develop_aegi_base($progaesu,$proj,$chan));
+	$env->insert("BL",$aegi_baseline_dir);
 }
 if($chxx) {
 	if($aegi_inch) {
-		develop_envx_setx("CH",develop_aegi_chan($progaesu,$proj,$chan));
+		$env->insert("CH",$aegi_change_dir);
 	}
 }
 if($ps1x) {
-	develop_envx_setx("PS1","\\u:\\h:\\w> ");
+	$env->insert("PS1","\\u:\\h:\\w> ");
 }
 if($page) {
-	develop_envx_setx("PAGER","less -csi");
+	$env->insert("PAGER","less -csi");
 }
 if($manp) {
-	develop_envx_setx("MANPAGER","less -csi");
+	$env->insert("MANPAGER","less -csi");
 }
 if($tbin) {
-	develop_envx_addx_mult("PATH",":",$tvbi,"",1);
+	develop_envx_addx_mult("PATH",":",$tvbi,"",1,$env);
 }
 if($tldx) {
-	develop_envx_addx_mult("LD_LIBRARY_PATH",":",$tvld,"",1);
+	develop_envx_addx_mult("LD_LIBRARY_PATH",":",$tvld,"",1,$env);
 }
 if($tman) {
-	develop_envx_addx_mult("MANPATH",":",$tvma,"",1);
+	develop_envx_addx_mult("MANPATH",":",$tvma,"",1,$env);
 }
 if($tinf) {
-	develop_envx_addx_mult("INFOPATH",":",$tvin,"",1);
+	develop_envx_addx_mult("INFOPATH",":",$tvin,"",1,$env);
 }
 if($txmd) {
-	develop_envx_addx_mult("XML_CATALOG_FILES",":",$xmli,"",0);
+	develop_envx_addx_mult("XML_CATALOG_FILES",":",$xmli,"",0,$env);
 }
 if($tsgm) {
-	develop_envx_addx_mult("SGML_CATALOG_FILES",":",$sgmi,"",0);
+	develop_envx_addx_mult("SGML_CATALOG_FILES",":",$sgmi,"",0,$env);
 }
 if($tsgp) {
-	develop_envx_addx_mult("SGML_SEARCH_PATH",":",$sgpi,"",0);
+	develop_envx_addx_mult("SGML_SEARCH_PATH",":",$sgpi,"",0,$env);
 }
 if($tsgs) {
-	develop_envx_addx_mult("SGML_PATH",":",$sgpi,"",0);
+	develop_envx_addx_mult("SGML_PATH",":",$sgpi,"",0,$env);
 }
 if($verb) {
-	Meta::Utils::Output::print("progaesu=[".$progaesu."]\n");
-	Meta::Utils::Output::print("progaegi=[".$progaegi."]\n");
-	Meta::Utils::Output::print("proj=[".$proj."]\n");
-	Meta::Utils::Output::print("chan=[".$chan."]\n");
+	Meta::Utils::Output::print("aegi_proj=[".$aegi_proj."]\n");
+	Meta::Utils::Output::print("aegi_chan=[".$aegi_chan."]\n");
 	Meta::Utils::Output::print("aegi_base=[".$aegi_base."]\n");
 	Meta::Utils::Output::print("aegi_stat=[".$aegi_stat."]\n");
 	Meta::Utils::Output::print("aegi_sear=[".$aegi_sear."]\n");
@@ -415,22 +305,28 @@ if($verb) {
 
 # Lets get a temp file for the script. Open it,put the script in,and close it
 
-my($temp)=develop_file_temp();
-open(TEMP,"> ".$temp) || Meta::Utils::System::die("unable to open temp file [".$temp."]");
+#my($temp)=Meta::Utils::Utils::get_temp_file();
+#open(TEMP,"> ".$temp) || throw Meta::Error::Simple("unable to open temp file [".$temp."]");
 for(my($i)=0;$i<=$#scri;$i++) {
-	print TEMP $scri[$i]."\n";
+	print $scri[$i]."\n";
+}
+for(my($i)=0;$i<$env->size();$i++) {
+	print "export ".$env->key($i)."='".$env->val($i)."'\n";
 }
 #print TEMP "rm -f ".$temp."\n";# Watch closly now. Are you watching now ?
-close(TEMP) || Meta::Utils::System::die("unable to close temp file [".$temp."]");
+#close(TEMP) || throw Meta::Error::Simple("unable to close temp file [".$temp."]");
+#if($verb) {
+#	Meta::Utils::Output::print("wrote script to [".$temp."]\n");
+#}
 
 # Thats it. Lets run the shell,and tell it to read our initialization to make
 # everything uniform...
 
-exec($shel,"--rcfile",$temp);
+#exec($shel,"--rcfile",$temp);
 
 # exit with a success exit code
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -463,7 +359,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: develop_rc.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -592,11 +488,11 @@ what is the dll platform you are working on
 
 what is your shell
 
-=item B<tbin> (type: bool, default: 1)
+=item B<tbin> (type: bool, default: 0)
 
 do you want to set PATH for tools
 
-=item B<tldx> (type: bool, default: 1)
+=item B<tldx> (type: bool, default: 0)
 
 do you want to set LD_LIBRARY_PATH for tools
 
@@ -676,19 +572,19 @@ do you want to set the CDPATH for development
 
 do you want to cd to your change on login
 
-=item B<colo> (type: bool, default: 1)
+=item B<colo> (type: bool, default: 0)
 
-do you want ls coloring
+do you want ls baseline coloring
 
-=item B<lsco> (type: bool, default: 1)
+=item B<lsco> (type: bool, default: 0)
 
-do you want ls color aliasing
+do you want ls standard coloring
 
 =item B<long> (type: bool, default: 1)
 
 do you want --long opt for ls coloring
 
-=item B<pete> (type: bool, default: 1)
+=item B<pete> (type: bool, default: 0)
 
 do you want aegis type (Peter) shortcuts (only valid for bash)
 
@@ -747,14 +643,13 @@ None.
 
 	0.00 MV move tests to modules
 	0.01 MV finish papers
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), Meta::Utils::File::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), POSIX(3), strict(3)
+Error(3), File::Basename(3), Meta::Baseline::Aegis(3), Meta::Ds::Ohash(3), Meta::Utils::File::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), POSIX(3), strict(3)
 
 =head1 TODO
-
--make this script with an option just to write the changes to be made to the environment and not do them and so we could run this without the shell at the end and just execute the stuff its telling us to.
 
 -get the $- variable from the shell as input (the shell has it) and use it to make checks whether this script runs interactivly or not...
 
@@ -765,3 +660,7 @@ File::Basename(3), Meta::Utils::File::File(3), Meta::Utils::Opts::Opts(3), Meta:
 -make stuff here more generic (all the variables are handled pretty much the same...).
 
 -make the coloring work again (the code is commented).
+
+-remove the functions here which have to do with paths, evnrionment and the like and use my modules instead.
+
+-add an option to set default posgresql and mysql env variables here (like default database name and other stuff).

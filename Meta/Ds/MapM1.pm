@@ -9,7 +9,7 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sbu BEGIN();
@@ -34,9 +34,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	CORE::bless($self,$clas);
+	CORE::bless($self,$class);
 	$self->set_hash_a(Meta::Ds::Ohash->new());
 	$self->set_hash_b(Meta::Ds::Ohash->new());
 	return($self);
@@ -147,7 +147,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MapM1.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -265,6 +265,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV more pdmt stuff
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

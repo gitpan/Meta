@@ -3,11 +3,11 @@
 package Meta::Pdmt::Cvs;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
 use Meta::Class::MethodMaker qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub BEGIN();
@@ -22,7 +22,7 @@ sub BEGIN() {
 
 sub add_all_nodes($$) {
 	my($self,$graph)=@_;
-	Meta::Utils::System::die("this is an abstract method and should not be called");
+	throw Meta::Error::Simple("this is an abstract method and should not be called");
 	return(0);
 }
 
@@ -64,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cvs.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -125,10 +125,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

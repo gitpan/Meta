@@ -25,11 +25,12 @@ $gpg->armor(1);
 $gpg->secretkey($author->get_keyid());
 $gpg->passphrase($author->get_passphrase());
 
-my($content)=Meta::Utils::File::File::load("/etc/passwd");
+my($content);
+Meta::Utils::File::File::load("/etc/passwd",\$content);
 my($enc)=$gpg->encrypt($content,$author->get_email());
 Meta::Utils::Output::print("enc is [".$enc."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -62,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: demo_gpg.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -130,6 +131,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV finish papers
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

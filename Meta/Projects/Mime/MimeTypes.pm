@@ -7,7 +7,7 @@ use Meta::Class::DBI qw();
 use base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.03";
 @ISA=qw(Meta::Class::DBI);
 
 #sub BEGIN();
@@ -60,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MimeTypes.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -119,6 +119,7 @@ None.
 	0.00 MV download scripts
 	0.01 MV bring movie data
 	0.02 MV move tests into modules
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

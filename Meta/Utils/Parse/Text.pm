@@ -3,12 +3,12 @@
 package Meta::Utils::Parse::Text;
 
 use strict qw(vars refs subs);
-use IO::File qw();
+use Meta::IO::File qw();
 use IO::Pipe qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub BEGIN();
@@ -31,15 +31,11 @@ sub BEGIN() {
 		-java=>"_fnam",
 		-java=>"_proc",
 	);
-	Meta::Class::MethodMaker->print(["type","file","over","line","numb","fnam","proc"]);
 }
 
 sub init_file($$) {
 	my($self,$fnam)=@_;
-	my($file)=IO::File->new($fnam);
-	if(!defined($file)) {
-		Meta::Utils::System::die("unable to open file [".$fnam."]");
-	}
+	my($file)=Meta::IO::File->new($fnam,"r");
 	$self->set_type("file");
 	$self->set_fnam($fnam);
 	$self->set_file($file);
@@ -58,7 +54,7 @@ sub init_proc($$) {
 	my($self,$proc)=@_;
 	my($file)=IO::Pipe->new();
 	if(!defined($file)) {
-		Meta::Utils::System::die("unable to create object");
+		throw Meta::Error::Simple("unable to create object");
 	}
 	$file->reader(@$proc);
 	$self->set_type("proc");
@@ -95,7 +91,7 @@ sub fini($) {
 	if($type eq "file") {
 		my($file)=$self->get_file();
 		if(!$file->close()) {
-			Meta::Utils::System::die("unable to close file [".$self->get_fnam()."]");
+			throw Meta::Error::Simple("unable to close file [".$self->get_fnam()."]");
 		}
 	}
 	if($type eq "proc") {
@@ -140,7 +136,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Text.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -279,10 +275,11 @@ None.
 	0.28 MV website construction
 	0.29 MV web site automation
 	0.30 MV SEE ALSO section fix
+	0.31 MV md5 issues
 
 =head1 SEE ALSO
 
-IO::File(3), IO::Pipe(3), Meta::Class::MethodMaker(3), strict(3)
+IO::Pipe(3), Meta::Class::MethodMaker(3), Meta::IO::File(3), strict(3)
 
 =head1 TODO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub BEGIN();
@@ -62,7 +62,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: BuildInfo.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -128,6 +128,7 @@ None.
 	0.10 MV web site development
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 

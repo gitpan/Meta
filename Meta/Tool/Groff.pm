@@ -8,16 +8,26 @@ use Meta::Utils::Utils qw();
 use Meta::Utils::File::File qw();
 use Meta::Utils::File::Remove qw();
 use Compress::Zlib qw();
+use Meta::Utils::File::Patho qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.06";
+$VERSION="0.07";
 @ISA=qw();
 
+#sub BEGIN();
 #sub process($$);
 #sub get_oneliner($);
 #sub TEST($);
 
 #__DATA__
+
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("groff");
+}
 
 sub process($$) {
 	my($data,$device)=@_;
@@ -26,7 +36,9 @@ sub process($$) {
 	Meta::Utils::File::File::save($file,$data);
 	# the -W w stuff is to inhibit warnings. It's not documented in groff so don't
 	# look for it. It's from the source.
-	my($out)=Meta::Utils::System::system_out("groff",["-m","mandoc","-W","w","-T",$device,$file]);
+	# the -m mandoc is to tell groff to use the groff manual page macros to
+	# do its work.
+	my($out)=Meta::Utils::System::system_out($tool_path,["-m","mandoc","-W","w","-T",$device,$file]);
 	Meta::Utils::File::Remove::rm($file);
 	return($$out);
 }
@@ -44,22 +56,22 @@ sub get_oneliner($) {
 	if(defined($name2)) {
 		return($name2);
 	}
-	return(undef);
+	throw Meta::Error::Simple("could not get one line description");
 }
 
 sub TEST($) {
 	my($context)=@_;
-	my($file)="/usr/share/man/man1/ls.1.gz";
-	my($content)=Meta::Utils::File::File::load($file);
-	my($full)=Compress::Zlib::memGunzip($content);
+	my($file)="/usr/share/man/man1/ls.1.bz2";
+	my($content);
+	Meta::Utils::File::File::load($file,\$content);
+	my($full)=Compress::Bzip2::decompress($content);
 	my($liner)=get_oneliner($full);
-#	if($liner eq "list directory contents") {
-#		return(1);
-#	} else {
-#		Meta::Utils::Output::print("liner is [".$liner."]\n");
-#		return(0);
-#	}
-	return(1);
+	Meta::Utils::Output::print("liner is [".$liner."]\n");
+	if($liner eq "list directory contents") {
+		return(1);
+	} else {
+		return(0);
+	}
 }
 
 1;
@@ -95,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Groff.pm
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -110,6 +122,7 @@ This module eases the job of running groff for you.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	process($$)
 	get_oneliner($)
 	TEST($)
@@ -117,6 +130,10 @@ This module eases the job of running groff for you.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method for finding your groff executable.
 
 =item B<process($$)>
 
@@ -159,10 +176,11 @@ None.
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
 	0.06 MV download scripts
+	0.07 MV md5 issues
 
 =head1 SEE ALSO
 
-Compress::Zlib(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Compress::Zlib(3), Meta::Error::Simple(3), Meta::Utils::File::File(3), Meta::Utils::File::Patho(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

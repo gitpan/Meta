@@ -9,7 +9,7 @@ use Meta::Baseline::Lang qw();
 use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.33";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub env();
@@ -112,7 +112,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pyth.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.33
 
 =head1 SYNOPSIS
 
@@ -247,6 +247,7 @@ None.
 	0.30 MV web site automation
 	0.31 MV SEE ALSO section fix
 	0.32 MV put all tests in modules
+	0.33 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Gtk qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Gtk::Window);
 
 #sub new($);
@@ -16,9 +16,9 @@ $VERSION="0.11";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Gtk::Window->new("dialog");
-	bless($self,$clas);
+	bless($self,$class);
 	#this is where the create code comes in
 	$self->signal_connect("delete_event",\&event_delete_event);
 	my($name_label)=Gtk::Label->new();
@@ -86,7 +86,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connection.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -153,6 +153,7 @@ None.
 	0.09 MV website construction
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

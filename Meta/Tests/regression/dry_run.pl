@@ -63,7 +63,7 @@ __END__
 
 =head1 NAME
 
-dry_run.pl - what does your program do.
+dry_run.pl - Meta regression test to dry run all executables to catch compilation errors.
 
 =head1 COPYRIGHT
 
@@ -90,7 +90,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dry_run.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -170,6 +170,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

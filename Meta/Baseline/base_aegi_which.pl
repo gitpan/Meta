@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_which.pl
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -153,6 +153,7 @@ None.
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
 	0.25 MV move tests to modules
+	0.26 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -6,15 +6,14 @@ use strict qw(vars refs subs);
 use Cache::MemoryCache qw();
 use Meta::File::MMagic qw();
 use File::Spec qw();
-use OpenFrame::Slot qw();
 use OpenFrame::Response qw();
-use OpenFrame::Constants qw();
+use Pipeline::Segment qw();
 use Meta::Utils::File::File qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA,$mm,$cache);
-$VERSION="0.00";
-@ISA=qw(OpenFrame::Slot);
+$VERSION="0.01";
+@ISA=qw(Pipeline::Segment);
 
 #sub BEGIN();
 #sub what();
@@ -60,10 +59,12 @@ sub action($$$) {
 		if($type eq "text/html" || $type eq "text/css") {
 			warn("[slot:html] file $file is being handled") if $OpenFrame::DEBUG;
 			my($response)=OpenFrame::Response->new();
-			$response->code(OpenFrame::Constants::ofOK);
+			#$response->code(OpenFrame::Constants::ofOK);
 			$response->mimetype($type);
-			$response->message(Meta::Utils::File::File::load($file));
-			my($time)=(stat($file))[9];
+			my($content);
+			Meta::Utils::File::File::load($file,\$content);
+			$response->message($content);
+			my($time)=(CORE::stat($file))[9];
 			$response->last_modified($time);
 			return($response);
 		}
@@ -109,7 +110,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Types.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -168,7 +169,7 @@ or release time or just as a regular routine to check that all is well.
 
 =head1 SUPER CLASSES
 
-OpenFrame::Slot(3)
+Pipeline::Segment(3)
 
 =head1 BUGS
 
@@ -184,10 +185,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Cache::MemoryCache(3), File::Spec(3), Meta::Baseline::Aegis(3), Meta::File::MMagic(3), Meta::Utils::File::File(3), OpenFrame::Constants(3), OpenFrame::Response(3), OpenFrame::Slot(3), strict(3)
+Cache::MemoryCache(3), File::Spec(3), Meta::Baseline::Aegis(3), Meta::File::MMagic(3), Meta::Utils::File::File(3), OpenFrame::Response(3), Pipeline::Segment(3), strict(3)
 
 =head1 TODO
 

@@ -65,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: sendmail.pl
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -150,6 +150,7 @@ None.
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
 	0.16 MV move tests to modules
+	0.17 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -54,17 +54,17 @@ sub select_row($$$$) {
 	my($pixi)=Gtk::Gdk::ImlibImage->load_file_to_pixmap($file);
 	Meta::Utils::File::Remove::rm($file);
 	if(!$pixi) {
-		Meta::Utils::System::die("unable to create pixmap");
+		throw Meta::Error::Simple("unable to create pixmap");
 	}
 	if(!defined($pic_window)) {
 	#	Meta::Utils::Output::print("in here\n");
 		$pic_window=Gtk::Window->new();
 		if(!$pic_window) {
-			Meta::Utils::System::die("unable to build pic_window");
+			throw Meta::Error::Simple("unable to build pic_window");
 		}
 		$pix=Gtk::Pixmap->new($pixi,undef);
 		if(!$pix) {
-			Meta::Utils::System::die("unable to build pixmap [".$pix."]");
+			throw Meta::Error::Simple("unable to build pixmap [".$pix."]");
 		}
 		$pic_window->add($pix);
 	} else {
@@ -109,7 +109,7 @@ Gtk->main();
 
 $dbi->disconnect();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 #my($vbox)=Gtk::VBox->new(0,0);
 #$vbox->show();
@@ -150,7 +150,7 @@ Meta::Utils::System::exit(1);
 #my($style)=$vbox->get_style()->bg('normal');
 #my($pixmap,$mask)=Gtk::Gdk::ImlibImage->create_from_xpm($vbox->window,$style,$filename);
 #if(!$pixmap) {
-#	Meta::Utils::System::die("unable to open pixmap");
+#	throw Meta::Error::Simple("unable to open pixmap");
 #}
 #my($pixmapwid)=new Gtk::Pixmap($pixmap,$mask);
 #$vbox->pack_start_defaults($imgwid);
@@ -161,7 +161,7 @@ Meta::Utils::System::exit(1);
 #my($filename)=Meta::Baseline::Aegis::which("jpgx/simul.jpg");
 #my($image)=Gtk::Gdk::ImlibImage->load_image($filename);
 #if(!$image) {
-#	Meta::Utils::System::die("unable to load image [".$filename."]");
+#	throw Meta::Error::Simple("unable to load image [".$filename."]");
 #}
 #my($imgwid)=Gtk::Image->new($image,undef);
 #$window->add($imgwid);
@@ -207,7 +207,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_ui.pl
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -294,6 +294,7 @@ None.
 	0.16 MV SEE ALSO section fix
 	0.17 MV move tests to modules
 	0.18 MV teachers project
+	0.19 MV md5 issues
 
 =head1 SEE ALSO
 

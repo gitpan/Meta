@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Hash qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw(Meta::Ds::Hash);
 
 #sub new($);
@@ -15,18 +15,18 @@ $VERSION="0.35";
 #sub overwrite($$$);
 #sub remove($$);
 #sub elem($$);
-#sub keyx($$);
-#sub valx($$);
-#sub print($$);
+#sub key($$);
+#sub val($$);
 #sub get_elem_number($$);
+#sub bash($$);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Hash->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{KEYX}=[];
 	$self->{VALX}=[];
 	$self->{OHASH}={};
@@ -34,16 +34,16 @@ sub new($) {
 }
 
 sub insert($$$) {
-	my($self,$keyx,$valx)=@_;
+	my($self,$key,$val)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Ohash");
-	return($self->SUPER::insert($keyx,$valx));
-#	if($self->SUPER::insert($keyx,$valx)) {
+	return($self->SUPER::insert($key,$val));
+#	if($self->SUPER::insert($key,$val)) {
 #		my($list)=$self->{KEYX};
-#		my($num1)=push(@$list,$keyx);
+#		my($num1)=push(@$list,$key);
 #		my($tsil)=$self->{VALX};
-#		my($num2)=push(@$tsil,$valx);
+#		my($num2)=push(@$tsil,$val);
 #		my($numb)=$num1-1;#arbitrary
-#		$self->{OHASH}->{$keyx}=$numb;
+#		$self->{OHASH}->{$key}=$numb;
 #		return(1);
 #	} else {
 #		return(0);
@@ -51,22 +51,22 @@ sub insert($$$) {
 }
 
 sub put($$$) {
-	my($self,$keyx,$valx)=@_;
-	$self->SUPER::put($keyx,$valx);
+	my($self,$key,$val)=@_;
+	$self->SUPER::put($key,$val);
 	my($list)=$self->{KEYX};
-	my($num1)=push(@$list,$keyx);
+	my($num1)=push(@$list,$key);
 	my($tsil)=$self->{VALX};
-	my($num2)=push(@$tsil,$valx);
+	my($num2)=push(@$tsil,$val);
 	my($numb)=$num1-1;#arbitrary
-	$self->{OHASH}->{$keyx}=$numb;
+	$self->{OHASH}->{$key}=$numb;
 }
 
 sub overwrite($$$) {
-	my($self,$keyx,$valx)=@_;
-	$self->SUPER::overwrite($keyx,$valx);
-	my($num)=$self->get_elem_number($keyx);
+	my($self,$key,$val)=@_;
+	$self->SUPER::overwrite($key,$val);
+	my($num)=$self->get_elem_number($key);
 	my($tsil)=$self->{VALX};
-	$tsil->[$num]=$valx;
+	$tsil->[$num]=$val;
 }
 
 sub remove($$) {
@@ -98,26 +98,14 @@ sub elem($$) {
 	return($self->{VALX}->[$elem]);
 }
 
-sub keyx($$) {
+sub key($$) {
 	my($self,$elem)=@_;
 	return($self->{KEYX}->[$elem]);
 }
 
-sub valx($$) {
+sub val($$) {
 	my($self,$elem)=@_;
 	return($self->{VALX}->[$elem]);
-}
-
-sub print($$) {
-	my($self,$file)=@_;
-	my($list)=$self->{LIST};
-	my($size)=$self->size();
-	for(my($i)=0;$i<$size;$i++) {
-		my($keyx)=$self->keyx($i);
-		my($valx)=$self->valx($i);
-		print $file "[".$keyx."]\n";
-		$valx->print($file);
-	}
 }
 
 sub get_elem_number($$) {
@@ -125,8 +113,21 @@ sub get_elem_number($$) {
 	return($self->{OHASH}->{$elem});
 }
 
+sub bash($$) {
+	my($self,$file)=@_;
+	for(my($i)=0;$i<$self->size();$i++) {
+		my($key)=$self->key($i);
+		my($val)=$self->val($i);
+		print $file "export \$".$key."=\"".$val."\"\n";
+	}
+}
+
 sub TEST($) {
 	my($context)=@_;
+	my($ohash)=__PACKAGE__->new();
+	$ohash->insert("mark","veltzer");
+	$ohash->insert("linus","torvalds");
+	$ohash->bash(Meta::Utils::Output::get_file());
 	return(1);
 }
 
@@ -163,7 +164,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ohash.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -183,9 +184,8 @@ element.
 	overwrite($$$)
 	remove($$)
 	elem($$)
-	keyx($$)
-	valx($$)
-	print($$)
+	key($$)
+	val($$)
 	get_elem_number($$)
 	TEST($)
 
@@ -223,17 +223,13 @@ list if it was successful.
 
 This returns a specific element in the hash.
 
-=item B<keyx($$)>
+=item B<key($$)>
 
 This returns the key with the specified number.
 
-=item B<valx($$)>
+=item B<val($$)>
 
 This returns the value with the specified number.
-
-=item B<print($$)>
-
-This will print the Ohash object to the specified file for you.
 
 =item B<get_elem_number($$)>
 
@@ -242,6 +238,8 @@ This method will give you the sequential number of an element in the ordered has
 =item B<TEST($)>
 
 Test suite for this module.
+Currently this tests creates an object, puts some data in it and then writes
+it out in bash format.
 
 =back
 
@@ -298,6 +296,7 @@ None.
 	0.33 MV web site automation
 	0.34 MV SEE ALSO section fix
 	0.35 MV move tests to modules
+	0.36 MV md5 issues
 
 =head1 SEE ALSO
 

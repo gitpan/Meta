@@ -5,6 +5,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use BerkeleyDB qw();
 use Meta::Template::Sub qw();
+use Error qw(:try);
 
 my($file);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -17,7 +18,7 @@ $file=Meta::Template::Sub::interpolate($file);
 
 my($db)=BerkeleyDB::Hash->new(-Filename=>$file,-Flags=>BerkeleyDB::DB_RDONLY());
 if(!$db) {
-	Meta::Utils::System::die("no db with error [".$BerkeleyDB::Error."]");
+	throw Meta::Error::Simple("no db on file [".$file."] with error [".$BerkeleyDB::Error."]");
 }
 my($k,$v);
 my($cursor)=$db->db_cursor();
@@ -26,7 +27,7 @@ while($cursor->c_get($k,$v,BerkeleyDB::DB_NEXT())==0) {
 	Meta::Utils::Output::print("value is [".$v."]\n");
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -59,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: evolution_from.pl
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -139,10 +140,11 @@ None.
 	0.03 MV SEE ALSO section fix
 	0.04 MV move tests to modules
 	0.05 MV more pdmt stuff
+	0.06 MV md5 issues
 
 =head1 SEE ALSO
 
-BerkeleyDB(3), Meta::Template::Sub(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+BerkeleyDB(3), Error(3), Meta::Template::Sub(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -46,7 +46,7 @@ if($write) {
 	Meta::Utils::Output::print($out);
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -79,7 +79,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: email_signature.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -193,6 +193,7 @@ None.
 	0.10 MV web site development
 	0.11 MV finish papers
 	0.12 MV teachers project
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 

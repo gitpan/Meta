@@ -31,7 +31,7 @@ my($module4)=Meta::Development::Module->new();
 $module4->set_name("temp/sgml/projects/computing/pdmt.temp");
 Meta::Utils::Output::print("temp sgml book title is [".$module4->get_temp_sgml_book()."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -64,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: development_extract.pl
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -137,6 +137,7 @@ None.
 	0.02 MV SEE ALSO section fix
 	0.03 MV put all tests in modules
 	0.04 MV move tests to modules
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 
@@ -144,4 +145,4 @@ Meta::Development::Module(3), Meta::Lang::Xml::Xml(3), Meta::Utils::Opts::Opts(3
 
 =head1 TODO
 
-Nothing.
+-move this whole thing as a test for Meta::Development::Module.

@@ -7,7 +7,7 @@ use Meta::Math::Pad qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw();
 
 #sub BEGIN();
@@ -116,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Entry.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -227,6 +227,7 @@ None.
 	0.17 MV web site development
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
+	0.20 MV md5 issues
 
 =head1 SEE ALSO
 

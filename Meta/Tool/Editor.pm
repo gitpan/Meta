@@ -7,16 +7,23 @@ use Meta::Utils::System qw();
 use Meta::Utils::Env qw();
 use Meta::Utils::File::File qw();
 use Meta::Utils::Utils qw();
+use Meta::Utils::File::Patho qw();
+use Meta::Utils::File::Remove qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub BEGIN();
 #sub set_editor($);
 #sub edit($);
-#sub edit_mult($);
+#sub edit_list($);
+#sub edit_hash($);
+#sub edit_set($);
+#sub edit_set_pat($$);
+#sub edit_line($$);
 #sub edit_line_char($$$);
+#sub edit_pat($$);
 #sub edit_content($);
 #sub TEST($);
 
@@ -24,6 +31,7 @@ $VERSION="0.12";
 
 our($editor);
 our($env_var)="EDITOR";
+our($tool_path);
 
 sub BEGIN() {
 	if(Meta::Utils::Env::has($env_var)) {
@@ -31,6 +39,8 @@ sub BEGIN() {
 	} else {
 		$editor="vim";
 	}
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve($editor);
 }
 
 sub set_editor($) {
@@ -40,17 +50,63 @@ sub set_editor($) {
 
 sub edit($) {
 	my($file)=@_;
-	return(Meta::Utils::System::system($editor,[$file]));
+	Meta::Utils::System::system($editor,[$file]);
 }
 
-sub edit_mult($) {
+sub edit_list($) {
 	my($list)=@_;
-	return(Meta::Utils::System::system($editor,$list));
+	Meta::Utils::System::system($editor,$list);
+}
+
+sub edit_hash($) {
+	my($hash)=@_;
+	if($hash->size()>0) {
+		my(@list);
+		for(my($i)=0;$i<$hash->size();$i++) {
+			my($curr)=$hash->key($i);
+			push(@list,$curr);
+		}
+		Meta::Utils::System::system($editor,\@list);
+	}
+}
+
+sub edit_set($) {
+	my($set)=@_;
+	if($set->size()>0) {
+		my(@list);
+		for(my($i)=0;$i<$set->size();$i++) {
+			my($curr)=$set->elem($i);
+			push(@list,$curr);
+		}
+		Meta::Utils::System::system($editor,\@list);
+	}
+}
+
+sub edit_set_pat($$) {
+	my($set,$pat)=@_;
+	if($set->size()>0) {
+		my(@list);
+		for(my($i)=0;$i<$set->size();$i++) {
+			my($curr)=$set->elem($i);
+			push(@list,$curr);
+		}
+		Meta::Utils::System::system($editor,["+/".$pat,@list]);
+	}
+}
+
+sub edit_line($$) {
+	my($file,$line)=@_;
+	Meta::Utils::System::system($editor,\[$file,"+".$line]);
 }
 
 sub edit_line_char($$$) {
 	my($file,$line,$char)=@_;
-	return(Meta::Utils::System::system($editor,$file));
+	Meta::Utils::System::system($editor,\[$file,"+".$line]);
+}
+
+sub edit_pat($$) {
+	my($file,$pat)=@_;
+	Meta::Utils::System::system($editor,\[$file,"+/".$pat]);
 }
 
 sub edit_content($) {
@@ -58,7 +114,9 @@ sub edit_content($) {
 	my($temp)=Meta::Utils::Utils::get_temp_file();
 	Meta::Utils::File::File::save($temp,$content);
 	&edit($temp);
-	my($ncontent)=Meta::Utils::File::File::load($temp);
+	my($ncontent);
+	Meta::Utils::File::File::load($temp,\$ncontent);
+	Meta::Utils::File::Remove::rm($temp);
 	return($ncontent);
 }
 
@@ -100,7 +158,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Editor.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -120,8 +178,13 @@ Currently just activation of the editor is supported (vi...).
 	BEGIN()
 	set_editor($)
 	edit($)
-	edit_mult($)
+	edit_list($)
+	edit_hash($)
+	edit_set($)
+	edit_set_pat($$)
+	edit_line($$)
 	edit_line_char($$$)
+	edit_pat($$)
 	edit_content($)
 	TEST($)
 
@@ -140,18 +203,45 @@ This class method sets the editor to be used.
 
 =item B<edit($)>
 
-Edit a file using your favorite editor (vi).
+Edit a file using your favorite editor.
 
-=item B<edit_mult($)>
+=item B<edit_list($)>
 
-Edit a list of files using your favorite editor (vi).
+Edit a list of files using your favorite editor.
 
 This method will open up an editor on the specified file and will place the
 cursor on the specified line and character.
 
+=item B<edit_hash($)>
+
+Edit a hash of files using your favorite editor.
+
+This method receives a hash object and runs your favorite editor on each
+key of the hash.
+
+=item B<edit_set($)>
+
+Edit a set of files using your favorite editor.
+
+This method receives a set object and runs your favorite editor on each
+key of the hash.
+
+=item B<edit_set_pat($$)>
+
+This method will open a set of files using an editor and make the editor
+seek a specific pattern.
+
+=item B<edit_line($$)>
+
+This will open an editor on a specified line.
+
 =item B<edit_line_char($$$)>
 
 This will open an editor at the specified line and character number.
+
+=item B<edit_pat($$)>
+
+This will open an editor seeking a specific pattern.
 
 =item B<edit_content($)>
 
@@ -193,14 +283,13 @@ None.
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
 	0.12 MV teachers project
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Env(3), Meta::Utils::File::File(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Meta::Utils::Env(3), Meta::Utils::File::File(3), Meta::Utils::File::Patho(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
-
--Add a routine to activate the editor with a regular expression to be searched (both for a single file and for multiple files). Then use this routine in base_tool_grep_edit
 
 -Support other editors (emacs etc..)
 

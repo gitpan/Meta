@@ -5,6 +5,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::File::Move qw();
+use Meta::IO::File qw();
 
 my($verb,$demo,$star,$jump,$colu,$ldel,$vdel);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -25,23 +26,22 @@ $opts->analyze(\@ARGV);
 for(my($i)=0;$i<=$#ARGV;$i++) {
 	my($icur)=$star;
 	my($curr)=$ARGV[$i];
-	open(INFI,$curr) || Meta::Utils::System::die("unable to open file [".$curr."]");
+	my($in)=Meta::IO::File->new_reader($curr);
 	my($file)=Meta::Utils::Utils::get_temp_file();
-	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line);
-	while($line=<INFI> || 0) {
-		chop($line);
-		my(@fiel)=split($vdel,$line);
+	my($out)=Meta::IO::File->new_writer($file);
+	while(!$in->eof()) {
+		my($line)=$in->cgetline();
+		my(@fiel)=CORE::split($vdel,$line);
 		$fiel[$colu]=$icur;
 		$icur+=$jump;
-		print FILE join($vdel,@fiel)."\n";
+		print $out CORE::join($vdel,@fiel)."\n";
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
-	close(INFI) || Meta::Utils::System::die("unable to close file [".$curr."]");
+	$out->close();
+	$in->close();
 	Meta::Utils::File::Move::mv($file,$curr);
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -74,7 +74,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_fix_column.pl
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -192,10 +192,11 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV move tests to modules
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::File::Move(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Meta::IO::File(3), Meta::Utils::File::Move(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

@@ -14,9 +14,10 @@ use Meta::Lang::Xml::Xml qw();
 use Meta::Xml::Dom qw();
 use XML::XPath qw();
 use XML::Parser qw();
+use Error qw(:try);
 
-our($VERSION,@ISA,%directories);
-$VERSION="0.08";
+our($VERSION,@ISA);
+$VERSION="0.09";
 @ISA=qw();
 
 #sub BEGIN();
@@ -67,7 +68,8 @@ sub new_name($$) {
 
 sub get_abs_path($) {
 	my($self)=@_;
-	if(Meta::Baseline::Aegis::have_aegis()) {
+#	if(Meta::Baseline::Aegis::have_aegis()) {
+	if(1) {
 		return(Meta::Baseline::Aegis::which($self->get_name()));
 	} else {
 		# FIXME this only deals with apache and is hardcoded
@@ -82,15 +84,15 @@ sub get_sgml_name($) {
 	my($doc)=$parser->parsefile($file_name);
 	my($article)=$doc->getDocumentElement();
 	if(!defined($article)) {
-		Meta::Utils::System::die("cant get article");
+		throw Meta::Error::Simple("cant get article");
 	}
 	my($title);
 	$title=$article->getElementsByTagName("title",0);
 	if(!defined($title)) {
-		Meta::Utils::System::die("cant get name");
+		throw Meta::Error::Simple("cant get name");
 	}
 	if($title->getLength()!=1) {
-		Meta::Utils::System::die("bad length");
+		throw Meta::Error::Simple("bad length");
 	}
 	my($ret)=$title->[0]->getFirstChild()->getData();
 	return($ret);
@@ -103,12 +105,12 @@ sub get_temp_sgml_tag($$) {
 	my($text)=Meta::Baseline::Lang::Temp::ram_process($self->get_name(),$file_name);
 	my($par)=XML::Parser->new();
 	if(!defined($par)) {
-		Meta::Utils::System::die("unable to create XML::Parser");
+		throw Meta::Error::Simple("unable to create XML::Parser");
 	}
 	my($xp)=XML::XPath->new(xml=>$text,parser=>$par);
 	my($nodeset)=$xp->find($tag);
 	if($nodeset->size()!=1) {
-		Meta::Utils::System::die("found !=1 nodes [".$nodeset->size()."] in module [".$self->get_name()."]");
+		throw Meta::Error::Simple("found !=1 nodes [".$nodeset->size()."] in module [".$self->get_name()."]");
 	}
 	return($nodeset->get_node(0)->getChildNode(1)->getValue());
 }
@@ -133,15 +135,15 @@ sub get_xml_def_name($) {
 	my($def);
 	$def=$doc->getDocumentElement();
 	if(!defined($def)) {
-		Meta::Utils::System::die("cant get def");
+		throw Meta::Error::Simple("cant get def");
 	}
 	my($name);
 	$name=$def->getElementsByTagName("name",0);
 	if(!defined($name)) {
-		Meta::Utils::System::die("cant get name");
+		throw Meta::Error::Simple("cant get name");
 	}
 	if($name->getLength()!=1) {
-		Meta::Utils::System::die("bad length");
+		throw Meta::Error::Simple("bad length");
 	}
 	my($ret)=$name->[0]->getFirstChild()->getData();
 	return($ret);
@@ -246,7 +248,7 @@ our(%directories)=(
 sub get_link($$$) {
 	my($self,$suff,$modu)=@_;
 	if(!exists($directories{$suff})) {
-		Meta::Utils::System::die("unable to find suffix [".$suff."]");
+		throw Meta::Error::Simple("unable to find suffix [".$suff."]");
 	}
 	my($dire)=$directories{$suff};
 	return(linkit($self->get_name(),$dire,$suff,$modu));
@@ -255,10 +257,10 @@ sub get_link($$$) {
 sub get_2_link($$$$) {
 	my($self,$suff1,$suff2,$modu)=@_;
 	if(!exists($directories{$suff1})) {
-		Meta::Utils::System::die("unable to find suffix [".$suff1."]");
+		throw Meta::Error::Simple("unable to find suffix [".$suff1."]");
 	}
 	if(!exists($directories{$suff2})) {
-		Meta::Utils::System::die("unable to find suffix [".$suff2."]");
+		throw Meta::Error::Simple("unable to find suffix [".$suff2."]");
 	}
 	my($dire1)=$directories{$suff1};
 	my($dire2)=$directories{$suff2};
@@ -275,13 +277,13 @@ sub get_2_link($$$$) {
 sub get_3_link($$$$$) {
 	my($self,$suff1,$suff2,$suff3,$modu)=@_;
 	if(!exists($directories{$suff1})) {
-		Meta::Utils::System::die("unable to find suffix [".$suff1."]");
+		throw Meta::Error::Simple("unable to find suffix [".$suff1."]");
 	}
 	if(!exists($directories{$suff2})) {
-		Meta::Utils::System::die("unable to find suffix [".$suff2."]");
+		throw Meta::Error::Simple("unable to find suffix [".$suff2."]");
 	}
 	if(!exists($directories{$suff3})) {
-		Meta::Utils::System::die("unable to find suffix [".$suff3."]");
+		throw Meta::Error::Simple("unable to find suffix [".$suff3."]");
 	}
 	my($dire1)=$directories{$suff1};
 	my($dire2)=$directories{$suff2};
@@ -368,7 +370,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Module.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -550,10 +552,11 @@ None.
 	0.06 MV web site development
 	0.07 MV weblog issues
 	0.08 MV more pdmt stuff
+	0.09 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Lang::Temp(3), Meta::Class::MethodMaker(3), Meta::Lang::Lily::InfoParser(3), Meta::Lang::Xml::Xml(3), Meta::Utils::File::Dir(3), Meta::Utils::Text::Counter(3), Meta::Utils::Utils(3), Meta::Xml::Dom(3), Meta::Xml::Parsers::Dom(3), XML::Parser(3), XML::XPath(3), strict(3)
+Error(3), Meta::Baseline::Lang::Temp(3), Meta::Class::MethodMaker(3), Meta::Lang::Lily::InfoParser(3), Meta::Lang::Xml::Xml(3), Meta::Utils::File::Dir(3), Meta::Utils::Text::Counter(3), Meta::Utils::Utils(3), Meta::Xml::Dom(3), Meta::Xml::Parsers::Dom(3), XML::Parser(3), XML::XPath(3), strict(3)
 
 =head1 TODO
 

@@ -7,11 +7,12 @@ use IO::Handle qw();
 use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw();
 
 #sub BEGIN();
 #sub print($);
+#sub println($);
 #sub verbose($$);
 #sub dump($);
 #sub verbose_dump($$);
@@ -35,6 +36,11 @@ sub print($) {
 	if(!$block) {
 		print STDOUT $stri;
 	}
+}
+
+sub println($) {
+	my($stri)=@_;
+	&print($stri."\n");
 }
 
 sub verbose($$) {
@@ -114,7 +120,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Output.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -135,6 +141,7 @@ this is a SPECIAL STDERR FILE
 
 	BEGIN()
 	print($)
+	println($)
 	verbose($$)
 	dump($)
 	verbose_dump($$)
@@ -159,6 +166,10 @@ so.
 =item B<print($)>
 
 This prints out an output message to the console.
+
+=item B<println($)>
+
+This method prints out it's argument with newline attached.
 
 =item B<verbose($$)>
 
@@ -231,6 +242,7 @@ None.
 	0.13 MV SEE ALSO section fix
 	0.14 MV finish papers
 	0.15 MV teachers project
+	0.16 MV md5 issues
 
 =head1 SEE ALSO
 

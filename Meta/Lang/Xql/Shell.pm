@@ -13,7 +13,7 @@ use Meta::Template::Sub qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Shell::Shell);
 
 #sub BEGIN();
@@ -76,7 +76,9 @@ sub process($$) {
 		my($file)=($line=~/^\s*LOAD_HTML_FILE\s+'(.*)'\s*$/);
 		Meta::Utils::Output::verbose($self->get_verbose(),"loading file [".$file."]...\n");
 		CORE::eval {
-			$self->set_content(Meta::Utils::File::File::load($file));
+			my($content);
+			Meta::Utils::File::File::load($file,\$content);
+			$self->set_content($content);
 			$self->set_dom(Meta::Lang::Html::Html::c2dom($self->get_content()));
 		};
 		if($@) {
@@ -214,7 +216,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Shell.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -284,6 +286,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

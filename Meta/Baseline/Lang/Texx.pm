@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -77,7 +77,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Texx.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -153,6 +153,7 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV move tests to modules
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 

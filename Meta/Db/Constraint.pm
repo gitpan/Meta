@@ -7,7 +7,7 @@ use Meta::Ds::Ohash qw();
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.04";
+$VERSION="0.05";
 @ISA=qw(Meta::Ds::Ohash Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -98,7 +98,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Constraint.pm
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -168,6 +168,7 @@ None.
 	0.02 MV website construction
 	0.03 MV web site automation
 	0.04 MV SEE ALSO section fix
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 

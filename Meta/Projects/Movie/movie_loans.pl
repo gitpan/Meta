@@ -7,6 +7,7 @@ use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Xml::Dom qw();
 use Meta::Lang::Xml::Xml qw();
+use Error qw(:try);
 
 my($vali);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -35,11 +36,11 @@ for(my($i)=0;$i<$onloantos->getLength();$i++) {
 		my($full)=$name->getFirstChild()->getData();
 		Meta::Utils::Output::print("[".$full."] is on loan to [".$loanto_name."]\n");
 	} else {
-		Meta::Utils::System::die("no loan text ?");
+		throw Meta::Error::Simple("no loan text ?");
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -72,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: movie_loans.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -156,10 +157,11 @@ None.
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
 	0.12 MV move tests to modules
+	0.13 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Lang::Xml::Xml(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::Dom(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Lang::Xml::Xml(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::Dom(3), strict(3)
 
 =head1 TODO
 

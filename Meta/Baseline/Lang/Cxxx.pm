@@ -8,7 +8,7 @@ use Meta::Baseline::Aegis qw();
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub env();
@@ -19,16 +19,16 @@ $VERSION="0.27";
 
 sub env() {
 	my(%hash);
-	my($clas)="";
+	my($class)="";
 	my($sear)=Meta::Baseline::Aegis::search_path_list();
 	for(my($i)=0;$i<=$#$sear;$i++) {
 		my($curr)=$sear->[$i];
-		$clas=Meta::Utils::File::Path::add_path($clas,
+		$class=Meta::Utils::File::Path::add_path($class,
 			$curr."/java/lib",":");
-		$clas=Meta::Utils::File::Path::add_path($clas,
+		$class=Meta::Utils::File::Path::add_path($class,
 			$curr."/java/import/lib",":");
 	}
-	$hash{"CLASSPATH"}=$clas;
+	$hash{"CLASSPATH"}=$class;
 	return(\%hash);
 }
 
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cxxx.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -177,6 +177,7 @@ None.
 	0.25 MV website construction
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 

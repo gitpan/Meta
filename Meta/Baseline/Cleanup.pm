@@ -12,7 +12,7 @@ use Meta::Baseline::Cook qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.27";
 @ISA=qw();
 
 #sub cleanup($$$$$$);
@@ -26,7 +26,7 @@ sub cleanup($$$$$$) {
 	my($dire,$abso,$safe,$matc,$demo,$verb)=@_;
 	my($hash)=extra_files_hash($dire,$abso,$safe,0);
 	$hash=Meta::Utils::Hash::filter_regexp($hash,$matc,1);
-	my($resu)=Meta::Utils::File::Remove::rmhash_demo_verb($hash,$demo,$verb);
+	my($resu)=Meta::Utils::File::Remove::rmhash($hash);
 	if(!$resu) {
 		return($resu);
 	}
@@ -97,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cleanup.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -215,6 +215,7 @@ None.
 	0.24 MV website construction
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 

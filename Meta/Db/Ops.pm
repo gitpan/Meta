@@ -8,15 +8,16 @@ use Meta::Sql::Stats qw();
 use Meta::Db::Dbi qw();
 use Meta::Utils::Output qw();
 use Meta::Xml::Writer qw();
-use Meta::Utils::System qw();
 use Meta::Xml::Parsers::Dbdata qw();
 use Meta::Db::Info qw();
+use Error qw(:try);
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw();
 
-#sub act($$);
+#sub create_db($$);
 #sub export_writ($$$$);
 #sub export_hand($$$$);
 #sub export_file($$$$);
@@ -36,23 +37,30 @@ $VERSION="0.14";
 
 #__DATA__
 
-sub act($$) {
+sub create_db($$) {
 	my($conn,$defx)=@_;
-	my($verb)=0;
-	my($demo)=0;
-	if($verb) {
-		$conn->print(Meta::Utils::Output::get_file());
-		$defx->print(Meta::Utils::Output::get_file());
-	}
 	my($info)=Meta::Db::Info->new();
 	$info->set_name($defx->get_name());
 	$info->set_type($conn->get_type());
-	my($stats)=Meta::Sql::Stats->new();
-	$defx->getsql_drop($stats,$info,1);
-	$defx->getsql_create($stats,$info);
+	
+	my($drop_stats)=Meta::Sql::Stats->new();
+	$defx->getsql_drop($drop_stats,$info,1);
+
+	my($create_stats)=Meta::Sql::Stats->new();
+	$defx->getsql_create($create_stats,$info);
+
 	my($dbi)=Meta::Db::Dbi->new();
 	$dbi->connect($conn);
-	$dbi->execute($stats,$conn,$info);
+	try {
+		$dbi->execute($drop_stats,$conn,$info);
+	}
+	catch Error with {#FIXME only catch errors regaring "no such database"
+		#and not errors like "dont have permission"
+		#we dont care about errors in the drop process
+		my($error)=@_;
+		Meta::Utils::Output::println("got drop errors [".$error->text()."]");
+	};
+	$dbi->execute($create_stats,$conn,$info);
 	$dbi->disconnect($conn);
 	return(1);
 }
@@ -72,11 +80,11 @@ sub export_writ($$$$) {
 		my($select)=$fields->getsql_select($info);
 		my($stat)=$dbi->prepare("SELECT ".$select." FROM ".$table->get_name());
 		if(!$stat) {
-			Meta::Utils::System::die("unable to prepare statement");
+			throw Meta::Error::Simple("unable to prepare statement");
 		}
 		my($return)=$stat->execute();
 		if(!$return) {
-			Meta::Utils::System::die("unable to execute statement");
+			throw Meta::Error::Simple("unable to execute statement");
 		}
 		my($set)=$stat->fetchrow_arrayref();
 		while($set) {
@@ -112,9 +120,9 @@ sub export_hand($$$$) {
 
 sub export_file($$$$) {
 	my($dbi,$defx,$file,$info)=@_;
-	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	export_hand($dbi,$defx,*FILE,$info);
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	my($io)=Meta::IO::File->new_writer($file);
+	export_hand($dbi,$defx,$io,$info);
+	$io->close();
 }
 
 sub import($) {
@@ -135,7 +143,7 @@ sub san($$$$$$$$) {
 	}
 	my($dbxx)=DBI->connect($dsnx,$user,$password);
 	if(!$dbxx) {
-		Meta::Utils::System::die("error in connect");
+		throw Meta::Error::Simple("error in connect");
 	}
 	my($defx)=Meta::Db::Def->new();
 	$defx->read($schema);
@@ -146,7 +154,7 @@ sub san($$$$$$$$) {
 	}
 	my($resu)=$dbxx->disconnect();
 	if(!$resu) {
-		Meta::Utils::System::die("error in disconnect");
+		throw Meta::Error::Simple("error in disconnect");
 	}
 	return(1);
 }
@@ -169,9 +177,9 @@ sub sindex($$$) {
 		if(!defined($resu)) {
 			my($resu)=$dbxx->disconnect();
 			if(!$resu) {
-				Meta::Utils::System::die("error in disconnect");
+				throw Meta::Error::Sipmle("error in disconnect");
 			}
-			Meta::Utils::System::die("error in issuing [".$i."] [".$stat."]");
+			throw Meta::Error::Simple("error in issuing [".$i."] [".$stat."]");
 		}
 		for(my($j)=0;$j<=$#$resu;$j++) {
 			my($curr)=$resu->[$j]->[0];
@@ -200,14 +208,14 @@ sub sindex($$$) {
 				if(!defined($resu)) {
 					my($resu)=$dbxx->disconnect();
 					if(!$resu) {
-						Meta::Utils::System::die("error in disconnect");
+						throw Meta::Error::Simple("error in disconnect");
 					}
-					Meta::Utils::System::die("error in issuing [".$i."] [".$stat."]");
+					throw Meta::Error::Simple("error in issuing [".$i."] [".$stat."]");
 				}
 				for(my($j)=0;$j<=$#$resu;$j++) {
 					my($curr)=$resu->[$j]->[0];
 					if(!defined($hash{$tabl,$curr})) {
-						Meta::Utils::System::die("error in $name,$cnam,$curr pointing to $tabl");
+						throw Meta::Error::Simple("error in [".$name."][".$cnam."][".$curr."] pointing to [".$tabl."]");
 					}
 				}
 			}
@@ -218,10 +226,22 @@ sub sindex($$$) {
 
 sub clean_sa($) {
 	my($dbi)=@_;
+#	my(@tables)=$dbi->tables();
+#	Meta::Utils::Output::print("tables is [".join(',',@tables)."]\n");
+#	my($sth)=$dbi->table_info('','','','TABLE');
 	my($sth)=$dbi->table_info();
 	$dbi->begin_work();
 	while(my($qual,$owner,$name,$type,$remarks)=$sth->fetchrow_array()) {
-#		Meta::Utils::Output::print("doing [".$name."]\n");
+		#Meta::Utils::Output::print("qual is [".$qual."]\n");
+		#Meta::Utils::Output::print("owner is [".$owner."]\n");
+		#Meta::Utils::Output::print("name is [".$name."]\n");
+		#Meta::Utils::Output::print("type is [".$type."]\n");
+		#Meta::Utils::Output::print("remarks is [".$remarks."]\n");
+# this is PostgreSQL code
+#		my($user)="mark";
+#		if($owner eq $user) {
+#			$dbi->execute_single("DELETE FROM ".$name);
+#		}
 		$dbi->execute_single("DELETE FROM ".$name);
 	}
 	$dbi->commit();
@@ -297,13 +317,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ops.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Db::Ops qw();
-	my($scod)=Meta::Db::Ops::act($connection,$dbdef);
+	my($scod)=Meta::Db::Ops::create_db($connection,$dbdef);
 
 =head1 DESCRIPTION
 
@@ -316,7 +336,7 @@ in no other modules ballpark.
 
 =head1 FUNCTIONS
 
-	act($$)
+	create_db($$)
 	export_writ($$$$)
 	export_hand($$$$)
 	export_file($$$$)
@@ -336,7 +356,7 @@ in no other modules ballpark.
 
 =over 4
 
-=item B<act($$)>
+=item B<create_db($$)>
 
 This will actually do the work of creating.
 You need to supply a connection object and a definition object.
@@ -442,10 +462,11 @@ None.
 	0.12 MV move tests to modules
 	0.13 MV download scripts
 	0.14 MV weblog issues
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Db::Dbi(3), Meta::Db::Info(3), Meta::Sql::Stat(3), Meta::Sql::Stats(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::Parsers::Dbdata(3), Meta::Xml::Writer(3), strict(3)
+Error(3), Meta::Db::Dbi(3), Meta::Db::Info(3), Meta::IO::File(3), Meta::Sql::Stat(3), Meta::Sql::Stats(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Dbdata(3), Meta::Xml::Writer(3), strict(3)
 
 =head1 TODO
 

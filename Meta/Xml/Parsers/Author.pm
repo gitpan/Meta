@@ -14,7 +14,7 @@ use Meta::Info::Im qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw(Meta::Xml::Parsers::Collector);
 
 #sub new($);
@@ -27,13 +27,13 @@ $VERSION="0.15";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
-	my($self)=Meta::Xml::Parsers::Collector::new($clas);
+	my($class)=@_;
+	my($self)=Meta::Xml::Parsers::Collector::new($class);
 	$self->setHandlers(
 		'Start'=>\&handle_start,
 		'End'=>\&handle_end,
 	);
-	#bless($self,$clas);
+	#bless($self,$class);
 	$self->{TEMP_AUTHOR}=defined;
 	return($self);
 }
@@ -296,7 +296,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Author.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -383,6 +383,7 @@ None.
 	0.13 MV weblog issues
 	0.14 MV finish papers
 	0.15 MV teachers project
+	0.16 MV md5 issues
 
 =head1 SEE ALSO
 

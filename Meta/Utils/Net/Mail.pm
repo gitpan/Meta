@@ -5,9 +5,11 @@ package Meta::Utils::Net::Mail;
 use strict qw(vars refs subs);
 use Meta::Utils::Utils qw();
 use Meta::Utils::File::Remove qw();
+use Meta::Utils::File::File qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub send($$);
@@ -18,17 +20,17 @@ $VERSION="0.28";
 sub send($$) {
 	my($clie,$text)=@_;
 	my($file)=Meta::Utils::Utils::get_temp_file();
-	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	print FILE $text;
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
-	my($resu)=Meta::Utils::System::system_shell_nodie(
+	Meta::Utils::File::File::save($file,$text);
+	my($resu)=Meta::Utils::System::system_shell(
 		"sendmail ".
 		join(" ",@$clie).
 		" < ".
 		$file
 	);
-	my($remo)=Meta::Utils::File::Remove::rm_nodie($file);
-	return($resu);
+	if(!$resu) {
+		throw Meta::Error::Simple("send of email failed");
+	}
+	Meta::Utils::File::Remove::rm($file);
 }
 
 sub TEST($) {
@@ -69,15 +71,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Mail.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Utils::Net::Mail qw();
-	my($stat)=Meta::Utils::Net::Mail::send("mark@meta.org","hello");
-	if(!$stat) {
-		Meta::Utils::System::die("unable to send mail to mark");
+	try {
+		Meta::Utils::Net::Mail::send("mark@veltzer.org","Hello from Meta::Utils::Net::Mail");
+	}
+	catch Error::Simple with {
+		Meta::Utils::Output::print("unable to send mail to mark");
 	}
 
 =head1 DESCRIPTION
@@ -110,6 +114,7 @@ The function return whether it was able to send the message or not.
 =item B<TEST($)>
 
 Test suite for this module.
+This test suite currently does nothing.
 
 =back
 
@@ -159,10 +164,11 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::File::Remove(3), Meta::Utils::Utils(3), strict(3)
+Error(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

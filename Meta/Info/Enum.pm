@@ -7,9 +7,10 @@ use Meta::Ds::Ohash qw();
 use Meta::Utils::Output qw();
 use Meta::Xml::Parsers::Enum qw();
 use Meta::Development::Module qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub BEGIN();
@@ -44,7 +45,7 @@ sub new_modu($$) {
 sub is_selected($$$) {
 	my($self,$selected,$val)=@_;
 	if($self->hasnt($val)) {
-		Meta::Utils::System::die("value [".$val."] is not part of the enum");
+		throw Meta::Error::Simple("value [".$val."] is not part of the enum");
 	}
 	return($selected eq $val);
 }
@@ -98,7 +99,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Enum.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -172,10 +173,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Development::Module(3), Meta::Ds::Ohash(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Enum(3), strict(3)
+Error(3), Meta::Development::Module(3), Meta::Ds::Ohash(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Enum(3), strict(3)
 
 =head1 TODO
 

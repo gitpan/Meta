@@ -3,9 +3,10 @@
 package Meta::Utils::String;
 
 use strict qw(vars refs subs);
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub compare($$);
@@ -42,7 +43,7 @@ sub is_alnum_u($) {
 sub check_alnum_u($) {
 	my($string)=@_;
 	if(!is_alnum_u($string)) {
-		Meta::Utils::System::die("string [".$string."] is not alpha numeric with underscores");
+		throw Meta::Error::Simple("string [".$string."] is not alpha numeric with underscores");
 	}
 }
 
@@ -97,7 +98,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: String.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -205,10 +206,11 @@ None.
 	0.07 MV website construction
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
+	0.10 MV md5 issues
 
 =head1 SEE ALSO
 
-strict(3)
+Meta::Error::Simple(3), strict(3)
 
 =head1 TODO
 

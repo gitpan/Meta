@@ -7,26 +7,27 @@ use Meta::Baseline::Aegis qw();
 use Meta::Lang::Perl::Perl qw();
 use Meta::Baseline::Lang::Perl qw();
 use Meta::Utils::Output qw();
-use Meta::Ds::Oset qw();
+use Meta::Ds::Noset qw();
+use Meta::Info::Enum qw();
 
-my($fset)=Meta::Ds::Oset->new();
-my($set)=Meta::Ds::Oset->new();
-$set->insert("copyright","fix the COPYRIGHT tag");
-$set->insert("license","fix the LICENSE tag");
-$set->insert("details","fix the DETAILS tag");
-$set->insert("author","fix the AUTHOR tag");
-$set->insert("history","fix the HISTORY tag");
-$set->insert("see","fix the SEE ALSO tag");
-$set->insert("options","fix the OPTIONS tag");
-$set->insert("version","fix the VERSION tag");
-$set->insert("super","fix the SUPER CLASSES tag");
-$set->set_default("options");
+my($fset)=Meta::Ds::Noset->new();
+my($enum)=Meta::Info::Enum->new();
+$enum->insert("copyright","fix the COPYRIGHT tag");
+$enum->insert("license","fix the LICENSE tag");
+$enum->insert("details","fix the DETAILS tag");
+$enum->insert("author","fix the AUTHOR tag");
+$enum->insert("history","fix the HISTORY tag");
+$enum->insert("see","fix the SEE ALSO tag");
+$enum->insert("options","fix the OPTIONS tag");
+$enum->insert("version","fix the VERSION tag");
+$enum->insert("super","fix the SUPER CLASSES tag");
+$enum->set_default("options");
 my($verb,$all,$file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("verbose","noisy or quiet ?",1,\$verb);
 $opts->def_bool("all","do it for all files in the change ?",0,\$all);
-$opts->def_setx("fix","what fix to apply ?","options",\$fset,$set);
+$opts->def_setx("fix","what fix to apply ?","options",\$fset,$enum);
 $opts->def_devf("file","what file to fix ?",undef,\$file);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
@@ -80,7 +81,7 @@ for(my($i)=0;$i<=$#$file_list;$i++) {
 	}
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -113,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_pod_fix.pl
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -194,15 +195,15 @@ do it for all files in the change ?
 what fix to apply ?
 
 options:
-	bug - bug
-	bug - bug
-	bug - bug
-	bug - bug
-	bug - bug
-	bug - bug
-	bug - bug
-	bug - bug
-	bug - bug
+	copyright - fix the COPYRIGHT tag
+	license - fix the LICENSE tag
+	details - fix the DETAILS tag
+	author - fix the AUTHOR tag
+	history - fix the HISTORY tag
+	see - fix the SEE ALSO tag
+	options - fix the OPTIONS tag
+	version - fix the VERSION tag
+	super - fix the SUPER CLASSES tag
 
 =item B<file> (type: devf, default: )
 
@@ -229,10 +230,11 @@ None.
 	0.01 MV move tests to modules
 	0.02 MV download scripts
 	0.03 MV finish papers
+	0.04 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Ds::Oset(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Ds::Noset(3), Meta::Info::Enum(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

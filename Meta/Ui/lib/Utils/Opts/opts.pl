@@ -34,7 +34,7 @@ Gtk->main();
 
 Meta::Utils::Output::print("In here after Gtk->main()\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: opts.pl
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.23
 
 =head1 SYNOPSIS
 
@@ -162,6 +162,7 @@ None.
 	0.20 MV bring movie data
 	0.21 MV finish papers
 	0.22 MV teachers project
+	0.23 MV md5 issues
 
 =head1 SEE ALSO
 

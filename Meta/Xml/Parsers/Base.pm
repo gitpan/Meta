@@ -10,7 +10,7 @@ use Meta::Utils::File::File qw();
 use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(XML::Parser::Expat);
 
 #sub new($);
@@ -25,15 +25,15 @@ $VERSION="0.11";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=XML::Parser::Expat->new();
 	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
+		throw Meta::Error::Simple("didn't get a parser");
 	}
 	$self->setHandlers(
 		'ExternEnt'=>\&handle_externent,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -70,7 +70,8 @@ sub in_abs_ccontext($$) {
 sub handle_externent($$$$) {
 	my($self,$base,$sysi,$pubi)=@_;
 	my($find)=Meta::Baseline::Aegis::which($sysi);
-	my($data)=Meta::Utils::File::File::load($find);
+	my($data);
+	Meta::Utils::File::File::load($find,\$data);
 	#Meta::Utils::Output::print("in handle_externent\n");
 	#Meta::Utils::Output::print("base is [".$base."]\n");
 	#Meta::Utils::Output::print("sysi is [".$sysi."]\n");
@@ -121,7 +122,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Base.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -216,6 +217,7 @@ None.
 	0.09 MV website construction
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -8,9 +8,10 @@ use Meta::Utils::File::File qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::Debug qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.39";
+$VERSION="0.40";
 @ISA=qw();
 
 #sub system_nodie($$);
@@ -19,6 +20,7 @@ $VERSION="0.39";
 #sub system_shell($);
 #sub smart_shell($);
 #sub system_out_nodie($$$);
+#sub system_err($$$);
 #sub system_err_nodie($$$);
 #sub system_err_silent_nodie($$);
 #sub system_out($$);
@@ -30,6 +32,7 @@ $VERSION="0.39";
 #sub eval_nodie($$);
 #sub os_exit($);
 #sub exit($);
+#sub exit_ok();
 #sub die($);
 #sub TEST($);
 
@@ -56,7 +59,7 @@ sub system($$) {
 	my($comm,$list)=@_;
 	my($resu)=&system_nodie($comm,$list);
 	if(!$resu) {
-		Meta::Utils::System::die("execution of [".$comm."] failed");
+		throw Meta::Error::Simple("execution of [".$comm."] failed");
 	}
 	return($resu);
 }
@@ -70,9 +73,11 @@ sub system_shell_nodie($) {
 
 sub system_shell($) {
 	my($prog)=@_;
-	my($scod)=system_shell_nodie($prog);
-	if(!$scod) {
-		&die("execution of [".$prog."] failed");
+	my($code)=CORE::system($prog);
+	my($resu)=Meta::Utils::Utils::bnot($code);
+#	Meta::Utils::Output::print("resu is [".$resu."]\n");
+	if(!$resu) {
+		throw Meta::Error::Simple("error running shell command [".$prog."]");
 	}
 }
 
@@ -92,6 +97,18 @@ sub system_out_nodie($$$) {
 	}
 	close(FILE) || return(0);
 	return(1);
+}
+
+sub system_err($$$) {
+	my($text,$prog,$args)=@_;
+	my($full)=$prog." ".CORE::join(' ',@$args)." 2>&1 |";
+	open(FILE,$full) || throw Meta::Error::Simple("unable to open prog [".$full."]");
+	my($line);
+	$$text="";
+	while($line=<FILE> || 0) {
+		$$text.=$line;
+	}
+	close(FILE) || throw Meta::Error::Simple("unable to close prog [".$full."]");
 }
 
 sub system_err_nodie($$$) {
@@ -180,7 +197,8 @@ sub perl_nodie($$) {
 #	my($resu)=$cmpt->rdo($prog);
 #	or
 #	use Meta::Utils::File::File qw();
-#	my($file)=Meta::Utils::File::File::load($prog);
+#	my($file);
+#	Meta::Utils::File::File::load($prog,\$file);
 #	my($resu)=$cmpt->reval($file);
 
 #	my(@save)=@ARGV;
@@ -189,7 +207,8 @@ sub perl_nodie($$) {
 #	@ARGV=@save;
 
 	$eval=1;
-	my($file)=Meta::Utils::File::File::load($prog);
+	my($file);
+	Meta::Utils::File::File::load($prog,\$file);
 
 	my(@save)=@ARGV;
 	@ARGV=@$args;
@@ -246,6 +265,10 @@ sub exit($) {
 	CORE::exit($code);
 }
 
+sub exit_ok() {
+	&exit(1);
+}
+
 sub die($) {
 	my($stri)=@_;
 	Carp::confess($stri);
@@ -289,7 +312,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: System.pm
 	PROJECT: meta
-	VERSION: 0.39
+	VERSION: 0.40
 
 =head1 SYNOPSIS
 
@@ -317,6 +340,7 @@ die on errors from the execution process...
 	system_shell($)
 	smart_shell($)
 	system_out_nodie($$$)
+	system_err($$$)
 	system_err_nodie($$$)
 	system_err_silent_nodie($$)
 	system_out($$)
@@ -327,6 +351,7 @@ die on errors from the execution process...
 	smart_nodie($$)
 	os_exit($)
 	exit($)
+	exit_ok()
 	die($)
 	TEST($)
 
@@ -373,6 +398,12 @@ This routine does exactly the same as B<system_out> but does not die.
 This routine return the error status according to whether the command was
 successful or not.
 This routine gets a string by reference to store the results in.
+
+=item B<system_err($$$)>
+
+This method will run a system command and will put it's standard error into
+a string reference you will give it. Exceptions will be thrown in case of
+error.
 
 =item B<system_err_nodie($$$)>
 
@@ -463,6 +494,12 @@ The ideas here are:
 This function performs an exist but with a normal value passed to
 it. This means that you pass 1 for success and 0 otherwise.
 
+=item B<exit_ok()>
+
+This function is explicitly designed to be called when a program
+exists successfully. Currently it merely calls exit(1) from this
+very package.
+
 =item B<die($)>
 
 This routine gets a string and dies while printing the string.
@@ -530,10 +567,11 @@ None.
 	0.37 MV web site automation
 	0.38 MV SEE ALSO section fix
 	0.39 MV download scripts
+	0.40 MV md5 issues
 
 =head1 SEE ALSO
 
-Carp(3), Meta::Utils::Debug(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
+Carp(3), Error(3), Meta::Utils::Debug(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

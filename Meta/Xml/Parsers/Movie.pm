@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Xml::Parsers::Collector qw();
 use Meta::Ds::Array qw();
 use Meta::Utils::Time qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw(Meta::Xml::Parsers::Collector);
 
 #sub new($);
@@ -20,26 +21,26 @@ $VERSION="0.13";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Xml::Parsers::Collector->new();
 	$self->setHandlers(
 		"Start"=>\&handle_start,
 		"End"=>\&handle_end,
 #		"Char"=>\&handle_char,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
 sub set_dbi($$) {
-	my($self,$valx)=@_;
-	$self->{DBI}=$valx;
-	$self->{PREP_DIRECTOR}=$valx->prepare("INSERT INTO person (id,firstname,lineage,surname,sequential) VALUES (?,?,?,?,?);");
-	$self->{PREP_TITLE}=$valx->prepare("INSERT INTO movie (id,name,description) VALUES (?,?,?);");
-	$self->{PREP_NODATE_VIEW}=$valx->prepare("INSERT INTO view (movie) VALUES (?);");
-	$self->{PREP_VIEW}=$valx->prepare("INSERT INTO view (movie,date) VALUES (?,?);");
-	$self->{PREP_AUTH}=$valx->prepare("INSERT INTO credit (movie,verification) VALUES (?,?);");
-	$self->{PREP_DIRE}=$valx->prepare("INSERT INTO participant (person,movie,role) VALUES (?,?,?);");
+	my($self,$val)=@_;
+	$self->{DBI}=$val;
+	$self->{PREP_DIRECTOR}=$val->prepare("INSERT INTO person (id,firstname,lineage,surname,sequential) VALUES (?,?,?,?,?);");
+	$self->{PREP_TITLE}=$val->prepare("INSERT INTO movie (id,name,description) VALUES (?,?,?);");
+	$self->{PREP_NODATE_VIEW}=$val->prepare("INSERT INTO view (movie) VALUES (?);");
+	$self->{PREP_VIEW}=$val->prepare("INSERT INTO view (movie,date) VALUES (?,?);");
+	$self->{PREP_AUTH}=$val->prepare("INSERT INTO credit (movie,verification) VALUES (?,?);");
+	$self->{PREP_DIRE}=$val->prepare("INSERT INTO participant (person,movie,role) VALUES (?,?,?);");
 }
 
 sub handle_start($$) {
@@ -70,61 +71,61 @@ sub handle_end($$) {
 		#insert director
 		my($prep)=$self->{PREP_DIRECTOR};
 		my($rv1)=$prep->bind_param(1,$self->{TEMP_DIRECTOR_ID});
-		if(!$rv1) { Meta::Utils::System::die("unable to bind param 1");}
+		if(!$rv1) { throw Meta::Error::Simple("unable to bind param 1");}
 		my($rv2)=$prep->bind_param(2,$self->{TEMP_DIRECTOR_FIRSTNAME});
-		if(!$rv2) { Meta::Utils::System::die("unable to bind param 2");}
+		if(!$rv2) { throw Meta::Error::Simple("unable to bind param 2");}
 		my($rv3)=$prep->bind_param(3,$self->{TEMP_DIRECTOR_LINEAGE});
-		if(!$rv3) { Meta::Utils::System::die("unable to bind param 3");}
+		if(!$rv3) { throw Meta::Error::Simple("unable to bind param 3");}
 		my($rv4)=$prep->bind_param(4,$self->{TEMP_DIRECTOR_SURNAME});
-		if(!$rv4) { Meta::Utils::System::die("unable to bind param 4");}
+		if(!$rv4) { throw Meta::Error::Simple("unable to bind param 4");}
 		my($rv5)=$prep->bind_param(5,$self->{TEMP_DIRECTOR_SEQUENTIAL});
-		if(!$rv5) { Meta::Utils::System::die("unable to bind param 5");}
+		if(!$rv5) { throw Meta::Error::Simple("unable to bind param 5");}
 		my($prv)=$prep->execute();
 		if(!$prv) {
-			Meta::Utils::System::die("unable to execute statement");
+			throw Meta::Error::Simple("unable to execute statement");
 		}
 	}
 	if($self->in_context("movie.titles.title",$elem)) {
 		#insert title 
 		my($prep)=$self->{PREP_TITLE};
 		my($rv1)=$prep->bind_param(1,$self->{TEMP_TITLE_ID});
-		if(!$rv1) { Meta::Utils::System::die("unable to bind param 1");}
+		if(!$rv1) { throw Meta::Error::Simple("unable to bind param 1");}
 		my($rv2)=$prep->bind_param(2,$self->{TEMP_TITLE_NAME});
-		if(!$rv2) { Meta::Utils::System::die("unable to bind param 2");}
+		if(!$rv2) { throw Meta::Error::Simple("unable to bind param 2");}
 		my($rv3)=$prep->bind_param(3,$self->{TEMP_TITLE_DESCRIPTION});
-		if(!$rv3) { Meta::Utils::System::die("unable to bind param 3");}
+		if(!$rv3) { throw Meta::Error::Simple("unable to bind param 3");}
 		my($prv)=$prep->execute();
 		if(!$prv) {
-			Meta::Utils::System::die("unable to execute statement");
+			throw Meta::Error::Simple("unable to execute statement");
 		}
 		#insert views with no dates
 		$prep=$self->{PREP_NODATE_VIEW};
 		$rv1=$prep->bind_param(1,$self->{TEMP_TITLE_ID});
-		if(!$rv1) { Meta::Utils::System::die("unable to bind param 1");}
+		if(!$rv1) { throw Meta::Error::Simple("unable to bind param 1");}
 		my($views)=$self->{TEMP_TITLE_VIEWS};
 		for(my($i)=0;$i<$views;$i++) {
 			my($prv)=$prep->execute();
 			if(!$prv) {
-				Meta::Utils::System::die("unable to execute statement");
+				throw Meta::Error::Simple("unable to execute statement");
 			}
 		}
 		#insert views with dates
 		$prep=$self->{PREP_VIEW};
 		$rv1=$prep->bind_param(1,$self->{TEMP_TITLE_ID});
-		if(!$rv1) { Meta::Utils::System::die("unable to bind param 1");}
+		if(!$rv1) { throw Meta::Error::Simple("unable to bind param 1");}
 		my($list)=$self->{TEMP_TITLE_VIEW_LIST};
 		for(my($i)=0;$i<$list->size();$i++) {
 			my($curr)=$list->getx($i);
 			$prep->bind_param(2,$curr);
 			my($prv)=$prep->execute();
 			if(!$prv) {
-				Meta::Utils::System::die("unable to execute statement");
+				throw Meta::Error::Simple("unable to execute statement");
 			}
 		}
 		#insert authorizations
 		$prep=$self->{PREP_AUTH};
 		$rv1=$prep->bind_param(1,$self->{TEMP_TITLE_ID});
-		if(!$rv1) { Meta::Utils::System::die("unable to bind param 1");}
+		if(!$rv1) { throw Meta::Error::Simple("unable to bind param 1");}
 		my($auth_string)=$self->{TEMP_TITLE_AUTHORIZATIONS};
 		my($auth_hash)={
 			"i","imdb",
@@ -142,30 +143,30 @@ sub handle_end($$) {
 		for(my($i)=0;$i<length($auth_string);$i++) {
 			my($curr)=substr($auth_string,$i,1);
 			if(!exists($auth_hash->{$curr})) {
-				Meta::Utils::System::die("unable to translate authorization for [".$curr."]");
+				throw Meta::Error::Simple("unable to translate authorization for [".$curr."]");
 			}
 			my($auth)=$auth_hash->{$curr};
 			$rv2=$prep->bind_param(2,$auth);
-			if(!$rv2) { Meta::Utils::System::die("unable to bind param 2");}
+			if(!$rv2) { throw Meta::Error::Simple("unable to bind param 2");}
 			my($prv)=$prep->execute();
 			if(!$prv) {
-				Meta::Utils::System::die("unable to execute statement");
+				throw Meta::Error::Simple("unable to execute statement");
 			}
 		}
 		#insert director (if we have one that is)
 		$prep=$self->{PREP_DIRE};
 		my($list)=$self->{TEMP_TITLE_DIRECTOR_LIST};
 		$rv2=$prep->bind_param(2,$self->{TEMP_TITLE_ID});
-		if(!$rv2) { Meta::Utils::System::die("unable to bind param 2");}
+		if(!$rv2) { throw Meta::Error::Simple("unable to bind param 2");}
 		$rv3=$prep->bind_param(3,"Director");
-		if(!$rv3) { Meta::Utils::System::die("unable to bind param 3");}
+		if(!$rv3) { throw Meta::Error::Simple("unable to bind param 3");}
 		for(my($i)=0;$i<$list->size();$i++) {
 			my($curr)=$list->getx($i);
 			$rv1=$prep->bind_param(1,$curr);
-			if(!$rv1) { Meta::Utils::System::die("unable to bind param 1");}
+			if(!$rv1) { throw Meta::Error::Simple("unable to bind param 1");}
 			my($prvf)=$prep->execute();
 			if(!$prvf) {
-				Meta::Utils::System::die("unable to execute statement");
+				throw Meta::Error::Simple("unable to execute statement");
 			}
 		}
 	}
@@ -251,7 +252,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Movie.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -338,10 +339,11 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV teachers project
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Ds::Array(3), Meta::Utils::Time(3), Meta::Xml::Parsers::Collector(3), strict(3)
+Error(3), Meta::Ds::Array(3), Meta::Utils::Time(3), Meta::Xml::Parsers::Collector(3), strict(3)
 
 =head1 TODO
 

@@ -5,7 +5,7 @@ package Meta::Info::Vcard;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.03";
+$VERSION="0.04";
 @ISA=qw();
 
 #sub new($);
@@ -14,9 +14,9 @@ $VERSION="0.03";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Vcard.pm
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -156,7 +156,7 @@ strained this too much in my opinion (xml would have done better)).
 
 This is a constructor for the Meta::Info::Vcard object.
 
-=item B<TEXT($)>
+=item B<TEST($)>
 
 Test suite for this module.
 
@@ -183,6 +183,7 @@ None.
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
 	0.03 MV more pdmt stuff
+	0.04 MV md5 issues
 
 =head1 SEE ALSO
 

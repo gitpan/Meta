@@ -3,16 +3,15 @@
 package Meta::Utils::File::Dir;
 
 use strict qw(vars refs subs);
-use Meta::Utils::System qw();
-#use Carp qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub empty($);
-#sub exist($);
 #sub check_exist($);
+#sub check_notexist($);
 #sub fixdir($);
 #sub get_relative_path($$);
 #sub TEST($);
@@ -21,21 +20,26 @@ $VERSION="0.29";
 
 sub empty($) {
 	my($dire)=@_;
-	opendir(DIRE,$dire) || Meta::Utils::System::die("cannot opendir [".$dire."]");
+	opendir(DIRE,$dire) || throw Meta::Error::Simple("cannot opendir [".$dire."]");
 	my(@file)=readdir(DIRE);
-	closedir(DIRE) || Meta::Utils::System::die("cannot closedir [".$dire."]");
+	closedir(DIRE) || throw Meta::Error::Simple("cannot closedir [".$dire."]");
 	return($#file==1);
-}
-
-sub exist($) {
-	my($dire)=@_;
-	return(-d $dire);
 }
 
 sub check_exist($) {
 	my($dire)=@_;
-	if(!exist($dire)) {
-		Meta::Utils::System::die("directory [".$dire."] does not exist");
+	if(-d $dire) {
+	} else {
+		Meta::Utils::Output::print("throwing error\n");
+		throw Meta::Error::Simple("directory [".$dire."] does not exist");
+	}
+}
+
+sub check_notexist($) {
+	my($dire)=@_;
+	if(-d $dire) {
+		Meta::Utils::Output::print("throwing error\n");
+		throw Meta::Error::Simple("directory [".$dire."] exists");
 	}
 }
 
@@ -73,9 +77,26 @@ sub get_relative_path($$) {
 	return($res);
 }
 
+sub file_list($) {
+	my($dire)=@_;
+	opendir(DIRE,$dire) || throw Meta::Error::Simple("cannot opendir [".$dire."]");
+	my(@file)=readdir(DIRE);
+	closedir(DIRE) || throw Meta::Error::Simple("cannot closedir [".$dire."]");
+	return(\@file);
+}
+
 sub TEST($) {
 	my($context)=@_;
-	return(1);
+	my($scod);
+	try {
+		check_exist("/etc");
+		$scod=1;
+	}
+	catch Error::Simple with {
+		$scod=0;
+		Meta::Utils::Output::print("in error\n");
+	}
+	return($scod);
 }
 
 1;
@@ -111,7 +132,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dir.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -133,10 +154,11 @@ goes wrong, checking if a directory is empty etc...
 =head1 FUNCTIONS
 
 	empty($)
-	exist($)
 	check_exist($)
+	check_notexist($)
 	fixdir($)
 	get_relative_path($$)
+	file_list($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -152,13 +174,15 @@ we have only one (the ".." link which points to the father...:)
 A speedup would be to find a better way in perl to do this...
 Using stat maybe ?
 
-=item B<exist($)>
-
-This routine returns whether a certain directory is valid.
-
 =item B<check_exist($)>
 
-This routine checks if a directory given to it exists and if not dies.
+This routine checks if a directory given to it exists.
+If the directory does not exist it throws an exception.
+
+=item B<check_notexist($)>
+
+This routine checks if a directory given to it does not exist.
+If the directory exists it throws an exception.
 
 =item B<fixdir($)>
 
@@ -171,6 +195,11 @@ Currently it will only do this (removed trailing slashes) using a regexp.
 
 This method will return a relative path which leads from the first file or
 directory to the second assuming that they both start from the same root.
+
+=item B<file_list($)>
+
+This method will return the file list in a specific directory.
+This method will throw eceptions if something bad happens.
 
 =item B<TEST($)>
 
@@ -225,10 +254,11 @@ None.
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
 	0.29 MV weblog issues
+	0.30 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Error(3), strict(3)
 
 =head1 TODO
 

@@ -8,11 +8,13 @@ use Meta::Utils::File::Remove qw();
 use Meta::Utils::File::Move qw();
 use Meta::Utils::File::Symlink qw();
 use Meta::Utils::Utils qw();
+use Meta::Utils::Chdir qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::Env qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub c2chec($);
@@ -27,6 +29,13 @@ $VERSION="0.14";
 
 #__DATA__
 
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("lilypond");
+}
+
 sub c2chec($) {
 	my($buil)=@_;
 	Meta::Baseline::Utils::file_emblem($buil->get_targ());
@@ -37,7 +46,6 @@ sub c2midi($) {
 	my($buil)=@_;
 	my($srcx)=$buil->get_srcx();
 	my($targ)=$buil->get_targ();
-	my($prog)="/local/tools/bin/lilypond";
 	my(@args);
 	push(@args,"--no-paper");
 	push(@args,"--output=".$targ);
@@ -50,7 +58,7 @@ sub c2midi($) {
 	#FIXME: do I really need to set this path ?!?
 	Meta::Utils::Env::set("LD_LIBRARY_PATH","/local/tools/lib");
 	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
-	my($ret)=Meta::Utils::System::system_err_silent_nodie($prog,\@args);
+	my($ret)=Meta::Utils::System::system_err_silent_nodie($tool_path,\@args);
 	#now check that the output file exists since if the input file
 	#had no midi directives it could be that it is non existant
 	if($ret) {
@@ -66,7 +74,6 @@ sub c2texx($) {
 	my($buil)=@_;
 	my($srcx)=$buil->get_srcx();
 	my($targ)=$buil->get_targ();
-	my($prog)="/local/tools/bin/lilypond";
 	my(@args);
 	push(@args,"--format=tex");
 	push(@args,"--output=".$targ);
@@ -79,9 +86,9 @@ sub c2texx($) {
 	#FIXME: do I really need to set this path ?!?
 	Meta::Utils::Env::set("LD_LIBRARY_PATH","/local/tools/lib");
 	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
-	my($res)=Meta::Utils::System::system_err_silent_nodie($prog,\@args);
+	my($res)=Meta::Utils::System::system_err_silent_nodie($tool_path,\@args);
 	my($extra)=Meta::Utils::Utils::remove_suffix($targ).".midi";
-	Meta::Utils::File::Remove::rm_nodie($extra);
+	Meta::Utils::File::Remove::rm($extra);
 	return($res);
 }
 
@@ -89,7 +96,6 @@ sub c2psxx($) {
 	my($buil)=@_;
 	my($srcx)=$buil->get_srcx();
 	my($targ)=$buil->get_targ();
-	my($prog)="/local/tools/bin/lilypond";
 	my(@args);
 	push(@args,"--format=ps");
 	push(@args,"--output=".$targ);
@@ -102,9 +108,9 @@ sub c2psxx($) {
 	#FIXME: do I really need to set this path ?!?
 	Meta::Utils::Env::set("LD_LIBRARY_PATH","/local/tools/lib");
 	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
-	my($res)=Meta::Utils::System::system_err_silent_nodie($prog,\@args);
+	my($res)=Meta::Utils::System::system_err_silent_nodie($tool_path,\@args);
 	my($extra)=Meta::Utils::Utils::remove_suffix($targ).".midi";
-	Meta::Utils::File::Remove::rm_nodie($extra);
+	Meta::Utils::File::Remove::rm($extra);
 	return($res);
 }
 
@@ -119,12 +125,11 @@ sub c2dvix($) {
 	my($dire)=Meta::Utils::Utils::get_temp_dire();
 	my($file)=$dire."/tmp.ly";
 	my($outf)=$dire."/tmp.dvi";
-	my($oldd)=Meta::Utils::Utils::pwd();
-	Meta::Utils::Utils::chdir($dire);
+	Meta::Utils::Chdir::chdir($dire);
 	my($full)=Meta::Baseline::Aegis::which_f($srcx);
 	Meta::Utils::File::Symlink::symlink($full,$file);
 	my($resu)=Meta::Utils::System::system_err_silent_nodie("ly2dvi",[$file]);
-	Meta::Utils::Utils::chdir($oldd);
+	Meta::Utils::Chdir::popd();
 	if($resu) {
 		Meta::Utils::File::Move::mv($outf,$targ);
 	}
@@ -190,7 +195,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Lilypond.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -343,10 +348,11 @@ None.
 	0.12 MV web site development
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Utils(3), Meta::Utils::Env(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::File::Symlink(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
+Meta::Baseline::Utils(3), Meta::Utils::Chdir(3), Meta::Utils::Env(3), Meta::Utils::File::Move(3), Meta::Utils::File::Patho(3), Meta::Utils::File::Remove(3), Meta::Utils::File::Symlink(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

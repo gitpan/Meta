@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.23";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub my_file($$);
@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aspe.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.23
 
 =head1 SYNOPSIS
 
@@ -129,6 +129,7 @@ None.
 	0.20 MV website construction
 	0.21 MV web site automation
 	0.22 MV SEE ALSO section fix
+	0.23 MV md5 issues
 
 =head1 SEE ALSO
 

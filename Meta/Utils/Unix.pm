@@ -4,12 +4,14 @@ package Meta::Utils::Unix;
 
 use strict qw(vars refs subs);
 use File::Basename qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.27";
 @ISA=qw();
 
 #sub file_to_libname($);
+#sub libname_to_file($);
 #sub file_to_libname_dir($$);
 #sub TEST($);
 
@@ -23,8 +25,13 @@ sub file_to_libname($) {
 		my($name)=($base=~/^$stri$/);
 		return($name);
 	} else {
-		Meta::Utils::System::die("file [".$file."] is not a standard library name");
+		throw Meta::Error::Simple("file [".$file."] is not a standard library name");
 	}
+}
+
+sub libname_to_file($) {
+	my($name)=@_;
+	return("lib".$name.".so");
 }
 
 sub file_to_libname_dir($$) {
@@ -69,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Unix.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -86,6 +93,7 @@ library "library" the actual file is not library but rather: liblibrary.so.versi
 =head1 FUNCTIONS
 
 	file_to_libname($)
+	libname_to_file($)
 	file_to_libname_dir($$)
 	TEST($)
 
@@ -99,6 +107,11 @@ This routine receives the name of a file which is supposed to be the name
 of a library. It checks that it does comply with the standard name for
 a library ([dire]/lib[name].so.[version]) and if so returns the [name]
 component.
+
+=item B<libname_to_file($)>
+
+This method does the opposite of file_to_libname and converts a name given
+to it to a library name (adds "lib" at the start and ".so" at the end).
 
 =item B<file_to_libname_dir($$)>
 
@@ -155,10 +168,11 @@ None.
 	0.24 MV website construction
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), strict(3)
+Error(3), File::Basename(3), strict(3)
 
 =head1 TODO
 

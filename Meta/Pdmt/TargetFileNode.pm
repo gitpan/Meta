@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Pdmt::FileNode qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Pdmt::FileNode);
 
 #sub uptodate($$);
@@ -42,7 +42,7 @@ __END__
 
 =head1 NAME
 
-Meta::Pdmt::TargetFileNode - what does your module/class do.
+Meta::Pdmt::TargetFileNode - PDMT node that represents a target file.
 
 =head1 COPYRIGHT
 
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: TargetFileNode.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -124,6 +124,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

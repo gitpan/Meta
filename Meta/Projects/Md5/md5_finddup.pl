@@ -8,6 +8,7 @@ use Meta::Utils::Output qw();
 use MIME::Base64 qw();
 use Term::ReadKey qw();
 use Meta::Utils::File::Remove qw();
+use Error qw(:try);
 
 my($curr_filename,$curr_moddate,$curr_md5sum,$hash);
 my($premature,$predat)=0;
@@ -77,16 +78,13 @@ sub handle_end($$) {
 					if($char eq 'c') {
 						$remove=0;
 						Term::ReadKey::ReadMode(0);
-						Meta::Utils::System::die("caught interrupt");
+						throw Meta::Error::Simple("caught interrupt");
 					}
 					if($char eq 's') {
 						$remove=0;
 					}
 					if($remove) {
-						my($res)=Meta::Utils::File::Remove::rm_nodie($to_remove);
-						if(!$res) {
-							Meta::Utils::Output::print("unable to remove file [".$to_remove."]\n");
-						}
+						Meta::Utils::File::Remove::rm($to_remove);
 					}
 				}
 			}
@@ -117,7 +115,7 @@ $parser->setHandlers(
 $parser->parsefile($input);
 Term::ReadKey::ReadMode(0);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -150,7 +148,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_finddup.pl
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -240,10 +238,11 @@ None.
 	0.11 MV move tests to modules
 	0.12 MV finish papers
 	0.13 MV more pdmt stuff
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 
-MIME::Base64(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Term::ReadKey(3), XML::Parser(3), strict(3)
+Error(3), MIME::Base64(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Term::ReadKey(3), XML::Parser(3), strict(3)
 
 =head1 TODO
 

@@ -10,7 +10,7 @@ use Meta::Utils::Output qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Ds::Oset);
 
 #sub BEGIN();
@@ -51,8 +51,8 @@ sub insert($$$) {
 sub remove_value($$$) {
 	my($self,$node,$value)=@_;
 	$self->get_value_hash()->remove($node);
-	$self->get_attribute_hash()->get_valx($value)->remove($node);
-	if($self->get_attribute_hash()->get_valx($value)->is_empty()) {
+	$self->get_attribute_hash()->get_val($value)->remove($node);
+	if($self->get_attribute_hash()->get_val($value)->is_empty()) {
 		$self->get_attribute_hash()->remove($value);
 	}
 	$self->SUPER::remove($node);
@@ -60,7 +60,7 @@ sub remove_value($$$) {
 
 sub remove($$) {
 	my($self,$node)=@_;
-	my($value)=$self->get_value_hash()->get_valx($node);
+	my($value)=$self->get_value_hash()->get_val($node);
 	return($self->remove_value($self,$node,$value));
 }
 
@@ -113,7 +113,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: PartitionedSet.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -204,6 +204,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

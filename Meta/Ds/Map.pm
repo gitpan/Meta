@@ -5,11 +5,11 @@ package Meta::Ds::Map;
 use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
-use Meta::Ds::Ohash qw();
-#use Params::Validate qw();
+use Meta::Ds::Hash qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.02";
 @ISA=qw();
 
 #sub BEGIN();
@@ -24,6 +24,7 @@ $VERSION="0.01";
 #sub remove($$$);
 #sub size($);
 #sub clear($);
+#sub foreach($$);
 #sub TEST($);
 
 #__DATA__
@@ -36,32 +37,23 @@ sub BEGIN() {
 }
 
 sub new($) {
-#	my($clas)=Params::Validate::validate_pos(@_,{type=>Params::Validate::SCALAR});
-	#my($clas)=Params::Validate::validate_pos(@_,{type=>"SCALAR"});
-#	my($clas)=Params::Validate::validate_pos(@_,{isa=>"scalar"});
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	CORE::bless($self,$clas);
-	$self->set_hash_a(Meta::Ds::Ohash->new());
-	$self->set_hash_b(Meta::Ds::Ohash->new());
+	CORE::bless($self,$class);
+	$self->set_hash_a(Meta::Ds::Hash->new());
+	$self->set_hash_b(Meta::Ds::Hash->new());
 	return($self);
 }
 
 sub insert($$$) {
-#	my($self,$elem_a,$elem_b)=Params::Validate::validate_pos(@_,{
-#		self=>{type=>'Meta::Ds::Map'},
-#		elem_a=>{},
-#		elen_b=>{}
-#	});
 	my($self,$elem_a,$elem_b)=@_;
 	my($hash_a)=$self->get_hash_a();
 	my($hash_b)=$self->get_hash_b();
-	if($hash_a->has($elem_a)) {
-		Meta::Utils::System::die("hash_a has elem [".$elem_a."]");
-	}
-	if($hash_b->has($elem_b)) {
-		Meta::Utils::System::die("hash_b has elem [".$elem_b."]");
-	}
+	# check needs to be done in order to not contaminate the first
+	# hash and then error on the second thus leaving the data
+	# structure in a non coherent state
+	$hash_a->check_hasnt($elem_a);
+	$hash_b->check_hasnt($elem_b);
 	$hash_a->insert($elem_a,$elem_b);
 	$hash_b->insert($elem_b,$elem_a);
 }
@@ -88,37 +80,24 @@ sub get_b($$) {
 
 sub remove_a($$) {
 	my($self,$elem_a)=@_;
-#	my($self)=Params::Validate::validate_pos(@_,
-#		{isa=>__PACKAGE__},
-#	);
-#	my($elem_a)=Params::Validate::validate(@_,
-#		{elem_a=>{type=>$self->get_type_a()}},
-#	);
 	my($elem_b)=$self->get_b($elem_a);
 	return($self->remove($elem_a,$elem_b));
 }
 
 sub remove_b($$) {
 	my($self,$elem_b)=@_;
-#	my($self)=Params::Validate::validate_pos(@_,
-#		{isa=>__PACKAGE__},
-#	);
-#	my($elem_b)=Params::Validate::validate(@_,
-#		{elem_b=>{type=>$self->get_type_a()}},
-#	);
 	my($elem_a)=$self->get_a($elem_b);
 	return($self->remove($elem_a,$elem_b));
 }
 
 sub remove($$$) {
 	my($self,$elem_a,$elem_b)=@_;
-#	my($self)=my($self,$elem_b)=Params::Validate::validate_pos(@_,
-#		{isa=>__PACKAGE__},
-#	);
-#	my($elem_a,$elem_b)=Params::Validate::validate(@_,{
-#		elem_a=>{type=>$self->get_type_a()},
-#		elem_b=>{type=>$self->get_type_b()},
-#	});
+	# checks have to be made before removal so that
+	# the data structure is not left in a contaminated
+	# state if the first removal succeeds and the second
+	# doesnt
+	$self->get_hash_a()->check_has($elem_a);
+	$self->get_hash_b()->check_has($elem_b);
 	$self->get_hash_a()->remove($elem_a);
 	$self->get_hash_b()->remove($elem_b);
 	return(1);
@@ -126,9 +105,6 @@ sub remove($$$) {
 
 sub size($) {
 	my($self)=@_;
-#	my($self)=Params::Validate::validate_pos(@_,
-#		{isa=>__PACKAGE__},
-#	);
 	return($self->get_hash_a()->size());
 }
 
@@ -136,6 +112,11 @@ sub clear($) {
 	my($self)=@_;
 	$self->get_hash_a()->clear();
 	$self->get_hash_b()->clear();
+}
+
+sub foreach($$) {
+	my($self,$code)=@_;
+	$self->get_hash_a()->foreach($code);
 }
 
 sub TEST($) {
@@ -184,7 +165,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Map.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -222,6 +203,7 @@ same size).
 	remove($$$)
 	size($)
 	clear($)
+	foreach($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -279,6 +261,12 @@ This method will give you the size of the map.
 
 This method will clear the map. It is quick.
 
+=item B<foreach($$)>
+
+This method will run a piece of code given to it on every pair of elements
+in the map. The code should be a subroutine which accepts two arguments. The
+arguments are a and then b.
+
 =item B<TEST($)>
 
 This is a testing suite for the Meta::Ds::Map module.
@@ -308,11 +296,14 @@ None.
 
 	0.00 MV teachers project
 	0.01 MV more pdmt stuff
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Ds::Ohash(3), Meta::Utils::Output(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Ds::Hash(3), Meta::Error::Simple(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-stop using ordered hashes for this class - it does not make use of them.
+
+-idea: store another hash with all pairs joined by $;. This could be used for fast iteration on all elements.

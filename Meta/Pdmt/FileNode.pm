@@ -10,7 +10,7 @@ use Meta::Utils::File::Time qw();
 use Meta::Digest::MD5 qw();
 
 our($VERSION,@ISA);
-$VERSION="0.03";
+$VERSION="0.04";
 @ISA=qw(Meta::Pdmt::Md5Node);
 
 #sub BEGIN();
@@ -89,7 +89,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: FileNode.pm
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -166,6 +166,7 @@ None.
 	0.01 MV SEE ALSO section fix
 	0.02 MV bring movie data
 	0.03 MV teachers project
+	0.04 MV md5 issues
 
 =head1 SEE ALSO
 

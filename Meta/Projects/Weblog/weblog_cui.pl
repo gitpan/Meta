@@ -28,7 +28,7 @@ my($entry_name,$entry_description,$entry_content);
 sub do_add($) {
 	my($self)=@_;
 	#Meta::Utils::Output::print("self is [".$self."]\n");
-	my($new_entry)=Meta::Projects::Weblog::Item->new();
+	my($new_entry)=Meta::Projects::Weblog::Item->new({});
 	$new_entry->personid(1);
 	$new_entry->name($entry_name->get());
 	$new_entry->description($entry_description->get());
@@ -46,7 +46,7 @@ sub do_add($) {
 
 sub do_quit() {
 	my($self)=@_;
-	Meta::Utils::System::exit(1);
+	Meta::Utils::System::exit_ok();
 }
 
 my($cui)=Curses::UI->new(
@@ -97,13 +97,13 @@ $entry_content=$win->add(
 #$cui->dialog("Hello,\sWorld!");
 Curses::UI::MainLoop();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
 =head1 NAME
 
-weblog_cui.pl - what does your program do.
+weblog_cui.pl - curses based interface to the weblog system.
 
 =head1 COPYRIGHT
 
@@ -130,7 +130,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: weblog_cui.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -138,7 +138,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put your programs description here.
+This is a program which provides you with a curses interface to the META weblog system.
+It will present you with a user interface to insert new weblog items, search for weblog
+items matching certain criteria and delete weblog items.
 
 =head1 OPTIONS
 
@@ -211,6 +213,7 @@ None.
 
 	0.00 MV weblog issues
 	0.01 MV teachers project
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

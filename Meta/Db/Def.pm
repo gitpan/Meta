@@ -14,9 +14,10 @@ use Meta::Ds::Connected qw();
 use Meta::Db::Info qw();
 use Meta::Xml::Writer qw();
 use XML::DOM qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.46";
+$VERSION="0.47";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -62,9 +63,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Connected->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->set_parents(Meta::Db::Parents->new());
 	$self->set_sets(Meta::Db::Sets->new());
 	$self->set_enums(Meta::Db::Enums->new());
@@ -302,15 +303,15 @@ sub getsql_insert($$$) {
 }
 
 sub new_file($$) {
-	my($clas,$file)=@_;
+	my($class,$file)=@_;
 	my($parser)=Meta::Xml::Parsers::Def->new();
 	$parser->parsefile($file);
 	return($parser->get_result());
 }
 
 sub new_modu($$) {
-	my($clas,$modu)=@_;
-	return(&new_file($clas,$modu->get_abs_path()));
+	my($class,$modu)=@_;
+	return(&new_file($class,$modu->get_abs_path()));
 }
 
 sub has_table($$) {
@@ -407,7 +408,7 @@ sub add_deps($$$) {
 			$deps->node_insert($name);
 			$deps->edge_insert($modu,$name);
 		} else {
-			Meta::Utils::System::die("no parent text ?");
+			throw Meta::Error::Simple("no parent text ?");
 		}
 	}
 }
@@ -480,7 +481,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.46
+	VERSION: 0.47
 
 =head1 SYNOPSIS
 
@@ -759,10 +760,11 @@ None.
 	0.44 MV SEE ALSO section fix
 	0.45 MV web site development
 	0.46 MV teachers project
+	0.47 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Db::Enums(3), Meta::Db::Info(3), Meta::Db::Parents(3), Meta::Db::Sets(3), Meta::Db::Tables(3), Meta::Db::Users(3), Meta::Ds::Connected(3), Meta::Sql::Stat(3), Meta::Xml::Parsers::Def(3), Meta::Xml::Writer(3), XML::DOM(3), strict(3)
+Error(3), Meta::Db::Enums(3), Meta::Db::Info(3), Meta::Db::Parents(3), Meta::Db::Sets(3), Meta::Db::Tables(3), Meta::Db::Users(3), Meta::Ds::Connected(3), Meta::Sql::Stat(3), Meta::Xml::Parsers::Def(3), Meta::Xml::Writer(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 

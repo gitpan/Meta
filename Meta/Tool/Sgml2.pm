@@ -11,9 +11,10 @@ use Meta::Utils::File::Copy qw();
 use Meta::Utils::File::Remove qw();
 use Meta::Utils::File::Move qw();
 use Meta::Utils::Utils qw();
+use Meta::Utils::Chdir qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw();
 
 #sub c2html($$$$);
@@ -91,8 +92,9 @@ sub c2info($$$$) {
 	push(@args,"--pass=\'".join(" ",@dirs)."\'",$file);
 	my($text);
 	Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
-	Meta::Utils::Utils::chdir("/tmp");
+	Meta::Utils::Chdir::chdir("/tmp");
 	my($scod)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
+	Meta::Utils::Chdir::popd();
 	if(!$scod) {
 		Meta::Utils::Output::print($text);
 	} else {
@@ -162,7 +164,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml2.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -252,10 +254,11 @@ None.
 	0.11 MV website construction
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Utils(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
+Meta::Baseline::Utils(3), Meta::Utils::Chdir(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

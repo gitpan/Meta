@@ -5,6 +5,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Development::Deps qw();
 use Meta::Lang::Perl::Deps qw();
+use Meta::IO::File qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -26,35 +27,35 @@ for(my($i)=6;$i<=$#ARGV;$i++) {
 	my($modu)=$ARGV[$i];
 	Meta::Lang::Perl::Deps::add_deps($grap,$modu,1,1,$path);
 }
-open(MAPL,"> ".$mani_pl) || Meta::Utils::System::die("unable to open file [".$mani_pl."]");
-open(MAPM,"> ".$mani_pm) || Meta::Utils::System::die("unable to open file [".$mani_pm."]");
-open(MAEM,"> ".$mani_em) || Meta::Utils::System::die("unable to open file [".$mani_em."]");
-open(MAIM,"> ".$mani_im) || Meta::Utils::System::die("unable to open file [".$mani_im."]");
-open(MACH,"> ".$mani_ch) || Meta::Utils::System::die("unable to open file [".$mani_ch."]");
+my($mapl)=Meta::IO::File->new_writer($mani_pl);
+my($mapm)=Meta::IO::File->new_writer($mani_pm);
+my($maem)=Meta::IO::File->new_writer($mani_em);
+my($maim)=Meta::IO::File->new_writer($mani_im);
+my($mach)=Meta::IO::File->new_writer($mani_ch);
 for(my($i)=0;$i<$grap->node_size();$i++) {
 	my($curr)=$grap->nodes()->elem($i);
 	if($curr=~/^perl\/bin\/Meta\/(.*)\.pl$/) {
-		print MAPL $curr."\n";
+		print $mapl $curr."\n";
 	}
 	if($curr=~/^(.*)\.pm$/) {
-		print MAPM $curr."\n";
+		print $mapm $curr."\n";
 	}
 	if($curr=~/^perl\/lib\/Meta\/(.*)\.pm$/) {
-		print MAIM $curr."\n";
+		print $maim $curr."\n";
 	}
 	if($curr=~/^\/(.*)\.pm$/) {
-		print MAEM $curr."\n";
+		print $maem $curr."\n";
 	}
-	print MACH $curr."\n";
+	print $mach $curr."\n";
 }
-print MACH "number of nodes: ".$grap->node_size()."\n";
-print MACH "number of edges: ".$grap->edge_size()."\n";
-close(MAPL) || Meta::Utils::System::die("unable to close file [".$mani_pl."]");
-close(MAPM) || Meta::Utils::System::die("unable to close file [".$mani_pm."]");
-close(MAEM) || Meta::Utils::System::die("unable to close file [".$mani_em."]");
-close(MAIM) || Meta::Utils::System::die("unable to close file [".$mani_im."]");
-close(MACH) || Meta::Utils::System::die("unable to close file [".$mani_ch."]");
-Meta::Utils::System::exit(1);
+print $mach "number of nodes: ".$grap->node_size()."\n";
+print $mach "number of edges: ".$grap->edge_size()."\n";
+$mapl->close();
+$mapm->close();
+$maem->close();
+$maim->close();
+$mach->close();
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -87,7 +88,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_mani.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -164,10 +165,11 @@ None.
 
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Development::Deps(3), Meta::Lang::Perl::Deps(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Meta::Development::Deps(3), Meta::IO::File(3), Meta::Lang::Perl::Deps(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

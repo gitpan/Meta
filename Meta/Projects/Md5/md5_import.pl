@@ -3,43 +3,118 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Utils::File::Iter qw();
+use Meta::Utils::File::Iterator qw();
 use Meta::Utils::File::Prop qw();
 use Meta::Digest::MD5 qw();
 use Meta::Projects::Md5::Node qw();
+use Meta::Projects::Md5::Edge qw();
+use Meta::Db::Connections qw();
+use Meta::Db::Dbi qw();
+use Meta::Db::Ops qw();
+use Meta::Class::DBI qw();
+use Meta::Ds::Hash qw();
+use Fcntl qw();
 
-my($dire,$verb);
+my($connections_file,$con_name,$name,$clean,$dire,$verb);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
+$opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_stri("con_name","what connection name ?",undef,\$con_name);
+$opts->def_stri("name","what database name ?","md5",\$name);
+$opts->def_bool("clean","should I clean the database before ?",0,\$clean);
 $opts->def_dire("directory","what directory to scan ?",undef,\$dire);
 $opts->def_bool("verbose","should I be noisy ?",1,\$verb);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($iterator)=Meta::Utils::File::Iter->new();
-$iterator->add_directory($dire);
-$iterator->set_want_dirs(1);
-$iterator->start();
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
+my($connection)=$connections->get_con_null($con_name);
 
+if($clean) {
+	#clean the database
+	my($dbi)=Meta::Db::Dbi->new();
+	$dbi->connect_name($connection,$name);
+	Meta::Db::Ops::clean_sa($dbi);
+	$dbi->disconnect();
+}
+
+Meta::Class::DBI::set_connection($connection,$name);
+
+sub insert($$$$) {
+	my($sb,$curr,$base,$dire)=@_;
+	#Meta::Utils::Output::verbose($verb,"in insert with curr [".$curr."]\n");
+	#Meta::Utils::Output::verbose($verb,"in insert with base [".$base."]\n");
+	#Meta::Utils::Output::verbose($verb,"in insert with dire [".$dire."]\n");
+	if($curr eq "") {
+		return;
+	}
+	my($node)=Meta::Projects::Md5::Node->create({});
+	$node->mod_time($sb->mtime());
+	$node->inode($sb->ino());
+	$node->name($base);
+	$node->size($sb->size());
+	$node->mode($sb->mode());
+	if(Fcntl::S_ISREG($sb->mode())) {
+		$node->checksum(Meta::Digest::MD5::get_filename_digest($curr));
+	}
+	$node->commit();
+	#now connect the file to its directory
+	my($sd)=Meta::Utils::File::Prop::stat($dire);
+	my($dir_inode)=$sd->ino();
+	my(@found)=Meta::Projects::Md5::Node->search("inode"=>$sd->ino());
+	if($#found==0) {#found exactly one parent dir
+		my($directory_node)=$found[0];
+		my($edge)=Meta::Projects::Md5::Edge->create({});
+		$edge->from_node_id($directory_node->id());
+		$edge->to_node_id($node->id());
+		$edge->commit();
+	}
+	if($#found>0) {#found more than one parent dir ?
+		throw Meta::Error::Simple("inode [".$sd->ino."] for directory [".$dire."] more than once in the database");
+	}
+	if($#found==-1) {#havent found the parent
+		insert(
+			$sd,
+			$dire,
+			File::Basename::basename($dire),
+			File::Basename::dirname($dire)
+		);
+	}
+}
+
+my($iterator)=Meta::Utils::File::Iterator->new();
+$iterator->set_want_dirs(1);
+$iterator->set_want_files(1);
+$iterator->add_directory($dire);
+
+$iterator->start();
 while(!$iterator->get_over()) {
 	my($curr)=$iterator->get_curr();
-	if($verb) {
-		Meta::Utils::Output::print("doing [".$curr."]\n");
-	}
+	my($base)=$iterator->get_base();
+	my($dire)=$iterator->get_dire();
+	Meta::Utils::Output::verbose($verb,"curr is [".$curr."]\n");
+	#Meta::Utils::Output::verbose($verb,"base is [".$base."]\n");
+	#Meta::Utils::Output::verbose($verb,"dire is [".$dire."]\n");
 	my($sb)=Meta::Utils::File::Prop::stat($curr);
-	my($node)=Meta::Projects::Md5::Node->new();
-	$node->time($sb->mtime());
-	$node->mode($sb->mode());
-	$node->inode($sb->ino());
-	$node->name($iterator->curr_base());
-	$node->md5(Meta::Digest::MD5::get_filename_digest($curr));
-	$node->size($sb->size());
-	$node->commit();
+	my(@found)=Meta::Projects::Md5::Node->search("inode"=>$sb->ino());
+	if($#found==-1) {#is not in the database
+		insert($sb,$curr,$base,$dire);
+	}
+	if($#found==0) {#is in the database
+		#update the md5 sum if the data is bigger
+		my($db_node)=$found[0];
+		if($sb->mtime()>$db_node->mod_time()) {#hard disk is newer than db
+			insert($sb,$curr,$base,$dire);
+		}
+	}
+	if($#found>0) {#more than once in the database ?!?
+		throw Meta::Error::Simple("inode [".$sb->ino."] for file [".$curr."] more than once in the database");
+	}
 	$iterator->next();
 }
 $iterator->fini();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -125,6 +200,22 @@ show description and exit
 
 show history and exit
 
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
+
+what connections XML file to use ?
+
+=item B<con_name> (type: stri, default: )
+
+what connection name ?
+
+=item B<name> (type: stri, default: md5)
+
+what database name ?
+
+=item B<clean> (type: bool, default: 0)
+
+should I clean the database before ?
+
 =item B<directory> (type: dire, default: )
 
 what directory to scan ?
@@ -169,12 +260,8 @@ None.
 
 =head1 SEE ALSO
 
-Meta::Digest::MD5(3), Meta::Projects::Md5::Node(3), Meta::Utils::File::Iter(3), Meta::Utils::File::Prop(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Fcntl(3), Meta::Class::DBI(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Ops(3), Meta::Digest::MD5(3), Meta::Ds::Hash(3), Meta::Projects::Md5::Edge(3), Meta::Projects::Md5::Node(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Prop(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
--do an update version of this script which only changes the information which is no longer needed.
-
--fix the problem that we always start with an ID of 1.
-
--do this script using the Class::DBI tools.
+-make this script also do update smoothly.

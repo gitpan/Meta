@@ -7,7 +7,7 @@ use Meta::Math::Matrix qw();
 use Meta::Geo::Pos2d qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Meta::Math::Matrix);
 
 #sub new($);
@@ -16,9 +16,9 @@ $VERSION="0.17";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Math::Matrix->new();
-	bless($self,$clas);
+	bless($self,$class);
 	my($posx)=Meta::Geo::Pos2d->new();
 	$posx->set(8,8);
 	$self->set_size($posx);
@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Board.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -129,6 +129,7 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -4,11 +4,11 @@ package Meta::Ds::Array;
 
 use strict qw(vars refs subs);
 use Meta::Utils::Arg qw();
-use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
+use Meta::Error::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw();
 
 #sub new($);
@@ -27,9 +27,9 @@ $VERSION="0.35";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{LIST}=[];
 	return($self);
 }
@@ -83,7 +83,7 @@ sub remove_first($$) {
 			return;
 		}
 	}
-	Meta::Utils::System::die("unable to find element [".$elem."]");
+	throw Meta::Error::Simple("unable to find element [".$elem."]");
 }
 
 sub size($) {
@@ -161,7 +161,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Array.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -328,10 +328,11 @@ None.
 	0.33 MV web site automation
 	0.34 MV SEE ALSO section fix
 	0.35 MV web site development
+	0.36 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Arg(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Error::Simple(3), Meta::Utils::Arg(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

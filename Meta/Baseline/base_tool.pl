@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool.pl
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -275,6 +275,7 @@ None.
 	0.13 MV SEE ALSO section fix
 	0.14 MV move tests to modules
 	0.15 MV finish papers
+	0.16 MV md5 issues
 
 =head1 SEE ALSO
 

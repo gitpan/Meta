@@ -11,7 +11,7 @@ use File::Basename qw();
 use LWP::Simple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(XML::LibXML);
 
 #sub resolver($$);
@@ -36,21 +36,24 @@ sub resolver($$) {
 			my($correct)="dtdx".Meta::Utils::Utils::minus($full,"temp/dtdx/deve/xml");
 			$correct=Meta::Baseline::Aegis::which($correct);
 			#Meta::Utils::Output::print("correct is [".$correct."]\n");
-			$content=Meta::Utils::File::File::load($correct);
+			Meta::Utils::File::File::load($correct,\$content);
 		} else {
 			my($correct)="dtdx".Meta::Utils::Utils::minus($full,$file_path);
 			$correct=Meta::Baseline::Aegis::which($correct);
 			#Meta::Utils::Output::print("correct is [".$correct."]\n");
-			$content=Meta::Utils::File::File::load($correct);
+			Meta::Utils::File::File::load($correct,\$content);
 		}
 	}
+	#Meta::Utils::Output::print("content is [".$content."]\n");
+	#if return here is "" then LibXML will segfault. This is pretty bad.
 	return($content);
 }
 
 sub new_aegis($) {
-	my($clas)=@_;
-	my($self)=XML::LibXML->new(ext_ent_handler=>\&resolver);
-	CORE::bless($self,$clas);
+	my($class)=@_;
+	my($self)=XML::LibXML::new($class,ext_ent_handler=>\&resolver);
+	#my($self)=XML::LibXML::new($class);
+#	CORE::bless($self,$class);
 	return($self);
 }
 
@@ -90,7 +93,7 @@ __END__
 
 =head1 NAME
 
-Meta::Xml::LibXML - what does your module/class do.
+Meta::Xml::LibXML - extend/enhance the XML::LibXML module.
 
 =head1 COPYRIGHT
 
@@ -117,7 +120,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: LibXML.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -184,6 +187,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

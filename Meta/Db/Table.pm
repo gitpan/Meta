@@ -9,7 +9,7 @@ use Meta::Db::Constraints qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.40";
+$VERSION="0.41";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -40,9 +40,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Connected->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->set_fields(Meta::Db::Fields->new());
 	$self->set_constraints(Meta::Db::Constraints->new());
 	return($self);
@@ -186,7 +186,7 @@ sub getsql_name($$) {
 	if($info->is_mysql()) {
 		return($info->get_name().".".$self->get_name());
 	}
-	Meta::Utils::System::die("what kind of db is it ?");
+	throw Meta::Error::Simple("what kind of db is it ?");
 }
 
 sub getsql_select($$) {
@@ -237,7 +237,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Table.pm
 	PROJECT: meta
-	VERSION: 0.40
+	VERSION: 0.41
 
 =head1 SYNOPSIS
 
@@ -405,6 +405,7 @@ None.
 	0.38 MV web site development
 	0.39 MV web site automation
 	0.40 MV SEE ALSO section fix
+	0.41 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -15,7 +15,7 @@ use Meta::Utils::Time qw();
 use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -27,17 +27,17 @@ $VERSION="0.19";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Xml::Parsers::Base->new();
 	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
+		throw Meta::Error::Simple("didn't get a parser");
 	}
 	$self->setHandlers(
 		"Start"=>\&handle_start,
 		"End"=>\&handle_end,
 		"Char"=>\&handle_char,
 	);
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{CONNECTIONS}=defined;
 	$self->{DEF}=defined;
 	$self->{INFO}=Meta::Ds::Array->new();
@@ -175,10 +175,10 @@ sub handle_char($$) {
 		$self->{FIELD_DATA}=$elem;
 	}
 	if($context eq "dbdata.tables.table.records.record.field.filedata") {
-		$self->{FIELD_DATA}=Meta::Utils::File::File::load($elem);
+		Meta::Utils::File::File::load($elem,\($self->{FIELD_DATA}));
 	}
 	if($context eq "dbdata.tables.table.records.record.field.devedata") {
-		$self->{FIELD_DATA}=Meta::Utils::File::File::load_deve($elem);
+		Meta::Utils::File::File::load_deve($elem,\($self->{FIELD_DATA}));
 	}
 }
 
@@ -220,7 +220,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbdata.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -326,6 +326,7 @@ None.
 	0.17 MV download scripts
 	0.18 MV weblog issues
 	0.19 MV teachers project
+	0.20 MV md5 issues
 
 =head1 SEE ALSO
 

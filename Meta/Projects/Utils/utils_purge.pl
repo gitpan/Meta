@@ -49,7 +49,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_purge.pl
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -137,6 +137,7 @@ None.
 	0.05 MV web site automation
 	0.06 MV SEE ALSO section fix
 	0.07 MV move tests to modules
+	0.08 MV md5 issues
 
 =head1 SEE ALSO
 

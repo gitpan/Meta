@@ -3,7 +3,6 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Utils::Hash qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 
@@ -16,10 +15,10 @@ $opts->def_bool("absolute","give absolute paths ?",0,\$abso);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($hash)=Meta::Baseline::Aegis::project_files_hash($srcx,$test,$abso);
-Meta::Utils::Hash::print(Meta::Utils::Output::get_file(),$hash);
+my($set)=Meta::Baseline::Aegis::project_files_set($srcx,$test,$abso);
+$set->foreach(\&Meta::Utils::Output::println);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -52,7 +51,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_project_files.pl
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -161,10 +160,11 @@ None.
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
 	0.27 MV move tests to modules
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Hash(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

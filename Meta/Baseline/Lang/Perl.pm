@@ -29,9 +29,11 @@ use Meta::Info::Authors qw();
 use Meta::Lang::Perl::Perl qw();
 use Meta::Utils::Env qw();
 use Meta::Development::Module qw();
+use Error qw(:try);
+use Meta::Error::FileNotFound qw();
 
 our($VERSION,@ISA);
-$VERSION="0.62";
+$VERSION="0.63";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub env();
@@ -46,7 +48,6 @@ $VERSION="0.62";
 #sub check_pods($$$$$$);
 #sub check_protos($$$$$$);
 #sub c2deps($);
-#sub get_use($$$);
 #sub get_pod($);
 #sub check_list($$$);
 #sub check_list_pl($$$);
@@ -61,7 +62,6 @@ $VERSION="0.62";
 #sub c2late($);
 #sub c2txtx($);
 #sub my_file($$);
-#sub TEST($);
 #sub source_file($$);
 #sub create_file($$);
 #sub pod2code($);
@@ -77,6 +77,7 @@ $VERSION="0.62";
 #sub fix_super($$$);
 #sub fix_see($$$);
 #sub fix_version_add($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -122,7 +123,8 @@ sub c2chec($) {
 
 sub check($$$) {
 	my($modu,$srcx,$path)=@_;
-	my($text)=Meta::Utils::File::File::load($srcx);
+	my($text);
+	Meta::Utils::File::File::load($srcx,\$text);
 	my($test)=Meta::Lang::Perl::Perl::is_test($srcx);
 	my($module)=Meta::Lang::Perl::Perl::is_lib($srcx);
 	my($resu)=1;
@@ -170,36 +172,37 @@ sub check_use($$$$$$) {
 		if($line=~/^use Meta::.* qw\(.*\);$/) {
 			my($string)=($line=~/^use (.*) qw\(.*\);$/);
 			if(!defined($string)) {
-				Meta::Utils::System::die("bad our use in [".$line."]");
+				throw Meta::Error::Simple("bad our use in [".$line."]");
 			} else {
 				$hash{$string}="defined our";
 			}
 		} else {
 			if($line=~/^use .*;$/) {
-				my($string)=($line=~/^use (.*) qw\(.*\);$/);
-				if(!defined($string)) {
-					Meta::Utils::System::die("bad basic use in [".$line."]");
-				} else {
-					$hash{$string}="defined basic";
-				}
+				my($string,$qw)=($line=~/^use (.*) qw\(.*\);$/);
+				#	if(!defined($string)) {
+				#	throw Meta::Error::Simple("bad basic use in [".$line."]");
+				#} else {
+				#	$hash{$string}="defined basic";
+				#}
+				$hash{$string}="defined basic";
 			} else {
-				while(my($keyx,$valx)=each(%hash)) {
-					if($line=~/$keyx/) {
-						$hash{$keyx}="used";
+				while(my($key,$val)=each(%hash)) {
+					if($line=~/$key/) {
+						$hash{$key}="used";
 					}
 				}
 			}
 		}
 	}
 	my($resu)=1;
-	while(my($keyx,$valx)=each(%hash)) {
-		if($valx eq "defined our") {
-			Meta::Utils::Output::print("imported (internal) but not used [".$keyx."]\n");
+	while(my($key,$val)=each(%hash)) {
+		if($val eq "defined our") {
+			Meta::Utils::Output::print("imported (internal) but not used [".$key."]\n");
 			$resu=0;
 		}
-		if($valx eq "defined basic") {
-			if($keyx ne "strict" && $keyx ne "vars") {
-				Meta::Utils::Output::print("imported (external) but not used [".$keyx."]\n");
+		if($val eq "defined basic") {
+			if($key ne "strict" && $key ne "vars") {
+				Meta::Utils::Output::print("imported (external) but not used [".$key."]\n");
 				$resu=0;
 			}
 		}
@@ -374,10 +377,10 @@ sub check_misc($$$$$$) {
 
 sub check_mods($$$$$$) {
 	my($perl,$path,$text,$test,$modu,$module)=@_;
-	if($text=~/STANDALONE SPECIAL FILE/) {
-		return(1);
-	}
-	my($arra)=get_use($text,1,1);
+#	if($text=~/STANDALONE SPECIAL FILE/) {
+#		return(1);
+#	}
+	my($arra)=Meta::Lang::Perl::Perl::get_use_text($text);
 	my(@must);
 	if($modu) {
 		push(@must,"strict");
@@ -446,7 +449,8 @@ sub check_pods($$$$$$) {
 	}
 	# check LICENSE
 	my($pod_lice)=$hash->{"LICENSE"};
-	my($lice)=Meta::Utils::File::File::load_deve("data/baseline/lice/lice.txt");
+	my($lice);
+	Meta::Utils::File::File::load_deve("data/baseline/lice/lice.txt",\$lice);
 	my($need_lice)=$lice."\n";
 	if($pod_lice ne $need_lice) {
 		Meta::Utils::Output::print("LICENSE pod found is [".$pod_lice."]\n");
@@ -566,30 +570,6 @@ sub c2deps($) {
 	}
 }
 
-sub get_use($$$) {
-	my($text,$inte,$exte)=@_;
-	my(@lines)=split('\n',$text);
-	my($size)=$#lines+1;
-	my(@arra);
-	for(my($i)=0;$i<$size;$i++) {
-		my($line)=$lines[$i];
-		if($line=~/^use .* qw\(.*\);$/) {
-			if($line=~/^use Meta::.* qw\(.*\);$/) {
-				my($modu)=($line=~/^use (.*) qw\(.*\);$/);
-				if($inte) {
-					push(@arra,$modu);
-				}
-			} else {
-				my($modu)=($line=~/^use (.*) qw\(.*\);$/);
-				if($exte) {
-					push(@arra,$modu);
-				}
-			}
-		}
-	}
-	return(\@arra);
-}
-
 sub get_pod($) {
 	my($text)=@_;
 	my(@lines)=split('\n',$text);
@@ -654,7 +634,7 @@ sub fix_runline($$$$$) {
 		}
 		if(!$demo) {
 			my(@arra);
-			tie(@arra,"DB_File",$file,$DB_File::O_RDWR,0666,$DB_File::DB_RECNO) or Meta::Utils::System::die("cannot tie [".$file."]");
+			tie(@arra,"DB_File",$file,$DB_File::O_RDWR,0666,$DB_File::DB_RECNO) or throw Meta::Error::Simple("cannot tie [".$file."]");
 			my($doit)=0;
 			if($chec) {
 				if($arra[0] eq $cstr) {
@@ -669,7 +649,7 @@ sub fix_runline($$$$$) {
 			if($doit) {
 				$arra[0]=$line;
 			}
-			untie(@arra) || Meta::Utils::System::die("cannot untie [".$file."]");
+			untie(@arra) || throw Meta::Error::Simple("cannot untie [".$file."]");
 		}
 	}
 	return($resu);
@@ -716,8 +696,13 @@ sub c2html($) {
 	);
 	my($fil0)="pod2htmd.x~~";
 	my($fil1)="pod2htmi.x~~";
-	Meta::Utils::File::Remove::rm_nodie($fil0);
-	Meta::Utils::File::Remove::rm_nodie($fil1);
+	try {
+		Meta::Utils::File::Remove::rm($fil0);
+		Meta::Utils::File::Remove::rm($fil1);
+	}
+	catch Meta::Error::FileNotFound with {
+		# do nothing
+	};
 	return(1);
 }
 
@@ -736,10 +721,20 @@ sub c2late($) {
 #			Meta::Utils::File::Remove::rm($file);
 #		} else {
 #			Meta::Utils::Output::print("unable to move file [".$resu."] to [".$targ."]\n");
-#			Meta::Utils::File::Remove::rm_nodie($resu);
+#			try {
+#				Meta::Utils::File::Remove::rm($resu);
+#			}
+#			catch Meta::Error::FileNotFound with {
+#				# do nothing
+#			};
 #		}
 #	} else {
-#		Meta::Utils::File::Remove::rm_nodie($resu);
+#		try {
+#			Meta::Utils::File::Remove::rm($resu);
+#		}
+#		catch Meta::Error::FileNotFound with {
+#			# do nothing
+#		};
 #	}
 #	return($scod);
 }
@@ -766,22 +761,18 @@ sub my_file($$) {
 	return(0);
 }
 
-sub TEST($) {
-	my($context)=@_;
-	my($hash)=Meta::Baseline::Lang::Perl::env();
-	Meta::Utils::Env::bash_cat($hash);
-	return(1);
-}
-
 sub source_file($$) {
 	my($self,$file)=@_;
+	my($ok)=0;
 	if($file=~/^perl\/.*\.pl$/) {
-		return(1);
+		$ok=1;
 	}
 	if($file=~/^perl\/.*\.pm$/) {
-		return(1);
+		$ok=1;
 	}
-	return(0);
+	if(!$ok) {
+		throw Meta::Error::Simple("file [".$file."] is not a perl source file");
+	}
 }
 
 sub create_file($$) {
@@ -796,7 +787,8 @@ sub create_file($$) {
 	my($dire)=File::Basename::dirname($file);
 	my($base)=File::Basename::basename($file);
 	my($modu)=Meta::Lang::Perl::Perl::file_to_module($file);
-	my($lice)=Meta::Utils::File::File::load_deve("data/baseline/lice/lice.txt");
+	my($lice);
+	Meta::Utils::File::File::load_deve("data/baseline/lice/lice.txt",\$lice);
 	my($module)=Meta::Development::Module->new_name("xmlx/author/author.xml");
 	my($author)=Meta::Info::Author->new_modu($module);
 	my($perl_copyright)=$author->get_perl_copyright();
@@ -831,7 +823,7 @@ sub create_file($$) {
 	);
 	my($scod)=$template->process($tmpl,$vars,$file);
 	if(!$scod) {
-		Meta::Utils::System::die("could not process template with error [".$template->error()."]");
+		throw Meta::Error::Simple("could not process template with error [".$template->error()."]");
 	}
 }
 
@@ -846,7 +838,7 @@ sub pod2code($) {
 		if($curr eq "=cut") {
 #			Meta::Utils::Output::print("in here with curr [".$curr."]\n");
 			if($state eq "in_code") {
-				Meta::Utils::System::die("cut in code?");
+				throw Meta::Error::Simple("cut in code?");
 			} else {#in_pod
 				$state="in_code";
 			}
@@ -873,14 +865,15 @@ sub pod2code($) {
 
 sub fix_pod($$$$$) {
 	my($self,$curr,$need,$before_pod,$after_pod)=@_;
-	my($text)=Meta::Utils::File::File::load($curr);
+	my($text);
+	Meta::Utils::File::File::load($curr,\$text);
 	if($text=~m/\n=head1 $before_pod\n.*\n\n=head1 $after_pod\n/s) {
 		#Meta::Utils::Output::print("doing [".$curr."]\n");
 		my($new_string)="\n=head1 ".$before_pod."\n\n".$need."\n=head1 ".$after_pod."\n";
 		$text=~s/\n=head1 $before_pod\n.*\n\n=head1 $after_pod\n/$new_string/s;
 		Meta::Utils::File::File::save($curr,$text);
 	} else {
-		Meta::Utils::System::die("cannot find POD tag [".$before_pod."] in [".$curr."]");
+		throw Meta::Error::Simple("cannot find POD tag [".$before_pod."] in [".$curr."]");
 	}
 }
 
@@ -936,7 +929,8 @@ sub fix_details_add($$$) {
 
 sub fix_license($$$) {
 	my($self,$modu,$curr)=@_;
-	my($need)=Meta::Utils::File::File::load(Meta::Baseline::Aegis::which("data/baseline/lice/lice.txt"));
+	my($need);
+	Meta::Utils::File::File::load(Meta::Baseline::Aegis::which("data/baseline/lice/lice.txt"),\$need);
 	my($before_pod)="LICENSE";
 	my($after_pod)="DETAILS";
 	fix_pod($self,$curr,$need,$before_pod,$after_pod);
@@ -968,12 +962,13 @@ sub fix_version($$$) {
 	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($hist_obje)=Meta::Tool::Aegis::history($modu,$authors);
 	my($version)=$hist_obje->perl_current();
-	my($text)=Meta::Utils::File::File::load($curr);
+	my($text);
+	Meta::Utils::File::File::load($curr,\$text);
 	if($text=~/\n\$VERSION=\"\d.\d\d\";\n/) {
 		$text=~s/\n\$VERSION=\"\d.\d\d\";\n/\n\$VERSION=\"$version\";\n/s;
 		Meta::Utils::File::File::save($curr,$text);
 	} else {
-		Meta::Utils::System::die("unable to find VERSION variable");
+		throw Meta::Error::Simple("unable to find VERSION variable");
 	}
 }
 
@@ -1001,13 +996,21 @@ sub fix_version_add($$$) {
 	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($hist_obje)=Meta::Tool::Aegis::history_add($modu,$authors);
 	my($version)=$hist_obje->perl_current();
-	my($text)=Meta::Utils::File::File::load($curr);
+	my($text);
+	Meta::Utils::File::File::load($curr,\$text);
 	if($text=~/\n\$VERSION=\"\d.\d\d\";\n/) {
 		$text=~s/\n\$VERSION=\"\d.\d\d\";\n/\n\$VERSION=\"$version\";\n/s;
 		Meta::Utils::File::File::save($curr,$text);
 	} else {
-		Meta::Utils::System::die("unable to find VERSION variable");
+		throw Meta::Error::Simple("unable to find VERSION variable");
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	my($hash)=Meta::Baseline::Lang::Perl::env();
+	Meta::Utils::Env::bash_cat($hash);
+	return(1);
 }
 
 1;
@@ -1043,7 +1046,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perl.pm
 	PROJECT: meta
-	VERSION: 0.62
+	VERSION: 0.63
 
 =head1 SYNOPSIS
 
@@ -1072,7 +1075,6 @@ etc...
 	check_pods($$$$$$)
 	check_protos($$$$$$)
 	c2deps($)
-	get_use($$$)
 	get_pod($)
 	check_list($$$)
 	check_list_pl($$$)
@@ -1086,7 +1088,6 @@ etc...
 	c2late($)
 	c2txtx($)
 	my_file($$)
-	TEST($)
 	source_file($$)
 	create_file($$)
 	pod2code($)
@@ -1102,6 +1103,7 @@ etc...
 	fix_version($$$)
 	fix_super($$$)
 	fix_version_add($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -1109,8 +1111,11 @@ etc...
 
 =item B<env()>
 
-This routie returns a hash of environment variables which are essential for
-running Perl scripts.
+This routine returns a wealth of information about the current running
+perl. This includes the version, include path, compliation options and
+other pieces of information. Why would you want this ? To get a proper
+hash table interface to all the information instead of having to access
+funny variable names to get it.
 
 =item B<c2chec($)>
 
@@ -1168,12 +1173,6 @@ declaration and code.
 =item B<c2deps($)>
 
 This will generate a dep file from a perl file.
-
-=item B<get_use($$$)>
-
-This method gets a perl file and returns the list of modules this file uses
-in the order it is using them. The module can be made to bring external
-and internal uses or either one.
 
 =item B<get_pod($)>
 
@@ -1245,11 +1244,6 @@ This method returns an error code.
 This method will return true if the file received should be handled by this
 module.
 
-=item B<TEST($)>
-
-Test suite for this module.
-This currently just runs the Env stuff and checks whats the output bash script.
-
 =item B<source_file($$)>
 
 This method will return true if the file received is a source of this module.
@@ -1311,6 +1305,11 @@ This method fixes the SUPPER tag.
 =item B<fix_version_add($$$)>
 
 This method fixes the $VERSION variable taking the current change into consideration.
+
+=item B<TEST($)>
+
+Test suite for this module.
+This currently just runs the Env stuff and checks whats the output bash script.
 
 =back
 
@@ -1394,10 +1393,11 @@ None.
 	0.60 MV finish papers
 	0.61 MV teachers project
 	0.62 MV more pdmt stuff
+	0.63 MV md5 issues
 
 =head1 SEE ALSO
 
-DB_File(3), Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Info::Author(3), Meta::Info::Authors(3), Meta::Lang::Perl::Deps(3), Meta::Lang::Perl::Perl(3), Meta::Tool::Aegis(3), Meta::Utils::Env(3), Meta::Utils::File::Copy(3), Meta::Utils::File::File(3), Meta::Utils::File::Move(3), Meta::Utils::File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Text::Lines(3), Pod::Checker(3), Pod::Html(3), Pod::LaTeX(3), Pod::Man(3), Pod::Text(3), Template(3), strict(3)
+DB_File(3), Error(3), Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Error::FileNotFound(3), Meta::Info::Author(3), Meta::Info::Authors(3), Meta::Lang::Perl::Deps(3), Meta::Lang::Perl::Perl(3), Meta::Tool::Aegis(3), Meta::Utils::Env(3), Meta::Utils::File::Copy(3), Meta::Utils::File::File(3), Meta::Utils::File::Move(3), Meta::Utils::File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Text::Lines(3), Pod::Checker(3), Pod::Html(3), Pod::LaTeX(3), Pod::Man(3), Pod::Text(3), Template(3), strict(3)
 
 =head1 TODO
 

@@ -9,7 +9,7 @@ use XML::DOM qw();
 use XML::DOM::ValParser qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw(Gtk::Tree);
 
 #sub new($);
@@ -31,13 +31,13 @@ $VERSION="0.13";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Gtk::Tree->new();
 	$self->{DOMX}=defined;
 	$self->{VALI}=1;
 	$self->{SKIP}=1;
 	$self->{FULL}=1;
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -79,8 +79,8 @@ sub get_vali($) {
 }
 
 sub set_vali($$) {
-	my($self,$valx)=@_;
-	$self->{VALI}=$valx;
+	my($self,$val)=@_;
+	$self->{VALI}=$val;
 }
 
 sub get_skip($) {
@@ -89,8 +89,8 @@ sub get_skip($) {
 }
 
 sub set_skip($$) {
-	my($self,$valx)=@_;
-	$self->{SKIP}=$valx;
+	my($self,$val)=@_;
+	$self->{SKIP}=$val;
 }
 
 sub get_full($) {
@@ -99,8 +99,8 @@ sub get_full($) {
 }
 
 sub set_full($$) {
-	my($self,$valx)=@_;
-	$self->{FULL}=$valx;
+	my($self,$val)=@_;
+	$self->{FULL}=$val;
 }
 
 sub node_add($$$) {
@@ -200,7 +200,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: XmlTree.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -345,6 +345,7 @@ None.
 	0.11 MV website construction
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 

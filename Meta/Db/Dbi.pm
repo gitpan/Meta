@@ -6,12 +6,14 @@ use strict qw(vars refs subs);
 use DBI qw();
 use Meta::Utils::System qw();
 use Meta::Db::Connections qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub new($);
+#sub error($$);
 #sub connect_dsn($$$);
 #sub connect_xml($$$$);
 #sub connect($$);
@@ -26,28 +28,47 @@ $VERSION="0.29";
 #sub commit($);
 #sub quote_simple($$);
 #sub quote($$$);
-#sub dis($);
-#sub disconnect($$);
+#sub disconnect($);
 #sub table_info($);
+#sub full_table_info($);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{HANDLE}=defined;
 	return($self);
 }
 
+sub error($$) {
+	my($one,$two)=@_;
+	throw Meta::Error::Simple("dbi error with text [".$one."] on handle [".$two."]");
+}
+
 sub connect_dsn($$$) {
 	my($self,$conn,$dsnx)=@_;
-	my($dbxx)=DBI->connect($dsnx,$conn->get_user(),$conn->get_password());
-	if(!$dbxx) {
-		Meta::Utils::System::die("error in connect");
+	my($user)=undef;
+	if($conn->get_use_user()) {
+		$user=$conn->get_user();
 	}
-	$dbxx->{RaiseError}=1;
+	my($password)=undef;
+	if($conn->get_use_password()) {
+		$password=$conn->get_password();
+	}
+#	Meta::Utils::Output::print("dsnx is [".$dsnx."]\n");
+#	Meta::Utils::Output::print("user is [".$user."]\n");
+#	Meta::Utils::Output::print("password is [".$password."]\n");
+	my($dbxx)=DBI->connect($dsnx,$user,$password,{ HandleError=>\&error });
+#	if(!$dbxx) {
+#		throw Meta::Error::Simple("error in connect was [".$DBI::errstr."]");
+#	}
+	# I don't think the next line is needed
+#	$dbxx->{RaiseError}=0;
+	$dbxx->{AutoCommit}=1;
+#	$dbxx->{HandleError}=\&error;
 	$self->{HANDLE}=$dbxx;
 }
 
@@ -84,20 +105,12 @@ sub connect_info($$$) {
 
 sub execute_single($$) {
 	my($self,$stat)=@_;
-	my($resu)=$self->{HANDLE}->do($stat);
-	if(!$resu) {
-		Meta::Utils::System::die("unable to execute statement [".$stat."]");
-	}
-	return($resu);
+	$self->{HANDLE}->do($stat);
 }
 
 sub execute_arrayref($$) {
 	my($self,$stat)=@_;
-	my($resu)=$self->{HANDLE}->selectall_arrayref($stat);
-	if(!$resu) {
-		Meta::Utils::System::die("unable to execute statement [".$stat."]");
-	}
-	return($resu);
+	$self->{HANDLE}->selectall_arrayref($stat);
 }
 
 sub execute($$$$) {
@@ -109,7 +122,7 @@ sub execute($$$$) {
 			$self->execute_single($curr.";");
 		}
 		if($stat->is_reconnect()) {
-			$self->dis();
+			$self->disconnect();
 			$self->connect_name($conn,$stat->get_reconnect_name());
 		}
 	}
@@ -118,26 +131,19 @@ sub execute($$$$) {
 sub prepare($$) {
 	my($self,$stat)=@_;
 	my($sth)=$self->{HANDLE}->prepare($stat);
-	if(!defined($sth)) {
-		Meta::Utils::System::die("unable to prepare statemet [".$stat."]");
-	}
 	return($sth);
 }
 
 sub begin_work($) {
 	my($self)=@_;
 	my($sth)=$self->{HANDLE}->begin_work();
-	if(!defined($sth)) {
-		Meta::Utils::System::die("unable to begin_work");
-	}
+	return($sth);
 }
 
 sub commit($) {
 	my($self)=@_;
 	my($sth)=$self->{HANDLE}->commit();
-	if(!defined($sth)) {
-		Meta::Utils::System::die("unable to commit");
-	}
+	return($sth);
 }
 
 sub quote_simple($$) {
@@ -150,25 +156,20 @@ sub quote($$$) {
 	return($self->{HANDLE}->quote($string,$type));
 }
 
-sub dis($) {
+sub disconnect($) {
 	my($self)=@_;
-	my($resu)=$self->{HANDLE}->disconnect();
-	if(!$resu) {
-		Meta::Utils::System::die("error in disconnect");
-	}
-}
-
-sub disconnect($$) {
-	my($self,$conn)=@_;
-	$self->dis();
+	$self->{HANDLE}->disconnect();
 }
 
 sub table_info($) {
-	my($self,$conn)=@_;
+	my($self)=@_;
 	my($sth)=$self->{HANDLE}->table_info();
-	if(!defined($sth)) {
-		Meta::Utils::System::die("error in table_info");
-	}
+	return($sth);
+}
+
+sub full_table_info($$$$$) {
+	my($self,$o1,$o2,$o3,$o4)=@_;
+	my($sth)=$self->{HANDLE}->table_info($o1,$o2,$o3,$o4);
 	return($sth);
 }
 
@@ -210,7 +211,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbi.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -231,6 +232,7 @@ This is the reason that this object just stores a handle and not IS a handle.
 =head1 FUNCTIONS
 
 	new($)
+	error($$)
 	connect_dsn($$$)
 	connect_xml($$$$)
 	connect($$)
@@ -245,9 +247,9 @@ This is the reason that this object just stores a handle and not IS a handle.
 	commit($)
 	quote_simple($$)
 	quote($$$)
-	dis($)
-	disconnect($$)
+	disconnect($)
 	table_info($)
+	full_table_info($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -257,6 +259,11 @@ This is the reason that this object just stores a handle and not IS a handle.
 =item B<new($)>
 
 This is a constructor which gives you a new Dbi object.
+
+=item B<error($$)>
+
+This class method will handle error for us by raising an exception with the
+relevant errors data.
 
 =item B<connect_dsn($$$)>
 
@@ -330,17 +337,16 @@ This is the most basic quoting mechanism without type specification.
 
 This is the two argument Dbi quote function.
 
-=item B<dis($)>
-
-This method will disconnect the Dbi object with no regard to connection
-data.
-
-=item B<disconnect($$)>
+=item B<disconnect($)>
 
 This method will disconnect the Dbi object according to the specified
 connection data.
 
 =item B<table_info($)>
+
+This method will give you the list of tables in the database.
+
+=item B<full_table_info($$$$$)>
 
 This method will give you the list of tables in the database.
 
@@ -397,11 +403,16 @@ None.
 	0.27 MV SEE ALSO section fix
 	0.28 MV download scripts
 	0.29 MV teachers project
+	0.30 MV md5 issues
 
 =head1 SEE ALSO
 
-DBI(3), Meta::Db::Connections(3), Meta::Utils::System(3), strict(3)
+DBI(3), Error(3), Meta::Db::Connections(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
 -use Meta::Class::MethodMaker so that inheritance and code will be cleaner.
+
+-use the connect_cached method of the DBI instead of straight connect.
+
+-add convenience method of auto_commit on and off.

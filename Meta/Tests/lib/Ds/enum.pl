@@ -24,7 +24,7 @@ Meta::Utils::Output::print(Data::Dumper::Dumper($enum));
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: enum.pl
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -150,6 +150,7 @@ None.
 	0.22 MV bring movie data
 	0.23 MV finish papers
 	0.24 MV teachers project
+	0.25 MV md5 issues
 
 =head1 SEE ALSO
 

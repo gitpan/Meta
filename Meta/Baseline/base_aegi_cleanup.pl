@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_cleanup.pl
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -174,6 +174,7 @@ None.
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
 	0.26 MV move tests to modules
+	0.27 MV md5 issues
 
 =head1 SEE ALSO
 

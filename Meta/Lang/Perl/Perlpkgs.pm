@@ -9,7 +9,7 @@ use Meta::Utils::Output qw();
 use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new_file($$);
@@ -82,7 +82,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perlpkgs.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -159,6 +159,7 @@ None.
 	0.13 MV bring movie data
 	0.14 MV finish papers
 	0.15 MV teachers project
+	0.16 MV md5 issues
 
 =head1 SEE ALSO
 

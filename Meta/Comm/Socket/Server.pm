@@ -8,7 +8,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.10";
 @ISA=qw(IO::Socket::INET);
 
 #sub new($);
@@ -19,7 +19,7 @@ $VERSION="0.09";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
 	$self->{SERVER}=IO::Socket::INET->new(
 		LocalPort=>9000,
@@ -29,11 +29,11 @@ sub new($) {
 		Reuse=>1,
 		Listen=>10);
 	if(!$self->{SERVER}) {
-		Meta::Utils::System::die("unable to start server [".$!."]");
+		throw Meta::Error::Simple("unable to start server [".$!."]");
 	}
 	$self->{SERVER}->autoflush(1);
 	Meta::Utils::Output::print("server listening\n");
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -50,14 +50,14 @@ sub run($) {
 #		print $client "hello from server\n";
 #		my($kidpid)=CORE::fork();
 #		if(!defined($kidpid)) {
-#			Meta::Utils::System::die("unable to fork");
+#			throw Meta::Error::Simple("unable to fork");
 #		}
 #		if($kidpid) {
 #			Meta::Utils::Output::print("in server in fork\n");
 #			$self->{SERVER}->close();
 #			my($pid)=CORE::fork();
 #			if(!defined($pid)) {
-#				Meta::Utils::System::die("unable to fork");
+#				throw Meta::Error::Simple("unable to fork");
 #			}
 #			if($pid) {
 #				my($mess);
@@ -66,10 +66,10 @@ sub run($) {
 #					Meta::Utils::Output::print("in loop\n");
 #					$self->handle($client,$mess);
 #				}
-#				Meta::Utils::System::exit(1);
+#				Meta::Utils::System::exit_ok();
 #			} else {
 #			}
-#			Meta::Utils::System::exit(1);
+#			Meta::Utils::System::exit_ok();
 #		}
 #		Meta::Utils::Output::print("in server out fork\n");
 	}
@@ -81,7 +81,7 @@ sub handle($$$) {
 	Meta::Utils::Output::print("in handle with data [".$mess."]\n");
 #	print $client "response\n";
 	if(!$client->send("Goodbye\n")) {
-		Meta::Utils::System::die("unable to send");
+		throw Meta::Error::Simple("unable to send");
 	}
 	Meta::Utils::Output::print("data sent\n");
 }
@@ -124,7 +124,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Server.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -195,6 +195,7 @@ None.
 	0.07 MV website construction
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
+	0.10 MV md5 issues
 
 =head1 SEE ALSO
 

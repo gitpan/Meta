@@ -113,6 +113,7 @@ Meta/Db/Tables.pm
 Meta/Db/Type.pm
 Meta/Db/User.pm
 Meta/Db/Users.pm
+Meta/Development/Assert.pm
 Meta/Development/Deps.pm
 Meta/Development/Errors.pm
 Meta/Development/Link.pm
@@ -134,6 +135,7 @@ Meta/Distrib/Machines.pm
 Meta/Ds/Array.pm
 Meta/Ds/Carray.pm
 Meta/Ds/Connected.pm
+Meta/Ds/Container.pm
 Meta/Ds/Dgraph.pm
 Meta/Ds/Dhash.pm
 Meta/Ds/Graph.pm
@@ -149,10 +151,16 @@ Meta/Ds/PartitionedSet.pm
 Meta/Ds/Set.pm
 Meta/Ds/Stack.pm
 Meta/Ds/String.pm
+Meta/Error/FileNotFound.pm
+Meta/Error/NoSuchElement.pm
+Meta/Error/Root.pm
+Meta/Error/Simple.pm
 Meta/File/MMagic.pm
 Meta/Geo/Pos2d.pm
 Meta/Geo/Pos3d.pm
 Meta/Graph/Directed.pm
+Meta/IO/Dir.pm
+Meta/IO/File.pm
 Meta/Image/Magick.pm
 Meta/Imdb/Get.pm
 Meta/Info/Account.pm
@@ -171,6 +179,7 @@ Meta/Info/SecurityKey.pm
 Meta/Info/User.pm
 Meta/Info/Vcard.pm
 Meta/Info/Webpage.pm
+Meta/Init.pm
 Meta/LWP/Simple.pm
 Meta/Lang/Cpp/Libs.pm
 Meta/Lang/Cpp/Run.pm
@@ -235,6 +244,8 @@ Meta/Projects/Fortune/Fortune.pm
 Meta/Projects/Fortune/Item.pm
 Meta/Projects/Fortune/Link.pm
 Meta/Projects/Fortune/Node.pm
+Meta/Projects/Md5/Edge.pm
+Meta/Projects/Md5/Node.pm
 Meta/Projects/Mime/Extensions.pm
 Meta/Projects/Mime/MimeTypes.pm
 Meta/Projects/Movie/Credit.pm
@@ -249,11 +260,13 @@ Meta/Revision/Revision.pm
 Meta/Shell/Shell.pm
 Meta/Sql/Stat.pm
 Meta/Sql/Stats.pm
+Meta/Template.pm
 Meta/Template/Sub.pm
 Meta/Tool/Aegis.pm
 Meta/Tool/Aspell.pm
 Meta/Tool/Cincl.pm
 Meta/Tool/Deb.pm
+Meta/Tool/Diff.pm
 Meta/Tool/Docbook2.pm
 Meta/Tool/Docpp.pm
 Meta/Tool/Doxygen.pm
@@ -267,10 +280,13 @@ Meta/Tool/Jade.pm
 Meta/Tool/Jar.pm
 Meta/Tool/Less.pm
 Meta/Tool/Lilypond.pm
+Meta/Tool/Man.pm
+Meta/Tool/More.pm
 Meta/Tool/Nm.pm
 Meta/Tool/Nsgmls.pm
 Meta/Tool/Onsgmls.pm
 Meta/Tool/Openjade.pm
+Meta/Tool/Perl.pm
 Meta/Tool/Ps2Pdf.pm
 Meta/Tool/Robodoc.pm
 Meta/Tool/Rpm.pm
@@ -280,9 +296,11 @@ Meta/Tool/Sgmltools.pm
 Meta/Tool/Sgmltoolslite.pm
 Meta/Tool/Tar.pm
 Meta/Tool/Xmllint.pm
+Meta/Types/Bool.pm
 Meta/Types/Enumerated.pm
 Meta/Types/String.pm
 Meta/Utils/Arg.pm
+Meta/Utils/Chdir.pm
 Meta/Utils/Color.pm
 Meta/Utils/Debug.pm
 Meta/Utils/Dos.pm
@@ -442,7 +460,6 @@ Meta/Demos/demo_console.pl
 Meta/Demos/demo_fam.pl
 Meta/Demos/demo_filter.pl
 Meta/Demos/demo_ftp.pl
-Meta/Demos/demo_gnupg.pl
 Meta/Demos/demo_gpg.pl
 Meta/Demos/demo_groff.pl
 Meta/Demos/demo_gtk.pl
@@ -479,6 +496,7 @@ Meta/Lang/Perl/perl_man.pl
 Meta/Lang/Perl/perl_mani.pl
 Meta/Lang/Perl/perl_pkgcheck.pl
 Meta/Lang/Perl/perl_pkglist.pl
+Meta/Lang/Perl/perl_pod2docbook.pl
 Meta/Lang/Perl/perl_pod_fix.pl
 Meta/Lang/Perl/perl_profile.pl
 Meta/Lang/Perl/perl_run.pl
@@ -506,6 +524,7 @@ Meta/Projects/Dbman/dbman_find.pl
 Meta/Projects/Dbman/dbman_import.pl
 Meta/Projects/Dbman/dbman_install.pl
 Meta/Projects/Dbman/dbman_man.pl
+Meta/Projects/Develop/develop_diff.pl
 Meta/Projects/Develop/develop_file.pl
 Meta/Projects/Develop/develop_find_sym.pl
 Meta/Projects/Develop/develop_httpd.pl
@@ -539,6 +558,8 @@ Meta/Projects/Movie/movie_loans.pl
 Meta/Projects/Movie/movie_stats.pl
 Meta/Projects/Movie/movie_update.pl
 Meta/Projects/Music/music_stats.pl
+Meta/Projects/NetTools/nettools_import_services.pl
+Meta/Projects/NetTools/nettools_nmap.pl
 Meta/Projects/Pdmt/pdmt.pl
 Meta/Projects/Pdmt/pdmt_test.pl
 Meta/Projects/Pics/pics_dir_check.pl
@@ -579,6 +600,7 @@ Meta/Projects/Website/website_cleanout.pl
 Meta/Projects/Website/website_copy.pl
 Meta/Projects/Website/website_httpd.pl
 Meta/Projects/Website/website_upload.pl
+Meta/System/Rpm/rpm_filter.pl
 Meta/Tests/import/ansicolor.pl
 Meta/Tests/import/archive.pl
 Meta/Tests/import/base64.pl
@@ -652,12 +674,10 @@ Meta/Tests/lib/Utils/debug.pl
 Meta/Tests/lib/Utils/dos.pl
 Meta/Tests/lib/Utils/list.pl
 Meta/Tests/lib/Utils/options.pl
-Meta/Tests/lib/Utils/output.pl
 Meta/Tests/lib/Utils/pc.pl
 Meta/Tests/lib/Utils/pid.pl
 Meta/Tests/lib/Utils/system.pl
 Meta/Tests/lib/Utils/time.pl
-Meta/Tests/lib/Utils/utils.pl
 Meta/Tests/lib/Xml/Parsers/graph.pl
 Meta/Tests/regression/client_server.pl
 Meta/Tests/regression/dry_run.pl
@@ -670,7 +690,6 @@ Meta/Tests/regression/xmlrpc.pl
 Meta/Ui/lib/Utils/Opts/opts.pl
 Meta/Ui/lib/Widg/Db/connection.pl
 Meta/Ui/lib/Widget/Gtk/xml_tree.pl
-Meta/Projects/Md5/Node.pm
 INSTALL
 LICENSE
 Makefile.PL

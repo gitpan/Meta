@@ -21,7 +21,7 @@ my($def)=Meta::Db::Def->new_modu($def_file);
 print $def->printc($c);
 print $c->end_html();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -54,7 +54,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_cgi.pl
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -137,6 +137,7 @@ None.
 	0.02 MV SEE ALSO section fix
 	0.03 MV move tests to modules
 	0.04 MV teachers project
+	0.05 MV md5 issues
 
 =head1 SEE ALSO
 

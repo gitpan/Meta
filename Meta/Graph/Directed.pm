@@ -5,9 +5,10 @@ package Meta::Graph::Directed;
 use strict qw(vars refs subs);
 use Graph::Directed qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.03";
 @ISA=qw(Graph::Directed);
 
 #sub vertices_num($);
@@ -36,7 +37,7 @@ sub get_single_succ($$) {
 	my($self,$node)=@_;
 	my(@nodes)=$self->successors($node);
 	if($#nodes!=0) {
-		Meta::Utils::System::die("number of nodes is not 1");
+		throw Meta::Error::Simple("number of nodes is not 1");
 	}
 	return($nodes[0]);
 }
@@ -92,7 +93,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Directed.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -166,10 +167,11 @@ None.
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
 	0.02 MV teachers project
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 
-Graph::Directed(3), Meta::Utils::Output(3), strict(3)
+Error(3), Graph::Directed(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -3,28 +3,47 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Baseline::Test qw();
 use Meta::Utils::Output qw();
+use RPM::Database qw();
+use Meta::Ds::Hash qw();
+use Meta::Tool::Rpm qw();
+use Error qw(:try);
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->set_free_allo(0);
+$opts->set_free_allo(1);
+$opts->set_free_stri("[rpmfiles]");
+$opts->set_free_mini(1);
+$opts->set_free_noli(1);
 $opts->analyze(\@ARGV);
 
-Meta::Baseline::Test::redirect_on();
+my($hash)=Meta::Ds::Hash->new();
+my(%RPM);
+tie %RPM,"RPM::Database" or throw Meta::Error::Simple("cannot access RPM database with error [".$RPM::err."]");
+while(my($key,$val)=each(%RPM)) {
+	$hash->insert($key);
+#	Meta::Utils::Output::print("key is [".$key."] and val is [".$val."]\n");
+#	while(my($hkey,$hval)=each(%$val)) {
+#		Meta::Utils::Output::print("hkey is [".$hkey."] and hval is [".$hval."]\n");
+#	}
+}
 
-Meta::Utils::Output::print("hello");
-#Meta::Utils::System::die("ohhhh");
+for(my($i)=0;$i<=$#ARGV;$i++) {
+	my($curr)=$ARGV[$i];
+	# get the basename of the rpm
+	my($base)=Meta::Tool::Rpm::basename($curr);
+	if($hash->hasnt($base)) {
+		Meta::Utils::Output::print($curr."\n");
+	}
+}
 
-Meta::Baseline::Test::redirect_off();
-
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
 =head1 NAME
 
-output.pl - testing program for the Meta::Utils::Output.pm module.
+rpm_filter.pl - filter out installed packages.
 
 =head1 COPYRIGHT
 
@@ -49,22 +68,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-	MANIFEST: output.pl
+	MANIFEST: rpm_filter.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.00
 
 =head1 SYNOPSIS
 
-	output.pl
+	rpm_filter.pl [options]
 
 =head1 DESCRIPTION
 
-This script tests the Meta::Utils::Output module.
-Currently it just prints out a string with no newline at the end. Dont
-lauge at this because after that it executes an exit and the output module
-is supposed to flush before the exit. The test is not realy run because
-otherwise it would have exited with a bad error (which should be a good
-one...).
+Give this program a list of RPMS and it will only return the RPM which are
+not installed on your system. The idea is that you can use this tool to
+find the set of RPMS that you didn't install from a CD and install them
+at a single command. This script is not designed to be run as root. You
+should run this script to create the list of RPMS that you want installed
+and then issue "rpm --install --verbose `cat list.txt`" as root. This script
+uses the RPM perl module to access the RPM database and find out which RPMS
+are installed.
 
 =head1 OPTIONS
 
@@ -108,7 +129,8 @@ show history and exit
 
 =back
 
-no free arguments are allowed
+minimum of [1] free arguments required
+no maximum limit on number of free arguments placed
 
 =head1 BUGS
 
@@ -123,23 +145,11 @@ None.
 
 =head1 HISTORY
 
-	0.00 MV get imdb ids of directors and movies
-	0.01 MV perl packaging
-	0.02 MV license issues
-	0.03 MV md5 project
-	0.04 MV database
-	0.05 MV perl module versions in files
-	0.06 MV thumbnail user interface
-	0.07 MV more thumbnail issues
-	0.08 MV website construction
-	0.09 MV improve the movie db xml
-	0.10 MV web site automation
-	0.11 MV SEE ALSO section fix
-	0.12 MV move tests to modules
+	0.00 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Test(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Ds::Hash(3), Meta::Tool::Rpm(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), RPM::Database(3), strict(3)
 
 =head1 TODO
 

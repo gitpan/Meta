@@ -18,6 +18,7 @@ use Meta::Sql::Stats qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::File::Prop qw();
 use File::MMagic qw();
+use Error qw(:try);
 
 my($def_file,$connections_file,$name,$con_name,$clean,$verb,$demo,$dire,$thumb_y,$thumb_x);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -73,15 +74,11 @@ while(!($iter->get_over())) {
 	my($curr)=$iter->get_curr();
 	#find out if file is jpg
 	my($type)=$mm->checktype_filename($curr);
-	if($verb) {
-		Meta::Utils::Output::print("considering [".$curr."]\n");
-		Meta::Utils::Output::print("type is [".$type."]\n");
-	}
+	Meta::Utils::Output::verbose($verb,"considering [".$curr."] with type [".$type."]\n");
 	if($type eq "image/jpeg") {
-		if($verb) {
-			Meta::Utils::Output::print("importing [".$curr."]\n");
-		}
-		my($data)=Meta::Utils::File::File::load($curr);
+		Meta::Utils::Output::verbose($verb,"importing [".$curr."]\n");
+		my($data);
+		Meta::Utils::File::File::load($curr,\$data);
 		my($image)=Meta::Image::Magick->new(magick=>'jpg');
 		$image->BlobToImage($data);
 		my($width,$height)=$image->Get('width','height');
@@ -100,35 +97,35 @@ while(!($iter->get_over())) {
 		my($checksum)=Digest::MD5::md5($data);
 		my($rv1)=$prep->bind_param(1,$width);
 		if(!$rv1) {
-			Meta::Utils::System::die("unable to bind param 1");
+			throw Meta::Error::Simple("unable to bind param 1");
 		}
 		my($rv2)=$prep->bind_param(2,$height);
 		if(!$rv2) {
-			Meta::Utils::System::die("unable to bind param 2");
+			throw Meta::Error::Simple("unable to bind param 2");
 		}
 		my($rv3)=$prep->bind_param(3,$curr);
 		if(!$rv3) {
-			Meta::Utils::System::die("unable to bind param 3");
+			throw Meta::Error::Simple("unable to bind param 3");
 		}
 		my($rv4)=$prep->bind_param(4,$dbi->quote($thumb,DBI::SQL_BINARY),{ TYPE=>"SQL_BINARY" });
 		if(!$rv4) {
-			Meta::Utils::System::die("unable to bind param 4");
+			throw Meta::Error::Simple("unable to bind param 4");
 		}
 		my($rv5)=$prep->bind_param(5,$dbi->quote($checksum,DBI::SQL_BINARY),{ TYPE=>"SQL_BINARY" });
 		if(!$rv5) {
-			Meta::Utils::System::die("unable to bind param 5");
+			throw Meta::Error::Simple("unable to bind param 5");
 		}
 		my($sb)=Meta::Utils::File::Prop::stat($curr);
 		my($inode)=$sb->ino();
 		my($rv6)=$prep->bind_param(6,$inode);
 		if(!$rv6) {
-			Meta::Utils::System::die("unable to bind param 6");
+			throw Meta::Error::Simple("unable to bind param 6");
 		}
 		#Meta::Utils::Output::print("going to execute\n");
 		if(!$demo) {
 			my($prv)=$prep->execute();
 			if(!$prv) {
-				Meta::Utils::System::die("unable to execute statement");
+				throw Meta::Error::Simple("unable to execute statement");
 			}
 		}
 	}
@@ -139,7 +136,7 @@ $iter->fini();
 $dbi->commit();
 $dbi->disconnect();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -172,7 +169,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: thumbnail_import.pl
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -300,10 +297,11 @@ None.
 	0.12 MV SEE ALSO section fix
 	0.13 MV move tests to modules
 	0.14 MV teachers project
+	0.15 MV md5 issues
 
 =head1 SEE ALSO
 
-Digest::MD5(3), File::MMagic(3), GD(3), Image::GD::Thumbnail(3), Image::Magick(3), Meta::Baseline::Aegis(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Image::Magick(3), Meta::Sql::Stats(3), Meta::Utils::File::File(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Prop(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Digest::MD5(3), Error(3), File::MMagic(3), GD(3), Image::GD::Thumbnail(3), Image::Magick(3), Meta::Baseline::Aegis(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Image::Magick(3), Meta::Sql::Stats(3), Meta::Utils::File::File(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Prop(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

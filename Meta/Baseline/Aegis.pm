@@ -3,6 +3,7 @@
 package Meta::Baseline::Aegis;
 
 use strict qw(vars refs subs);
+use Meta::Utils::Utils qw();
 use Meta::Utils::List qw();
 use Meta::Utils::Hash qw();
 use Meta::Utils::File::Collect qw();
@@ -13,11 +14,17 @@ use Meta::Utils::File::Path qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::File::Patho qw();
 use Meta::Info::Enum qw();
+use Meta::Ds::Noset qw();
 use Data::Dumper qw();
+use Error qw(:try);
+use Meta::Development::Assert qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.49";
+$VERSION="0.50";
 @ISA=qw();
+
+#sub BEGIN();
 
 #sub aesub($);
 #sub aesub_file($);
@@ -43,6 +50,7 @@ $VERSION="0.49";
 
 #sub deve();
 #sub inte();
+#sub inside_change();
 
 #sub work_dir();
 
@@ -64,46 +72,48 @@ $VERSION="0.49";
 #sub administrator_list_list();
 #sub administrator_list_hash();
 
-#sub change_files_hash($$$$$$);
-#sub project_files_hash($$$);
-#sub source_files_hash($$$$$$);
-#sub base_files_hash($$);
-#sub missing_files_hash();
-#sub extra_files_hash($);
-#sub total_files_hash($$);
+#sub change_files($$$$$$);
+#sub project_files($$$);
+#sub source_files($$$$$$);
+#sub base_files($$);
+#sub missing_files();
+#sub extra_files($);
+#sub total_files($$);
 
-#sub change_files_list($$$$$$);
-#sub project_files_list($$$);
-#sub source_files_list($$$$$$);
-#sub base_files_list($$);
-#sub missing_files_list();
-#sub extra_files_list($);
-#sub total_files_list($$);
-
-#sub no_missing_files($);
+#sub no_missing_files();
 
 #sub checkout_file($);
-#sub checkout_hash($);
+#sub checkout_set($);
 
 #sub in_change($);
-#sub have_aegis();
 
 #sub get_enum();
+#sub rc_set();
 
 #sub TEST($);
 
 #__DATA__
 
+our($tool_path);
+our($aesub_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("aegis");
+	$aesub_path=$patho->resolve("aesub");
+}
+
 sub aesub($) {
 	my($stri)=@_;
-	my($resu)=Meta::Utils::System::system_out_val("/local/tools/bin/aesub",["'$stri'"]);
+	my($resu)=Meta::Utils::System::system_out_val($aesub_path,["'$stri'"]);
 	chop($resu);
 	return($resu);
 }
 
 sub aesub_file($) {
 	my($file)=@_;
-	my($text)=Meta::Utils::File::File::load($file);
+	my($text);
+	Meta::Utils::File::File::load($file,\$text);
 	my($resu)=&aesub($text);
 	return($resu);
 }
@@ -192,6 +202,16 @@ sub inte() {
 	}
 }
 
+sub inside_change() {
+	my($stat)=state();
+	return(
+		($stat eq "being_developed") ||
+		($stat eq "being_integrated") ||
+		($stat eq "being_reviewed") ||
+		($stat eq "awaiting_integration")
+	);
+}
+
 sub work_dir() {
 	if(deve()) {
 		return(development_directory());
@@ -199,17 +219,17 @@ sub work_dir() {
 	if(inte()) {
 		return(integration_directory());
 	}
-	Meta::Utils::System::die("strange state");
+	throw Meta::Error::Simple("strange state");
 }
 
-sub exists($) {
+sub check_exists($) {
 	my($file)=@_;
-	return(Meta::Utils::File::Path::exists(&search_path(),$file,":"));
+	Meta::Utils::File::Path::exists(&search_path(),$file,":");
 }
 
-sub direxists($) {
+sub check_direxists($) {
 	my($dire)=@_;
-	return(Meta::Utils::File::Path::exists_dir(&search_path(),$dire,":"));
+	Meta::Utils::File::Path::exists_dir(&search_path(),$dire,":");
 }
 
 sub which_nodie($) {
@@ -296,23 +316,21 @@ sub administrator_list_hash() {
 	return($hash);
 }
 
-sub change_files_hash($$$$$$) {
+sub change_files_set($$$$$$) {
 	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
 	my($resu)=which("aegi/repo/chan_files.rpt");
 	my($pars)=Meta::Utils::Parse::Text->new();
-	my(@args)=("aegis","-Report","-TERse","-File",$resu);
+	my(@args)=($tool_path,"-Report","-TERse","-File",$resu);
 	$pars->init_proc(\@args);
 	my($pref);
 	if($abso) {
 		$pref=work_dir()."/";
 	}
-	my(%hash);
+	my($hash)=Meta::Ds::Noset->new();
 	while(!$pars->get_over()) {
 		my($line)=$pars->get_line();
 		my(@fiel)=split(' ',$line);
-		if($#fiel!=2) {
-			die("what kind of line is [".$line."]");
-		}
+		Meta::Development::Assert::assert_eq($#fiel+1,3,"what kind of line is [".$line."]");
 		my($usag)=$fiel[0];
 		my($type)=$fiel[1];
 		my($file)=$fiel[2];
@@ -344,31 +362,29 @@ sub change_files_hash($$$$$$) {
 			if($abso) {
 				$file=$pref.$file;
 			}
-			$hash{$file}=defined;
+			$hash->insert($file,defined);
 		}
 		$pars->next();
 	}
 	$pars->fini();
-	return(\%hash);
+	return($hash);
 }
 
-sub project_files_hash($$$) {
+sub project_files_set($$$) {
 	my($srcx,$test,$abso)=@_;
 	my($resu)=which("aegi/repo/proj_files.rpt");
 	my($pars)=Meta::Utils::Parse::Text->new();
-	my(@args)=("aegis","-Report","-TERse","-File",$resu);
+	my(@args)=($tool_path,"-Report","-TERse","-File",$resu);
 	$pars->init_proc(\@args);
 	my($pref);
 	if($abso) {
 		$pref=baseline()."/";
 	}
-	my(%hash);
+	my($hash)=Meta::Ds::Noset->new();
 	while(!$pars->get_over()) {
 		my($line)=$pars->get_line();
 		my(@fiel)=split(' ',$line);
-		if($#fiel!=1) {
-			Meta::Utils::System::die("what kind of line is [".$line."]");
-		}
+		Meta::Development::Assert::assert_eq($#fiel+1,2,"what kind of line is [".$line."]");
 		my($doit);
 		my($usag)=$fiel[0];
 		my($file)=$fiel[1];
@@ -385,161 +401,108 @@ sub project_files_hash($$$) {
 			if($abso) {
 				$file=$pref.$file;
 			}
-			$hash{$file}=defined;
+			$hash->insert($file,defined);
 		}
 		$pars->next();
 	}
 	$pars->fini();
-	return(\%hash);
-}
-
-sub source_files_hash($$$$$$) {
-	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
-	my($basehash)=project_files_hash($srcx,$test,0);
-	my($modihash)=change_files_hash(0,1,1,$srcx,$test,0);
-	Meta::Utils::Hash::remove_hash($basehash,$modihash,1);
-	my($chanhash)=change_files_hash($newx,$modi,$dele,$srcx,$test,0);
-	if($abso) {
-		$basehash=Meta::Utils::Hash::add_key_prefix($basehash,baseline()."/");
-		$chanhash=Meta::Utils::Hash::add_key_prefix($chanhash,development_directory()."/");
-	}
-	Meta::Utils::Hash::add_hash($basehash,$chanhash);
-	return($basehash);
-}
-
-sub base_files_hash($$) {
-	my($dele,$abso)=@_;
-	my($basehash)=project_files_hash(1,1,0);
-	my($modihash)=change_files_hash(0,1,!$dele,1,1,0);
-	Meta::Utils::Hash::remove_hash($basehash,$modihash,1);
-	if($abso) {
-		$basehash=Meta::Utils::Hash::add_key_prefix($basehash,baseline()."/");
-	}
-	return($basehash);
-}
-
-sub missing_files_hash() {
-	my($hash)=change_files_hash(1,1,1,1,1,1);
-	$hash=Meta::Utils::Hash::filter_notexists($hash);
 	return($hash);
 }
 
-sub extra_files_hash($) {
+sub source_files_set($$$$$$) {
+	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
+	my($basehash)=project_files_set($srcx,$test,0);
+	my($modihash)=change_files_set(0,1,1,$srcx,$test,0);
+	$basehash->remove_set($modihash);
+	my($chanhash)=change_files_set($newx,$modi,$dele,$srcx,$test,$abso);
+	if($abso) {
+		$basehash=$basehash->add_prefix(baseline()."/");
+#		$chanhash=$chanhash->add_prefix(development_directory()."/");
+	}
+	$basehash->add_set($chanhash);
+	return($basehash);
+}
+
+sub base_files_set($$) {
+	my($dele,$abso)=@_;
+	my($basehash)=project_files_set(1,1,0);
+	my($modihash)=change_files_set(0,1,!$dele,1,1,0);
+	$basehash->remove_set($modihash);#
+	if($abso) {
+		$basehash->add_prefix($basehash,baseline()."/");
+	}
+	return($basehash);
+}
+
+sub missing_files_set() {
+	my($set)=change_files_set(1,1,1,1,1,1);
+	$set=$set->filter(\&Meta::Utils::File::File::check_exist);
+	return($set);
+}
+
+sub extra_files($) {
 	my($abso)=@_;
-	my($full)=Meta::Utils::File::Collect::hash(work_dir(),$abso);
-	my($hash)=change_files_hash(1,1,1,1,1,$abso);
-	Meta::Utils::Hash::remove_hash($full,$hash,$abso);
+	my($full)=Meta::Utils::File::Collect::set(work_dir(),$abso);
+	my($set)=change_files_set(1,1,1,1,1,$abso);
+	$full->remove_set($set);
 	return($full);
 }
 
-sub total_files_hash($$) {
+sub total_files($$) {
 	my($dele,$abso)=@_;
 	my($resuhash);
 	if(deve()) {
-		my($basehash)=Meta::Utils::File::Collect::hash(baseline(),0);
+		my($basehash)=Meta::Utils::File::Collect::set(baseline(),0);
 #		Meta::Utils::Output::print("base size is [".Meta::Utils::Hash::size($basehash)."]\n");
 #	Meta::Utils::Output::print("modi size is [".Meta::Utils::Hash::size($modihash)."]\n");
 #		Meta::Utils::Output::print("base size is [".Meta::Utils::Hash::size($basehash)."]\n");
-		my($modihash)=change_files_hash(0,1,!$dele,1,1,0);
-		Meta::Utils::Hash::remove_hash($basehash,$modihash,1);
-		my($chanhash)=Meta::Utils::File::Collect::hash(work_dir(),0);
-		my($delehash)=change_files_hash(0,0,!$dele,1,1,0);
-		Meta::Utils::Hash::remove_hash($chanhash,$delehash,1);
+		my($modihash)=change_files(0,1,!$dele,1,1,0);
+		$basehash->remove_set($modihash);
+		#Meta::Utils::Hash::remove($basehash,$modihash,1);
+		my($chanhash)=Meta::Utils::File::Collect::set(work_dir(),0);
+		my($delehash)=change_files(0,0,!$dele,1,1,0);
+		$chanhash->remove_set($delehash);
+		#Meta::Utils::Hash::remove_hash($chanhash,$delehash,1);
 		if($abso) {
-			$basehash=Meta::Utils::Hash::add_key_prefix($basehash,baseline()."/");
-			$chanhash=Meta::Utils::Hash::add_key_prefix($chanhash,development_directory()."/");
+			$basehash=$basehash->add_prefix(baseline()."/");
+			$chanhash=$chanhash->add_prefix(development_directory()."/");
 		}
-		Meta::Utils::Hash::add_hash($basehash,$chanhash);
+		$basehash->add_set($chanhash);
 		$resuhash=$basehash;
 	} else {
-		$resuhash=Meta::Utils::File::Collect::hash(work_dir(),$abso);
+		$resuhash=Meta::Utils::File::Collect::set(work_dir(),$abso);
 	}
 	return($resuhash);
 }
 
-sub change_files_list($$$$$$) {
-	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
-	return(Meta::Utils::Hash::to_list(change_files_hash($newx,$modi,$dele,$srcx,$test,$abso)));
-}
-
-sub project_files_list($$$) {
-	my($srcx,$test,$abso)=@_;
-	return(Meta::Utils::Hash::to_list(project_files_hash($srcx,$test,$abso)));
-}
-
-sub source_files_list($$$$$$) {
-	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
-	return(Meta::Utils::Hash::to_list(source_files_hash($newx,$modi,$dele,$srcx,$test,$abso)));
-}
-
-sub base_files_list($$) {
-	my($dele,$abso)=@_;
-	return(Meta::Utils::Hash::to_list(base_files_hash($dele,$abso)));
-}
-
-sub missing_files_list() {
-	return(Meta::Utils::Hash::to_list(missing_files_hash()));
-}
-
-sub extra_files_list($) {
-	my($abso)=@_;
-	return(Meta::Utils::Hash::to_list(extra_files_hash($abso)));
-}
-
-sub total_files_list($$) {
-	my($dele,$abso)=@_;
-	return(Meta::Utils::Hash::to_list(total_files_hash($dele,$abso)));
-}
-
-sub no_missing_files($) {
-	my($verb)=@_;
-	my($list)=missing_files_list();
-	if($verb) {
-		Meta::Utils::List::print(Meta::Utils::Output::get_file(),$list);
-	}
-	return(Meta::Utils::List::empty($list));
+sub no_missing_files() {
+	my($set)=missing_files_set();
+	return($set->empty());
 }
 
 sub checkout_file($) {
 	my($file)=@_;
-	return(Meta::Utils::System::system_nodie("aegis",["-Copy_File",$file]));
+	Meta::Utils::System::system($tool_path,["-Copy_File",$file]);
 }
 
-sub checkout_hash($) {
-	my($hash)=@_;
-	my(@list)=keys(%$hash);
-	my($size)=$#list+1;
-	my($code);
-	if($size>0) {
-		$code=Meta::Utils::System::system_nodie("aegis",["-Copy_File",@list]);
+sub checkout_set($) {
+	my($set)=@_;
+	if($set->size()>0) {
+		my(@list);
+		for(my($i)=0;$i<$set->size();$i++) {
+			my($curr)=$set->elem($i);
+			push(@list,$curr);
+		}
+		Meta::Utils::System::system($tool_path,["-Copy_File",@list]);
 	} else {
-		$code=1;
+		throw Meta::Error::Simple("no files to checkout");
 	}
-	return($code);
-#	my($resu)=1;
-#	while(my($keyx,$valx)=each(%$hash)) {
-#		my($code)=Meta::Utils::System::system_nodie("aegis",["-Copy_File",$keyx]);
-#		if(!$code) {
-#			Meta::Utils::System::die("failed to checkout [".$keyx."]");
-#			$resu=0;
-#		}
-#	}
-#	return($resu);
 }
 
 sub in_change($) {
 	my($file)=@_;
-	my($hash)=&change_files_hash(1,1,0,1,1,0);
-	if(exists($hash->{$file})) {
-		return(1);
-	} else {
-		return(0);
-	}
-}
-
-sub have_aegis() {
-	my($patho)=Meta::Utils::File::Patho->new_path();
-	return($patho->exists("aegis"));
+	my($set)=&change_files_set(1,1,0,1,1,0);
+	return($set->has($file));
 }
 
 sub get_enum() {
@@ -551,6 +514,27 @@ sub get_enum() {
 	$enum->insert("source","complete source manifest");
 	$enum->set_default("source");
 	return($enum);
+}
+
+sub rc_set() {
+	my($pprj,$pchn)=@_;
+	my($file)=Meta::Utils::Utils::get_home_dir()."/.aegisrc";
+	my($hash)=Meta::Ds::Ohash->new();
+	my($io)=Meta::IO::File->new_reader($file);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
+		if($line=~/^\s*(.*)\s*=\s*"(.*)"\s*$/) {
+			my($var,$val)=($line=~/^\s*(.*)\s*=\s*"(.*)"\s*$/);
+			$hash->insert($var,$val);
+		} else {
+			if($line=~/^\s*(.*)\s*=\s*(.*)\s*$/) {
+				my($var,$val)=($line=~/^\s*(.*)\s*=\s*(.*)\s*$/);
+				$hash->insert($var,$val);
+			}
+		}
+	}
+	$io->close();
+	return($hash);
 }
 
 sub TEST($) {
@@ -585,6 +569,8 @@ sub TEST($) {
 	Meta::Utils::Output::print("deve is [".$deve."]\n");
 	my($inte)=Meta::Baseline::Aegis::inte();
 	Meta::Utils::Output::print("inte is [".$inte."]\n");
+	my($inside_change)=Meta::Baseline::Aegis::inside_change();
+	Meta::Utils::Output::print("inside_change is [".$inside_change."]\n");
 	my($work_dir)=Meta::Baseline::Aegis::work_dir();
 	Meta::Utils::Output::print("work_dir is [".$work_dir."]\n");
 	my($file)=Meta::Baseline::Aegis::which_f("/tmp/tmp");
@@ -593,10 +579,10 @@ sub TEST($) {
 	Meta::Utils::Output::print("in_change todo.txt [".$in_change."]\n");
 	my($in_change_2)=Meta::Baseline::Aegis::in_change("foo");
 	Meta::Utils::Output::print("in_change foo [".$in_change_2."]\n");
-	my($have_aegis)=Meta::Baseline::Aegis::have_aegis();
-	Meta::Utils::Output::print("have_aegis is [".$have_aegis."]\n");
 	my($enum)=Meta::Baseline::Aegis::get_enum();
 	Meta::Utils::Output::print("enum is [".Data::Dumper::Dumper($enum)."]\n");
+	my($rc_set)=Meta::Baseline::Aegis::rc_set();
+	Meta::Utils::Output::print("rc_set is [".Data::Dumper::Dumper($rc_set)."]\n");
 	return(1);
 }
 
@@ -633,7 +619,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aegis.pm
 	PROJECT: meta
-	VERSION: 0.49
+	VERSION: 0.50
 
 =head1 SYNOPSIS
 
@@ -680,6 +666,7 @@ The services here are divided into several categories:
 	history_directory()
 	deve()
 	inte()
+	inside_change()
 	work_dir()
 	which_nodie($)
 	which($)
@@ -696,26 +683,19 @@ The services here are divided into several categories:
 	integrator_list_hash()
 	administrator_list_list()
 	administrator_list_hash()
-	change_files_hash($$$$$$)
-	project_files_hash($$$)
-	source_files_hash($$$$$$)
-	base_files_hash($$)
-	missing_files_hash()
-	extra_files_hash($)
-	total_files_hash($$)
-	change_files_list($$$$$$)
-	project_files_list($$$)
-	source_files_list($$$$$$)
-	base_files_list($$)
-	missing_files_list()
-	extra_files_list($)
-	total_files_list($$)
-	no_missing_files($)
+	change_files_set($$$$$$)
+	project_files_set($$$)
+	source_files_set($$$$$$)
+	base_files_set($$)
+	missing_files_set()
+	extra_files_set($)
+	total_files_set($$)
+	no_missing_files()
 	checkout_file($)
-	checkout_hash($)
+	checkout_set($)
 	in_change($)
-	have_aegis()
 	get_enum()
+	rc_set()
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -829,19 +809,26 @@ This checks if the current changes state is "being_developed".
 Returns whether the change is in an integration state.
 This checks if the current changes state is "being_integrated".
 
+=item B<inside_change()>
+
+Returns whether the change is in development.
+
 =item B<work_dir()>
 
 Returns what I defined to be the work dir. This is the development directory
 if the change is begin developed and the integration directory if the change
 is being integrated.
 
-=item B<exists($)>
+=item B<check_exists($)>
 
-This method returns true iff the file given exists in development.
+This method will verify that a certain file exists in the aegis
+development path. The method will throw an exception if this is not so.
 
-=item B<direxists($)>
+=item B<check_direxists($)>
 
-This method returns true iff the directory given to it exists in development.
+This method will verify that a certain directory exists in the aegis
+path as a development directory.
+The method will throw an exception if this is not so.
 
 =item B<which_nodie($)>
 
@@ -914,7 +901,7 @@ This routine returns the list of administrators in a perl list reference.
 
 This routine returns the list of administrators in a perl hash reference.
 
-=item B<change_files_hash($$$$$$)>
+=item B<change_files_set($$$$$$)>
 
 This script gives out all the files in the current change with
 no extra aegis information.
@@ -934,11 +921,11 @@ The data for this routine are:
 4. test - do you want test files included ?
 5. abso - do you want absolute file names or relative in the output ?
 
-=item B<project_files_hash($$$)>
+=item B<project_files_set($$$)>
 
 List all the files in the current baseline project.
 
-=item B<source_files_hash($$$$$$)>
+=item B<source_files_set($$$$$$)>
 
 List all the files viewed from the changes point of view
 This is very useful for grepping etc...
@@ -953,58 +940,28 @@ will have different names...).
 Aegis has such a report so maybe I should add an implementation which
 uses it and then check out which performs better.
 
-=item B<base_files_hash($$)>
+=item B<base_files_set($$)>
 
 This gives out all the files left in the baseline.
 
-=item B<missing_files_hash()>
+=item B<missing_files_set()>
 
 This routine gives out all the missing files for the current change.
 It does so by using change_files 1 1 1 1 and filtering out
 all the files which exist using Meta::Utils::Hash::filter_exist().
 
-=item B<extra_files_hash($)>
+=item B<extra_files_set($)>
 
 This returns a hash with all the extra files (files which are not change
 files) which are lying around in the directory.
 The algorithm: collect all the files in the working directory and subtract
 all the files which are in the change.
 
-=item B<total_files_hash($$)>
+=item B<total_files_set($$)>
 
 This gives you all the files from the changes point of view (source+target).
 
-=item B<change_files_list($$$$$$)>
-
-This function is the same as change_files_hash but returns a list.
-
-=item B<project_files_list($$$)>
-
-This function is the same as project_files_hash but returns a list.
-
-=item B<source_files_list($$$$$$)>
-
-This function is the same as source_files_hash but returns a list.
-
-=item B<base_files_list($$)>
-
-This function is the same as base_files_hash but returns a list.
-
-=item B<missing_files_list()>
-
-This routine gives out all the missing files for the current change.
-It does so by using change_files 1 1 1 1 and filtering out
-all the files which exist using Meta::Utils::List::filter_exist().
-
-=item B<extra_files_list($)>
-
-This method is the same as extra_files_hash expect it returns a list.
-
-=item B<total_files_list($$)>
-
-This method is the same as total_files_hash expect it returns a list.
-
-=item B<no_missing_files($)>
+=item B<no_missing_files()>
 
 This routine returns a boolean according to whether there are or aren't any
 missing files.
@@ -1013,20 +970,16 @@ missing files.
 
 This method will check out a single file.
 
-=item B<checkout_hash($)>
+=item B<checkout_set($)>
 
 This will receive a hash reference and will check out all the files in
-the hash.
+the hash. The method does not just do a foreach on the set because it
+is more effective to ask aegis to checkout all files at once.
 
 =item B<in_change($)>
 
 This function recevies a file name and returns true iff the file is part
 of the current change.
-
-=item B<have_aegis()>
-
-This function returns whether the current environment is an Aegis environment
-or not. Currently it only checks whether aegis is in the path. This is bad.
 
 =item B<get_enum()>
 
@@ -1109,10 +1062,11 @@ None.
 	0.47 MV SEE ALSO section fix
 	0.48 MV web site development
 	0.49 MV teachers project
+	0.50 MV md5 issues
 
 =head1 SEE ALSO
 
-Data::Dumper(3), Meta::Info::Enum(3), Meta::Utils::File::Collect(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::File::Patho(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
+Data::Dumper(3), Error(3), Meta::Development::Assert(3), Meta::Ds::Noset(3), Meta::IO::File(3), Meta::Info::Enum(3), Meta::Utils::File::Collect(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::File::Patho(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 
@@ -1123,3 +1077,5 @@ Data::Dumper(3), Meta::Info::Enum(3), Meta::Utils::File::Collect(3), Meta::Utils
 -add an interface to aefind here.
 
 -add the aegis backup code here.
+
+-add code to parse the .aegisrc file here.

@@ -7,7 +7,7 @@ use Meta::Pdmt::TargetFileNode qw();
 use Meta::Lang::Dtd::Html qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Pdmt::TargetFileNode);
 
 #sub build($$);
@@ -35,7 +35,7 @@ __END__
 
 =head1 NAME
 
-Meta::Pdmt::Nodes::Dtd2Html - what does your module/class do.
+Meta::Pdmt::Nodes::Dtd2Html - PDMT driver to create HTML documentation from DTD source.
 
 =head1 COPYRIGHT
 
@@ -62,7 +62,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dtd2Html.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -116,6 +116,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV more pdmt stuff
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

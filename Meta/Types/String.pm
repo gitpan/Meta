@@ -5,7 +5,7 @@ package Meta::Types::String;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub new($);
@@ -19,17 +19,17 @@ $VERSION="0.00";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{TEXT}=defined;
 	return($self);
 }
 
 sub new_stri($$) {
-	my($clas,$text)=@_;
+	my($class,$text)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{TEXT}=$text;
 	return($self);
 }
@@ -92,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: String.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -168,6 +168,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV more pdmt stuff
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -8,9 +8,10 @@ use Meta::Lang::Xml::Xml qw();
 use Meta::Baseline::Aegis qw();
 use XML::Parser qw();
 use XML::XPath qw();
-use IO::File qw();
+use Meta::IO::File qw();
 use Meta::Template::Sub qw();
 use Meta::Ds::Set qw();
+use Error qw(:try);
 
 my($file,$verb,$outf,$sync,$set_sort,$config);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -26,11 +27,12 @@ $opts->analyze(\@ARGV);
 
 $outf=Meta::Template::Sub::interpolate($outf);
 
-my($special)="# kmail addressbook file";
 Meta::Utils::Output::verbose($verb,"started reading old file\n");
 my($old_set)=Meta::Ds::Set->new();
 $old_set->read($outf);
 Meta::Utils::Output::verbose($verb,"finished reading old file\n");
+#Meta::Utils::Output::dump($old_set);
+my($special)="# kmail addressbook file";
 $old_set->remove($special);
 
 my($set)=Meta::Ds::Set->new();
@@ -41,11 +43,11 @@ Meta::Lang::Xml::Xml::setup_path();
 my($file)=Meta::Baseline::Aegis::which($file);
 my($par)=XML::Parser->new();
 if(!defined($par)) {
-	Meta::Utils::System::die("unable to create XML::Parser");
+	throw Meta::Error::Simple("unable to create XML::Parser");
 }
 my($parser)=XML::XPath::XMLParser->new(filename=>$file,parser=>$par);
 if(!defined($parser)) {
-	Meta::Utils::System::die("unable to create XML::XPath::XMLParser");
+	throw Meta::Error::Simple("unable to create XML::XPath::XMLParser");
 }
 my($root_node)=$parser->parse();
 my($nodes)=$root_node->find('/contacts/contact');
@@ -98,10 +100,7 @@ Meta::Utils::Output::verbose($verb,"finished reading xml file\n");
 if(!$sync || ($sync && $old_set->contained($set))) {
 	Meta::Utils::Output::verbose($verb,"started writing output\n");
 	my($io);
-	$io=IO::File->new($outf,"w");
-	if(!defined($io)) {
-		Meta::Utils::System::die("unable to open output file [".$outf."]");
-	}
+	$io=Meta::IO::File->new($outf,"w");
 	$io->print($special."\n");
 	if($set_sort) {
 		my($hash)=$set->get_hash();
@@ -117,10 +116,10 @@ if(!$sync || ($sync && $old_set->contained($set))) {
 	my($res_set)=$old_set->subtract($set);
 	Meta::Utils::Output::print("New info in kmail. Please Sync.\n");
 	Meta::Utils::Output::dump($res_set);
-	#Meta::Utils::System::die("cannot write output becuse of sync problems");
+	#throw Meta::Error::Simple("cannot write output becuse of sync problems");
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -153,7 +152,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: contacts_export.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -279,10 +278,11 @@ None.
 	0.04 MV finish papers
 	0.05 MV teachers project
 	0.06 MV more pdmt stuff
+	0.07 MV md5 issues
 
 =head1 SEE ALSO
 
-IO::File(3), Meta::Baseline::Aegis(3), Meta::Ds::Set(3), Meta::Lang::Xml::Xml(3), Meta::Template::Sub(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::Parser(3), XML::XPath(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Ds::Set(3), Meta::IO::File(3), Meta::Lang::Xml::Xml(3), Meta::Template::Sub(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::Parser(3), XML::XPath(3), strict(3)
 
 =head1 TODO
 

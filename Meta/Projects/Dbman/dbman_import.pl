@@ -5,7 +5,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Projects::Dbman::Page qw();
 use Meta::Projects::Dbman::Section qw();
-use Meta::Utils::File::Iter qw();
+use Meta::Utils::File::Iterator qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::File::File qw();
 use Compress::Zlib qw();
@@ -15,15 +15,16 @@ use Meta::Db::Ops qw();
 use Meta::Db::Connections qw();
 use Meta::Db::Dbi qw();
 use Meta::Class::DBI qw();
-use File::MMagic qw();
+use Meta::File::MMagic qw();
+use Meta::Tool::Man qw();
 
-my($connections_file,$con_name,$name,$verbose,$clean,$sections,$pages,$demo,$import_description,$import_troff,$import_ascii,$import_ps,$import_dvi,$import_html,$dlst);
+my($connections_file,$con_name,$name,$verbose,$clean,$sections,$pages,$demo,$import_description,$import_troff,$import_ascii,$import_ps,$import_dvi,$import_html,$dlst,$man_path);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("con_name","what connection name ?",undef,\$con_name);
 $opts->def_stri("name","what database name ?","dbman",\$name);
-$opts->def_bool("verbose","should I be noisy ?",0,\$verbose);
+$opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->def_bool("clean","should I clean the database before ?",1,\$clean);
 $opts->def_bool("sections","import sections ?",1,\$sections);
 $opts->def_bool("pages","import pages ?",1,\$pages);
@@ -34,15 +35,19 @@ $opts->def_bool("import_ascii","import ascii format ?",1,\$import_ascii);
 $opts->def_bool("import_ps","import ps format ?",1,\$import_ps);
 $opts->def_bool("import_dvi","import dvi format ?",1,\$import_dvi);
 $opts->def_bool("import_html","import html format ?",1,\$import_html);
-#$opts->def_dlst("dirs","directory path to scan","/usr/local/man",\$dlst);
 $opts->def_dlst("dirs","directory path to scan","/local/tools/man",\$dlst);
+$opts->def_bool("man_path","take path to import from man ?",1,\$man_path);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
+
+if($man_path) {
+	$dlst=Meta::Tool::Man::path();
+}
 
 my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection)=$connections->get_con_null($con_name);
 
-my($mm)=File::MMagic->new();
+my($mm)=Meta::File::MMagic->new();
 
 if($clean) {
 	#clean the database
@@ -144,79 +149,56 @@ if($pages) {
 		my($curr)=$sections[$i];
 		$mapping{$curr->tag()}=$curr->id();
 	}
-	my(@dirs)=split(':',$dlst);
-#	my($dirs)=[
-#		"/local/tools/man",
-#		"/usr/share/man",
-#		"/usr/local/man",
-#		"/usr/X11R6/man",
-#		"/usr/kerberos/man",
-#		"/usr/lib/perl5/man",
-#		"/usr/man",
-#		"/local/tools/share/aegis/en",
-#		"/local/tools/share/aegis",
-#	];
-
-	my($iter)=Meta::Utils::File::Iter->new();
-	for(my($i)=0;$i<=$#dirs;$i++) {
-		my($curr)=$dirs[$i];
-		$iter->add_directory($curr);
-	}
+	my($iter)=Meta::Utils::File::Iterator->new();
 	$iter->set_want_dirs(0);
-	$iter->nstart();
+	$iter->set_want_files(1);
+	$iter->add_directories($dlst,":");
+	$iter->start();
 	my($progress)=Meta::Utils::Progress->new();
 	$progress->start();
 	while(!($iter->get_over())) {
 		my($curr)=$iter->get_curr();
-		if($verbose) {
-			Meta::Utils::Output::print("curr is [".$curr."]\n");
-		}
-		my($doit)=0;
+		Meta::Utils::Output::verbose($verbose,"curr is [".$curr."]\n");
 		my($name,$description,$tag,$contenttroff,$contenttroff_unzipped);
 		#uncompressed file
 		my($res)=$mm->checktype_filename($curr);
-#		if($verbose) {
-#			Meta::Utils::Output::print("type is [".$res."]\n");
-#		}
+		Meta::Utils::Output::verbose($verbose,"type is [".$res."]\n");
+		my($doit)=0;
 		if($res eq "text/x-roff") {
 		#if($curr=~m/\/man.*\/.*\..*$/) {
 			#Meta::Utils::Output::print("curr is [".$curr."]\n");
-			$contenttroff_unzipped=Meta::Utils::File::File::load($curr);
+			Meta::Utils::File::File::load($curr,\$contenttroff_unzipped);
 			#compress is
 			$contenttroff=Compress::Zlib::memGzip($contenttroff_unzipped);
 			($name,$tag)=($curr=~/\/man.*\/(.*)\.(.*)$/);
 			$doit=1;
 		}
-		#compressed file
+		#gzip compressed file
 		if($curr=~m/\/man.*\/.*\..*\.gz$/) {
-			$contenttroff=Meta::Utils::File::File::load($curr);
+			Meta::Utils::File::File::load($curr,\$contenttroff);
 			$contenttroff_unzipped=Compress::Zlib::memGunzip($contenttroff);
 			($name,$tag)=($curr=~/\/man.*\/(.*)\.(.*)\.gz$/);
 			$doit=1;
 		}
-		#find the section id
-		#this is db oriented code - currently commented
-		#my($section);
-		#my($sect_obj)=Meta::Projects::Dbman::Section->search('tag',$tag);
-		#if(!defined($sect_obj)) {
-		#	Meta::Utils::Output::print("cannot find tag for [".$curr."]\n");
-		#	$doit=0;
-		#} else {
-		#	$section=$sect_obj->id();
-		#}
-		#find the section id
-		my($section);
-		if(exists($map_hash{$tag})) {
-			my($map_tag)=$map_hash{$tag};
-			if(exists($mapping{$map_tag})) {
-				$section=$mapping{$map_tag};
-			} else {
-				Meta::Utils::System::die("internal mapping problem");
-			}
-		} else {
-			$doit=0;
+		#bzip compressed file
+		if($curr=~m/\/man.*\/.*\..*\.bz2$/) {
+			Meta::Utils::File::File::load($curr,\$contenttroff);
+			$contenttroff_unzipped=Compress::Bzip2::decompress($contenttroff);
+			($name,$tag)=($curr=~/\/man.*\/(.*)\.(.*)\.bz2$/);
+			$doit=1;
 		}
 		if($doit) {
+			my($section);
+			if(exists($map_hash{$tag})) {
+				my($map_tag)=$map_hash{$tag};
+				if(exists($mapping{$map_tag})) {
+					$section=$mapping{$map_tag};
+				} else {
+					throw Meta::Error::Simple("internal mapping problem");
+				}
+			} else {
+				throw Meta::Error::Simple("internal mapping problem");
+			}
 			#extract description from content
 			if(!$demo) {
 				my($page)=Meta::Projects::Dbman::Page->create({});
@@ -251,14 +233,14 @@ if($pages) {
 		} else {
 			Meta::Utils::Output::print("not matched [".$curr."]\n");
 		}
-		$iter->nnext();
+		$iter->next();
 		$progress->report();
 	}
 	$iter->fini();
 	$progress->finish();
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -291,7 +273,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbman_import.pl
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -354,7 +336,7 @@ what connection name ?
 
 what database name ?
 
-=item B<verbose> (type: bool, default: 0)
+=item B<verbose> (type: bool, default: 1)
 
 should I be noisy ?
 
@@ -402,6 +384,10 @@ import html format ?
 
 directory path to scan
 
+=item B<man_path> (type: bool, default: 1)
+
+take path to import from man ?
+
 =back
 
 no free arguments are allowed
@@ -429,10 +415,11 @@ None.
 	0.07 MV move tests to modules
 	0.08 MV download scripts
 	0.09 MV teachers project
+	0.10 MV md5 issues
 
 =head1 SEE ALSO
 
-Compress::Zlib(3), File::MMagic(3), Meta::Class::DBI(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Ops(3), Meta::Projects::Dbman::Page(3), Meta::Projects::Dbman::Section(3), Meta::Tool::Groff(3), Meta::Utils::File::File(3), Meta::Utils::File::Iter(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::Progress(3), Meta::Utils::System(3), strict(3)
+Compress::Zlib(3), Meta::Class::DBI(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Ops(3), Meta::File::MMagic(3), Meta::Projects::Dbman::Page(3), Meta::Projects::Dbman::Section(3), Meta::Tool::Groff(3), Meta::Tool::Man(3), Meta::Utils::File::File(3), Meta::Utils::File::Iterator(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::Progress(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
@@ -440,13 +427,6 @@ Compress::Zlib(3), File::MMagic(3), Meta::Class::DBI(3), Meta::Db::Connections(3
 
 -take care of all the warnings that come out when doing a full import.
 
--make the db user and password and connection info also be read from a configuration file.
-
--do the ps,dvi and html importing.
-
 -do file types with File::Mime or someting and not according to the file name.
 
 -handle symbolic links by having multiple entries with the same manual content (two tables).
-
--make the ability to run man --path and get the result in order to get the actual directories. Actually make a man tool which can either run man --path or read the man conf files (/etc/man.config) to in order to get the relevant paths.
-

@@ -7,7 +7,7 @@ use Meta::Types::Enumerated qw();
 use Meta::Info::Enum qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw(Meta::Types::Enumerated);
 
 #sub BEGIN();
@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Function.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -158,6 +158,7 @@ None.
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
 	0.27 MV teachers project
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 

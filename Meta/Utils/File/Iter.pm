@@ -50,16 +50,16 @@ sub init($) {
 }
 
 sub add_directory($$) {
-	my($self,$valx)=@_;
-	my($handle)=DirHandle->new($valx);
+	my($self,$val)=@_;
+	my($handle)=DirHandle->new($val);
 	if(defined($handle)) {
 		$self->{STACK}->push($handle);
-		$self->{STACK_NAME}->push($valx);
-		my($st)=File::stat::stat($valx);
+		$self->{STACK_NAME}->push($val);
+		my($st)=File::stat::stat($val);
 		my($inode)=$st->ino();
 		$self->{INODE_HASH}->insert($inode);
 	} else {
-		Meta::Utils::System::die("cannot create handle for [".$valx."]");
+		throw Meta::Error::Simple("cannot create handle for [".$val."]");
 	}
 }
 

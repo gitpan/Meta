@@ -108,7 +108,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_rule_exec.pl
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -270,6 +270,7 @@ None.
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
 	0.28 MV move tests to modules
+	0.29 MV md5 issues
 
 =head1 SEE ALSO
 

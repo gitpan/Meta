@@ -4,19 +4,36 @@ package Meta::Module::Info;
 
 use strict qw(vars refs subs);
 use Module::Info qw();
+use CLASS;
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Module::Info);
 
-#sub modules_used($);
+#sub new_from_module($$);
+#sub new_from_file($$);
+#sub modules_used_sorted($);
 #sub TEST($);
 
 #__DATA__
 
-sub modules_used($) {
+sub new_from_module($$) {
+	my($class,$module)=@_;
+	my($mod)=Module::Info::new_from_module($class,$module);
+	Meta::Development::Assert::assert_isa($mod,$CLASS,"bad class");
+	return($mod);
+}
+
+sub new_from_file($$) {
+	my($class,$file)=@_;
+	my($mod)=Module::Info::new_from_file($class,$file);
+	Meta::Development::Assert::assert_isa($mod,$CLASS,"bad class");
+	return($mod);
+}
+
+sub modules_used_sorted($) {
 	my($self)=@_;
-	my(@list)=$self->SUPER::modules_used();
+	my(@list)=$self->modules_used();
 	my(@sorted_list)=CORE::sort(@list);
 	return(@sorted_list);
 }
@@ -24,7 +41,7 @@ sub modules_used($) {
 sub TEST($) {
 	my($context)=@_;
 	my($object)=Meta::Module::Info->new_from_file(Meta::Baseline::Aegis::which("perl/lib/Meta/Module/Info.pm"));
-	my(@list)=$object->modules_used();
+	my(@list)=$object->modules_used_sorted();
 	#now check the list
 	return(1);
 }
@@ -62,7 +79,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Info.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -83,12 +100,24 @@ Other extensions may follow.
 
 =head1 FUNCTIONS
 
+	new_from_module($$)
+	new_from_file($$)
 	modules_used($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<new_from_module($$)>
+
+This method overrides the Module::Info::new_from_module method and throws
+an exception if the aforementioned method fails.
+
+=item B<new_from_file($$)>
+
+This method overrides the Module::Info::new_from_file method and throws
+an exception if the aforementioned method failes.
 
 =item B<modules_used($)>
 
@@ -122,10 +151,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV SEE ALSO section fix
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-Module::Info(3), strict(3)
+CLASS(3), Module::Info(3), strict(3)
 
 =head1 TODO
 

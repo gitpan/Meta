@@ -4,7 +4,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use XML::Handler::YAWriter qw();
-use IO::File qw();
+use Meta::IO::File qw();
 use XML::Driver::HTML qw();
 
 my($file,$PrettyWhiteIndent,$NoWhiteSpace,$NoComments,$AddHiddenNewline,$AddHiddenAttrTab,$CatchEmptyElement,$Encoding);
@@ -22,7 +22,7 @@ $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($ya)=XML::Handler::YAWriter->new(
-	'Output'=>IO::File->new(">-"),
+	'Output'=>Meta::IO::File->new(">-"),
 	'Pretty'=> {
 		'PrettyWhiteIndent'=>$PrettyWhiteIndent,
 		'NoWhiteSpace'=>$NoWhiteSpace,
@@ -35,13 +35,13 @@ my($ya)=XML::Handler::YAWriter->new(
 my($html)=XML::Driver::HTML->new(
 	'Handler'=>$ya,
 	'Source'=>{
-		'ByteStream'=>IO::File->new($file),
+		'ByteStream'=>Meta::IO::File->new($file),
 		'Encoding',$Encoding,
 	},
 );
 $html->parse();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -74,7 +74,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: xml_html_to_xml.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -175,10 +175,11 @@ None.
 
 	0.00 MV move tests to modules
 	0.01 MV teachers project
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
-IO::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), XML::Driver::HTML(3), XML::Handler::YAWriter(3), strict(3)
+Meta::IO::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), XML::Driver::HTML(3), XML::Handler::YAWriter(3), strict(3)
 
 =head1 TODO
 

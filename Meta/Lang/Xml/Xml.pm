@@ -15,9 +15,10 @@ use Meta::Xml::Parsers::Type qw();
 use Meta::Xml::Parsers::Checker qw();
 use Meta::Utils::Env qw();
 use Meta::Utils::File::Patho qw();
+use Meta::IO::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub catalog_setup();
@@ -142,7 +143,7 @@ sub c2chun($) {
 	$parser->init_file($srcx);
 	my($found_doctype)=0;
 	my($found_xml)=0;
-	open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
+	my($io)=Meta::IO::File->new_writer($targ);
 	while(!$parser->get_over()) {
 		my($line)=$parser->get_line();
 		if($line=~/^\<\!DOCTYPE/) {
@@ -151,13 +152,13 @@ sub c2chun($) {
 			if($line=~/^\<\?xml version/) {
 				$found_xml=1;
 			} else {
-				print FILE $line."\n";
+				print $io $line."\n";
 			}
 		}
 		$parser->next();
 	}
 	$parser->fini();
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
+	$io->close();
 	if(!$found_doctype) {
 		Meta::Utils::Output::print("unable to find DOCTYPE in document\n");
 	}
@@ -229,7 +230,7 @@ sub odeps($$$$) {
 			$graph->node_insert($a_system_id);
 			$graph->edge_insert($modu,$a_system_id);
 			if(!defined($system_id)) {
-			Meta::Utils::System::die("no system id");
+				throw Meta::Error::Simple("no system id");
 			}
 		}
 	}
@@ -295,7 +296,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xml.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -460,10 +461,11 @@ None.
 	0.07 MV web site development
 	0.08 MV finish papers
 	0.09 MV teachers project
+	0.10 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Env(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), Meta::Xml::Parsers::Checker(3), Meta::Xml::Parsers::Deps(3), Meta::Xml::Parsers::Type(3), XML::Checker::Parser(3), XML::DOM(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::IO::File(3), Meta::Utils::Env(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), Meta::Xml::Parsers::Checker(3), Meta::Xml::Parsers::Deps(3), Meta::Xml::Parsers::Type(3), XML::Checker::Parser(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 

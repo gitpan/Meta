@@ -7,7 +7,7 @@ use Meta::Xml::Parsers::User qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.03";
+$VERSION="0.04";
 @ISA=qw();
 
 #sub BEGIN();
@@ -78,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: User.pm
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -147,6 +147,7 @@ None.
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
 	0.03 MV teachers project
+	0.04 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -17,7 +17,7 @@ $opts->set_standard();
 $opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("con_name","what connection name ?",undef,\$con_name);
 $opts->def_stri("name","what database name ?","mime",\$name);
-$opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
+$opts->def_bool("verbose","noisy or quiet ?",1,\$verb);
 $opts->def_bool("clean","should I clean the database before ?",1,\$clean);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
@@ -65,7 +65,7 @@ while($line=<MIME::Types::DATA>) {
 		Meta::Utils::Output::print("extensions is [".$extensions."]\n");
 		Meta::Utils::Output::print("encoding is [".$encoding."]\n");
 	}
-	my($mime)=Meta::Projects::Mime::MimeTypes->new();
+	my($mime)=Meta::Projects::Mime::MimeTypes->new({});
 #	$mime->id($mimetypes_id);#no need for this (MYSQL does automatically)
 	$mime->type($name);
 	$mime->encoding($encoding);
@@ -75,7 +75,7 @@ while($line=<MIME::Types::DATA>) {
 		my(@exts)=split(',',$extensions);
 		for(my($i)=0;$i<=$#exts;$i++) {
 			my($curr)=$exts[$i];
-			my($extension)=Meta::Projects::Mime::Extensions->new();
+			my($extension)=Meta::Projects::Mime::Extensions->new({});
 			#$extension->id($extensions_id);#no need for this (MYSQL does this automatically)
 			$extensions_id++;
 			$extension->extension($curr);
@@ -86,7 +86,7 @@ while($line=<MIME::Types::DATA>) {
 	$mimetypes_id++;
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -119,7 +119,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: mime_import_mt.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -182,7 +182,7 @@ what connection name ?
 
 what database name ?
 
-=item B<verbose> (type: bool, default: 0)
+=item B<verbose> (type: bool, default: 1)
 
 noisy or quiet ?
 
@@ -210,6 +210,7 @@ None.
 	0.00 MV bring movie data
 	0.01 MV move tests into modules
 	0.02 MV teachers project
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -8,7 +8,7 @@ use Meta::Xml::Parsers::Connections qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.36";
+$VERSION="0.37";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub new($);
@@ -24,10 +24,10 @@ $VERSION="0.36";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Ohash->new();
 	$self->{DEFAULT}=defined;
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -37,8 +37,8 @@ sub get_default($) {
 }
 
 sub set_default($$) {
-	my($self,$valx)=@_;
-	$self->{DEFAULT}=$valx;
+	my($self,$val)=@_;
+	$self->{DEFAULT}=$val;
 }
 
 sub get_def_con($) {
@@ -47,16 +47,16 @@ sub get_def_con($) {
 }
 
 sub get_con_null($$) {
-	my($self,$valx)=@_;
-	if(!defined($valx)) {
+	my($self,$val)=@_;
+	if(!defined($val)) {
 		return($self->get_def_con());
 	} else {
-		return($self->get($valx));
+		return($self->get($val));
 	}
 }
 
 sub new_handle($$) {
-	my($clas,$handle)=@_;
+	my($class,$handle)=@_;
 	#check that handle is IO::Handle
 	my($parser)=Meta::Xml::Parsers::Connections->new();
 	$parser->parse($handle);
@@ -64,15 +64,15 @@ sub new_handle($$) {
 }
 
 sub new_file($$) {
-	my($clas,$file)=@_;
+	my($class,$file)=@_;
 	my($parser)=Meta::Xml::Parsers::Connections->new();
 	$parser->parsefile($file);
 	return($parser->get_result());
 }
 
 sub new_modu($$) {
-	my($clas,$modu)=@_;
-	return(&new_file($clas,$modu->get_abs_path()));
+	my($class,$modu)=@_;
+	return(&new_file($class,$modu->get_abs_path()));
 }
 
 sub TEST($) {
@@ -116,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connections.pm
 	PROJECT: meta
-	VERSION: 0.36
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -265,6 +265,7 @@ None.
 	0.34 MV download scripts
 	0.35 MV web site development
 	0.36 MV teachers project
+	0.37 MV md5 issues
 
 =head1 SEE ALSO
 

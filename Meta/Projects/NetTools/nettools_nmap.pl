@@ -3,45 +3,29 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use GnuPG qw();
 use Meta::Utils::Output qw();
-use Meta::Info::Author qw();
-use Meta::Development::Module qw();
 
+my($from_port,$to_port,$host,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
+$opts->def_inte("from_port","from what port to scan ?",0,\$from_port);
+$opts->def_inte("to_port","from what port to scan ?",1024,\$to_port);
+$opts->def_stri("host","what host to use ?","localhost",\$host);
+$opts->def_bool("verbose","should I be noisy ?",0,\$verbose);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($file)="xmlx/author/author.xml";
-my($module)=Meta::Development::Module->new();
-$module->set_name($file);
-my($author)=Meta::Info::Author->new_modu($module);
+for(my($i)=$from_port;$i<$to_port;$i++) {
+	Meta::Utils::Output::verbose($verbose,"scanning port [".$i."]\n");
+}
 
-my($file_to_encrypt)="/etc/passwd";
-my($outfile)="/tmp/passwd.gpg";
-my($gpg)=GnuPG->new();
-
-$gpg->encrypt(
-	plaintext=>$file_to_encrypt,
-	output=>$outfile,
-#	symmetric=>1,
-	recipient=>$author->get_email(),
-	armor=>0,
-	sign=>0,
-	passphrase=>$author->get_passphrase(),
-);
-
-#my($enc)=$gpg->encrypt($content,$author->get_email());
-#Meta::Utils::Output::print("enc is [".$enc."]\n");
-
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
 =head1 NAME
 
-demo_gnupg.pl - demo usage of the GnuPG module.
+nettools_nmap.pl - perl version of nmap.
 
 =head1 COPYRIGHT
 
@@ -66,17 +50,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-	MANIFEST: demo_gnupg.pl
+	MANIFEST: nettools_nmap.pl
 	PROJECT: meta
 	VERSION: 0.00
 
 =head1 SYNOPSIS
 
-	gnupg.pl [options]
+	nettools_nmap.pl [options]
 
 =head1 DESCRIPTION
 
-This program demostrates using the GnuPG module for encryption. 
+This program will scan a range of ports on a target machine and will report
+which ports are open. It can optionally translate these ports into service
+names using a small XML database that it uses.
+
+Many ideas were borrowed from the standard nmap. Obviously this version does
+not support the many features that nmap supports but on the other hand it
+is Perl and therefore can run on any machine. In addition most users of nmap
+scan their own machines to check if they didn't leave something on unintentionally
+which means that this program is enough for 95% of the users of nmap.
 
 =head1 OPTIONS
 
@@ -118,6 +110,22 @@ show description and exit
 
 show history and exit
 
+=item B<from_port> (type: inte, default: 0)
+
+from what port to scan ?
+
+=item B<to_port> (type: inte, default: 1024)
+
+from what port to scan ?
+
+=item B<host> (type: stri, default: localhost)
+
+what host to use ?
+
+=item B<verbose> (type: bool, default: 0)
+
+should I be noisy ?
+
 =back
 
 no free arguments are allowed
@@ -135,11 +143,11 @@ None.
 
 =head1 HISTORY
 
-	0.00 MV finish papers
+	0.00 MV md5 issues
 
 =head1 SEE ALSO
 
-GnuPG(3), Meta::Development::Module(3), Meta::Info::Author(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -8,7 +8,7 @@ use Meta::Utils::System qw();
 use IO::Socket::INET qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub new($);
@@ -18,7 +18,7 @@ $VERSION="0.09";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
 	$self->{CLIENT}=IO::Socket::INET->new(
 		PeerAddr=>"localhost",
@@ -28,12 +28,12 @@ sub new($) {
 		Type=>IO::Socket::SOCK_STREAM
 	);
 	if(!$self->{CLIENT}) {
-		Meta::Utils::System::die("unable to init client [".$!."]");
+		throw Meta::Error::Simple("unable to init client [".$!."]");
 	}
 	$self->{CLIENT}->autoflush(1);
 #	my($kidpid)=CORE::fork();
 #	if(!defined($kidpid)) {
-#		Meta::Utils::System::die("unable to fork");
+#		throw Meta::Error::Simple("unable to fork");
 #	}
 #	if(!$kidpid) {
 #		Meta::Utils::Output::print("in client in fork\n");
@@ -45,7 +45,7 @@ sub new($) {
 #		Meta::Utils::System::Sexo(1);
 #	}
 #	Meta::Utils::Output::print("in client out fork\n");
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -54,7 +54,7 @@ sub send($$) {
 	my($client)=$self->{CLIENT};
 #	print $client $mess;
 	if(!$self->send($mess)) {
-		Meta::Utils::System::die("unable to send");
+		throw Meta::Error::Simple("unable to send");
 	}
 	Meta::Utils::Output::print("message sent");
 	my($retu)=<$client>;
@@ -99,7 +99,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Client.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -165,6 +165,7 @@ None.
 	0.07 MV website construction
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
+	0.10 MV md5 issues
 
 =head1 SEE ALSO
 

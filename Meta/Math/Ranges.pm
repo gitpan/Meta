@@ -5,7 +5,7 @@ package Meta::Math::Ranges;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub new($);
@@ -18,9 +18,9 @@ $VERSION="0.28";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{MINX}=[];
 	$self->{MAXX}=[];
 	$self->{SIZE}=0;
@@ -91,7 +91,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ranges.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -190,6 +190,7 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV md5 issues
 
 =head1 SEE ALSO
 

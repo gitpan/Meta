@@ -5,7 +5,7 @@ package Meta::Distrib::File;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub new($);
@@ -26,9 +26,9 @@ $VERSION="0.27";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)={};
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{SOUR}=defined;
 	$self->{TARG}=defined;
 	$self->{BUIL}=defined;
@@ -141,7 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: File.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -276,6 +276,7 @@ None.
 	0.25 MV website construction
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
+	0.28 MV md5 issues
 
 =head1 SEE ALSO
 

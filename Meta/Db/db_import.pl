@@ -11,11 +11,11 @@ use Meta::Xml::Parsers::Dbdata qw();
 my($def_file,$connections_file,$name,$con_name,$data_file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_modu("def_file","which definition file to use ?","xmlx/def/people.xml",\$def_file);
+$opts->def_modu("def_file","which definition file to use ?",undef,\$def_file);
 $opts->def_modu("connections_file","which connections file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("name","which database name to use ?",undef,\$name);
 $opts->def_stri("con_name","which connection name to use ?",undef,\$con_name);
-$opts->def_devf("data_file","which data file to use ?","xmlx/dbdata/small.xml",\$data_file);
+$opts->def_devf("data_file","which data file to use ?",undef,\$data_file);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
@@ -36,7 +36,7 @@ my($parser)=Meta::Xml::Parsers::Dbdata->new();
 $parser->parsefile_deve($data_file);
 #$dbi->disconnect();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_import.pl
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -123,7 +123,7 @@ show description and exit
 
 show history and exit
 
-=item B<def_file> (type: modu, default: xmlx/def/people.xml)
+=item B<def_file> (type: modu, default: )
 
 which definition file to use ?
 
@@ -139,7 +139,7 @@ which database name to use ?
 
 which connection name to use ?
 
-=item B<data_file> (type: devf, default: xmlx/dbdata/small.xml)
+=item B<data_file> (type: devf, default: )
 
 which data file to use ?
 
@@ -179,6 +179,7 @@ None.
 	0.16 MV SEE ALSO section fix
 	0.17 MV move tests to modules
 	0.18 MV teachers project
+	0.19 MV md5 issues
 
 =head1 SEE ALSO
 

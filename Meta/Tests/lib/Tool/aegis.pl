@@ -25,7 +25,7 @@ Meta::Utils::Output::print("perl_currnet is [".$revision->perl_current()."]\n");
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: aegis.pl
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -144,6 +144,7 @@ None.
 	0.16 MV SEE ALSO section fix
 	0.17 MV move tests to modules
 	0.18 MV bring movie data
+	0.19 MV md5 issues
 
 =head1 SEE ALSO
 

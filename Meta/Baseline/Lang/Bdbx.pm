@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.03";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub my_file($$);
@@ -60,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Bdbx.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -112,6 +112,7 @@ None.
 	0.00 MV improve the movie db xml
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
+	0.03 MV md5 issues
 
 =head1 SEE ALSO
 

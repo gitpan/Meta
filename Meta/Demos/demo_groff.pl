@@ -14,17 +14,18 @@ $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($file)="/usr/share/man/man1/ls.1.gz";
-my($content)=Meta::Utils::File::File::load($file);
+my($content);
+Meta::Utils::File::File::load($file,\$content);
 #Meta::Utils::Output::print("content is [".$content."]\n");
 my($uncompressed)=Compress::Zlib::memGunzip($content);
 if(!defined($uncompressed)) {
-	Meta::Utils::System::die("unable to uncompress");
+	throw Meta::Error::Simple("unable to uncompress");
 }
 #Meta::Utils::Output::print("uncompressed is [".$uncompressed."]\n");
 my($out)=Meta::Tool::Groff::process($uncompressed,"ascii");
 Meta::Utils::Output::print("out is [".$out."]\n");
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -57,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: demo_groff.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -125,6 +126,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV finish papers
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -10,11 +10,13 @@ use Meta::Revision::Entry qw();
 use Meta::Revision::Revision qw();
 use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw();
 
+#sub BEGIN();
 #sub history($);
 #sub create($$);
 #sub get($$$);
@@ -24,6 +26,13 @@ $VERSION="0.17";
 #sub TEST($);
 
 #__DATA__
+
+our($tool_path);
+
+sub BEGIN() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	$tool_path=$patho->resolve("tar");
+}
 
 sub history($) {
 	my($file)=@_;
@@ -178,7 +187,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Fhist.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -196,6 +205,7 @@ aegis supports binary files from version 3.26.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	history($)
 	create($$)
 	get($$$)
@@ -207,6 +217,10 @@ aegis supports binary files from version 3.26.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method to find your version of fhist.
 
 =item B<history($)>
 
@@ -278,10 +292,11 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 
-File::Basename(3), Meta::Baseline::Aegis(3), Meta::Revision::Entry(3), Meta::Revision::Revision(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+File::Basename(3), Meta::Baseline::Aegis(3), Meta::Revision::Entry(3), Meta::Revision::Revision(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

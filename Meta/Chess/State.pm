@@ -8,7 +8,7 @@ use Meta::Chess::Side qw();
 use Meta::Chess::Tuple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Meta::Chess::Board);
 
 #sub new($);
@@ -20,9 +20,9 @@ $VERSION="0.17";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Chess::Board->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -116,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: State.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -200,6 +200,7 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 

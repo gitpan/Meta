@@ -9,7 +9,7 @@ use Meta::Utils::File::File qw();
 use Meta::Utils::File::Mkdir qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub get_emblem();
@@ -140,7 +140,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Utils.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -283,6 +283,7 @@ None.
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
 	0.29 MV teachers project
+	0.30 MV md5 issues
 
 =head1 SEE ALSO
 

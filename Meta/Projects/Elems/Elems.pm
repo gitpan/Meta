@@ -7,7 +7,7 @@ use Meta::Class::DBI qw();
 use base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.02";
 @ISA=qw(Meta::Class::DBI);
 
 #sub BEGIN();
@@ -60,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Elems.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -113,6 +113,7 @@ None.
 
 	0.00 MV download scripts
 	0.01 MV bring movie data
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Ds::Connected qw();
 use Meta::Class::MethodMaker qw();
 use DBI qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.48";
+$VERSION="0.49";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -339,7 +340,7 @@ sub getsql_names($$) {
 		$ntyp=$tran_mysql{$type};
 	}
 	if(!defined($ntyp)) {
-		Meta::Utils::System::die("unable to translate type [".$type."]");
+		throw Meta::Error::Simple("unable to translate type [".$type."]");
 	}
 	# handle sets and enums
 	if($info->is_mysql()) {
@@ -361,7 +362,10 @@ sub getsql_names($$) {
 		if($self->get_null()) {
 			$ntyp.=" NULL";
 		} else {
-			$ntyp.=" NOT NULL";
+			# put this back once real creation in one statement is here
+			if($info->is_mysql()) {
+				$ntyp.=" NOT NULL";
+			}
 		}
 	}
 	# handle default values (not for primary keys since they are given explicitly).
@@ -477,7 +481,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Type.pm
 	PROJECT: meta
-	VERSION: 0.48
+	VERSION: 0.49
 
 =head1 SYNOPSIS
 
@@ -640,10 +644,11 @@ None.
 	0.46 MV web site automation
 	0.47 MV SEE ALSO section fix
 	0.48 MV download scripts
+	0.49 MV md5 issues
 
 =head1 SEE ALSO
 
-DBI(3), Meta::Class::MethodMaker(3), Meta::Ds::Connected(3), strict(3)
+DBI(3), Error(3), Meta::Class::MethodMaker(3), Meta::Ds::Connected(3), strict(3)
 
 =head1 TODO
 

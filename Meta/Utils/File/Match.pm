@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use File::Find qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub match($$$);
@@ -73,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Match.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -162,6 +162,7 @@ None.
 	0.23 MV website construction
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
+	0.26 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -8,7 +8,7 @@ use Meta::Db::Dbi qw();
 use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.02";
 @ISA=qw();
 
 #sub new($$$$);
@@ -89,7 +89,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Fortune.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -155,6 +155,7 @@ None.
 
 	0.00 MV finish papers
 	0.01 MV teachers project
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
@@ -163,3 +164,5 @@ Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Development::Module(3), strict
 =head1 TODO
 
 -prepare the statements in the constructor.
+
+-start using Class::DBI instead of doing SQL stuff here.

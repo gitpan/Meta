@@ -6,11 +6,11 @@ use strict qw(vars refs subs);
 use Term::ReadLine qw();
 use Meta::Class::MethodMaker qw();
 use Meta::Utils::System qw();
-use IO::File qw();
+use Meta::IO::File qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Term::ReadLine);
 
 #sub BEGIN();
@@ -62,7 +62,7 @@ sub run($) {
 	}
 	if($self->get_startup()) {
 		#process startup file.
-		my($io)=IO::File->new($self->get_startup_file());
+		my($io)=Meta::IO::File->new($self->get_startup_file());
 		if(defined($io)) {
 			while(!$io->eof() && !$self->get_quit()) {
 				my($line)=$io->getline();
@@ -146,7 +146,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Shell.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -247,10 +247,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
-IO::File(3), Meta::Class::MethodMaker(3), Meta::Utils::Output(3), Meta::Utils::System(3), Term::ReadLine(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::IO::File(3), Meta::Utils::Output(3), Meta::Utils::System(3), Term::ReadLine(3), strict(3)
 
 =head1 TODO
 

@@ -17,13 +17,13 @@ Meta::Utils::Output::print("this is [".@selecteddiscs[0]."]\n");
 my(%discinfo)=$cddb->getdiscinfo(@selecteddiscs[0]);
 $cddb->outstd(\%discinfo);
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
 =head1 NAME
 
-demo_cddb.pl - what does your program do.
+demo_cddb.pl - demo usage of the WebService::FreeDB module.
 
 =head1 COPYRIGHT
 
@@ -50,7 +50,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: demo_cddb.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -58,7 +58,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put your programs description here.
+This is a small demo program which demos how to use the WebService::FreeDB CPAN
+module.
 
 =head1 OPTIONS
 
@@ -118,6 +119,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV teachers project
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 

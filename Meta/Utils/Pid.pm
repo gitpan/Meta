@@ -5,7 +5,7 @@ package Meta::Utils::Pid;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.23";
+$VERSION="0.24";
 @ISA=qw();
 
 #sub mypid();
@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pid.pm
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -130,6 +130,7 @@ None.
 	0.21 MV website construction
 	0.22 MV web site automation
 	0.23 MV SEE ALSO section fix
+	0.24 MV md5 issues
 
 =head1 SEE ALSO
 

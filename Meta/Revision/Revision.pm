@@ -10,7 +10,7 @@ use Meta::Math::Pad qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw(Meta::Ds::Array);
 
 #sub print($$);
@@ -219,7 +219,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Revision.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -365,6 +365,7 @@ None.
 	0.17 MV bring movie data
 	0.18 MV weblog issues
 	0.19 MV teachers project
+	0.20 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -8,7 +8,7 @@ use Meta::Baseline::Lang qw();
 use Meta::Tool::Aspell qw();
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -76,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Txtx.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -168,6 +168,7 @@ None.
 	0.29 MV website construction
 	0.30 MV web site automation
 	0.31 MV SEE ALSO section fix
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 

@@ -38,16 +38,16 @@ sub get_jars() {
 
 sub env() {
 	my(%hash);
-	my($clas)="";
+	my($class)="";
 	my($sear)=Meta::Baseline::Aegis::search_path_list();
 	for(my($i)=0;$i<=$#$sear;$i++) {
 		my($curr)=$sear->[$i];
-		$clas=Meta::Utils::File::Path::add_path($clas,
+		$class=Meta::Utils::File::Path::add_path($class,
 			$curr."/java/lib",":");
-		$clas=Meta::Utils::File::Path::add_path($clas,
+		$class=Meta::Utils::File::Path::add_path($class,
 			$curr."/java/import/lib",":");
 	}
-	$hash{"CLASSPATH"}=$clas;
+	$hash{"CLASSPATH"}=$class;
 	return(\%hash);
 }
 
@@ -57,7 +57,7 @@ sub c2deps($) {
 	my($modu)=$buil->get_modu();
 	my($targ)=$buil->get_targ();
 	my($path)=$buil->get_path();
-	open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
+	open(FILE,"> ".$targ) || throw Meta::Error::Simple("unable to open file [".$targ."]");
 	Meta::Baseline::Utils::cook_emblem_print(*FILE);
 	print FILE "cascade ".$srcx."=\n";
 	my($obje)=Meta::Utils::Parse::Text->new();
@@ -74,7 +74,7 @@ sub c2deps($) {
 	}
 	$obje->fini();
 	print FILE ";\n";
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
+	close(FILE) || throw Meta::Error::Simple("unable to close file [".$targ."]");
 	return(1);
 }
 
@@ -119,9 +119,9 @@ sub c2clas($) {
 #		Meta::Utils::File::Move::mv($crea,$targ);
 #	}
 	return($scod);
-#	open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
+#	open(FILE,"> ".$targ) || throw Meta::Error::Simple("unable to open file [".$targ."]");
 #	Meta::Baseline::Utils::cook_emblem_print(*FILE);
-#	close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
+#	close(FILE) || throw Meta::Error::Simple("unable to close file [".$targ."]");
 #	return(1);
 }
 
@@ -146,11 +146,11 @@ sub c2chec($) {
 }
 
 sub class2file($) {
-	my($clas)=@_;
-#	Meta::Utils::Output::print("class is [".$clas."]\n");
-	$clas=~s/\./\//g;
-	$clas="java/lib/".$clas.".java";
-	return($clas);
+	my($class)=@_;
+#	Meta::Utils::Output::print("class is [".$class."]\n");
+	$class=~s/\./\//g;
+	$class="java/lib/".$class.".java";
+	return($class);
 }
 
 sub my_file($$) {

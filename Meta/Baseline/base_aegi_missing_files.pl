@@ -3,7 +3,6 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Utils::Hash qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 
@@ -12,9 +11,9 @@ $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($hash)=Meta::Baseline::Aegis::missing_files_hash();
-Meta::Utils::Hash::print(Meta::Utils::Output::get_file(),$hash);
-Meta::Utils::System::exit(1);
+my($set)=Meta::Baseline::Aegis::missing_files_set();
+$set->foreach(\&Meta::Utils::Output::println);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -47,7 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_missing_files.pl
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -142,10 +141,11 @@ None.
 	0.23 MV web site automation
 	0.24 MV SEE ALSO section fix
 	0.25 MV move tests to modules
+	0.26 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Hash(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

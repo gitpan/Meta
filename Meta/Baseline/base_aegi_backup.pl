@@ -8,9 +8,10 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 use Meta::Archive::Tar qw();
 use Meta::Template::Sub qw();
-use GnuPG qw();
+#use GnuPG qw();
 use Net::SCP qw();
 use Meta::Utils::File::Remove qw();
+use Error qw(:try);
 
 my($enum)=Meta::Baseline::Aegis::get_enum();
 
@@ -56,34 +57,34 @@ for(my($i)=0;$i<=$#$list;$i++) {
 Meta::Utils::Output::verbose($verb,"finished tarring\n");
 $scod=$tar->write($dirf."/".$tarf);
 if($enc) {
-	my($author)=Meta::Info::Author->new_modu($author_file);
-	my($enc_file)=$dirf."/".$tarf.".gpg";
-	my($gpg)=GnuPG->new();
-	Meta::Utils::Output::verbose($verb,"started encrypting\n");
-	$gpg->encrypt(
-		plaintext=>$dirf."/".$tarf,
-		output=>$enc_file,
-		recipient=>$author->get_default_email(),
-		armor=>$armor,
-		sign=>$sign,
-		passphrase=>$author->get_default_passphrase(),
-	);
-	Meta::Utils::Output::verbose($verb,"finished encrypting\n");
-	if($send) {
-		Meta::Utils::Output::verbose($verb,"started sending\n");
-		my($user)=$author->get_sourceforge_user();
-		my($host)=$author->get_sourceforge_ssh();
-		my($addr)=$user."@".$host.":".$remote_dir."/".$tarf.".gpg";
-		Meta::Utils::Output::verbose($verb,"addr is [".$addr."]\n");
-		my($scp)=Net::SCP->new($host,$user);
-		my($res)=$scp->scp($enc_file,$addr);
-		Meta::Utils::Output::verbose($verb,"res is [".$res."]\n");
-		if(!$res) {
-			Meta::Utils::System::die("cannot put with error [".$scp->{errstr}."]");
-		}
-		Meta::Utils::Output::verbose($verb,"finished sending\n");
-	}
-	Meta::Utils::File::Remove::rm($enc_file);
+#	my($author)=Meta::Info::Author->new_modu($author_file);
+#	my($enc_file)=$dirf."/".$tarf.".gpg";
+#	my($gpg)=GnuPG->new();
+#	Meta::Utils::Output::verbose($verb,"started encrypting\n");
+#	$gpg->encrypt(
+#		plaintext=>$dirf."/".$tarf,
+#		output=>$enc_file,
+#		recipient=>$author->get_default_email(),
+#		armor=>$armor,
+#		sign=>$sign,
+#		passphrase=>$author->get_default_passphrase(),
+#	);
+#	Meta::Utils::Output::verbose($verb,"finished encrypting\n");
+#	if($send) {
+#		Meta::Utils::Output::verbose($verb,"started sending\n");
+#		my($user)=$author->get_sourceforge_user();
+#		my($host)=$author->get_sourceforge_ssh();
+#		my($addr)=$user."@".$host.":".$remote_dir."/".$tarf.".gpg";
+#		Meta::Utils::Output::verbose($verb,"addr is [".$addr."]\n");
+#		my($scp)=Net::SCP->new($host,$user);
+#		my($res)=$scp->scp($enc_file,$addr);
+#		Meta::Utils::Output::verbose($verb,"res is [".$res."]\n");
+#		if(!$res) {
+#			throw Meta::Error::Simple("cannot put with error [".$scp->{errstr}."]");
+#		}
+#		Meta::Utils::Output::verbose($verb,"finished sending\n");
+#	}
+#	Meta::Utils::File::Remove::rm($enc_file);
 }
 
 Meta::Utils::System::exit($scod);
@@ -119,7 +120,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_backup.pl
 	PROJECT: meta
-	VERSION: 0.41
+	VERSION: 0.42
 
 =head1 SYNOPSIS
 
@@ -280,12 +281,15 @@ None.
 	0.39 MV finish papers
 	0.40 MV teachers project
 	0.41 MV more pdmt stuff
+	0.42 MV md5 issues
 
 =head1 SEE ALSO
 
-GnuPG(3), Meta::Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Template::Sub(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Net::SCP(3), strict(3)
+Error(3), Meta::Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Template::Sub(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Net::SCP(3), strict(3)
 
 =head1 TODO
+
+-encryption currently does not work since the GnuPG module is not working anymore. Move to another encryption module and make the code work again.
 
 -use aedist and not do any querying on your own with the features...
 

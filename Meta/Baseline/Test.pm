@@ -4,23 +4,19 @@ package Meta::Baseline::Test;
 
 use strict qw(vars refs subs);
 use Meta::Baseline::Aegis qw();
-use Meta::Utils::System qw();
 use Meta::Utils::Utils qw();
 use XML::Simple qw();
 use Meta::Utils::Output qw();
-#use Data::Dumper qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub BEGIN();
 
 #sub redirect_on();
 #sub redirect_off();
-
-#sub code_to_string($);
-#sub string_to_code($);
 
 #sub set_vars_for($$);
 
@@ -38,7 +34,6 @@ our($config);
 sub BEGIN() {
 	my($file)=Meta::Baseline::Aegis::which("xmlx/configs/test.xml");
 	$config=XML::Simple::XMLin($file);
-#	print Data::Dumper::Dumper($config);
 }
 
 sub redirect_on() {
@@ -46,41 +41,15 @@ sub redirect_on() {
 	my($temp_stdo)="/dev/null";
 #	my($temp_stde)=Meta::Utils::Utils::get_file_temp();
 #	my($temp_stdo)=Meta::Utils::Utils::get_file_temp();
-	open(STDERR,"> ".$temp_stde) || Meta::Utils::System::die("unable to redirect stderr to [".$temp_stdo."]");
-	open(STDOUT,"> ".$temp_stdo) || Meta::Utils::System::die("unable to redirect stdout to [".$temp_stde."]");
+	open(STDERR,"> ".$temp_stde) || throw Meta::Error::Simple("unable to redirect stderr to [".$temp_stdo."]");
+	open(STDOUT,"> ".$temp_stdo) || throw Meta::Error::Simple("unable to redirect stdout to [".$temp_stde."]");
 }
 
 sub redirect_off() {
-	close(STDERR) || Meta::Utils::System::die("unable to close stderr");
-	close(STDOUT) || Meta::Utils::System::die("unable to close stdout");
+	close(STDERR) || throw Meta::Error::Simple("unable to close stderr");
+	close(STDOUT) || throw Meta::Error::Simple("unable to close stdout");
 #	Meta::Utils::File::rm($temp_stde);
 #	Meta::Utils::File::rm($temp_stdo);
-}
-
-sub code_to_string($) {
-	my($code)=@_;
-	my($stri);
-	if($code) {
-		$stri="ok";
-	} else {
-		$stri="failed";
-	}
-	return($stri);
-}
-
-sub string_to_code($) {
-	my($string)=@_;
-	my($code);
-	if($string eq "ok") {
-		$code=1;
-	} else {
-		if($string eq "failed") {
-			$code=0;
-		} else {
-			Meta::Utils::System::die("what type of string is [".$string."]");
-		}
-	}
-	return($code);
 }
 
 sub set_vars_for($$) {
@@ -151,7 +120,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Test.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -171,8 +140,6 @@ scripts for the system. Have fun.
 	BEGIN()
 	redirect_on()
 	redirect_off()
-	code_to_string($)
-	string_to_code($)
 	set_vars_for($$)
 	get_user()
 	get_password()
@@ -195,16 +162,6 @@ This will block stdout and stderr output so tests wont be messy.
 =item B<redirect_off()>
 
 This will release the stdout and stderr blocks.
-
-=item B<code_to_string($)>
-
-This function will translate a return code from a test to a string that
-expresses whether the test failed or not ie "ok" or "failed".
-
-=item B<string_to_code($)>
-
-This function will translate a string which represents success or failure
-in tests ("ok" or "failed") to a valid return code (1 or 0).
 
 =item B<set_vars_for($$)>
 
@@ -283,10 +240,11 @@ None.
 	0.29 MV SEE ALSO section fix
 	0.30 MV bring movie data
 	0.31 MV teachers project
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), XML::Simple(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), XML::Simple(3), strict(3)
 
 =head1 TODO
 

@@ -34,15 +34,14 @@ $Text::Wrap::huge=$huge;
 
 for(my($i)=0;$i<=$#ARGV;$i++) {
 	my($curr)=$ARGV[$i];
-	if($verb) {
-		Meta::Utils::Output::print("working on [".$curr."]\n");
-	}
-	my($text)=Meta::Utils::File::File::load($curr);
+	Meta::Utils::Output::verbose($verb,"working on [".$curr."]\n");
+	my($text);
+	Meta::Utils::File::File::load($curr,\$text);
 	my($res)=Text::Wrap::wrap($initial_tab,$subsequent_tab,$text);
 	Meta::Utils::File::File::save($curr,$res);
 }
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -75,7 +74,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_wrap.pl
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -185,6 +184,7 @@ None.
 	0.01 MV SEE ALSO section fix
 	0.02 MV put all tests in modules
 	0.03 MV move tests to modules
+	0.04 MV md5 issues
 
 =head1 SEE ALSO
 

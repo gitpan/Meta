@@ -21,7 +21,7 @@ Meta::Utils::Output::print("text is [".$obje->get_text()."]\n");
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -54,7 +54,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: lines.pl
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.23
 
 =head1 SYNOPSIS
 
@@ -146,6 +146,7 @@ None.
 	0.20 MV web site automation
 	0.21 MV SEE ALSO section fix
 	0.22 MV move tests to modules
+	0.23 MV md5 issues
 
 =head1 SEE ALSO
 

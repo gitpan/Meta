@@ -22,22 +22,22 @@ Meta::Utils::Output::print("addr is [".$addr."]\n");
 my($scp)=Net::SCP->new($author->get_sourceforgessh(),$author->get_sourceforgeid());
 my($res)=$scp->scp($file,$addr);
 if(!$res) {
-	Meta::Utils::System::die("cannot put with error [".$scp->{errstr}."]");
+	throw Meta::Error::Simple("cannot put with error [".$scp->{errstr}."]");
 }
 
 #my($scp)=Net::SCP->new($author->get_sourceforgessh(),$author->get_sourceforgeid());
 #if(!defined($scp)) {
-#	Meta::Utils::System::die("cannot create Net::SCP object");
+#	throw Meta::Error::Simple("cannot create Net::SCP object");
 #}
 #Meta::Utils::Output::print("scp is [".$scp."]\n");
 #my($ret)=$scp->put($file);
 #my($ret)=$scp->scp($file,"out");
 #Meta::Utils::Output::print("ret is [".$ret."]\n");
 #if(!$ret) {
-#	Meta::Utils::System::die("cannot put with error [".$scp->{errstr}."]");
+#	throw Meta::Error::Simple("cannot put with error [".$scp->{errstr}."]");
 #}
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -70,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: demo_scp.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -139,6 +139,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV finish papers
+	0.01 MV md5 issues
 
 =head1 SEE ALSO
 
@@ -146,4 +147,4 @@ Meta::Info::Author(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta:
 
 =head1 TODO
 
-Nothing.
+-extend Net::Scp to Meta::Net::Scp and do exceptions there.

@@ -5,13 +5,14 @@ package Meta::Baseline::Rsh;
 use strict qw(vars refs subs);
 use Meta::Utils::Net::Hostname qw();
 use Meta::Utils::Utils qw();
+use Meta::Utils::Chdir qw();
 use Meta::Utils::File::Remove qw();
 use Meta::Utils::File::Prop qw();
 use Meta::Utils::Pc qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.31";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub rsh($$$$$);
@@ -41,7 +42,7 @@ sub rsh($$$$$) {
 #		if(Meta::Baseline::Cook::is_linu($host)) {
 		if(1) {
 			$type="linux";
-			$comm="cd ".Meta::Utils::Utils::pwd().";".$comm;
+			$comm="cd ".Meta::Utils::Chdir::get_system_cwd().";".$comm;
 #			$comm=Meta::Baseline::Cook::unix_path($comm,$host,$chst);
 			$code=Meta::Utils::System::system_nodie("ssh",[$host,$comm]);
 			$foun=1;
@@ -60,13 +61,14 @@ sub rsh($$$$$) {
 			my($temp)=Meta::Utils::Pc::get_temp_dir()."/kuku.pl";
 			my($resu)=Meta::Utils::Pc::get_temp_dir()."/kuku.res";
 #			$comm=Meta::Baseline::Cook::pc_path($comm,$host,$chst);
-			my($curr)=Meta::Utils::Utils::pwd();
+			my($curr)=Meta::Utils::Chdir::get_system_cwd();
 #			$curr=Meta::Baseline::Cook::pc_path($curr,$host,$chst);
 			Meta::Utils::Pc::writ_perl_inte($comm,$resu,$temp,$curr);
 			my($rcom)="perl $temp $resu";
 #			$rcom=Meta::Baseline::Cook::pc_path($rcom,$host,$chst);
 			$code=Meta::Utils::System::system_nodie("rsh",[$host,$rcom]);
-			my($scod)=Meta::Utils::File::File::load($resu);
+			my($scod);
+			Meta::Utils::File::File::load($resu,\$scod);
 			if($scod) {
 				$code=$scod;
 			}
@@ -89,11 +91,9 @@ sub rsh($$$$$) {
 		}
 	}
 	if(!$foun) { # machine not found
-		Meta::Utils::System::die("unknown machine [".$host."]");
+		throw Meta::Error::Simple("unknown machine [".$host."]");
 	}
-	if($verb) {
-		Meta::Utils::Output::print("data is [".$demo."] [".$verb."] [".$host."] [".$comm."] [".$type."]\n");
-	}
+	Meta::Utils::Output::verbose($verb,"data is [".$demo."] [".$verb."] [".$host."] [".$comm."] [".$type."]\n");
 	my($ncod)=Meta::Utils::Utils::bnot($code);
 	return($ncod);
 }
@@ -104,15 +104,13 @@ sub cook_rsh($$$$) {
 	my($file)=$comm=~/echo \$\? > (.*)'/;
 	my($fcom)=Meta::Utils::File::File::load_line($inpu,1);
 	my($rcom,$targ)=$fcom=~/(.*);targets=(.*)$/;
-	if($verb) {
-		Meta::Utils::Output::print("[".$targ."] on [".$host."]\n");
-	}
+	Meta::Utils::Output::verbose($verb,"[".$targ."] on [".$host."]\n");
 	my(@targ)=split(" ",$targ);
 	my($code)=rsh($demo,0,\@targ,$host,$rcom);
-	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
+	my($io)=Meta::IO::File->new_writer($file);
 	my($scod)=Meta::Utils::Utils::bnot($code);
-	print FILE $scod."\n";
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	print $io $scod."\n";
+	$io->close();
 	return($code);
 }
 
@@ -156,7 +154,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Rsh.pm
 	PROJECT: meta
-	VERSION: 0.31
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -262,10 +260,11 @@ None.
 	0.29 MV web site automation
 	0.30 MV SEE ALSO section fix
 	0.31 MV teachers project
+	0.32 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Utils::File::Prop(3), Meta::Utils::File::Remove(3), Meta::Utils::Net::Hostname(3), Meta::Utils::Output(3), Meta::Utils::Pc(3), Meta::Utils::Utils(3), strict(3)
+Meta::Utils::Chdir(3), Meta::Utils::File::Prop(3), Meta::Utils::File::Remove(3), Meta::Utils::Net::Hostname(3), Meta::Utils::Output(3), Meta::Utils::Pc(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

@@ -13,14 +13,15 @@ use Meta::Utils::Output qw();
 use Meta::Development::Module qw();
 use Data::Dumper qw();
 use Meta::Template::Sub qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.33";
+$VERSION="0.34";
 @ISA=qw();
 
 #sub BEGIN();
 #sub setup_value($$);
-#sub verify($$);
+#sub verify($);
 #sub TEST($);
 
 #__DATA__
@@ -62,132 +63,91 @@ sub setup_value($$) {
 		$self->set_value($modu);
 		return;
 	}
+	if($self->get_type() eq "dire") {
+		while($valu=~/\/$/) {
+			chop($valu);
+		}
+		$self->set_value($valu);
+		return;
+	}
 	$self->set_value($valu);
 }
 
-sub verify($$) {
-	my($self,$erro)=@_;
+sub verify($) {
+	my($self)=@_;
 	my($type)=$self->get_type();
-#	Meta::Utils::Output::print("in verify with type [".$type."]\n");
+	my($valu)=$self->get_value();
+	#Meta::Utils::Output::print("in here with type [".$type."]\n");
 	if($type eq "dire") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Utils::File::Dir::exist($valu);
-		if(!$scod) {
-			$$erro="directory [".$valu."] does not exist";
-		}
-		return($scod);
+		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
+		Meta::Utils::File::Dir::check_exist($valu);
 	}
 	if($type eq "newd") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Utils::File::Dir::exist($valu);
-		if($scod) {
-			$$erro="directory [".$valu."] exists";
-		}
-		return(!$scod);
+		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
+		Meta::Utils::File::Dir::check_notexist($valu);
 	}
 	if($type eq "devd") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Baseline::Aegis::direxists($valu);
-		if(!$scod) {
-			$$erro="directory [".$valu."] does not exist as a development directory";
-		}
-		return($scod);
+		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
+		Meta::Baseline::Aegis::check_direxists($valu);
 	}
 	if($type eq "file") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Utils::File::File::exist($valu);
-		if(!$scod) {
-			$$erro="file [".$valu."] does not exist";
-		}
-		return($scod);
+		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
+		Meta::Utils::File::File::check_exist($valu);
 	}
 	if($type eq "newf") {
-		my($valu)=$self->get_value();
 		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
-		my($scod)=Meta::Utils::File::File::exist($valu);
-#		Meta::Utils::Output::print("result is [".$scod."] for file [".$valu."]\n");
-		if($scod) {
-			$$erro="file [".$valu."] exists";
-		}
-		return(!$scod);
+		Meta::Utils::File::File::check_notexist($valu);
 	}
 	if($type eq "ovwf") {
-		my($valu)=$self->get_value();
 		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
-		my($scod)=Meta::Utils::File::File::exist($valu);
-#		Meta::Utils::Output::print("result is [".$scod."] for file [".$valu."]\n");
-		if(!$scod) {
-			$$erro="file [".$valu."] exists";
-		}
-		return($scod);
+		Meta::Utils::File::File::check_exist($valu);
 	}
 	if($type eq "devf") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Baseline::Aegis::exists($valu);
-		if(!$scod) {
-			$$erro="file [".$valu."] does not exist as a development file";
-		}
-		return($scod);
+		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
+		Meta::Baseline::Aegis::check_exists($valu);
 	}
 	if($type eq "urls") {
+		#$valu=Meta::Template::Sub::interpolate($valu);#FIXME
 		#check that the value is of valid URL form.
 		#check that URL can be fetched.
 		return(1);
 	}
 	if($type eq "modu") {
+		# interpolating here is bad since the $valu is not
+		# a string that can be interpolated
+		#$valu=Meta::Template::Sub::interpolate($valu);#FIXME
 		#check that the value is a valid path to a dev module
 		return(1);
 	}
 	if($type eq "enum") {
-		my($valu)=$self->get_value();
 		my($enum)=$self->get_enum();
-		my($scod)=$enum->has($valu);
-		if(!$scod) {
-			$$erro="value [".$valu."] is not part of the enum";
-		}
-		return($scod);
+		$enum->check_has($valu);
 	}
 	if($type eq "setx") {
-		my($valu)=$self->get_value();
 		my($setx)=$self->get_enum();
-		#Meta::Utils::Output::print("in setx [".$valu."]\n");
-		my($scod)=1;
 		my(@list)=split(',',$valu);
 		for(my($i)=0;$i<=$#list;$i++) {
 			my($curr)=$list[$i];
-			#Meta::Utils::Output::print("checking [".$curr."]\n");
-			if($setx->hasnt($curr)) {
-				$scod=0;
-				$$erro="value [".$curr."] is not in set";
-			}
+			$setx->check_has($curr);
 		}
-		return($scod);
 	}
 	if($type eq "path") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Utils::File::Path::check($valu,':');
-		if(!$scod) {
-			$$erro="value [".$valu."] is not a valid path";
-		}
-		return($scod);
+		#$valu=Meta::Template::Sub::interpolate($valu);#FIXME
+		my($patho)=Meta::Utils::File::Patho->new($valu,':');
+		$patho->check();
 	}
 	if($type eq "flst") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Utils::File::Path::check_flst($valu,':');
-		if(!$scod) {
-			$$erro="value [".$valu."] is not a valid file list";
-		}
-		return($scod);
+		Meta::Utils::File::Path::check_flst($valu,':');
 	}
 	if($type eq "dlst") {
-		my($valu)=$self->get_value();
-		my($scod)=Meta::Utils::File::Path::check($valu,':');
-		if(!$scod) {
-			$$erro="value [".$valu."] is not a valid directory list";
-		}
-		return($scod);
+		my($patho)=Meta::Utils::File::Patho->new($valu,':');
+		$patho->check();
 	}
-	return(1);
+	if($type eq "bool") {
+		if($valu ne "true" && $valu ne "false" && $valu!=1 && $valu!=0) {
+			throw Meta::Error::Simple("boolean value [".$valu."] bad");
+		}
+	}
 }
 
 sub TEST($) {
@@ -236,7 +196,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sopt.pm
 	PROJECT: meta
-	VERSION: 0.33
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
@@ -253,7 +213,7 @@ This object is used by the Opts object to store information about a single comma
 
 	new($)
 	setup_value($$)
-	verify($$)
+	verify($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -280,13 +240,22 @@ This method sets the current value for the current parameter. The reason that yo
 the set_valu accessor is that some values (like sets) are not really strings and need some
 processing.
 
-=item B<verify($$)>
+=item B<verify($)>
 
 This will run sanity checks on the value inside.
+The sanity checks are according to the type of argument.
+1. Files are checked for existance.
+2. Directories are checked for existance.
+3. New files are checkeed for absense.
+4. Paths are checked for existance of each component.
+5. URL are checked for correct specification and optionally for existance (over the net).
 
 =item B<TEST($)>
 
 Test suite for this module.
+This test suite should be called by some higher level regression test suite to test
+the entire distribution.
+The test suite currently just creates an object and prints it out.
 
 =back
 
@@ -341,10 +310,11 @@ None.
 	0.31 MV download scripts
 	0.32 MV web site development
 	0.33 MV finish papers
+	0.34 MV md5 issues
 
 =head1 SEE ALSO
 
-Data::Dumper(3), LWP::Simple(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Development::Module(3), Meta::Template::Sub(3), Meta::Utils::File::Dir(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::Output(3), strict(3)
+Data::Dumper(3), LWP::Simple(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Development::Module(3), Meta::Template::Sub(3), Meta::Utils::File::Dir(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

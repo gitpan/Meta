@@ -70,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: languages.pl
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -163,6 +163,7 @@ None.
 	0.21 MV SEE ALSO section fix
 	0.22 MV move tests to modules
 	0.23 MV teachers project
+	0.24 MV md5 issues
 
 =head1 SEE ALSO
 

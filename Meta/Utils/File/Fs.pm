@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Ds::Ohash qw();
 use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub new($);
@@ -56,13 +57,13 @@ $VERSION="0.13";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Ohash->new();
 	$self->{MODI}=defined;
 	$self->{TYPE}=defined;
 	$self->{MD5X}=defined;
 	$self->{DATA}=defined;
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
@@ -72,11 +73,11 @@ sub get_type($) {
 }
 
 sub set_type($$) {
-	my($self,$valx)=@_;
-	if($valx ne "file" && $valx ne "directory") {
-		Meta::Utils::System::die("type [".$valx."] is not a recognized type");
+	my($self,$val)=@_;
+	if($val ne "file" && $val ne "directory") {
+		throw Meta::Error::Simple("type [".$val."] is not a recognized type");
 	}
-	$self->{TYPE}=$valx;
+	$self->{TYPE}=$val;
 }
 
 sub get_modi($) {
@@ -85,8 +86,8 @@ sub get_modi($) {
 }
 
 sub set_modi($$) {
-	my($self,$valx)=@_;
-	$self->{MODI}=$valx;
+	my($self,$val)=@_;
+	$self->{MODI}=$val;
 }
 
 sub get_md5x($) {
@@ -95,8 +96,8 @@ sub get_md5x($) {
 }
 
 sub set_md5x($$) {
-	my($self,$valx)=@_;
-	$self->{MD5X}=$valx;
+	my($self,$val)=@_;
+	$self->{MD5X}=$val;
 }
 
 sub get_data($) {
@@ -105,8 +106,8 @@ sub get_data($) {
 }
 
 sub set_data($$) {
-	my($self,$valx)=@_;
-	$self->{DATA}=$valx;
+	my($self,$val)=@_;
+	$self->{DATA}=$val;
 }
 
 sub is_file($) {
@@ -122,8 +123,8 @@ sub is_dire($) {
 sub has_single_dir($$) {
 	my($self,$name)=@_;
 	if($self->has($name)) {
-		my($valx)=$self->get($name);
-		return($valx->is_dire());
+		my($val)=$self->get($name);
+		return($val->is_dire());
 	} else {
 		return(0);
 	}
@@ -146,8 +147,8 @@ sub has_dir($$) {
 sub has_single_file($$) {
 	my($self,$name)=@_;
 	if($self->has($name)) {
-		my($valx)=$self->get($name);
-		return($valx->is_file());
+		my($val)=$self->get($name);
+		return($val->is_file());
 	} else {
 		return(0);
 	}
@@ -169,11 +170,11 @@ sub has_file($$) {
 
 sub check_single_dir($$) {
 	my($self,$name)=@_;
-	my($valx)=$self->get($name);
-	if(!$valx->is_dire()) {
-		Meta::Utils::System::die("name [".$name."] is not a directory");
+	my($val)=$self->get($name);
+	if(!$val->is_dire()) {
+		throw Meta::Error::Simple("name [".$name."] is not a directory");
 	}
-	return($valx);
+	return($val);
 }
 
 sub check_dir($$) {
@@ -188,9 +189,9 @@ sub check_dir($$) {
 
 sub check_single_file($$) {
 	my($self,$name)=@_;
-	my($valx)=$self->get($name);
-	if(!$valx->is_file()) {
-		Meta::Utils::System::die("name [".$name."] is not a file");
+	my($val)=$self->get($name);
+	if(!$val->is_file()) {
+		throw Meta::Error::Simple("name [".$name."] is not a file");
 	}
 }
 
@@ -209,7 +210,7 @@ sub check_empty_single_dir($$) {
 	my($self,$name)=@_;
 	my($fs)=$self->get_single_dir($name);
 	if($fs->size() ne 0) {
-		Meta::Utils::System::die("name [".$name."] is not empty");
+		throw Meta::Error::Simple("name [".$name."] is not empty");
 	}
 	return($fs);
 }
@@ -218,7 +219,7 @@ sub check_empty_single_dir($$) {
 	my($self,$name)=@_;
 	my($fs)=$self->get_dir($name);
 	if($fs->size() ne 0) {
-		Meta::Utils::System::die("name [".$name."] is not empty");
+		throw Meta::Error::Simple("name [".$name."] is not empty");
 	}
 	return($fs);
 }
@@ -226,10 +227,10 @@ sub check_empty_single_dir($$) {
 sub create_single_dir($$) {
 	my($self,$name)=@_;
 	if($name=~/\//) {
-		Meta::Utils::System::die("name [".$name."] has a slash in it");
+		throw Meta::Error::Simple("name [".$name."] has a slash in it");
 	}
 	if($self->has($name)) {
-		Meta::Utils::System::die("name [".$name."] already exists");
+		throw Meta::Error::Simple("name [".$name."] already exists");
 	}
 	my($new)=Meta::Utils::File::Fs->new();
 	$new->set_type("directory");
@@ -255,10 +256,10 @@ sub create_dir($$) {
 sub create_single_file($$) {
 	my($self,$name)=@_;
 	if($name=~/\//) {
-		Meta::Utils::System::die("name [".$name."] has a slash in it");
+		throw Meta::Error::Simple("name [".$name."] has a slash in it");
 	}
 	if($self->has($name)) {
-		Meta::Utils::System::die("name [".$name."] already exists");
+		throw Meta::Error::Simple("name [".$name."] already exists");
 	}
 	my($new)=Meta::Utils::File::Fs->new();
 	$new->set_type("file");
@@ -335,7 +336,7 @@ sub get_single_dir($$) {
 	my($self,$name)=@_;
 	my($retu)=$self->get($name);
 	if(!$retu->is_dire()) {
-		Meta::Utils::System::die("name [".$name."] is not a directory");
+		throw Meta::Error::Simple("name [".$name."] is not a directory");
 	}
 	return($retu);
 }
@@ -355,7 +356,7 @@ sub get_single_file($$) {
 	my($self,$name)=@_;
 	my($retu)=$self->get($name);
 	if(!$retu->is_file()) {
-		Meta::Utils::System::die("name [".$name."] is not a directory");
+		throw Meta::Error::Simple("name [".$name."] is not a directory");
 	}
 	return($retu);
 }
@@ -385,19 +386,19 @@ sub get_dir_of_file($$) {
 sub get_all_files_list($$$) {
 	my($self,$list,$pref)=@_;
 	for(my($i)=0;$i<$self->size();$i++) {
-		my($keyx)=$self->keyx($i);
-		my($valx)=$self->valx($i);
+		my($key)=$self->key($i);
+		my($val)=$self->val($i);
 		my($curr);
 		if($pref ne "") {
-			$curr=$pref."/".$keyx;
+			$curr=$pref."/".$key;
 		} else {
-			$curr=$keyx;
+			$curr=$key;
 		}
-		if($valx->is_file()) {#this is a file
+		if($val->is_file()) {#this is a file
 			push(@$list,$curr);
 		}
-		if($valx->is_dire()) {#this is a directory - recurse
-			$valx->get_all_files_list($list,$curr);
+		if($val->is_dire()) {#this is a directory - recurse
+			$val->get_all_files_list($list,$curr);
 		}
 	}
 }
@@ -405,19 +406,19 @@ sub get_all_files_list($$$) {
 sub get_all_files_hash($$$) {
 	my($self,$hash,$pref)=@_;
 	for(my($i)=0;$i<$self->size();$i++) {
-		my($keyx)=$self->keyx($i);
-		my($valx)=$self->valx($i);
+		my($key)=$self->key($i);
+		my($val)=$self->val($i);
 		my($curr);
 		if($pref ne "") {
-			$curr=$pref."/".$keyx;
+			$curr=$pref."/".$key;
 		} else {
-			$curr=$keyx;
+			$curr=$key;
 		}
-		if($valx->is_file()) {#this is a file
+		if($val->is_file()) {#this is a file
 			$hash->{$curr}=defined;
 		}
-		if($valx->is_dire()) {#this is a directory - recurse
-			$valx->get_all_files_hash($hash,$curr);
+		if($val->is_dire()) {#this is a directory - recurse
+			$val->get_all_files_hash($hash,$curr);
 		}
 	}
 }
@@ -426,16 +427,16 @@ sub get_all_empty_dirs($$$) {
 	my($self,$list,$pref)=@_;
 	my($remove)=1;
 	for(my($i)=0;$i<$self->size();$i++) {
-		my($keyx)=$self->keyx($i);
-		my($valx)=$self->valx($i);
+		my($key)=$self->key($i);
+		my($val)=$self->val($i);
 		my($curr);
 		if($pref ne "") {
-			$curr=$pref."/".$keyx;
+			$curr=$pref."/".$key;
 		} else {
-			$curr=$keyx;
+			$curr=$key;
 		}
-		if($valx->is_dire()) {#this is a directory 
-			my($res)=$valx->get_all_empty_dirs($list,$curr);
+		if($val->is_dire()) {#this is a directory 
+			my($res)=$val->get_all_empty_dirs($list,$curr);
 			if(!$res) {
 				$remove=0;
 			}
@@ -458,14 +459,14 @@ sub get_name_of_file($) {
 sub print($$) {
 	my($self,$inde)=@_;
 	for(my($i)=0;$i<$self->size();$i++) {
-		my($keyx)=$self->keyx($i);
-		my($valx)=$self->valx($i);
+		my($key)=$self->key($i);
+		my($val)=$self->val($i);
 		for(my($j)=0;$j<$inde;$j++) {
 			Meta::Utils::Output::print("\t");
 		}
-		Meta::Utils::Output::print($keyx."(".$valx->get_modi().")\n");
-		if($valx->is_dire()) {
-			$valx->print($inde+1);
+		Meta::Utils::Output::print($key."(".$val->get_modi().")\n");
+		if($val->is_dire()) {
+			$val->print($inde+1);
 		}
 	}
 }
@@ -480,9 +481,9 @@ sub xml($$$) {
 	$writ->dataElement("data",$self->get_data());
 	if($self->is_dire()) {
 		for(my($i)=0;$i<$self->size();$i++) {
-			my($keyx)=$self->keyx($i);
-			my($valx)=$self->valx($i);
-			$valx->xml($writ,$keyx);
+			my($key)=$self->key($i);
+			my($val)=$self->val($i);
+			$val->xml($writ,$key);
 		}
 	}
 	$writ->endTag("fs");
@@ -526,7 +527,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Fs.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -857,10 +858,11 @@ None.
 	0.11 MV website construction
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Ds::Ohash(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Error(3), Meta::Ds::Ohash(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -19,7 +19,7 @@ sub BEGIN() {
 	base::import(__PACKAGE__,"Meta::Class::DBI");
 	__PACKAGE__->table('node');
 	__PACKAGE__->columns('Primary'=>'id');
-	__PACKAGE__->columns(All=>qw/id name description/);
+	__PACKAGE__->columns(All=>qw/id mod_time inode name size mode checksum/);
 }
 
 sub TEST($) {

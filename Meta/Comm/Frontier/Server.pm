@@ -9,7 +9,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Frontier::Daemon);
 
 #sub new($);
@@ -23,7 +23,7 @@ $VERSION="0.11";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Frontier::Daemon->new(
 		LocalPort=>1080,
 		methods=>{
@@ -33,9 +33,9 @@ sub new($) {
 		},
 	);
 	if(!$self) {
-		Meta::Utils::System::die("cannot create server");
+		throw Meta::Error::Simple("cannot create server");
 	}
-	#bless($self,$clas);
+	#bless($self,$class);
 	return($self);
 }
 
@@ -123,7 +123,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Server.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -210,6 +210,7 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests into modules
+	0.12 MV md5 issues
 
 =head1 SEE ALSO
 

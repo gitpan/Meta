@@ -7,7 +7,7 @@ use Meta::Ds::Connected qw();
 use Meta::Db::Type qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -36,9 +36,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Connected->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->init();
 	return($self);
 }
@@ -154,7 +154,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Field.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -316,6 +316,7 @@ None.
 	0.33 MV website construction
 	0.34 MV web site automation
 	0.35 MV SEE ALSO section fix
+	0.36 MV md5 issues
 
 =head1 SEE ALSO
 

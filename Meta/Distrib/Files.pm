@@ -6,10 +6,13 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Distrib::File qw();
+use Meta::IO::File qw();
+use Meta::Development::Assert qw();
 use Meta::Utils::Output qw();
+use Error qw(:try);
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -19,23 +22,20 @@ $VERSION="0.28";
 #__DATA__
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Meta::Ds::Array->new();
-	bless($self,$clas);
+	bless($self,$class);
 	return($self);
 }
 
 sub read($$) {
 	my($self,$file)=@_;
-	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	my($line);
-	while($line=<FILE> || 0) {
-		chop($line);
+	my($io)=Meta::IO::File->new_reader($file);
+	while(!$io->eof()) {
+		my($line)=$io->cgetline();
 #		Meta::Utils::Output::print("in here with line [".$line."]\n");
-		my(@fiel)=split("\t",$line);
-		if($#fiel!=2) {
-			Meta::Utils::System::die("wrong number of fields in line [".$line."]");
-		}
+		my(@fiel)=split('\t',$line);
+		Meta::Development::Assert::assert_eq($#fiel,2,"number of fields needs to be 3");
 		my($obje)=Meta::Distrib::File->new();
 		my($sour)=$fiel[0];
 		my($prefix);
@@ -48,7 +48,7 @@ sub read($$) {
 		my($phys)=Meta::Baseline::Aegis::which($sour);
 		my($buil_desc)=$fiel[1];
 		if($buil_desc ne "build" && $buil_desc ne "source") {
-			Meta::Utils::System::die("what is file type [".$buil_desc."]");
+			throw Meta::Error::Simple("what is file type [".$buil_desc."]");
 		}
 		my($buil);
 		if($buil_desc eq "build") {
@@ -64,7 +64,7 @@ sub read($$) {
 		$obje->set_perm($perm);
 		$self->push($obje);
 	}
-	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
+	$io->close();
 }
 
 sub TEST($) {
@@ -105,7 +105,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Files.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -188,10 +188,11 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV md5 issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Distrib::File(3), Meta::Ds::Array(3), Meta::Utils::Output(3), strict(3)
+Error(3), Meta::Baseline::Aegis(3), Meta::Development::Assert(3), Meta::Distrib::File(3), Meta::Ds::Array(3), Meta::IO::File(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

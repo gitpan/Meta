@@ -14,7 +14,7 @@ use Meta::Utils::System qw();
 use Meta::Ds::Set qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.18";
 @ISA=qw(Archive::Tar);
 
 #sub BEGIN();
@@ -39,9 +39,9 @@ sub BEGIN() {
 }
 
 sub new($) {
-	my($clas)=@_;
+	my($class)=@_;
 	my($self)=Archive::Tar->new();
-	bless($self,$clas);
+	bless($self,$class);
 	$self->{SET}=Meta::Ds::Set->new();
 	$self->set_type("gzip");
 	$self->set_use_uname(0);
@@ -77,7 +77,8 @@ sub add_file($$$) {
 	my($self,$name,$file)=@_;
 	my($set)=$self->{SET};
 	if($set->hasnt($name)) {
-		my($data)=Meta::Utils::File::File::load($file);
+		my($data);
+		Meta::Utils::File::File::load($file,\$data);
 		$self->add_data($name,$data);
 	}
 }
@@ -161,7 +162,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Tar.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -282,6 +283,7 @@ None.
 	0.15 MV move tests to modules
 	0.16 MV finish papers
 	0.17 MV teachers project
+	0.18 MV md5 issues
 
 =head1 SEE ALSO
 

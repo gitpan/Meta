@@ -28,7 +28,9 @@ Meta::Utils::Output::print("version3 is [".$version3."]\n");
 Meta::Utils::Output::print("isa is [".join(",",@$isa)."]\n");
 Meta::Utils::Output::print("pod is [".$pod."]\n");
 my($pod_file)=Meta::Baseline::Aegis::which("perl/bin/Meta/Projects/Website/website_copy.pl");
-my($hash)=Meta::Lang::Perl::Perl::get_pods_new(Meta::Utils::File::File::load($pod_file));
+my($content);
+Meta::Utils::File::File::load($pod_file,\$content);
+my($hash)=Meta::Lang::Perl::Perl::get_pods_new($content);
 while(my($key,$val)=each(%$hash)) {
 	Meta::Utils::Output::print("pod is [".$key."]\n");
 	Meta::Utils::Output::print("content is [".$val."]\n");
@@ -36,7 +38,7 @@ while(my($key,$val)=each(%$hash)) {
 
 Meta::Baseline::Test::redirect_off();
 
-Meta::Utils::System::exit(1);
+Meta::Utils::System::exit_ok();
 
 __END__
 
@@ -69,7 +71,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl.pl
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -147,6 +149,7 @@ None.
 	0.06 MV web site automation
 	0.07 MV SEE ALSO section fix
 	0.08 MV move tests to modules
+	0.09 MV md5 issues
 
 =head1 SEE ALSO
 
