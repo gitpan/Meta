@@ -32,10 +32,10 @@ sub file_list($) {
 
 sub TEST($) {
 	my($context)=@_;
-	my($patch)=Meta::Development::Patch->new();
-	my($file)=Meta::Baseline::Aegis::which("patc/example.patch");
-	$patch->set_file($file);
-	my($list)=$patch->file_list();
+#	my($patch)=Meta::Development::Patch->new();
+#	my($file)=Meta::Baseline::Aegis::which("patc/example.patch");
+#	$patch->set_file($file);
+#	my($list)=$patch->file_list();
 	return(1);
 }
 

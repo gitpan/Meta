@@ -7,7 +7,7 @@ use Gtk qw();
 use SQL::Statement qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Gtk::CList);
 
 #sub new_statement($$$$);
@@ -92,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: SqlList.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -116,6 +116,8 @@ The widget will:
 	database schema.
 4. if the database updates and can send signals, this widget will
 	automatically update the information in its display.
+
+This now uses the new SQL::Statment version by Jeff Zucker (better).
 
 =head1 FUNCTIONS
 
@@ -174,6 +176,7 @@ None.
 	0.09 MV website construction
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV weblog issues
 
 =head1 SEE ALSO
 

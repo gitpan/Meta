@@ -10,14 +10,34 @@ use Meta::Db::Def qw();
 use Meta::Db::Dbi qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw(Term::ReadLine);
 
+#sub BEGIN();
 #sub new($);
+#sub add_vars($$);
 #sub run($);
 #sub TEST($);
 
 #__DATA__
+
+sub BEGIN() {
+#	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_defs",
+		-java=>"_def_name",
+		-java=>"_connections",
+		-java=>"_connection_name",
+		-java=>"_prompt",
+	);
+	Meta::Class::MethodMaker->print([
+		"defs",
+		"def_name",
+		"connections",
+		"connection_name",
+		"prompt",
+	]);
+}
 
 sub new($) {
 	my($clas)=@_;
@@ -26,14 +46,20 @@ sub new($) {
 	return($self);
 }
 
+sub add_vars($$$) {
+	my($self,$opts,$pref)=@_;
+#	$opts->def_stri('prompt','what prompt to use','prompt>',\($self->{PROMPT}));
+#	$opts->def_url('connections','what connections url to use','aegis:xmlx/connections/connections.xml',));
+#	$opts->def_stri('con_name','what connection to use',undef,));
+#	$opts->def_url('defs','what defs file to use','aegis:xmlx/def/chess.xml',));
+#	$opts->def_stri('database_name','what database to use',undef,));
+}
+
 sub run($) {
 	my($self)=@_;
-	my($prompt)='prompt>';
-	my($conn_deve)="xmlx/connections/connections.xml";
-	my($defx_deve)="xmlx/def/chess.xml";
-	my($connections)=Meta::Db::Connections->new_deve($conn_deve);
-	my($def)=Meta::Db::Def->new_deve($defx_deve);
-	my($connection)=$connections->get_def_con();
+	my($prompt)=$self->get_prompt();
+	my($connection)=Meta::Db::Connections->new_url($self->get_connections())->get_con_null($self->get_con_name());
+	my($def)=Meta::Db::Def->new_url($self->get_defs())->get_def_null($self->get_database_name());
 	my($dbif)=Meta::Db::Dbi->new();
 	$dbif->connect_def($connection,$def);
 #	$connection->print(Meta::Utils::Output::get_file());
@@ -95,7 +121,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Console.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -113,6 +139,7 @@ results on your terminal.
 =head1 FUNCTIONS
 
 	new($)
+	add_vars($)
 	run($)
 	TEST($)
 
@@ -167,6 +194,7 @@ None.
 	0.13 MV website construction
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
+	0.16 MV download scripts
 
 =head1 SEE ALSO
 
@@ -174,4 +202,6 @@ Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Utils::Outpu
 
 =head1 TODO
 
-Nothing.
+-add options to set the prompt according to preference.
+
+-use Data::ShowTable to show the results.

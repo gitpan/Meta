@@ -5,13 +5,11 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::List qw();
-use Meta::Utils::Time qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 use Meta::Ds::Enum qw();
 use Meta::Archive::Tar qw();
-use Meta::Math::Pad qw();
-use Template qw();
+use Meta::Template::Sub qw();
 
 my($enum)=Meta::Ds::Enum->new();
 $enum->insert("change");
@@ -29,31 +27,16 @@ $opts->def_enum("type","what type of backup ?","source",\$type,$enum);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-# first process the tarfile
-my($vars)={
-	"project",Meta::Baseline::Aegis::project(),
-	"change",Meta::Math::Pad::pad(Meta::Baseline::Aegis::change(),3),
-	"architecture",Meta::Baseline::Aegis::architecture(),
-	"developer",Meta::Baseline::Aegis::developer(),
-	"home_dir",Meta::Utils::Utils::get_home_dir(),
-	"time",Meta::Utils::Time::now_string(),
-};
-my($template)=Template->new();
-my($tarfile);
-my($res)=$template->process(\$tarf,$vars,\$tarfile);
-if(!$res) {
-	Meta::Utils::System::die("error in Template processing [".$template->error()."]");
-}
-#Meta::Utils::Output::print("tarfile is [".$tarfile."]\n");
+$tarf=Meta::Template::Sub::interpolate($tarf);
 
 my($list);
-if($type eq "change") {
+if($enum->is_selected($type,"change")) {
 	$list=Meta::Baseline::Aegis::change_files_list(1,1,1,1,1,0);
 }
-if($type eq "project") {
+if($enum->is_selected($type,"project")) {
 	$list=Meta::Baseline::Aegis::project_files_list(1,1,0);
 }
-if($type eq "source") {
+if($enum->is_selected($type,"source")) {
 	$list=Meta::Baseline::Aegis::source_files_list(1,1,0,1,1,0);
 }
 my($scod);
@@ -67,7 +50,7 @@ if($demo) {
 		my($curr)=$list->[$i];
 		$tar->add_deve($curr,$curr);
 	}
-	$scod=$tar->write($tarfile,9);#the 9 is the compression level
+	$scod=$tar->write($tarf);
 }
 Meta::Utils::System::exit($scod);
 
@@ -102,7 +85,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_backup.pl
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.38
 
 =head1 SYNOPSIS
 
@@ -150,6 +133,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -226,10 +213,13 @@ None.
 	0.33 MV improve the movie db xml
 	0.34 MV web site automation
 	0.35 MV SEE ALSO section fix
+	0.36 MV move tests to modules
+	0.37 MV bring movie data
+	0.38 MV web site development
 
 =head1 SEE ALSO
 
-Meta::Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Ds::Enum(3), Meta::Math::Pad(3), Meta::Utils::List(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Time(3), Meta::Utils::Utils(3), Template(3), strict(3)
+Meta::Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Ds::Enum(3), Meta::Template::Sub(3), Meta::Utils::List(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

@@ -13,7 +13,7 @@ use Meta::Utils::Utils qw();
 use Meta::Baseline::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub check($);
@@ -79,6 +79,7 @@ sub c2pdfx($) {
 
 sub tool($$$) {
 	my($buil,$suff,$back)=@_;
+	my($prefix)="/local/tools";
 	my($modu)=$buil->get_modu();
 	my($srcx)=$buil->get_srcx();
 	my($targ)=$buil->get_targ();
@@ -86,7 +87,8 @@ sub tool($$$) {
 	my($file)=Meta::Utils::Utils::get_temp_file();
 	my($resu)=$file."\.".$suff;
 	Meta::Utils::File::Copy::copy($srcx,$file);
-	Meta::Utils::Env::remove_nodie("SGML_CATALOG_FILES");
+#	Meta::Utils::Env::remove_nodie("SGML_CATALOG_FILES");
+	Meta::Utils::Env::set("SGML_CATALOG_FILES",$prefix."/share/sgml/stylesheets/sgmltools/sgmltools.cat");
 	Meta::Utils::Env::remove_nodie("SGML_PATH");
 	my($prog)="sgmltools";
 	#my($prog)="sgmltools.v1";
@@ -128,9 +130,12 @@ sub tool($$$) {
 			#push(@args,"-c".$dslxcata);
 		}
 	}
+	push(@dirs,"-c".$prefix."/share/sgml/stylesheets/sgmltools/sgmltools.cat");
+	push(@dirs,"-c/usr/share/sgml/openjade-1.3/catalog");
+	push(@dirs,"-c/usr/share/sgml/docbook/dsssl-stylesheets/catalog");
 	push(@args,"--jade-opt=\'".join(" ",@dirs)."\'",$file);
 	my($text);
-	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
+	#Meta::Utils::Output::print("cmd line is [".CORE::join(",",$prog,@args)."]\n");
 	my($scod)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
 	Meta::Utils::File::Remove::rm($file);
 	if(!$scod) {#code is bad (there should be no result but we rm it still)
@@ -190,7 +195,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgmltoolslite.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -319,6 +324,7 @@ None.
 	0.12 MV website construction
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV bring movie data
 
 =head1 SEE ALSO
 

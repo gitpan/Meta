@@ -8,36 +8,40 @@ use Meta::Utils::File::Remove qw();
 use Image::Magick qw();
 use Image::Size qw();
 use Meta::Ds::Enum qw();
+use Meta::Utils::File::Iterator qw();
 
 my($enum)=Meta::Ds::Enum->new();
 $enum->insert("magick");
 $enum->insert("imagesize");
 
-my($verbose,$demo,$summ,$x_size,$y_size,$method);
+my($verbose,$demo,$summ,$x_size,$y_size,$method,$dire);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->def_bool("demo","should I just fake it ?",1,\$demo);
-$opts->def_bool("summary","should I display summary ?",1,\$summ);
+$opts->def_bool("summary","should I display summary ?",0,\$summ);
 $opts->def_inte("x","minimum x size",200,\$x_size);
 $opts->def_inte("y","minimum y size",200,\$y_size);
-$opts->def_enum("method","what type of method to use ?","imagesize",\$method,$enum);
-$opts->set_free_allo(1);
-$opts->set_free_stri("[files]");
-$opts->set_free_mini(1);
-$opts->set_free_noli(1);
+$opts->def_enum("method","what type of method to use ?","magick",\$method,$enum);
+$opts->def_dire("directory","directory to scan",".",\$dire);
+$opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($scan)=0;
 my($remove)=0;
 my($found)=0;
-for(my($i)=0;$i<=$#ARGV;$i++) {
-	my($curr)=$ARGV[$i];
+
+my($iterator)=Meta::Utils::File::Iterator->new();
+$iterator->add_directory($dire);
+$iterator->start();
+
+while(!$iterator->get_over()) {
+	my($curr)=$iterator->get_curr();
 	if($verbose) {
 		Meta::Utils::Output::print("doing [".$curr."]\n");
 	}
 	my($curr_x,$curr_y);
-	if($method eq "magick") {
+	if($enum->is_selected($method,"magick")) {
 		my($image)=Image::Magick->new();
 		my($ret)=$image->Read($curr);
 		if($ret) {
@@ -46,7 +50,7 @@ for(my($i)=0;$i<=$#ARGV;$i++) {
 		#$image->Display();
 		($curr_x,$curr_y)=$image->Get('height','width');
 	}
-	if($method eq "imagesize") {
+	if($enum->is_selected($method,"imagesize")) {
 		($curr_x,$curr_y)=Image::Size::imgsize($curr);
 	}
 	#Meta::Utils::Output::print("x is [".$curr_x."] y is [".$curr_y."]\n");
@@ -61,7 +65,9 @@ for(my($i)=0;$i<=$#ARGV;$i++) {
 		}
 	}
 	$scan++;
+	$iterator->next();
 }
+$iterator->fini();
 if($summ) {
 	Meta::Utils::Output::print("scanned [".$scan."] images\n");
 	Meta::Utils::Output::print("found [".$found."] small images\n");
@@ -101,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_remove_small.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -153,6 +159,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -165,7 +175,7 @@ should I be noisy ?
 
 should I just fake it ?
 
-=item B<summary> (type: bool, default: 1)
+=item B<summary> (type: bool, default: 0)
 
 should I display summary ?
 
@@ -177,16 +187,19 @@ minimum x size
 
 minimum y size
 
-=item B<method> (type: enum, default: imagesize)
+=item B<method> (type: enum, default: magick)
 
 what type of method to use ?
 
 options [magick,imagesize]
 
+=item B<directory> (type: dire, default: .)
+
+directory to scan
+
 =back
 
-minimum of [1] free arguments required
-no maximum limit on number of free arguments placed
+no free arguments are allowed
 
 =head1 BUGS
 
@@ -212,11 +225,13 @@ None.
 	0.08 MV improve the movie db xml
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV move tests to modules
+	0.12 MV bring movie data
 
 =head1 SEE ALSO
 
-Image::Magick(3), Image::Size(3), Meta::Ds::Enum(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Image::Magick(3), Image::Size(3), Meta::Ds::Enum(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-add option to only produce of list of files to be removed.

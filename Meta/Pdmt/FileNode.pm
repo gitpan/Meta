@@ -9,7 +9,7 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::File::Time qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.02";
 @ISA=qw(Meta::Pdmt::Node);
 
 #sub BEGIN();
@@ -42,9 +42,9 @@ sub remove($) {
 
 sub date($) {
 	my($self)=@_;
-	my($res)=Meta::Utils::File::Time::new_time($self->get_path());
-	Meta::Utils::Output::print("path is [".$self->get_path()."]\n");
-	Meta::Utils::Output::print("returning [".$res."]\n");
+	my($res)=Meta::Utils::File::Time::ntime($self->get_path());
+#	Meta::Utils::Output::print("path is [".$self->get_path()."]\n");
+#	Meta::Utils::Output::print("returning [".$res."]\n");
 	return($res);
 }
 
@@ -103,7 +103,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: FileNode.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -178,6 +178,7 @@ None.
 
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
+	0.02 MV bring movie data
 
 =head1 SEE ALSO
 

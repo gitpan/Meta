@@ -7,15 +7,17 @@ use Meta::Info::Affiliation qw();
 use Meta::Xml::Parsers::Author qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Class::MethodMaker qw();
+use XML::Writer qw();
+use IO::String qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.18";
 @ISA=qw();
 
 #sub BEGIN();
 #sub init($);
-#sub new_file($);
-#sub new_deve($);
+#sub new_file($$);
+#sub new_deve($$);
 #sub get_perl_makefile($);
 #sub get_perl_source($);
 #sub get_perl_copyright($);
@@ -23,6 +25,9 @@ $VERSION="0.15";
 #sub get_vcard($);
 #sub get_html_copyright($);
 #sub get_html_info($);
+#sub get_full_name($);
+#sub get_docbook_author($);
+#sub get_docbook_address($);
 #sub TEST($);
 
 #__DATA__
@@ -33,6 +38,7 @@ sub BEGIN() {
 		-java=>"_honorific",
 		-java=>"_firstname",
 		-java=>"_surname",
+		-java=>"_title",
 		-java=>"_cpanid",
 		-java=>"_cpanpassword",
 		-java=>"_cpanemail",
@@ -72,17 +78,17 @@ sub init($) {
 	$self->set_affiliation(Meta::Info::Affiliation->new());
 }
 
-sub new_file($) {
-	my($file)=@_;
+sub new_file($$) {
+	my($class,$file)=@_;
 	my($parser)=Meta::Xml::Parsers::Author->new();
 	$parser->parsefile($file);
 	return($parser->get_result());
 }
 
-sub new_deve($) {
-	my($modu)=@_;
+sub new_deve($$) {
+	my($class,$modu)=@_;
 	my($file)=Meta::Baseline::Aegis::which($modu);
-	return(new_file($file));
+	return(&new_file($class,$file));
 }
 
 sub get_perl_makefile($) {
@@ -109,11 +115,12 @@ sub get_email_signature($) {
 	my($self)=@_;
 	return(
 		"Name: ".$self->get_firstname()." ".$self->get_surname()."\n".
-#		"Title: ".$self->get_title()."\n".
+		"Title: ".$self->get_title()."\n".
 		"Homepage: ".$self->get_homepage()."\n".
 		"CPAN id: ".$self->get_cpanid()." (http://cpan.org,\ mailto:".$self->get_cpanemail().")\n".
-		"sourceforge id: ".$self->get_sourceforgeid()." (http://www.sourceforge.net,\ mailto:".$self->get_sourceforgeemail().")\n".
-		"advogator id:".$self->get_advogatoid()." (http://www.advogato.org,\ mailto:".$self->get_advogatoemail().")\n"
+		"SourceForge id: ".$self->get_sourceforgeid()." (http://www.sourceforge.net,\ mailto:".$self->get_sourceforgeemail().")\n".
+		"Advogato id: ".$self->get_advogatoid()." (http://www.advogato.org,\ mailto:".$self->get_advogatoemail().")\n".
+		"Refer to http://pgp.ai.mit.edu or any PGP keyserver for public key.\n"
 	);
 }
 
@@ -141,8 +148,65 @@ sub get_html_info($) {
 	);
 }
 
+sub get_full_name($) {
+	my($self)=@_;
+	return($self->get_firstname()." ".$self->get_surname());
+}
+
+sub get_docbook_author($) {
+	my($self)=@_;
+	my($string);
+	my($io)=IO::String->new($string);
+	my($writer)=XML::Writer->new(OUTPUT=>$io);
+	$writer->startTag("author");
+	$writer->dataElement("honorific",$self->get_honorific());
+	$writer->dataElement("firstname",$self->get_firstname());
+	$writer->dataElement("surname",$self->get_surname());
+	$writer->startTag("affiliation");
+	$writer->dataElement("orgname",$self->get_affiliation()->get_orgname());
+	$writer->startTag("address");
+	$writer->dataElement("email",$self->get_affiliation()->get_address()->get_email());
+	$writer->endTag("address");
+	$writer->endTag("affiliation");
+	$writer->endTag("author");
+	$io->close();
+	return($string);
+}
+
+sub get_docbook_address($) {
+	my($self)=@_;
+	my($self)=@_;
+	my($string);
+	my($io)=IO::String->new($string);
+	my($writer)=XML::Writer->new(OUTPUT=>$io);
+	$writer->startTag("address");
+	$writer->dataElement("firstname",$self->get_firstname());
+	$writer->dataElement("surname",$self->get_surname());
+	$writer->dataElement("country",$self->get_affiliation()->get_address()->get_country());
+	$writer->dataElement("city",$self->get_affiliation()->get_address()->get_city());
+	$writer->dataElement("street",$self->get_affiliation()->get_address()->get_street());
+	$writer->dataElement("email",$self->get_affiliation()->get_address()->get_email());
+	$writer->dataElement("phone",$self->get_affiliation()->get_address()->get_phone());
+	$writer->dataElement("fax",$self->get_affiliation()->get_address()->get_fax());
+	$writer->dataElement("postcode",$self->get_affiliation()->get_address()->get_postcode());
+	$writer->endTag("address");
+	$io->close();
+	return($string);
+}
+
 sub TEST($) {
 	my($context)=@_;
+	my($author)=Meta::Info::Author->new_deve("xmlx/author/author.xml");
+	Meta::Utils::Output::print("perl_makefile is [".$author->get_perl_makefile()."]\n");
+	Meta::Utils::Output::print("perl_source is [".$author->get_perl_source()."]\n");
+	Meta::Utils::Output::print("perl_copyright is [".$author->get_perl_copyright()."]\n");
+	Meta::Utils::Output::print("email_signature is [".$author->get_email_signature()."]\n");
+	Meta::Utils::Output::print("vcard is [".$author->get_vcard()."]\n");
+	Meta::Utils::Output::print("html_copyright is [".$author->get_html_copyright()."]\n");
+	Meta::Utils::Output::print("html_info is [".$author->get_html_info()."]\n");
+	Meta::Utils::Output::print("full_name is [".$author->get_full_name()."]\n");
+	Meta::Utils::Output::print("docbook_author is [".$author->get_docbook_author()."]\n");
+	Meta::Utils::Output::print("docbook_address is [".$author->get_docbook_address()."]\n");
 	return(1);
 }
 
@@ -179,7 +243,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Author.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -196,8 +260,8 @@ This class provides author information according to the DocBook DTD.
 
 	BEGIN()
 	init($)
-	new_file($)
-	new_deve($)
+	new_file($$)
+	new_deve($$)
 	get_perl_makefile($)
 	get_perl_source($)
 	get_perl_copyright($)
@@ -205,6 +269,9 @@ This class provides author information according to the DocBook DTD.
 	get_vcard($)
 	get_html_copyright($)
 	get_html_info($)
+	get_full_name($)
+	get_docbook_author($)
+	get_docbook_address($)
 	TEST($);
 
 =head1 FUNCTION DOCUMENTATION
@@ -233,11 +300,11 @@ The attributes are:
 15. "affiliation".
 For their meaning please consult the Docbook DTD.
 
-=item B<new_file($)>
+=item B<new_file($$)>
 
 This method will create a new instance from an XML/author file.
 
-=item B<new_deve($)>
+=item B<new_deve($$)>
 
 This method will create a new instance from an XML/author file
 which will be located in the development path.
@@ -294,6 +361,18 @@ Get a copyright suitable for inserting into an HTML page.
 
 Get info suitable for inclusing in an HTML page.
 
+=item B<get_full_name($)>
+
+This method will return the full name of the Author.
+
+=item B<get_docbook_author($)>
+
+Return XML snipplet fit to be fitted in a Docbook document as author information.
+
+=item B<get_docbook_address($)>
+
+Return XML snipplet fit to be fitted in a Docbook document as address information.
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -333,10 +412,13 @@ None.
 	0.13 MV web site development
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
+	0.16 MV bring movie data
+	0.17 MV move tests into modules
+	0.18 MV web site development
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Info::Affiliation(3), Meta::Xml::Parsers::Author(3), strict(3)
+IO::String(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Info::Affiliation(3), Meta::Xml::Parsers::Author(3), XML::Writer(3), strict(3)
 
 =head1 TODO
 
@@ -345,3 +427,5 @@ Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Info::Affiliation(3
 -make the VCARD method do its thing.
 
 -add more info and track the Docbook DTD more strictly.
+
+-fix the constructor methods here (first argument in constructor should always be class type or blessing to right class wont be possible).

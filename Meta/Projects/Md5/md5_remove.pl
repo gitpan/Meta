@@ -7,6 +7,8 @@ use Meta::Utils::File::Iterator qw();
 use XML::Parser qw();
 use MIME::Base64 qw();
 use Meta::Digest::Collection qw();
+use Meta::Utils::File::File qw();
+use Meta::Ds::Array qw();
 
 my($curr_filename,$curr_moddate,$curr_md5sum,$collection);
 my($premature,$predat)=0;
@@ -49,33 +51,43 @@ sub handle_end($$) {
 	}
 }
 
-my($input,$verb,$remove,$dire);
+my($input,$verb,$remove,$dire,$leave_tag,$leave_suffix,$list,$list_file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_file("input","what input file to use ?","/tmp/file.xml",\$input);
+$opts->def_flst("input","what input files to use ?","/tmp/file.xml",\$input);
 $opts->def_bool("verbose","noisy or quiet ?",1,\$verb);
 $opts->def_bool("remove","actually remove files ?",1,\$remove);
 $opts->def_dire("directory","directory to scan",".",\$dire);
+$opts->def_bool("leave_tag","leave tag about removed files ?",1,\$leave_tag);
+$opts->def_stri("leave_suffix","what suffix to leave ?",".rem",\$leave_suffix);
+$opts->def_bool("list","make a list of removed files ?",0,\$list);
+$opts->def_newf("list_file","what file to write the list to ?","/tmp/list_file.txt",\$list_file);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-if($verb) {
-	Meta::Utils::Output::print("starting reading [".$input."]\n");
-}
 $collection=Meta::Digest::Collection->new();
 my($parser)=XML::Parser->new();
 $parser->setHandlers(
 	Char=>\&handle_char,
 	End=>\&handle_end,
 );
-$parser->parsefile($input);
-if($verb) {
-	Meta::Utils::Output::print("finished reading [".$input."]\n");
+my(@inputs)=split(':',$input);
+for(my($i)=0;$i<=$#inputs;$i++) {
+	my($curr)=$inputs[$i];
+	if($verb) {
+		Meta::Utils::Output::print("starting reading [".$curr."]\n");
+	}
+	$parser->parsefile($curr);
+	if($verb) {
+		Meta::Utils::Output::print("finished reading [".$curr."]\n");
+	}
 }
 
 my($iterator)=Meta::Utils::File::Iterator->new();
 $iterator->add_directory($dire);
 $iterator->start();
+
+my($array)=Meta::Ds::Array->new();
 
 while(!$iterator->get_over()) {
 	my($curr)=$iterator->get_curr();
@@ -94,12 +106,24 @@ while(!$iterator->get_over()) {
 			my($res)=Meta::Utils::File::Remove::rm_nodie($curr);
 			if(!$res) {
 				Meta::Utils::Output::print("unable to remove file [".$curr."]\n");
+			} else {
+				if($leave_tag) {
+					my($content)="file removed and exists in [".$collection->get_file($sum)."]\n";
+					my($new_file)=$curr.$leave_suffix;
+					Meta::Utils::File::File::save($new_file,$content);
+				}
+				if($list) {
+					$array->push($curr);
+				}
 			}
 		}
 	}
 	$iterator->next();
 }
 $iterator->fini();
+if($list) {
+	#print the $array Meta::Ds::Array to the file $list_file
+}
 
 Meta::Utils::System::exit(1);
 
@@ -134,7 +158,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_remove.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -145,7 +169,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 Give this program an XML file with MD5 signatures and a directory to scan. The program will read the
 MD5 signatures file and will store them in RAM. Then it will recurse the directory and for each file it
 will calc the MD5 sum. If it finds files which have MD5 signatures that it already has then it
-will remove them.
+will remove them. The program can optionally leave a small file saying which file generated the md5
+sum which caused the file to be deleted.
 
 =head1 OPTIONS
 
@@ -179,13 +204,17 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
 
-=item B<input> (type: file, default: /tmp/file.xml)
+=item B<input> (type: flst, default: /tmp/file.xml)
 
-what input file to use ?
+what input files to use ?
 
 =item B<verbose> (type: bool, default: 1)
 
@@ -198,6 +227,22 @@ actually remove files ?
 =item B<directory> (type: dire, default: .)
 
 directory to scan
+
+=item B<leave_tag> (type: bool, default: 1)
+
+leave tag about removed files ?
+
+=item B<leave_suffix> (type: stri, default: .rem)
+
+what suffix to leave ?
+
+=item B<list> (type: bool, default: 0)
+
+make a list of removed files ?
+
+=item B<list_file> (type: newf, default: /tmp/list_file.txt)
+
+what file to write the list to ?
 
 =back
 
@@ -219,10 +264,13 @@ None.
 	0.00 MV web site development
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
+	0.03 MV move tests to modules
+	0.04 MV download scripts
+	0.05 MV bring movie data
 
 =head1 SEE ALSO
 
-MIME::Base64(3), Meta::Digest::Collection(3), Meta::Utils::File::Iterator(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), XML::Parser(3), strict(3)
+MIME::Base64(3), Meta::Digest::Collection(3), Meta::Ds::Array(3), Meta::Utils::File::File(3), Meta::Utils::File::Iterator(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), XML::Parser(3), strict(3)
 
 =head1 TODO
 

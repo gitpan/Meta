@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub my_file($$);
@@ -17,6 +17,12 @@ $VERSION="0.00";
 sub my_file($$) {
 	my($self,$file)=@_;
 	if($file=~/^patc\/.*\.patch$/) {
+		return(1);
+	}
+	if($file=~/^patc\/.*\.bz2$/) {
+		return(1);
+	}
+	if($file=~/^patc\/.*\.gz$/) {
 		return(1);
 	}
 	return(0);
@@ -60,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Patc.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -112,6 +118,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV SEE ALSO section fix
+	0.01 MV move tests into modules
 
 =head1 SEE ALSO
 

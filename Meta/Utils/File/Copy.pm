@@ -10,12 +10,15 @@ use File::Path qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub copy($$);
+#sub syscopy($$);
 #sub copy_unlink($$);
+#sub syscopy_unlink($$);
 #sub copy_mkdir($$);
+#sub syscopy_mkdir($$);
 #sub TEST($);
 
 #__DATA__
@@ -27,6 +30,18 @@ sub copy($$) {
 		Meta::Utils::Output::print("copying [".$fil1."] to [".$fil2."]\n");
 	}
 	if(!File::Copy::copy($fil1,$fil2)) {
+		Meta::Utils::System::die("unable to copy [".$fil1."] to [".$fil2."]");
+	}
+	return(1);
+}
+
+sub syscopy($$) {
+	my($fil1,$fil2)=@_;
+	my($verb)=0;
+	if($verb) {
+		Meta::Utils::Output::print("copying [".$fil1."] to [".$fil2."]\n");
+	}
+	if(!File::Copy::syscopy($fil1,$fil2)) {
 		Meta::Utils::System::die("unable to copy [".$fil1."] to [".$fil2."]");
 	}
 	return(1);
@@ -44,6 +59,18 @@ sub copy_unlink($$) {
 	return(&copy($fil1,$fil2));
 }
 
+sub syscopy_unlink($$) {
+	my($fil1,$fil2)=@_;
+	my($verb)=0;
+	if($verb) {
+		Meta::Utils::Output::print("removing [".$fil2."]\n");
+	}
+	if(!Meta::Utils::File::Remove::rm($fil2)) {
+		return(0);
+	}
+	return(&syscopy($fil1,$fil2));
+}
+
 sub copy_mkdir($$) {
 	my($fil1,$fil2)=@_;
 	my($dire)=File::Basename::dirname($fil2);
@@ -57,6 +84,21 @@ sub copy_mkdir($$) {
 		}
 	}
 	return(&copy($fil1,$fil2));
+}
+
+sub syscopy_mkdir($$) {
+	my($fil1,$fil2)=@_;
+	my($dire)=File::Basename::dirname($fil2);
+	if(!(-e $dire)) {
+		my($verb)=0;
+		if($verb) {
+			Meta::Utils::Output::print("making directory [".$dire."]\n");
+		}
+		if(!File::Path::mkpath($dire)) {
+			return(0);
+		}
+	}
+	return(&syscopy($fil1,$fil2));
 }
 
 sub TEST($) {
@@ -97,7 +139,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Copy.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -112,8 +154,11 @@ This module eases the case for copying files.
 =head1 FUNCTIONS
 
 	copy($$)
+	syscopy($$)
 	copy_unlink($$)
+	syscopy_unlink($$)
 	copy_mkdir($$)
+	syscopy_mkdir($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -124,15 +169,30 @@ This module eases the case for copying files.
 
 This function copies a file to another and dies if it cannot succeed.
 
+=item B<syscopy($$)>
+
+This function does the same work as copy but preserves file permissions
+and other attributes.
+
 =item B<copy_unlink($$)>
 
 This function assumes that the target file exists, unlinks it, and then
 copies the source to the target
 
+=item B<syscopy_unlink($$)>
+
+This function does the same work as copy_unlink but preserves file permissions
+and other attributes.
+
 =item B<copy_mkdir($$)>
 
 This function copies one file to another and creates the directory
 if neccessary. More than one hierarchy of directories can be created...
+
+=item B<syscopy_mkdir($$)>
+
+This function does the same work as copy_mkdir but preserves file permissions
+and other attributes.
 
 =item B<TEST($)>
 
@@ -188,6 +248,7 @@ None.
 	0.28 MV website construction
 	0.29 MV web site automation
 	0.30 MV SEE ALSO section fix
+	0.31 MV web site development
 
 =head1 SEE ALSO
 

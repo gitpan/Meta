@@ -10,20 +10,23 @@ use Meta::Utils::File::Remove qw();
 use Compress::Zlib qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw();
 
-#sub process($);
+#sub process($$);
 #sub get_oneliner($);
 #sub TEST($);
 
 #__DATA__
 
-sub process($) {
-	my($data)=@_;
+sub process($$) {
+	my($data,$device)=@_;
+	# check that device is one of "ascii","ps","dvi","html"
 	my($file)=Meta::Utils::Utils::get_temp_file();
 	Meta::Utils::File::File::save($file,$data);
-	my($out)=Meta::Utils::System::system_out("groff",["-m","mandoc","-Tascii",$file]);
+	# the -W w stuff is to inhibit warnings. It's not documented in groff so don't
+	# look for it. It's from the source.
+	my($out)=Meta::Utils::System::system_out("groff",["-m","mandoc","-W","w","-T",$device,$file]);
 	Meta::Utils::File::Remove::rm($file);
 	return($$out);
 }
@@ -92,7 +95,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Groff.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -107,7 +110,7 @@ This module eases the job of running groff for you.
 
 =head1 FUNCTIONS
 
-	process($)
+	process($$)
 	get_oneliner($)
 	TEST($)
 
@@ -115,9 +118,10 @@ This module eases the job of running groff for you.
 
 =over 4
 
-=item B<process($)>
+=item B<process($$)>
 
 This method will run groff on a piece of data and will return the result.
+The other input is the device to render to.
 
 =item B<get_oneliner($)>
 
@@ -154,6 +158,7 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV download scripts
 
 =head1 SEE ALSO
 
@@ -164,3 +169,5 @@ Compress::Zlib(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Met
 -is there a way (using a CPAN module?) to feed the string into Groff without writing it first into a file ?
 
 -the oneliner method doesn't work right - get it to work right.
+
+-grohtml (the underlying tool doing the html conversion) is leaving junk if it crashes. Take care of it.

@@ -64,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: development_extract.pl
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -107,6 +107,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -132,6 +136,7 @@ None.
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
 	0.03 MV put all tests in modules
+	0.04 MV move tests to modules
 
 =head1 SEE ALSO
 

@@ -11,19 +11,21 @@ $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-sub do_ls() {
-	my($prog)="ls";
-	my(@args)=("--kuku");
-	my($text)="mark";
-	Meta::Utils::Output::print("running it\n");
-	my($resu)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
-	Meta::Utils::Output::print("text is [".$text."]\n");
-	Meta::Utils::Output::print("resu is [".$resu."]\n");
-}
-
 Meta::Baseline::Test::redirect_on();
 
-do_ls();
+#my($prog)="ls";
+#my(@args)=("--kuku");
+#my($text)="mark";
+#Meta::Utils::Output::print("running it\n");
+#my($resu)=Meta::Utils::System::system_err_nodie(\$text,$prog,\@args);
+#Meta::Utils::Output::print("text is [".$text."]\n");
+#Meta::Utils::Output::print("resu is [".$resu."]\n");
+
+my($string)="print \"Hello World\\n\";";
+my($out);
+my($res)=Meta::Utils::System::eval_nodie($string,\$out);
+Meta::Utils::Output::print("res is [".$res."]\n");
+Meta::Utils::Output::print("out is [".$out."]\n");
 
 Meta::Baseline::Test::redirect_off();
 
@@ -60,7 +62,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: system.pl
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -101,6 +103,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -143,6 +149,8 @@ None.
 	0.17 MV improve the movie db xml
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
+	0.20 MV move tests to modules
+	0.21 MV download scripts
 
 =head1 SEE ALSO
 

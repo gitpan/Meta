@@ -8,7 +8,7 @@ use Meta::Utils::File::File qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.33";
+$VERSION="0.34";
 @ISA=qw();
 
 #sub size($);
@@ -24,6 +24,7 @@ $VERSION="0.33";
 #sub add_prefix($$);
 #sub add_suffix($$);
 #sub system($$$$);
+#sub dup($);
 
 #sub add_key_prefix($$);
 #sub add_key_suffix($$);
@@ -297,6 +298,15 @@ sub system($$$$) {
 	}
 }
 
+sub dup($) {
+	my($hash)=@_;
+	my($res_hash)={};
+	while(my($key,$val)=each(%$hash)) {
+		$res_hash->{$key}=$val;
+	}
+	return($res_hash);
+}
+
 sub size($) {
 	my($hash)=@_;
 #	Meta::Utils::Arg::check_arg($hash,"HASH");
@@ -384,7 +394,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Hash.pm
 	PROJECT: meta
-	VERSION: 0.33
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
@@ -415,6 +425,7 @@ whereever possible.
 	add_prefix($$)
 	add_suffix($$)
 	system($$$$)
+	dup($)
 	add_key_prefix($$)
 	add_key_suffix($$)
 	filter_prefix($$$)
@@ -564,6 +575,10 @@ not empty or not
 This routine runs a system command for all keys of a hash.
 The inputs are: the hash,the system command,demo and verbose.
 
+=item B<dup($)>
+
+This function receives a hash reference and duplicates it.
+
 =item B<size($)>
 
 This routine returns the number of elements in the hash (actual elements
@@ -653,6 +668,7 @@ None.
 	0.31 MV website construction
 	0.32 MV web site automation
 	0.33 MV SEE ALSO section fix
+	0.34 MV bring movie data
 
 =head1 SEE ALSO
 

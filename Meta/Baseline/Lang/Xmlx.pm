@@ -23,9 +23,10 @@ use Meta::Tool::Onsgmls qw();
 use Meta::Lang::Perl::Perl qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::String qw();
+use Meta::Info::Authors qw();
 
 our($VERSION,@ISA);
-$VERSION="0.40";
+$VERSION="0.44";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -46,7 +47,7 @@ sub c2deps($) {
 	my($deps)=Meta::Lang::Xml::Xml::c2deps($buil);
 	my($type)=Meta::Lang::Xml::Xml::get_type($buil->get_srcx());
 	if($type eq "perlpkgs") {#add perl packages deps here
-		my($pkgs)=Meta::Lang::Perl::Perlpkgs::new_file($buil->get_srcx());
+		my($pkgs)=Meta::Lang::Perl::Perlpkgs->new_file($buil->get_srcx());
 		$pkgs->add_deps($buil->get_modu(),$deps);
 	}
 	if($type eq "def") {#add def deps here
@@ -59,10 +60,10 @@ sub c2deps($) {
 sub c2chec($) {
 	my($buil)=@_;
 	my($resu)=1;
-	my($cod0)=Meta::Lang::Xml::Xml::check($buil);
-	if(!$cod0) {
-		$resu=0;
-	}
+	#my($cod0)=Meta::Lang::Xml::Xml::check($buil);
+	#if(!$cod0) {
+	#	$resu=0;
+	#}
 	#my($cod1)=Meta::Tool::Onsgmls::dochec($srcx,$path);
 	#if(!$cod1) {
 	#	$resu=0;
@@ -96,7 +97,8 @@ sub c2sgml($) {
 		);
 		$writ->startTag("section");
 		$writ->startTag("sectioninfo");
-		my($revision)=Meta::Tool::Aegis::history($modu);
+		my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+		my($revision)=Meta::Tool::Aegis::history($modu,$authors);
 		$revision->docbook_revhistory_print($writ);
 		$writ->endTag("sectioninfo");
 		$obje->printd($writ);
@@ -187,7 +189,7 @@ sub c2targ($) {
 		#}
 	}
 	if($type eq "perlpkgs") {
-		my($pkgs)=Meta::Lang::Perl::Perlpkgs::new_file($srcx);
+		my($pkgs)=Meta::Lang::Perl::Perlpkgs->new_file($srcx);
 		my($string);
 		for(my($i)=0;$i<$pkgs->size();$i++) {
 			my($curr)=$pkgs->getx($i);
@@ -290,7 +292,7 @@ sub c2perl($) {
 	my($path)=$buil->get_path();
 	my($type)=Meta::Lang::Xml::Xml::get_type($srcx);
 	if($type eq "perlpkgs") {
-		my($pkgs)=Meta::Lang::Perl::Perlpkgs::new_file($srcx);
+		my($pkgs)=Meta::Lang::Perl::Perlpkgs->new_file($srcx);
 		#my($archive)=Meta::Archive::MyTar->new();
 		my($archive)=Meta::Archive::Tar->new();
 		$archive->set_type("gzip");
@@ -304,6 +306,7 @@ sub c2perl($) {
 			my($curr)=$modules->elem($i);
 			if(Meta::Lang::Perl::Deps::is_internal($curr)) {
 				my($name)=$pkg->get_pack()."/".Meta::Lang::Perl::Perl::remove_prefix($curr);
+				#my($name)=$pkg->get_pack()."/".$curr;
 				$archive->add_deve($name,$curr);
 			} else {
 				$ext_modules->{$curr}=defined;
@@ -315,6 +318,7 @@ sub c2perl($) {
 			my($curr)=$scripts->elem($i);
 			if(Meta::Lang::Perl::Deps::is_internal($curr)) {
 				my($name)=$pkg->get_pack()."/".Meta::Lang::Perl::Perl::remove_prefix($curr);
+				#my($name)=$pkg->get_pack()."/".$curr;
 				$archive->add_deve($name,$curr);
 			} else {
 				$ext_modules->{$curr}=defined;
@@ -326,6 +330,7 @@ sub c2perl($) {
 			my($curr)=$tests->elem($i);
 			if(Meta::Lang::Perl::Deps::is_internal($curr)) {
 				my($name)=$pkg->get_pack()."/".Meta::Lang::Perl::Perl::remove_prefix($curr);
+				#my($name)=$pkg->get_pack()."/".$curr;
 				$archive->add_deve($name,$curr);
 			} else {
 				$ext_modules->{$curr}=defined;
@@ -425,7 +430,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xmlx.pm
 	PROJECT: meta
-	VERSION: 0.40
+	VERSION: 0.44
 
 =head1 SYNOPSIS
 
@@ -561,10 +566,14 @@ None.
 	0.38 MV website construction
 	0.39 MV web site automation
 	0.40 MV SEE ALSO section fix
+	0.41 MV move tests to modules
+	0.42 MV bring movie data
+	0.43 MV move tests into modules
+	0.44 MV weblog issues
 
 =head1 SEE ALSO
 
-Meta::Archive::Tar(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Db::Connections(3), Meta::Db::Def(3), Meta::Db::Ops(3), Meta::Lang::Docb::Params(3), Meta::Lang::Perl::Perl(3), Meta::Lang::Perl::Perlpkgs(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aegis(3), Meta::Tool::Onsgmls(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::String(3), Meta::Utils::Utils(3), Meta::Xml::Parsers::Links(3), Meta::Xml::Writer(3), strict(3)
+Meta::Archive::Tar(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Db::Connections(3), Meta::Db::Def(3), Meta::Db::Ops(3), Meta::Info::Authors(3), Meta::Lang::Docb::Params(3), Meta::Lang::Perl::Perl(3), Meta::Lang::Perl::Perlpkgs(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aegis(3), Meta::Tool::Onsgmls(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::String(3), Meta::Utils::Utils(3), Meta::Xml::Parsers::Links(3), Meta::Xml::Writer(3), strict(3)
 
 =head1 TODO
 

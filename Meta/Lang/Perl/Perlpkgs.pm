@@ -9,18 +9,18 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw(Meta::Ds::Array);
 
-#sub new_file($);
-#sub new_deve($);
+#sub new_file($$);
+#sub new_deve($$);
 #sub add_deps($$$);
 #sub TEST($);
 
 #__DATA__
 
-sub new_file($) {
-	my($file)=@_;
+sub new_file($$) {
+	my($class,$file)=@_;
 #	Meta::Utils::Output::print("before creating object\n");
 	my($parser)=Meta::Xml::Parsers::Perlpkgs->new();
 #	Meta::Utils::Output::print("before parsing\n");
@@ -29,9 +29,9 @@ sub new_file($) {
 	return($parser->get_result());
 }
 
-sub new_deve($) {
-	my($file)=@_;
-	return(new_file(Meta::Baseline::Aegis::which($file)));
+sub new_deve($$) {
+	my($class,$file)=@_;
+	return(&new_file($class,Meta::Baseline::Aegis::which($file)));
 }
 
 sub add_deps($$$) {
@@ -79,7 +79,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perlpkgs.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -94,8 +94,8 @@ This module stores multiple perl package information.
 
 =head1 FUNCTIONS
 
-	new_file($)
-	new_deve($)
+	new_file($$)
+	new_deve($$)
 	add_deps($$$)
 	TEST($)
 
@@ -103,12 +103,12 @@ This module stores multiple perl package information.
 
 =over 4
 
-=item B<new_file($)>
+=item B<new_file($$)>
 
 This method will read an XML file that contains Perlpkgs information
 using the Meta::Xml::Parser::Perlpkgs parser.
 
-=item B<new_deve($)>
+=item B<new_deve($$)>
 
 This method is exactly like new_file except it searches for the
 requested file in the development path.
@@ -154,6 +154,7 @@ None.
 	0.10 MV website construction
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV bring movie data
 
 =head1 SEE ALSO
 

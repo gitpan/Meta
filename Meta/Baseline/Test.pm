@@ -10,7 +10,7 @@ use XML::Simple qw();
 #use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub BEGIN();
@@ -160,7 +160,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Test.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -253,7 +253,7 @@ This method will return a valid mysql password for connecting to a mysql databas
 
 =item B<TEST($)>
 
-Test suire for this module.
+Test suite for this module.
 
 =back
 
@@ -304,6 +304,7 @@ None.
 	0.27 MV improve the movie db xml
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
+	0.30 MV bring movie data
 
 =head1 SEE ALSO
 

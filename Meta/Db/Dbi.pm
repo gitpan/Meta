@@ -5,13 +5,15 @@ package Meta::Db::Dbi;
 use strict qw(vars refs subs);
 use DBI qw();
 use Meta::Utils::System qw();
+use Meta::Db::Connections qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub new($);
 #sub connect_dsn($$$);
+#sub connect_xml($$$$);
 #sub connect($$);
 #sub connect_def($$$);
 #sub connect_name($$$$);
@@ -22,8 +24,10 @@ $VERSION="0.27";
 #sub prepare($$);
 #sub begin_work($);
 #sub commit($);
+#sub quote_simple($$);
 #sub quote($$$);
 #sub disconnect($$);
+#sub table_info($);
 #sub TEST($);
 
 #__DATA__
@@ -44,6 +48,13 @@ sub connect_dsn($$$) {
 	}
 	$dbxx->{RaiseError}=1;
 	$self->{HANDLE}=$dbxx;
+}
+
+sub connect_xml($$$$) {
+	my($self,$file,$conn,$name)=@_;
+	my($connections)=Meta::Db::Connections->new_file($file);
+	my($connection)=$connections->get_con_null($conn);
+	return($self->connect_name($connection,$name));
 }
 
 sub connect($$) {
@@ -128,6 +139,11 @@ sub commit($) {
 	}
 }
 
+sub quote_simple($$) {
+	my($self,$string)=@_;
+	return($self->{HANDLE}->quote($string));
+}
+
 sub quote($$$) {
 	my($self,$string,$type)=@_;
 	return($self->{HANDLE}->quote($string,$type));
@@ -139,6 +155,15 @@ sub disconnect($$) {
 	if(!$resu) {
 		Meta::Utils::System::die("error in disconnect");
 	}
+}
+
+sub table_info($) {
+	my($self,$conn)=@_;
+	my($sth)=$self->{HANDLE}->table_info();
+	if(!defined($sth)) {
+		Meta::Utils::System::die("error in table_info");
+	}
+	return($sth);
 }
 
 sub TEST($) {
@@ -179,7 +204,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbi.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -201,6 +226,7 @@ This is the reason that this object just stores a handle and not IS a handle.
 
 	new($)
 	connect_dsn($$$)
+	connect_xml($$$$)
 	connect($$)
 	connect_def($$$)
 	connect_name($$$)
@@ -211,8 +237,10 @@ This is the reason that this object just stores a handle and not IS a handle.
 	prepare($$)
 	begin_work($)
 	commit($)
+	quote_simple($$)
 	quote($$$)
 	disconnect($$)
+	table_info($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -226,6 +254,19 @@ This is a constructor which gives you a new Dbi object.
 =item B<connect_dsn($$$)>
 
 This will connect the Dbi to the specified connection data if you spply the DSN.
+Input:
+0. object to connect.
+1. connection object.
+2. DSN used for connection.
+
+=item B<connect_xml($$$$)>
+
+This method will receive:
+0. A Meta::Db::Dbi object to connect.
+1. A file name of XML data for connection.
+2. A name of a connection to connect with.
+3. A name of a database to connect to.
+The method will connect the Dbi object.
 
 =item B<connect($$)>
 
@@ -274,6 +315,10 @@ raises exceptions in the case of errors.
 This method is exactly like the DBI::commit method except it
 raises exceptions in the case of errors.
 
+=item B<quote_simple($$)>
+
+This is the most basic quoting mechanism without type specification.
+
 =item B<quote($$$)>
 
 This is the two argument Dbi quote function.
@@ -282,6 +327,10 @@ This is the two argument Dbi quote function.
 
 This method will disconnect the Dbi object according to the specified
 connection data.
+
+=item B<table_info($)>
+
+This method will give you the list of tables in the database.
 
 =item B<TEST($)>
 
@@ -334,10 +383,11 @@ None.
 	0.25 MV web site development
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
+	0.28 MV download scripts
 
 =head1 SEE ALSO
 
-DBI(3), Meta::Utils::System(3), strict(3)
+DBI(3), Meta::Db::Connections(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

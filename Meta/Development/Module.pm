@@ -14,10 +14,11 @@ use Meta::Lang::Xml::Xml qw();
 use Meta::Xml::Dom qw();
 
 our($VERSION,@ISA,%directories);
-$VERSION="0.04";
+$VERSION="0.07";
 @ISA=qw();
 
 #sub BEGIN();
+#sub new_name($$);
 #sub get_abs_path($);
 #sub get_sgml_name($);
 #sub get_temp_sgml_name($);
@@ -39,6 +40,7 @@ $VERSION="0.04";
 #sub get_3_link($$$$$);
 #sub get_pgn_games($);
 #sub get_xml_num_elems($$);
+#sub get_xml_sum_elems($$);
 #sub TEST($);
 
 #__DATA__
@@ -55,9 +57,21 @@ sub BEGIN() {
 	);
 }
 
+sub new_name($$) {
+	my($clas,$name)=@_;
+	my($ret)=&new($clas);
+	$ret->set_name($name);
+	return($ret);
+}
+
 sub get_abs_path($) {
 	my($self)=@_;
-	return(Meta::Baseline::Aegis::which($self->get_name()));
+	if(Meta::Baseline::Aegis::have_aegis()) {
+		return(Meta::Baseline::Aegis::which($self->get_name()));
+	} else {
+		# FIXME this only deals with apache and is hardcoded
+		return("/local/tools/htdocs/".$self->get_name());
+	}
 }
 
 sub get_sgml_name($) {
@@ -256,6 +270,7 @@ our(%directories)=(
 	"latex"=>"latex",
 	"gz"=>"gzxx",
 	"ly"=>"lily",
+	"dtd"=>"dtdx",
 );
 
 sub get_link($$$) {
@@ -327,6 +342,22 @@ sub get_xml_num_elems($$) {
 	return($elem_number);
 }
 
+sub get_xml_sum_elems($$) {
+	my($self,$elem)=@_;
+	Meta::Lang::Xml::Xml::setup_path();
+	my($file)=$self->get_abs_path();
+	my($parser)=Meta::Xml::Dom->new_vali(0);
+	my($doc)=$parser->parsefile($file);
+	my($elems);
+	my($sum)=0;
+	$elems=$doc->getElementsByTagName($elem);
+	for(my($i)=0;$i<$elems->getLength();$i++) {
+		my($curr)=$elems->[$i];
+		$sum+=$curr->getFirstChild()->getData();
+	}
+	return($sum);
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -365,7 +396,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Module.pm
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -387,6 +418,7 @@ itself could be stored inside an RDBMS.
 =head1 FUNCTIONS
 
 	BEGIN()
+	new_name($$);
 	get_abs_path($)
 	get_sgml_name($)
 	get_temp_sgml_name($)
@@ -407,6 +439,7 @@ itself could be stored inside an RDBMS.
 	get_3_link($$$$$)
 	get_pgn_games($)
 	get_xml_num_elems($$)
+	get_xml_sum_elems($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -417,6 +450,10 @@ itself could be stored inside an RDBMS.
 
 Intializer method which sets up accessor methods for the following attributes:
 1. name - the name of the module.
+
+=item B<new_name($$)>
+
+Constructor which also accepts a name for the module.
 
 =item B<get_abs_path($)>
 
@@ -509,6 +546,11 @@ and count the appearances.
 
 This method will count how many times a specific element appears in an XML file.
 
+=item B<get_xml_sum_elems($$)>
+
+This method will count the sum of all content in a specific element in an XML file
+(under the assumption that it is numeric ofcourse).
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -537,6 +579,9 @@ None.
 	0.02 MV web site automation
 	0.03 MV SEE ALSO section fix
 	0.04 MV put all tests in modules
+	0.05 MV move tests into modules
+	0.06 MV web site development
+	0.07 MV weblog issues
 
 =head1 SEE ALSO
 

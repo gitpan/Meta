@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: deps.pl
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -102,6 +102,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -140,6 +144,7 @@ None.
 	0.14 MV web site development
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV move tests to modules
 
 =head1 SEE ALSO
 

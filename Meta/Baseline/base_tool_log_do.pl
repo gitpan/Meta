@@ -51,15 +51,15 @@ while(!$pars->get_over()) {
 }
 $pars->fini();
 
-if($acti eq "print") {
+if($enum->is_selected($acti,"print")) {
 	Meta::Utils::Hash::print(Meta::Utils::Output::get_file(),\%hash);
 }
-if($acti eq "checkout") {
+if($enum->is_selected($acti,"checkout")) {
 	my($change)=Meta::Baseline::Aegis::change_files_hash(1,1,0,1,1,1);
 	Meta::Utils::Hash::remove_hash(\%hash,$change,0);
 	Meta::Baseline::Aegis::checkout_hash(\%hash);
 }
-if($acti eq "edit") {
+if($enum->is_selected($acti,"edit")) {
 	if(!$demo) {
 	my($list)=Meta::Utils::Hash::to_list(\%hash);
 		if(Meta::Utils::List::notempty($list)) {
@@ -101,7 +101,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool_log_do.pl
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -147,6 +147,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -208,6 +212,8 @@ None.
 	0.18 MV improve the movie db xml
 	0.19 MV web site automation
 	0.20 MV SEE ALSO section fix
+	0.21 MV move tests to modules
+	0.22 MV bring movie data
 
 =head1 SEE ALSO
 

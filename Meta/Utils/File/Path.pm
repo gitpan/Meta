@@ -8,7 +8,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub add_path($$$);
@@ -23,6 +23,8 @@ $VERSION="0.29";
 #sub append($$$);
 #sub remove_path($$$);
 #sub remove_nonexist($$);
+#sub check($$);
+#sub check_flst($$);
 #sub TEST($);
 
 #__DATA__
@@ -175,6 +177,32 @@ sub remove_nonexist($$) {
 	return(join($sepa,@retu));
 }
 
+sub check($$) {
+	my($path,$sepa)=@_;
+	my($scod)=1;
+	my(@fiel)=split($sepa,$path);
+	for(my($i)=0;$i<=$#fiel;$i++) {
+		my($curr)=$fiel[$i];
+		if(!(-d $curr)) {
+			$scod=0;
+		}
+	}
+	return($scod);
+}
+
+sub check_flst($$) {
+	my($path,$sepa)=@_;
+	my($scod)=1;
+	my(@fiel)=split($sepa,$path);
+	for(my($i)=0;$i<=$#fiel;$i++) {
+		my($curr)=$fiel[$i];
+		if(!(-f $curr)) {
+			$scod=0;
+		}
+	}
+	return($scod);
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -213,7 +241,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Path.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -241,6 +269,8 @@ get paths with as few ".." as possible, reduce paths to a minimum etc...
 	append($$$)
 	remove_path($$$)
 	remove_nonexist($$)
+	check($$)
+	check_flst($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -310,6 +340,16 @@ This method return a path which is like the original given to
 it except it removes the parts of the path which are not
 real directories.
 
+=item B<check($$)>
+
+This method will return whether the path passed is indeed valid path
+(every component is a real directory).
+
+=item B<check_flst($$)>
+
+This method will return whether the path passed is indeed valid file
+list (every component is a real file).
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -363,6 +403,8 @@ None.
 	0.27 MV website construction
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
+	0.30 MV move tests to modules
+	0.31 MV download scripts
 
 =head1 SEE ALSO
 

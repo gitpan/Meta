@@ -5,12 +5,13 @@ package Meta::Utils::Utils;
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Env qw();
+use Meta::Utils::File::File qw();
 use IO::File qw();
 use POSIX qw();
 use Cwd qw();
 
 our($VERSION,@ISA);
-$VERSION="0.41";
+$VERSION="0.43";
 @ISA=qw();
 
 #sub bnot($);
@@ -20,6 +21,7 @@ $VERSION="0.41";
 #sub get_temp_file();
 #sub replace_suffix($$);
 #sub remove_suffix($);
+#sub remove_suf($$);
 #sub basename($);
 #sub is_prefix($$);
 #sub is_suffix($$);
@@ -30,6 +32,9 @@ $VERSION="0.41";
 #sub pwd();
 #sub remove_comments($);
 #sub chdir($);
+#sub cat($$$);
+#sub is_absolute($);
+#sub is_relative($);
 #sub TEST($);
 
 #__DATA__
@@ -44,11 +49,11 @@ sub bnot($) {
 }
 
 sub minus($$) {
-	my($full,$path)=@_;
-	if(substr($full,0,length($path)) eq $path) {
-		return(substr($full,length($path),length($full)));
+	my($full,$partial)=@_;
+	if(substr($full,0,length($partial)) eq $partial) {
+		return(substr($full,length($partial),length($full)));
 	} else {
-		Meta::Utils::System::die("whats this path is [".$path."] and full is [".$full."]\n");
+		Meta::Utils::System::die("partial is [".$partial."] and full is [".$full."]\n");
 	}
 }
 
@@ -88,6 +93,15 @@ sub replace_suffix($$) {
 sub remove_suffix($) {
 	my($file)=@_;
 	return(replace_suffix($file,""));
+}
+
+sub remove_suf($$) {
+	my($full,$partial)=@_;
+	if(substr($full,length($full)-length($partial),length($partial)) eq $partial) {
+		return(substr($full,0,length($full)-length($partial)));
+	} else {
+		Meta::Utils::System::die("partial is [".$partial."] and full is [".$full."]\n");
+	}
 }
 
 sub basename($) {
@@ -166,6 +180,25 @@ sub chdir($) {
 	}
 }
 
+sub cat($$$) {
+	my($f1,$f2,$out)=@_;
+	my($text_f1)=Meta::Utils::File::File::load($f1);
+	my($text_f2)=Meta::Utils::File::File::load($f2);
+	my($text_out)=$text_f1.$text_f2;
+	Meta::Utils::File::File::save($out,$text_out);
+	return(1);
+}
+
+sub is_absolute($) {
+	my($fn)=@_;
+	return($fn=~/^\//);
+}
+
+sub is_relative($) {
+	my($fn)=@_;
+	return($fn!~/^\//);
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -204,7 +237,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Utils.pm
 	PROJECT: meta
-	VERSION: 0.41
+	VERSION: 0.43
 
 =head1 SYNOPSIS
 
@@ -225,6 +258,7 @@ This is a general utility module for either miscelleneous commands which are har
 	get_temp_file()
 	replace_suffix($$)
 	remove_suffix($)
+	remove_suf($$)
 	is_prefix($$)
 	is_suffix($$)
 	cuid()
@@ -234,6 +268,9 @@ This is a general utility module for either miscelleneous commands which are har
 	pwd()
 	remove_comments($)
 	chdir($)
+	cat($$$)
+	is_absolute($)
+	is_relative($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -273,7 +310,12 @@ This replaces the strings suffix with another one.
 =item B<remove_suffix($)>
 
 This removes a suffix from the string argument given it.
-This just substitues the suffix of the file with nothing...:)
+This just substitues the suffix of the string with nothing...:)
+
+=item B<remove_suf($$)>
+
+This method removes a suffix from a string.
+The suffix is an explicit string passed to it.
 
 =item B<is_prefix($$)>
 
@@ -329,6 +371,19 @@ The idea here is C/C++ style comments : /* sdfdaf */
 
 This routine will change the current working directory by calling the builtin
 function "chdir". It will die if it cannot change the directory.
+
+=item B<cat($$$)>
+
+This function receives the names of two files and write the content of the
+two fles into the third one.
+
+=item B<is_absolute($)>
+
+This function will return whether the file name it received is an absolute file name.
+
+=item B<is_relative($)>
+
+This function will return whether the file name it received is a relative file name.
 
 =item B<TEST($)>
 
@@ -395,10 +450,12 @@ None.
 	0.39 MV more web page stuff
 	0.40 MV web site automation
 	0.41 MV SEE ALSO section fix
+	0.42 MV move tests to modules
+	0.43 MV web site development
 
 =head1 SEE ALSO
 
-Cwd(3), IO::File(3), Meta::Utils::Env(3), Meta::Utils::System(3), POSIX(3), strict(3)
+Cwd(3), IO::File(3), Meta::Utils::Env(3), Meta::Utils::File::File(3), Meta::Utils::System(3), POSIX(3), strict(3)
 
 =head1 TODO
 

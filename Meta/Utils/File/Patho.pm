@@ -8,16 +8,18 @@ use Meta::Utils::Env qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
 #sub new_data($$$);
 #sub new_env($$$);
+#sub new_path($);
 #sub minimize($$$);
 #sub exists($$);
 #sub resolve($$);
 #sub append_data($$$);
+#sub append($$);
 #sub check($);
 #sub compose($$);
 #sub TEST($);
@@ -33,14 +35,19 @@ sub new($) {
 
 sub new_data($$$) {
 	my($clas,$path,$sepa)=@_;
-	my($object)=Meta::Utils::File::Patho->new();
+	my($object)=&new($clas);
 	$object->append_data($path,$sepa);
 	return($object);
 }
 
 sub new_env($$$) {
 	my($clas,$var,$sepa)=@_;
-	return(Meta::Utils::File::Patho->new_data(Meta::Utils::Env::get($var),$sepa));
+	return(&new_data($clas,Meta::Utils::Env::get($var),$sepa));
+}
+
+sub new_path($) {
+	my($clas)=@_;
+	return(&new_env($clas,"PATH",':'));
 }
 
 sub minimize($) {
@@ -76,6 +83,13 @@ sub append_data($$$) {
 	my(@arra)=split($sepa,$path);
 	for(my($i)=0;$i<=$#arra;$i++) {
 		$self->push($arra[$i]);
+	}
+}
+
+sub append($$) {
+	my($self,$data)=@_;
+	for(my($i)=0;$i<$self->size();$i++) {
+		$self->setx($i,$self->getx($i).$data);
 	}
 }
 
@@ -132,7 +146,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Patho.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -158,10 +172,12 @@ operations.
 	new($)
 	new_data($$$)
 	new_env($$$)
+	new_path($)
 	minimize($)
 	exists($$)
 	resolve($$)
 	append_data($$$)
+	append($$)
 	check($)
 	compose($$)
 	TEST($)
@@ -184,6 +200,11 @@ a path object initialized for that path.
 This method will create a new instance from data taken from an
 environment variable. You have to supply the separator yourself.
 
+=item B<new_path($)>
+
+This method will create a new instance from the envrionment PATH
+variable.
+
 =item B<minimize($)>
 
 This method will remove redundant componets in the path. Redundant
@@ -203,6 +224,10 @@ This method will return a file resolved according to a path.
 =item B<append_data($$$)>
 
 This method will append a path to the end of the current one.
+
+=item B<append($$)>
+
+This method appends a piece of data to every element of the path.
 
 =item B<check($)>
 
@@ -241,6 +266,7 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV web site development
 
 =head1 SEE ALSO
 
@@ -250,6 +276,6 @@ Meta::Ds::Array(3), Meta::Utils::Env(3), Meta::Utils::System(3), strict(3)
 
 -in the check method also check that the components are ABSOLUTE directory names.
 
--in the minimize method convert the elements into some kind of cannonical representation so I'll know that two directory names are not the same name for the same directory.
+-write the minimize method.
 
--can I have the Array object supply some kind of join method so that the code for compose be cleaner and faster ?
+-in the minimize method convert the elements into some kind of cannonical representation so I'll know that two directory names are not the same name for the same directory.

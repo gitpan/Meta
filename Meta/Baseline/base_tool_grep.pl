@@ -49,36 +49,36 @@ if($lrep) {
 	$repe=Meta::Utils::File::File::load($repe);
 }
 my($show,$chec,$edit,$repl)=(0,0,0,0);
-if($acti eq "none") {
+if($action_enum->is_selected($acti,"none")) {
 }
-if($acti eq "print") {
+if($action_enum->is_selected($acti,"print")) {
 	$show=1;
 }
-if($acti eq "edit") {
+if($action_enum->is_selected($acti,"edit")) {
 	$edit=1;
 }
-if($acti eq "replace") {
+if($action_enum->is_selected($acti,"replace")) {
 	$repl=1;
 }
-if($acti eq "checkout") {
+if($action_enum->is_selected($acti,"checkout")) {
 	$chec=1;
 }
-if($acti eq "checeout_edit") {
+if($action_enum->is_selected($acti,"checkout_edit")) {
 	$chec=1;
 	$edit=1;
 }
-if($acti eq "checeout_replace") {
+if($action_enum->is_selected($acti,"checkout_replace")) {
 	$chec=1;
 	$repl=1;
 }
 my($hash);
-if($type eq "change") {
+if($type_enum->is_selected($type,"change")) {
 	$hash=Meta::Baseline::Aegis::change_files_hash(1,1,0,1,1,1);
 }
-if($type eq "project") {
+if($type_enum->is_selected($type,"project")) {
 	$hash=Meta::Baseline::Aegis::project_files_hash(1,1,1);
 }
-if($type eq "source") {
+if($type_enum->is_selected($type,"source")) {
 	$hash=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,1);
 }
 if($match) {
@@ -95,8 +95,11 @@ if($verb) {
 if($chec) {
 	if(!$demo) {
 		my($change)=Meta::Baseline::Aegis::change_files_hash(1,1,0,1,1,1);
-		Meta::Utils::Hash::remove_hash($hash,$change,0);
-		Meta::Baseline::Aegis::checkout_hash($hash);
+		my($baseline_hash)=Meta::Utils::Hash::dup($hash);
+		Meta::Utils::Hash::remove_hash($baseline_hash,$change,0);
+		if(Meta::Utils::Hash::notempty($baseline_hash)) {
+			Meta::Baseline::Aegis::checkout_hash($baseline_hash);
+		}
 	}
 }
 if($edit) {
@@ -153,7 +156,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool_grep.pl
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
@@ -212,6 +215,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -312,6 +319,8 @@ None.
 	0.30 MV web site development
 	0.31 MV web site automation
 	0.32 MV SEE ALSO section fix
+	0.33 MV move tests to modules
+	0.34 MV bring movie data
 
 =head1 SEE ALSO
 

@@ -14,7 +14,7 @@ use Meta::Utils::System qw();
 use Meta::Ds::Set qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw(Archive::Tar);
 
 #sub BEGIN();
@@ -87,6 +87,13 @@ sub write($$) {
 	$self->SUPER::write($targ,9);
 }
 
+sub write_bz2($$) {
+	my($self,$targ)=@_;
+	my($temp)="/tmp/tmpi";
+	$self->SUPER::write($temp);
+	# now compress $temp to $targ using bz2
+}
+
 sub TEST($) {
 	my($context)=@_;
 	my($tar)=Meta::Archive::Tar->new();
@@ -95,7 +102,7 @@ sub TEST($) {
 	my(@list)=$tar->list_files();
 	Meta::Utils::Output::print(join("\n",@list)."\n");
 	my($temp)=Meta::Utils::Utils::get_temp_file();
-	$tar->write($temp,9);
+	$tar->write($temp);
 	Meta::Utils::System::system("tar",["ztvf",$temp]);
 	Meta::Utils::File::Remove::rm($temp);
 	return(1);
@@ -134,7 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Tar.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -243,6 +250,7 @@ None.
 	0.12 MV web site development
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV move tests to modules
 
 =head1 SEE ALSO
 

@@ -21,13 +21,13 @@ $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($list);
-if($type eq "change") {
+if($enum->is_selected($type,"change")) {
 	$list=Meta::Baseline::Aegis::change_files_list(1,1,1,1,1,0);
 }
-if($type eq "project") {
+if($enum->is_selected($type,"project")) {
 	$list=Meta::Baseline::Aegis::project_files_list(1,1,0);
 }
-if($type eq "source") {
+if($enum->is_selected($type,"source")) {
 	$list=Meta::Baseline::Aegis::source_files_list(1,1,0,1,1,0);
 }
 for(my($i)=0;$i<=$#$list;$i++) {
@@ -78,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_check.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -121,6 +121,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -149,6 +153,8 @@ None.
 =head1 HISTORY
 
 	0.00 MV put all tests in modules
+	0.01 MV move tests to modules
+	0.02 MV bring movie data
 
 =head1 SEE ALSO
 

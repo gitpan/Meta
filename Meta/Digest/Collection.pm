@@ -7,13 +7,14 @@ use Meta::Ds::Hash qw();
 use Meta::Digest::MD5 qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.04";
 @ISA=qw();
 
 #sub new($);
 #sub add($$$);
 #sub add_file($$);
 #sub has_file($$);
+#sub get_file($$);
 #sub has_sum($$);
 #sub TEST($);
 
@@ -43,6 +44,11 @@ sub add_file($$) {
 sub has_file($$) {
 	my($self,$name)=@_;
 	return($self->{FILES}->has($name));
+}
+
+sub get_file($$) {
+	my($self,$sum)=@_;
+	return($self->{SUMS}->get($sum));
 }
 
 sub has_sum($$) {
@@ -88,7 +94,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Collection.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -111,6 +117,7 @@ mapping sums to files.
 	add($$$)
 	add_file($$)
 	has_file($$)
+	get_file($$)
 	has_sum($$)
 	TEST($)
 
@@ -133,6 +140,10 @@ Read a file, calculate it's sum and add it to the map.
 =item B<has_file($$)>
 
 Return whether the file exists in the collection.
+
+=item B<get_file($$)>
+
+Returns the file name with the specified sum.
 
 =item B<has_sum($$)>
 
@@ -164,6 +175,8 @@ None.
 	0.00 MV web site development
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
+	0.03 MV download scripts
+	0.04 MV bring movie data
 
 =head1 SEE ALSO
 
@@ -171,4 +184,4 @@ Meta::Digest::MD5(3), Meta::Ds::Hash(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-this entire class should either derive from some 1-1 mapping object or from a reverse has (many to 1). implement both classes (1-1 mapping and many to 1) and then derive.

@@ -8,7 +8,7 @@ use Meta::Class::MethodMaker qw();
 use DBI qw();
 
 our($VERSION,@ISA);
-$VERSION="0.47";
+$VERSION="0.48";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -33,10 +33,10 @@ sub BEGIN() {
 	Meta::Class::MethodMaker->new("new");
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
-		-java=>"_set_ref",
-		-java=>"_enum_ref",
-		-java=>"_table_ref",
-		-java=>"_field_ref",
+		-java=>"_setref",
+		-java=>"_enumref",
+		-java=>"_tableref",
+		-java=>"_fieldref",
 		-java=>"_optimized",
 		-java=>"_null",
 		-java=>"_default",
@@ -49,6 +49,7 @@ sub BEGIN() {
 		"integer",defined,
 		"posinteger",defined,
 		"namestring",defined,
+		"htmlstring",defined,
 		"string",defined,
 		"float",defined,
 		"probfloat",defined,
@@ -102,6 +103,7 @@ sub BEGIN() {
 		"integer","INTEGER",
 		"posinteger","INTEGER",
 		"namestring","CHAR(50)",
+		"htmlstring","TEXT",
 		"string","TEXT",
 		"float","FLOAT",
 		"probfloat","FLOAT",
@@ -155,6 +157,7 @@ sub BEGIN() {
 		"integer","INTEGER",
 		"posinteger","INTEGER",
 		"namestring","CHAR(50)",
+		"htmlstring","TEXT",
 		"string","TEXT",
 		"float","FLOAT",
 		"probfloat","FLOAT",
@@ -229,10 +232,10 @@ sub is_enum($) {
 sub print($$) {
 	my($self,$file)=@_;
 	print $file "type info name=[".$self->get_name()."]\n";
-	print $file "type info set_ref=[".$self->get_set_ref()."]\n";
-	print $file "type info enum_ref=[".$self->get_enum_ref()."]\n";
-	print $file "type info table_ref=[".$self->get_table_ref()."]\n";
-	print $file "type info field_ref=[".$self->get_field_ref()."]\n";
+	print $file "type info setref=[".$self->get_setref()."]\n";
+	print $file "type info enumref=[".$self->get_enumref()."]\n";
+	print $file "type info tableref=[".$self->get_tableref()."]\n";
+	print $file "type info fieldref=[".$self->get_fieldref()."]\n";
 	print $file "type info optimized=[".$self->get_optimized()."]\n";
 	print $file "type info null=[".$self->get_null()."]\n";
 	print $file "type info default=[".$self->get_default()."]\n";
@@ -246,25 +249,25 @@ sub printd($$) {
 	my($self,$writ)=@_;
 	$writ->dataElement("entry",$self->get_name());
 	if($self->is_set()) {
-		$writ->dataElement("entry",$self->get_set_ref());
+		$writ->dataElement("entry",$self->get_setref());
 	} else {
 		$writ->dataElement("entry","Not Set");
 	}
 	if($self->is_enum()) {
-		$writ->dataElement("entry",$self->get_enum_ref());
+		$writ->dataElement("entry",$self->get_enumref());
 	} else {
 		$writ->dataElement("entry","Not Enum");
 	}
 	if($self->is_inde()) {
 		$writ->startTag("entry");
-		$writ->dataElement("database",$self->get_table_ref(),"class"=>"table");
+		$writ->dataElement("database",$self->get_tableref(),"class"=>"table");
 		$writ->endTag("entry");
 	} else {
 		$writ->dataElement("entry","Not Fk");
 	}
 	if($self->is_inde()) {
 		$writ->startTag("entry");
-		$writ->dataElement("database",$self->get_field_ref(),"class"=>"field");
+		$writ->dataElement("database",$self->get_fieldref(),"class"=>"field");
 		$writ->endTag("entry");
 	} else {
 		$writ->dataElement("entry","Not Fk");
@@ -280,17 +283,17 @@ sub printx($$) {
 	my($self,$writ)=@_;
 	$writ->dataElement("type",$self->get_name());
 	if($self->is_inde()) {
-		$writ->dataElement("table_ref",$self->get_table_ref());
-		$writ->dataElement("field_ref",$self->get_field_ref());
+		$writ->dataElement("tableref",$self->get_tableref());
+		$writ->dataElement("fieldref",$self->get_fieldref());
 		$writ->dataElement("optimized",$self->get_optimized());
 		$writ->dataElement("null",$self->get_null());
 		$writ->dataElement("default",$self->get_default());
 	}
 	if($self->is_set()) {
-		$writ->dataElement("set_ref",$self->get_set_ref());
+		$writ->dataElement("setref",$self->get_setref());
 	}
 	if($self->is_enum()) {
-		$writ->dataElement("enum_ref",$self->get_enum_ref());
+		$writ->dataElement("enumref",$self->get_enumref());
 	}
 }
 
@@ -342,13 +345,13 @@ sub getsql_names($$) {
 	if($info->is_mysql()) {
 		if($type eq "set") {
 			my($defx)=$self->get_container()->get_container()->get_container()->get_container()->get_container();
-			my($set_obj)=$defx->get_sets()->get($self->get_set_ref());
+			my($set_obj)=$defx->get_sets()->get($self->get_setref());
 			my($set_string)=$set_obj->get_string();
 			$ntyp.="(".$set_string.")";
 		}
 		if($type eq "enum") {
 			my($defx)=$self->get_container()->get_container()->get_container()->get_container()->get_container();
-			my($enum_obj)=$defx->get_enums()->get($self->get_enum_ref());
+			my($enum_obj)=$defx->get_enums()->get($self->get_enumref());
 			my($enum_string)=$enum_obj->get_string();
 			$ntyp.="(".$enum_string.")";
 		}
@@ -380,7 +383,7 @@ sub getsql_names($$) {
 	# handle indices
 	if($self->is_inde()) {
 		if($info->is_mysql()) {
-			$ntyp.=" REFERENCES ".$self->get_table_ref();
+			$ntyp.=" REFERENCES ".$self->get_tableref();
 		}
 	}
 	return($ntyp);
@@ -474,7 +477,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Type.pm
 	PROJECT: meta
-	VERSION: 0.47
+	VERSION: 0.48
 
 =head1 SYNOPSIS
 
@@ -514,7 +517,7 @@ This method initializes the module for work. Do not use it directly.
 The idea is that this module uses translation hashes of types extensivly and
 we could build them once and use them many times. In addition this method
 sets up accessor methods for the following attributes:
-"name", "set_ref", "enum_ref", "table_ref", "field_ref", "optimized", "null".
+"name", "setref", "enumref", "tableref", "fieldref", "optimized", "null".
 
 =item B<is_prim($)>
 
@@ -636,6 +639,7 @@ None.
 	0.45 MV web site development
 	0.46 MV web site automation
 	0.47 MV SEE ALSO section fix
+	0.48 MV download scripts
 
 =head1 SEE ALSO
 

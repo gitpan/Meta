@@ -6,11 +6,11 @@ use strict qw(vars refs subs);
 use File::stat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub time($);
-#sub new_time($);
+#sub ntime($);
 #sub TEST($);
 
 #__DATA__
@@ -21,7 +21,7 @@ sub time($) {
 	return($mtime);
 }
 
-sub new_time($) {
+sub ntime($) {
 	my($file)=@_;
 	my($st)=File::stat::stat($file);
 	if(!defined($st)) {
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Time.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -84,7 +84,7 @@ This module eases the case for getting and setting file modification times.
 =head1 FUNCTIONS
 
 	time($)
-	new_time($)
+	ntime($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -98,7 +98,7 @@ This routine receives:
 The routine then proceeds to use the stat function to find
 the files modification time and returns it.
 
-=item B<new_time($)>
+=item B<ntime($)>
 
 This function receives:
 0. file - file for which the modification time is required.
@@ -141,6 +141,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV bring movie data
 
 =head1 SEE ALSO
 

@@ -7,7 +7,7 @@ use Meta::Ds::String qw();
 use SQL::Statement qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw(Meta::Ds::String);
 
 #sub execute($$);
@@ -97,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stat.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -110,6 +110,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 This class is a single SQL statement. It has methods like validation and
 execution on a specified DBI connection and writing it down to a file.
+The class can also check if the statement is of various types.
 
 =head1 FUNCTIONS
 
@@ -189,6 +190,7 @@ None.
 	0.17 MV website construction
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
+	0.20 MV weblog issues
 
 =head1 SEE ALSO
 

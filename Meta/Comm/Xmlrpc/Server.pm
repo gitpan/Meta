@@ -7,7 +7,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.10";
 #@ISA=qw(XMLRPC::Transport::HTTP::Daemon);
 @ISA=qw();
 
@@ -68,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Server.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -79,7 +79,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put a lot of documentation here to show what your class does.
+This is a server class for the XML/RPC protocol. Dervice from
+this class to implement your own servers.
 
 =head1 FUNCTIONS
 
@@ -132,6 +133,7 @@ None.
 	0.07 MV website construction
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
+	0.10 MV bring movie data
 
 =head1 SEE ALSO
 

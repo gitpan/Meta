@@ -10,7 +10,7 @@ use Meta::Utils::Debug qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.38";
+$VERSION="0.39";
 @ISA=qw();
 
 #sub system_nodie($$);
@@ -27,6 +27,7 @@ $VERSION="0.38";
 #sub system_out_hash($$);
 #sub perl_nodie($$);
 #sub smart_nodie($$);
+#sub eval_nodie($$);
 #sub os_exit($);
 #sub exit($);
 #sub die($);
@@ -222,10 +223,17 @@ sub smart_nodie($$) {
 	}
 }
 
+sub eval_nodie($$) {
+	my($string,$ref)=@_;
+#	my($io)=IO::String->new_from_fd(STDOUT,"r");
+	$$ref="hello";
+	return(1);
+}
+
 sub os_exit($) {
 	my($code)=@_;
 	if($eval==1) {
-		open(STDERR,"/dev/null") || &die("cannot redirect stderr to /dev/null");
+		CORE::open(STDERR,"/dev/null") || &die("cannot redirect stderr to /dev/null");
 		&die($code."\n");
 	} else {
 		CORE::exit($code);
@@ -281,7 +289,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: System.pm
 	PROJECT: meta
-	VERSION: 0.38
+	VERSION: 0.39
 
 =head1 SYNOPSIS
 
@@ -521,6 +529,7 @@ None.
 	0.36 MV website construction
 	0.37 MV web site automation
 	0.38 MV SEE ALSO section fix
+	0.39 MV download scripts
 
 =head1 SEE ALSO
 

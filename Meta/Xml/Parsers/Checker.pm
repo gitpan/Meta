@@ -9,7 +9,7 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::File::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.10";
 @ISA=qw(XML::Checker::Parser);
 
 #sub new($);
@@ -35,10 +35,10 @@ sub handle_externent($$$$) {
 	my($self,$base,$sysi,$pubi)=@_;
 	my($find)=Meta::Baseline::Aegis::which($sysi);
 	my($data)=Meta::Utils::File::File::load($find);
-	#Meta::Utils::Output::print("in handle_externent\n");
-	#Meta::Utils::Output::print("base is [".$base."]\n");
-	#Meta::Utils::Output::print("sysi is [".$sysi."]\n");
-	#Meta::Utils::Output::print("pubi is [".$pubi."]\n");
+	Meta::Utils::Output::print("in handle_externent\n");
+	Meta::Utils::Output::print("base is [".$base."]\n");
+	Meta::Utils::Output::print("sysi is [".$sysi."]\n");
+	Meta::Utils::Output::print("pubi is [".$pubi."]\n");
 	return($data);
 }
 
@@ -80,7 +80,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Checker.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -149,6 +149,7 @@ None.
 	0.07 MV website construction
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
+	0.10 MV move tests into modules
 
 =head1 SEE ALSO
 

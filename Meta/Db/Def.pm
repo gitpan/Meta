@@ -15,7 +15,7 @@ use Meta::Ds::Connected qw();
 use XML::DOM qw();
 
 our($VERSION,@ISA);
-$VERSION="0.44";
+$VERSION="0.45";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -42,6 +42,7 @@ $VERSION="0.44";
 #sub getsql_insert($$$);
 #sub new_file($$);
 #sub new_deve($$);
+#sub new_modu($$);
 #sub has_table($$);
 #sub has_field($$$);
 #sub has_parent_table($$);
@@ -298,6 +299,11 @@ sub new_deve($$) {
 	return(&new_file($clas,Meta::Baseline::Aegis::which($deve)));
 }
 
+sub new_modu($$) {
+	my($clas,$modu)=@_;
+	return(&new_file($clas,$modu->get_abs_path()));
+}
+
 sub has_table($$) {
 	my($self,$name)=@_;
 	my($parents)=$self->get_parents();
@@ -435,7 +441,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.44
+	VERSION: 0.45
 
 =head1 SYNOPSIS
 
@@ -475,6 +481,7 @@ This is an object to let you read,write and manipulate a database definition.
 	getsql_insert($$$)
 	new_file($$)
 	new_deve($$)
+	new_modu($$)
 	has_table($$)
 	has_field($$$)
 	has_parent_table($$)
@@ -611,6 +618,18 @@ The method uses the new_file method to achieve this.
 Remarks:
 This method is static.
 
+=item B<new_modu($$)>
+
+This method receives:
+0. A class name.
+1. A development module.
+This method returns:
+0. An def object contructed from the content of that development module.
+How it does it:
+The method uses the new_file method to achieve this.
+Remarks:
+This method is static.
+
 =item B<has_table($$)>
 
 This method returns a true/false value according to whether you have
@@ -711,6 +730,7 @@ None.
 	0.42 MV web site development
 	0.43 MV web site automation
 	0.44 MV SEE ALSO section fix
+	0.45 MV web site development
 
 =head1 SEE ALSO
 

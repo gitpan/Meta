@@ -5,6 +5,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Tool::Aegis qw();
 use Meta::Utils::Output qw();
+use Meta::Info::Authors qw();
 
 my($module);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -13,7 +14,8 @@ $opts->def_file("module","what module to use ?",undef,\$module);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($revision)=Meta::Tool::Aegis::history($module);
+my($authors)=Meta::Info::Authors->new();
+my($revision)=Meta::Tool::Aegis::history($module,$authors);
 $revision->print(Meta::Utils::Output::get_file());
 
 Meta::Utils::System::exit(1);
@@ -49,7 +51,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: fhist_ahistory.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -92,6 +94,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -124,10 +130,12 @@ None.
 	0.04 MV improve the movie db xml
 	0.05 MV web site automation
 	0.06 MV SEE ALSO section fix
+	0.07 MV move tests to modules
+	0.08 MV bring movie data
 
 =head1 SEE ALSO
 
-Meta::Tool::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Info::Authors(3), Meta::Tool::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

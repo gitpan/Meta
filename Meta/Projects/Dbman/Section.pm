@@ -3,11 +3,12 @@
 package Meta::Projects::Dbman::Section;
 
 use strict qw(vars refs subs);
+use Meta::Class::DBI qw();
 use base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.04";
-@ISA=qw(Class::DBI);
+$VERSION="0.05";
+@ISA=qw(Meta::Class::DBI);
 
 #sub BEGIN();
 #sub TEST($);
@@ -15,8 +16,8 @@ $VERSION="0.04";
 #__DATA__
 
 sub BEGIN() {
-	base::import(__PACKAGE__,"Class::DBI");
-	__PACKAGE__->set_db('Main',"dbi:mysql:dbman:host=database","master","master");
+	base::import(__PACKAGE__,"Meta::Class::DBI");
+#	__PACKAGE__->set_db('Main',"dbi:mysql:dbman:host=localhost","devel","pass");
 	__PACKAGE__->table('section');
 	__PACKAGE__->columns('Primary'=>'id');
 	__PACKAGE__->columns(All=>qw/id name description tag/);
@@ -60,7 +61,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Section.pm
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -95,7 +96,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-Class::DBI(3)
+Meta::Class::DBI(3)
 
 =head1 BUGS
 
@@ -115,10 +116,11 @@ None.
 	0.02 MV website construction
 	0.03 MV web site automation
 	0.04 MV SEE ALSO section fix
+	0.05 MV download scripts
 
 =head1 SEE ALSO
 
-base(3), strict(3)
+Meta::Class::DBI(3), base(3), strict(3)
 
 =head1 TODO
 

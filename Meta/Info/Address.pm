@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub BEGIN();
@@ -17,7 +17,13 @@ $VERSION="0.12";
 sub BEGIN() {
 	Meta::Class::MethodMaker->new("new");
 	Meta::Class::MethodMaker->get_set(
+		-java=>"_country",
+		-java=>"_city",
+		-java=>"_street",
 		-java=>"_email",
+		-java=>"_phone",
+		-java=>"_fax",
+		-java=>"_postcode",
 	);
 }
 
@@ -59,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Address.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -124,6 +130,7 @@ None.
 	0.10 MV web site development
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV bring movie data
 
 =head1 SEE ALSO
 

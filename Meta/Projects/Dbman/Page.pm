@@ -3,11 +3,12 @@
 package Meta::Projects::Dbman::Page;
 
 use strict qw(vars refs subs);
+use Meta::Class::DBI qw();
 use base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
-@ISA=qw(Class::DBI);
+$VERSION="0.06";
+@ISA=qw(Meta::Class::DBI);
 
 #sub BEGIN();
 #sub TEST($);
@@ -15,11 +16,11 @@ $VERSION="0.05";
 #__DATA__
 
 sub BEGIN() {
-	base::import(__PACKAGE__,"Class::DBI");
-	__PACKAGE__->set_db('Main',"dbi:mysql:dbman:host=database","master","master");
+	base::import(__PACKAGE__,"Meta::Class::DBI");
+	#__PACKAGE__->set_db('Main',"dbi:mysql:dbman:host=localhost","devel","pass");
 	__PACKAGE__->table('page');
 	__PACKAGE__->columns('Primary'=>'id');
-	__PACKAGE__->columns(All=>qw/id section name description content_troff content_ascii content_ps content_dvi content_html/);
+	__PACKAGE__->columns(All=>qw/id section name description contenttroff contentascii contentps contentdvi contenthtml filename/);
 }
 
 sub TEST($) {
@@ -60,7 +61,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Page.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -94,7 +95,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-Class::DBI(3)
+Meta::Class::DBI(3)
 
 =head1 BUGS
 
@@ -115,10 +116,11 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV download scripts
 
 =head1 SEE ALSO
 
-base(3), strict(3)
+Meta::Class::DBI(3), base(3), strict(3)
 
 =head1 TODO
 

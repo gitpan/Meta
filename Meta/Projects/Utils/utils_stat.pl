@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_stat.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -107,6 +107,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -136,6 +140,7 @@ None.
 	0.04 MV improve the movie db xml
 	0.05 MV web site automation
 	0.06 MV SEE ALSO section fix
+	0.07 MV move tests to modules
 
 =head1 SEE ALSO
 

@@ -7,24 +7,25 @@ use Meta::Baseline::Aegis qw();
 use Meta::Lang::Perl::Perl qw();
 use Meta::Baseline::Lang::Perl qw();
 use Meta::Utils::Output qw();
-use Meta::Ds::Enum qw();
+use Meta::Ds::Oset qw();
 
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("copyright");
-$enum->insert("license");
-$enum->insert("details");
-$enum->insert("author");
-$enum->insert("history");
-$enum->insert("see");
-$enum->insert("options");
-$enum->insert("version");
-$enum->insert("super");
-my($verb,$acti,$all,$file);
+my($fset)=Meta::Ds::Oset->new();
+my($set)=Meta::Ds::Oset->new();
+$set->insert("copyright");
+$set->insert("license");
+$set->insert("details");
+$set->insert("author");
+$set->insert("history");
+$set->insert("see");
+$set->insert("options");
+$set->insert("version");
+$set->insert("super");
+my($verb,$all,$file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("verbose","noisy or quiet ?",1,\$verb);
 $opts->def_bool("all","do it for all files in the change ?",0,\$all);
-$opts->def_enum("fix","what fix to apply ?","options",\$acti,$enum);
+$opts->def_setx("fix","what fix to apply ?","options",\$fset,$set);
 $opts->def_devf("file","what file to fix ?",undef,\$file);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
@@ -42,36 +43,36 @@ for(my($i)=0;$i<=$#$file_list;$i++) {
 		Meta::Utils::Output::print("working on [".$modu."]\n");
 	}
 	if(Meta::Lang::Perl::Perl::is_perl($modu)) {
-		if($acti eq "copyright") {
+		if($fset->has("copyright")) {
 			Meta::Baseline::Lang::Perl->fix_copyright($modu,$curr);
 		}
-		if($acti eq "license") {
+		if($fset->has("license")) {
 			Meta::Baseline::Lang::Perl->fix_license($modu,$curr);
 		}
-		if($acti eq "details") {
+		if($fset->has("details")) {
 			Meta::Baseline::Lang::Perl->fix_details($modu,$curr);
 		}
-		if($acti eq "author") {
+		if($fset->has("author")) {
 			Meta::Baseline::Lang::Perl->fix_author($modu,$curr);
 		}
-		if($acti eq "history") {
+		if($fset->has("history")) {
 			Meta::Baseline::Lang::Perl->fix_history($modu,$curr);
 		}
-		if($acti eq "see") {
+		if($fset->has("see")) {
 			Meta::Baseline::Lang::Perl->fix_see($modu,$curr);
 		}
 		#fixes just for binaries
 		if(Meta::Lang::Perl::Perl::is_bin($modu)) {
-			if($acti eq "options") {
+			if($fset->has("options")) {
 				Meta::Baseline::Lang::Perl->fix_options($modu,$curr);
 			}
 		}
 		#fixes just for libraries
 		if(Meta::Lang::Perl::Perl::is_lib($modu)) {
-			if($acti eq "version") {
+			if($fset->has("version")) {
 				Meta::Baseline::Lang::Perl->fix_version($modu,$curr);
 			}
-			if($acti eq "super") {
+			if($fset->has("super")) {
 				Meta::Baseline::Lang::Perl->fix_super($modu,$curr);
 			}
 		}
@@ -111,7 +112,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_pod_fix.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -171,6 +172,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -183,7 +188,7 @@ noisy or quiet ?
 
 do it for all files in the change ?
 
-=item B<fix> (type: enum, default: options)
+=item B<fix> (type: setx, default: options)
 
 what fix to apply ?
 
@@ -211,10 +216,12 @@ None.
 =head1 HISTORY
 
 	0.00 MV put all tests in modules
+	0.01 MV move tests to modules
+	0.02 MV download scripts
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Ds::Enum(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Ds::Oset(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
@@ -225,3 +232,5 @@ Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Ds::Enum(3), Meta
 -add options to just show which changes are going to be made.
 
 -add option to supply a list of files to be fixed.
+
+-add the ability to make several changes simulteneously (using the set type for opts).

@@ -14,7 +14,7 @@ my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("verbose","verbose or quiet ?",1,\$verb);
 $opts->def_bool("block","block output ?",1,\$block);
-$opts->def_devf("file","what file to check ?","perl/lib/Meta/Utils/Utils.pm",\$file);
+$opts->def_devf("file","what file to check ?",undef,\$file);
 $opts->def_bool("all","check all modules ?",0,\$all);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
@@ -41,6 +41,8 @@ for(my($i)=0;$i<=$#$files;$i++) {
 		#now use the module
 		Meta::Lang::Perl::Perl::load_module($module);
 		if($verb) {
+			# no new line at the end of the next print so that each line will
+			# be a different test
 			Meta::Utils::Output::print("testing [".$module."]...");
 		}
 		#now call the method
@@ -52,7 +54,7 @@ for(my($i)=0;$i<=$#$files;$i++) {
 			Meta::Baseline::Test::redirect_off();
 		}
 		#now unload the module
-		#the unload doesn't work well since if I load a module after wards
+		#the unload doesn't work well since if I load a module afterwards
 		#that needs something that I'm now unloading it created problems.
 		#Meta::Lang::Perl::Perl::unload_module($module);
 		Meta::Utils::Output::print("[".Meta::Baseline::Test::code_to_string($res)."]\n");
@@ -95,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_test.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -137,6 +139,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -149,7 +155,7 @@ verbose or quiet ?
 
 block output ?
 
-=item B<file> (type: devf, default: perl/lib/Meta/Utils/Utils.pm)
+=item B<file> (type: devf, default: )
 
 what file to check ?
 
@@ -175,6 +181,8 @@ None.
 =head1 HISTORY
 
 	0.00 MV put all tests in modules
+	0.01 MV move tests to modules
+	0.02 MV download scripts
 
 =head1 SEE ALSO
 

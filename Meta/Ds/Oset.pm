@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub new($);
+#sub clear($);
 #sub insert($$);
 #sub remove($$);
 #sub has($$);
@@ -31,6 +32,15 @@ sub new($) {
 	$self->{HASH}={};
 	$self->{LIST}=Meta::Ds::Array->new();
 	return($self);
+}
+
+sub clear($) {
+	my($self)=@_;
+	my($hash)=$self->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		$self->remove($key);
+	}
+	$self->{LIST}=Meta::Ds::Array->new();
 }
 
 sub insert($$) {
@@ -163,7 +173,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Oset.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -182,6 +192,7 @@ the Meta::Ds::Set class.
 =head1 FUNCTIONS
 
 	new($)
+	clear($)
 	insert($$)
 	remove($$)
 	has($$)
@@ -201,6 +212,10 @@ the Meta::Ds::Set class.
 =item B<new($)>
 
 Gives you a new Oset object.
+
+=item B<clear($)>
+
+Clears out the set so that it is empty.
 
 =item B<insert($$)>
 
@@ -311,6 +326,7 @@ None.
 	0.27 MV website construction
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
+	0.30 MV download scripts
 
 =head1 SEE ALSO
 

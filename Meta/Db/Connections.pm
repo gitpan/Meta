@@ -8,15 +8,18 @@ use Meta::Xml::Parsers::Connections qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.33";
+$VERSION="0.35";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub new($);
 #sub get_default($);
 #sub set_default($$);
 #sub get_def_con($);
+#sub get_con_null($$);
+#sub new_handle($$);
 #sub new_file($$);
 #sub new_deve($$);
+#sub new_modu($$);
 #sub TEST($);
 
 #__DATA__
@@ -44,6 +47,23 @@ sub get_def_con($) {
 	return($self->get($self->get_default()));
 }
 
+sub get_con_null($$) {
+	my($self,$valx)=@_;
+	if(!defined($valx)) {
+		return($self->get_def_con());
+	} else {
+		return($self->get($valx));
+	}
+}
+
+sub new_handle($$) {
+	my($clas,$handle)=@_;
+	#check that handle is IO::Handle
+	my($parser)=Meta::Xml::Parsers::Connections->new();
+	$parser->parse($handle);
+	return($parser->get_result());
+}
+
 sub new_file($$) {
 	my($clas,$file)=@_;
 	my($parser)=Meta::Xml::Parsers::Connections->new();
@@ -54,6 +74,11 @@ sub new_file($$) {
 sub new_deve($$) {
 	my($clas,$deve)=@_;
 	return(&new_file($clas,Meta::Baseline::Aegis::which($deve)));
+}
+
+sub new_modu($$) {
+	my($clas,$modu)=@_;
+	return(&new_file($clas,$modu->get_abs_path()));
 }
 
 sub TEST($) {
@@ -94,7 +119,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connections.pm
 	PROJECT: meta
-	VERSION: 0.33
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -113,8 +138,11 @@ This is an array of many connections to the database.
 	get_default($)
 	set_default($$)
 	get_def_con($)
+	get_con_null($$)
+	new_handle($$)
 	new_file($$)
 	new_deve($$)
+	new_modu($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -137,6 +165,25 @@ This method will set the name of the default connection for you.
 
 This method will retrive the default connection object for you.
 
+=item B<get_con_null($$)>
+
+This method will retrieve the default connection if you pass undef
+to it and otherwise it will try to retrieve the connections with the
+name specified.
+
+=item B<new_handle($$)>
+
+This method receives:
+0. A class name.
+1. An IO::Handle to read from.
+This method returns:
+0. A connection object constructed from the handle data.
+How it does it:
+The method uses the Meta::Xml::Parsers::Connections expat parser to do
+its thing.
+Remarks:
+This method is static.
+
 =item B<new_file($$)>
 
 This method receives:
@@ -157,6 +204,18 @@ This method receives:
 1. A development related file name.
 This method returns:
 0. A Connections object constructed from the file.
+How it does it:
+This method uses the new_file method of the same package.
+Remarks:
+This method is static.
+
+=item B<new_modu($$)>
+
+This method receives:
+0. A class name.
+1. A development module (Meta::Development::Module).
+This method returns:
+0. A Connections object constructed from the module.
 How it does it:
 This method uses the new_file method of the same package.
 Remarks:
@@ -219,6 +278,8 @@ None.
 	0.31 MV website construction
 	0.32 MV web site automation
 	0.33 MV SEE ALSO section fix
+	0.34 MV download scripts
+	0.35 MV web site development
 
 =head1 SEE ALSO
 

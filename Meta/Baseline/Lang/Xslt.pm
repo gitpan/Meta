@@ -16,7 +16,7 @@ $VERSION="0.00";
 
 sub my_file($$) {
 	my($self,$file)=@_;
-	if($file=~/^xslt\/.*\.xslt$/) {
+	if($file=~/^xslt\/.*\.xsl$/) {
 		return(1);
 	}
 	return(0);

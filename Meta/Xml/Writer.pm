@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use XML::Writer qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw(XML::Writer);
 
 #sub my_doctype($$$);
+#sub base_comment($);
 #sub TEST($);
 
 #__DATA__
@@ -18,6 +19,11 @@ sub my_doctype($$$) {
 	my($self,$name,$public)=@_;
 	my($output)=$self->getOutput();
 	$output->print("<!DOCTYPE ".$name." PUBLIC \"".$public."\" []>\n");
+}
+
+sub base_comment($) {
+	my($self)=@_;
+	$self->comment("Base generated document - DO NOT EDIT!");
 }
 
 sub TEST($) {
@@ -58,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Writer.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -78,6 +84,7 @@ fix bugs in the original XML::Writer).
 =head1 FUNCTIONS
 
 	my_doctype($$$)
+	base_comment($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -90,6 +97,11 @@ This is a replacement for the XML::Writer original method "doctype" to provide
 ability not to put a system id.
 I understand that writing this way may not be XML but rather SGML but I still
 need the method.
+
+=item B<base_comment($)>
+
+This method will emit a comment saying that the file is auto generated and should
+not be edited.
 
 =item B<TEST($)>
 
@@ -127,6 +139,7 @@ None.
 	0.10 MV website construction
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV move tests to modules
 
 =head1 SEE ALSO
 

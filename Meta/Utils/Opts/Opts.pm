@@ -16,7 +16,7 @@ use Meta::Utils::Output qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.44";
+$VERSION="0.47";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub BEGIN();
@@ -33,6 +33,8 @@ $VERSION="0.44";
 #sub def_file($$$$$);
 #sub def_newf($$$$$);
 #sub def_devf($$$$$);
+#sub def_urls($$$$$);
+#sub def_modu($$$$$);
 #sub def_enum($$$$$$);
 #sub def_setx($$$$$$);
 
@@ -142,6 +144,16 @@ sub def_devf($$$$$) {
 	$self->inse($name,$desc,"devf",$defa,$poin,undef);
 }
 
+sub def_urls($$$$$) {
+	my($self,$name,$desc,$defa,$poin)=@_;
+	$self->inse($name,$desc,"urls",$defa,$poin,undef);
+}
+
+sub def_modu($$$$$) {
+	my($self,$name,$desc,$defa,$poin)=@_;
+	$self->inse($name,$desc,"modu",$defa,$poin,undef);
+}
+
 sub def_enum($$$$$$) {
 	my($self,$name,$desc,$defa,$poin,$enum)=@_;
 	$self->inse($name,$desc,"enum",$defa,$poin,$enum);
@@ -150,6 +162,21 @@ sub def_enum($$$$$$) {
 sub def_setx($$$$$$) {
 	my($self,$name,$desc,$defa,$poin,$enum)=@_;
 	$self->inse($name,$desc,"setx",$defa,$poin,$enum);
+}
+
+sub def_path($$$$$) {
+	my($self,$name,$desc,$defa,$poin)=@_;
+	$self->inse($name,$desc,"path",$defa,$poin,undef);
+}
+
+sub def_flst($$$$$) {
+	my($self,$name,$desc,$defa,$poin)=@_;
+	$self->inse($name,$desc,"flst",$defa,$poin,undef);
+}
+
+sub def_dlst($$$$$) {
+	my($self,$name,$desc,$defa,$poin)=@_;
+	$self->inse($name,$desc,"dlst",$defa,$poin,undef);
 }
 
 sub use_color($$$) {
@@ -197,10 +224,19 @@ sub analyze($) {
 		if($type eq "file" || $type eq "newf" || $type eq "devf") {
 			$ostr.=":s";
 		}
+		if($type eq "urls") {
+			$ostr.=":s";
+		}
 		if($type eq "enum") {
 			$ostr.=":s";
 		}
 		if($type eq "setx") {
+			$ostr.=":s";
+		}
+		if($type eq "path") {
+			$ostr.=":s";
+		}
+		if($type eq "flst" || $type eq "dlst") {
 			$ostr.=":s";
 		}
 		push(@list,$ostr);
@@ -260,6 +296,12 @@ sub analyze($) {
 	}
 	if($self->get_valu("copyright")==1) {
 		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("COPYRIGHT");
+		$pod=CORE::substr($pod,1);
+		Meta::Utils::Output::print($pod);
+		Meta::Utils::System::exit(1);
+	}
+	if($self->get_valu("description")==1) {
+		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("DESCRIPTION");
 		$pod=CORE::substr($pod,1);
 		Meta::Utils::Output::print($pod);
 		Meta::Utils::System::exit(1);
@@ -430,6 +472,7 @@ sub set_standard($) {
 	$self->{STANDARD_GTKX}=defined;
 	$self->{STANDARD_LICE}=defined;
 	$self->{STANDARD_COPY}=defined;
+	$self->{STANDARD_DESC}=defined;
 	$self->{STANDARD_HIST}=defined;
 	$self->def_bool("help","display help message",0,\$self->{STANDARD_HELP});
 	$self->def_bool("pod","display pod options snipplet",0,\$self->{STANDARD_PODX});
@@ -438,6 +481,7 @@ sub set_standard($) {
 	$self->def_bool("gtk","run a gtk ui to get the parameters",0,\$self->{STANDARD_GTKX});
 	$self->def_bool("license","show license and exit",0,\$self->{STANDARD_LICE});
 	$self->def_bool("copyright","show copyright and exit",0,\$self->{STANDARD_COPY});
+	$self->def_bool("description","show description and exit",0,\$self->{STANDARD_DESC});
 	$self->def_bool("history","show history and exit",0,\$self->{STANDARD_HIST});
 	$self->set_author("mark");
 	$self->set_license("GPL");
@@ -479,7 +523,7 @@ sub get_gui($) {
 			$pack->pack_start_defaults($spin);
 			$tip->set_tip($spin,$desc,"");
 		}
-		if($type eq "stri") {
+		if($type eq "stri" || $type eq "urls") {
 			$pack=Gtk::HBox->new(1,$spac);
 			my($label)=Gtk::Label->new();
 			$label->set_text($name);
@@ -611,7 +655,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Opts.pm
 	PROJECT: meta
-	VERSION: 0.44
+	VERSION: 0.47
 
 =head1 SYNOPSIS
 
@@ -664,7 +708,9 @@ Currently supported types for parameters are:
 	file			file
 	new file		newf
 	development file	devf
+	url to be fetched	urls
 	enumerated values	enum
+	set			setx
 
 =head1 FUNCTIONS
 
@@ -681,8 +727,13 @@ Currently supported types for parameters are:
 	def_file($$$$$)
 	def_newf($$$$$)
 	def_devf($$$$$)
+	def_urls($$$$$)
+	def_modu($$$$$)
 	def_enum($$$$$$)
 	def_setx($$$$$$)
+	def_path($$$$$)
+	def_flst($$$$$)
+	def_dlst($$$$$)
 	use_color($$$)
 	use_color_rese($$)
 	set_standard($)
@@ -751,15 +802,23 @@ Add a development directory argument (checks that the directory exists).
 
 =item B<def_file($$$$$)>
 
-Add a file aegument (checks that the file is valid).
+Add a file argument (checks that the file is valid).
 
 =item B<def_newf($$$$$)>
 
-Add a new file aegument (checks that the file is non-existant).
+Add a new file argument (checks that the file is non-existant).
 
 =item B<def_devf($$$$$)>
 
-Add a new development file aegument (checks that the file is non-existant).
+Add a new development file argument (checks that the file is non-existant).
+
+=item B<def_urls($$$$$)>
+
+Add a new url argument (checks that the file is url and brings the content).
+
+=item B<def_modu($$$$$)>
+
+Add a new module argument (checks that the file is valid and brings a Meta::Development::Module object).
 
 =item B<def_enum($$$$$$)>
 
@@ -768,6 +827,18 @@ Add an enumerated argument (checks that the value is out of a set of values).
 =item B<def_setx($$$$$$)>
 
 Add a set argument (checks that the value is a sub set of a set of values).
+
+=item B<def_path($$$$$)>
+
+Add a path argument (checks that the value is colon separated dir list).
+
+=item B<def_flst($$$$$)>
+
+Add a file list argument (checks that the value is colon separated file list).
+
+=item B<def_dlst($$$$$)>
+
+Add a directory list argument (checks that the value is colon separated directory list).
 
 =item B<use_color($$$)>
 
@@ -888,6 +959,9 @@ None.
 	0.42 MV web site automation
 	0.43 MV SEE ALSO section fix
 	0.44 MV put all tests in modules
+	0.45 MV move tests to modules
+	0.46 MV download scripts
+	0.47 MV web site development
 
 =head1 SEE ALSO
 

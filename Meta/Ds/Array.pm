@@ -8,7 +8,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.34";
+$VERSION="0.35";
 @ISA=qw();
 
 #sub new($);
@@ -21,6 +21,7 @@ $VERSION="0.34";
 #sub print($$);
 #sub sort($$);
 #sub join($$);
+#sub list($);
 #sub TEST($);
 
 #__DATA__
@@ -117,6 +118,11 @@ sub join($$) {
 	return(CORE::join($expr,@$arra));
 }
 
+sub list($) {
+	my($self)=@_;
+	return($self->{LIST});
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -155,7 +161,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Array.pm
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -188,6 +194,7 @@ This will give you a clean object.
 	print($$)
 	sort($$)
 	join($$)
+	list($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -256,6 +263,12 @@ arrya.
 This method will return a string joining the elements of the array
 using a specific expression. This method uses the CORE::join function.
 
+=item B<list($)>
+
+This method provides a list pointer with all the elements of the array
+in it. Currently it gives you the real list that the array uses so
+used this with care (read only).
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -314,6 +327,7 @@ None.
 	0.32 MV website construction
 	0.33 MV web site automation
 	0.34 MV SEE ALSO section fix
+	0.35 MV web site development
 
 =head1 SEE ALSO
 

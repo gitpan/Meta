@@ -8,7 +8,7 @@ use Meta::Baseline::Aegis qw();
 #require 'sys/ioctl.ph';
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub check_mult_regexp($$$);
@@ -22,9 +22,11 @@ $VERSION="0.28";
 #sub load_line($$);
 #sub cmp($$);
 #sub exist($);
+#sub exec($);
 #sub notexist($);
 #sub check_exist($);
 #sub check_notexist($);
+#sub check_exec($);
 #sub create_new($);
 #sub subst($$$);
 #sub TEST($);
@@ -189,6 +191,11 @@ sub exist($) {
 	return(-f $file);
 }
 
+sub exec($) {
+	my($file)=@_;
+	return(-x $file);
+}
+
 sub notexist($) {
 	my($file)=@_;
 	return(!exist($file));
@@ -205,6 +212,13 @@ sub check_notexist($) {
 	my($file)=@_;
 	if(!notexist($file)) {
 		Meta::Utils::System::die("file [".$file."] does exist and it should not");
+	}
+}
+
+sub check_exec($) {
+	my($file)=@_;
+	if(!exec($file)) {
+		Meta::Utils::System::die("file [".$file."] is not executable as it should");
 	}
 }
 
@@ -274,7 +288,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: File.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -308,6 +322,7 @@ For instance: check if a file exists, compare two files etc...
 	notexist($)
 	check_exist($)
 	check_notexist($)
+	check_exec($)
 	create_new($)
 	subst($$$)
 	TEST($)
@@ -392,6 +407,11 @@ regular file. If something fails it dies.
 This routine checks if a file given to it not exists.
 If something fails it dies.
 
+=item B<check_exec($)>
+
+This routine will check if a file given to it exists and is executable.
+If something fails it dies.
+
 =item B<create_new($)>
 
 This function receives a file name and creates that file (it supposes the
@@ -457,6 +477,8 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV move tests to modules
+	0.30 MV download scripts
 
 =head1 SEE ALSO
 
@@ -471,3 +493,5 @@ Meta::Baseline::Aegis(3), Meta::Utils::Output(3), strict(3)
 -make the load routine prototype be the same as the load_nodie prototype. (its cleaner that way...).
 
 -stop using the hardcoded hexa value in ioctl (I only did it because of error in requiring the required ph files).
+
+-cant the load method be nicer if implemented using file handles ?

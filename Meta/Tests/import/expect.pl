@@ -18,7 +18,11 @@ my($user)=Meta::Baseline::Test::get_user();
 my($pass)=Meta::Baseline::Test::get_password();
 my($host)=Meta::Baseline::Test::get_host();
 
-my($sess)=Expect->spawn("/usr/bin/ssh ".$host." -l ".$user);
+my($ssh_bin)="/usr/bin/ssh";
+#my($ssh_bin)="/local/tools/bin/ssh";
+my($cmd)=$ssh_bin." ".$host." -l ".$user;
+Meta::Utils::Output::print("cmd is [".$cmd."]\n");
+my($sess)=Expect->spawn($cmd);
 
 $sess->log_stdout(1);
 $sess->expect(30,$user."@".$host."'s password: ") || Meta::Utils::System::die("never got password prompt on [".$host."],[".$sess->exp_error()."]");
@@ -72,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: expect.pl
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -113,6 +117,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -159,6 +167,8 @@ None.
 	0.21 MV improve the movie db xml
 	0.22 MV web site automation
 	0.23 MV SEE ALSO section fix
+	0.24 MV move tests to modules
+	0.25 MV web site development
 
 =head1 SEE ALSO
 

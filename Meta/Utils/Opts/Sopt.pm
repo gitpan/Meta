@@ -7,9 +7,13 @@ use Meta::Utils::File::File qw();
 use Meta::Utils::File::Dir qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Class::MethodMaker qw();
+use Meta::Utils::File::Path qw();
+use LWP::Simple qw();
+use Meta::Utils::Output qw();
+use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub BEGIN();
@@ -51,14 +55,25 @@ sub setup_value($$) {
 	#		Meta::Utils::Output::print("poin is [".$poin."]\n");
 			$$poin->insert($list[$i]);
 		}
-	} else {
-		$self->set_valu($valu);
+		return;
 	}
+	if($self->get_type() eq "urls") {
+		$self->set_valu(LWP::Simple::get($valu));
+		return;
+	}
+	if($self->get_type() eq "modu") {
+		my($modu)=Meta::Development::Module->new();
+		$modu->set_name($valu);
+		$self->set_valu($modu);
+		return;
+	}
+	$self->set_valu($valu);
 }
 
 sub verify($$) {
 	my($self,$erro)=@_;
 	my($type)=$self->get_type();
+#	Meta::Utils::Output::print("in verify with type [".$type."]\n");
 	if($type eq "dire") {
 		my($valu)=$self->get_valu();
 		my($scod)=Meta::Utils::File::Dir::exist($valu);
@@ -107,12 +122,61 @@ sub verify($$) {
 		}
 		return($scod);
 	}
+	if($type eq "urls") {
+		#check that the value is of valid URL form.
+		#check that URL can be fetched.
+		return(1);
+	}
+	if($type eq "modu") {
+		#check that the value is a valid path to a dev module
+		return(1);
+	}
 	if($type eq "enum") {
 		my($valu)=$self->get_valu();
 		my($enum)=$self->get_enum();
 		my($scod)=$enum->has($valu);
 		if(!$scod) {
 			$$erro="value [".$valu."] is not part of the enum";
+		}
+		return($scod);
+	}
+	if($type eq "setx") {
+		my($valu)=$self->get_valu();
+		my($setx)=$self->get_enum();
+		#Meta::Utils::Output::print("in setx [".$valu."]\n");
+		my($scod)=1;
+		my(@list)=split(',',$valu);
+		for(my($i)=0;$i<=$#list;$i++) {
+			my($curr)=$list[$i];
+			#Meta::Utils::Output::print("checking [".$curr."]\n");
+			if($setx->hasnt($curr)) {
+				$scod=0;
+				$$erro="value [".$curr."] is not in set";
+			}
+		}
+		return($scod);
+	}
+	if($type eq "path") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Utils::File::Path::check($valu,':');
+		if(!$scod) {
+			$$erro="value [".$valu."] is not a valid path";
+		}
+		return($scod);
+	}
+	if($type eq "flst") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Utils::File::Path::check_flst($valu,':');
+		if(!$scod) {
+			$$erro="value [".$valu."] is not a valid file list";
+		}
+		return($scod);
+	}
+	if($type eq "dlst") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Utils::File::Path::check($valu,':');
+		if(!$scod) {
+			$$erro="value [".$valu."] is not a valid directory list";
 		}
 		return($scod);
 	}
@@ -157,7 +221,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sopt.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -257,10 +321,13 @@ None.
 	0.27 MV website construction
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
+	0.30 MV move tests to modules
+	0.31 MV download scripts
+	0.32 MV web site development
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Utils::File::Dir(3), Meta::Utils::File::File(3), strict(3)
+LWP::Simple(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Development::Module(3), Meta::Utils::File::Dir(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -6,11 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.34";
+$VERSION="0.36";
 @ISA=qw();
 
 #sub BEGIN();
-#sub print($$);
 #sub is_postgres($);
 #sub is_mysql($);
 #sub get_dsn($$);
@@ -29,16 +28,14 @@ sub BEGIN() {
 		-java=>"_user",
 		-java=>"_password",
 	);
-}
-
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "name=[".$self->get_name()."]\n";
-	print $file "type=[".$self->get_type()."]\n";
-	print $file "host=[".$self->get_host()."]\n";
-	print $file "port=[".$self->get_port()."]\n";
-	print $file "user=[".$self->get_user()."]\n";
-	print $file "pass=[".$self->get_password()."]\n";
+	Meta::Class::MethodMaker->print([
+		"name",
+		"type",
+		"host",
+		"port",
+		"user",
+		"password"
+	]);
 }
 
 sub is_postgres($) {
@@ -114,7 +111,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connection.pm
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -131,7 +128,6 @@ connection to the database.
 =head1 FUNCTIONS
 
 	BEGIN()
-	print($$)
 	is_postgres($)
 	is_mysql($)
 	get_dsn($$)
@@ -145,12 +141,7 @@ connection to the database.
 =item B<BEGIN()>
 
 Instantiates basic accessors.
-Here they are: "name","type","host","port","user","pass","drop",
-"crea","drok","must","must","over","edir","flat".
-
-=item B<print($$)>
-
-This will print the current field for you.
+Here they are: "name","type","host","port","user","password".
 
 =item B<is_postgres($)>
 
@@ -227,6 +218,8 @@ None.
 	0.32 MV web site development
 	0.33 MV web site automation
 	0.34 MV SEE ALSO section fix
+	0.35 MV move tests to modules
+	0.36 MV download scripts
 
 =head1 SEE ALSO
 
@@ -234,8 +227,8 @@ Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 
--support more database in get_dsn.
+-support more databases in get_dsn.
 
 -limit type of databases in set_type.
 
--have a method that will print this object in XML.
+-have a method that will print this object in XML (automatically via Meta::Class::MethodMaker).

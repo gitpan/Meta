@@ -10,11 +10,11 @@ use Meta::Ds::Ohash qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.33";
+$VERSION="0.34";
 @ISA=qw(Meta::Ds::Ohash);
 
-#sub new_file($);
-#sub new_deve($);
+#sub new_file($$);
+#sub new_deve($$);
 #sub read($$);
 #sub getd($$$);
 #sub getenv($$);
@@ -22,16 +22,16 @@ $VERSION="0.33";
 
 #__DATA__
 
-sub new_file($) {
-	my($file)=@_;
+sub new_file($$) {
+	my($class,$file)=@_;
 	my($object)=Meta::Utils::Options->new();
 	$object->read($file);
 	return($object);
 }
 
-sub new_deve($) {
-	my($deve)=@_;
-	my($object)=Meta::Utils::Options::new_file(Meta::Baseline::Aegis::which($deve));
+sub new_deve($$) {
+	my($class,$deve)=@_;
+	my($object)=&new_file($class,Meta::Baseline::Aegis::which($deve));
 	return($object);
 }
 
@@ -109,13 +109,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Options.pm
 	PROJECT: meta
-	VERSION: 0.33
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Utils::Options qw();
-	my($opti)=Meta::Utils::Options->new();
+	my($opti)=Meta::Utils::Options->new_deve();
 	$opti->read("my_configuration_file");
 	$obje=$opti->get("my_variable");
 
@@ -125,8 +125,8 @@ This library lets you read and write configuration files.
 
 =head1 FUNCTIONS
 
-	new_file($)
-	new_deve($)
+	new_file($$)
+	new_deve($$)
 	read($$)
 	getd($$$)
 	getenv($$)
@@ -136,11 +136,11 @@ This library lets you read and write configuration files.
 
 =over 4
 
-=item B<new_file($)>
+=item B<new_file($$)>
 
 This method will give you a new Options object read from a file.
 
-=item B<new_deve($)>
+=item B<new_deve($$)>
 
 Gives you a new options object according to a development file.
 
@@ -214,6 +214,7 @@ None.
 	0.31 MV website construction
 	0.32 MV web site automation
 	0.33 MV SEE ALSO section fix
+	0.34 MV bring movie data
 
 =head1 SEE ALSO
 
@@ -221,4 +222,4 @@ Meta::Baseline::Aegis(3), Meta::Ds::Ohash(3), Meta::Utils::Env(3), Meta::Utils::
 
 =head1 TODO
 
-Nothing.
+-slowly remove usage of this class and use some off the shelf XML option parser instead and then remove this completely.

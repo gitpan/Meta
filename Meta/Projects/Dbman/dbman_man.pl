@@ -31,23 +31,23 @@ my($page)=Meta::Projects::Dbman::Page->search('name',$name);
 if(!defined($page)) {
 	Meta::Utils::System::die("unable to find manual page for [".$name."]");
 }
-if($choice eq "description") {
+if($enum->is_selected($choice,"description")) {
 	Meta::Utils::Output::print($page->description()."\n");
 }
-if($choice eq "troff") {
-	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->content_troff()));
+if($enum->is_selected($choice,"troff")) {
+	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->contenttroff()));
 }
-if($choice eq "ascii") {
-	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->content_ascii()));
+if($enum->is_selected($choice,"ascii")) {
+	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->contentascii()));
 }
-if($choice eq "ps") {
-	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->content_ps()));
+if($enum->is_selected($choice,"ps")) {
+	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->contentps()));
 }
-if($choice eq "dvi") {
-	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->content_dvi()));
+if($enum->is_selected($choice,"dvi")) {
+	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->contentdvi()));
 }
-if($choice eq "html") {
-	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->content_html()));
+if($enum->is_selected($choice,"html")) {
+	Meta::Tool::Less::show_data(Compress::Zlib::memGunzip($page->contenthtml()));
 }
 
 Meta::Utils::System::exit(1);
@@ -83,7 +83,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbman_man.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -125,6 +125,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -160,6 +164,9 @@ None.
 	0.04 MV improve the movie db xml
 	0.05 MV web site automation
 	0.06 MV SEE ALSO section fix
+	0.07 MV move tests to modules
+	0.08 MV download scripts
+	0.09 MV bring movie data
 
 =head1 SEE ALSO
 

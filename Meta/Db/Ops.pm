@@ -13,7 +13,7 @@ use Meta::Xml::Parsers::Dbdata qw();
 use Meta::Db::Info qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.14";
 @ISA=qw();
 
 #sub act($$);
@@ -23,6 +23,15 @@ $VERSION="0.11";
 #sub import($);
 #sub san($$$$$$$$);
 #sub sindex($$$);
+#sub clean_sa($);
+
+#sub dbname_name_to_deve($);
+#sub dbname_deve_to_name($);
+#sub dbname_name_to_prod($);
+#sub dbname_prod_to_name($);
+#sub dbname_deve_to_prod($);
+#sub dbname_prod_to_deve($);
+
 #sub TEST($);
 
 #__DATA__
@@ -49,12 +58,10 @@ sub act($$) {
 }
 
 sub export_writ($$$$) {
-	my($conn,$defx,$writ,$info)=@_;
-	my($dbi)=Meta::Db::Dbi->new();
-	$dbi->connect_def($conn,$defx);
-	my($tables)=$defx->get_tables();
+	my($dbi,$defx,$writ,$info)=@_;
 	$writ->startTag("dbdata");
 	$writ->dataElement("name",$defx->get_name());
+	my($tables)=$defx->get_tables();
 	$writ->startTag("tables");
 	for(my($i)=0;$i<$tables->size();$i++) {
 		$writ->startTag("table");
@@ -89,28 +96,24 @@ sub export_writ($$$$) {
 		$writ->endTag("records");
 		$writ->endTag("table");
 	}
-	$dbi->disconnect($conn);
 	$writ->endTag("tables");
 	$writ->endTag("dbdata");
 }
 
 sub export_hand($$$$) {
-	my($conn,$defx,$hand,$info)=@_;
+	my($dbi,$defx,$hand,$info)=@_;
 	my($writ)=Meta::Xml::Writer->new(OUTPUT=>$hand,DATA_INDENT=>1,DATA_MODE=>1,UNSAFE=>1);
 	$writ->xmlDecl();
 	$writ->base_comment();
-	$writ->doctype(
-		"dbdata",
-		"-//META//DTD DBDATA XML V1.0//EN",
-		"deve/xml/dbdata.dtd"
-	);
-	export_writ($conn,$defx,$writ,$info);
+	$writ->doctype("dbdata","-//META//DTD DBDATA XML V1.0//EN","deve/xml/dbdata.dtd");
+	export_writ($dbi,$defx,$writ,$info);
+	$writ->end();
 }
 
 sub export_file($$$$) {
-	my($conn,$defx,$file,$info)=@_;
+	my($dbi,$defx,$file,$info)=@_;
 	open(FILE,"> ".$file) || Meta::Utils::System::die("unable to open file [".$file."]");
-	export_hand($conn,$defx,*FILE,$info);
+	export_hand($dbi,$defx,*FILE,$info);
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
 }
 
@@ -213,6 +216,49 @@ sub sindex($$$) {
 	return(1);
 }
 
+sub clean_sa($) {
+	my($dbi)=@_;
+	my($sth)=$dbi->table_info();
+	$dbi->begin_work();
+	while(my($qual,$owner,$name,$type,$remarks)=$sth->fetchrow_array()) {
+#		Meta::Utils::Output::print("doing [".$name."]\n");
+		$dbi->execute_single("DELETE FROM ".$name);
+	}
+	$dbi->commit();
+}
+
+sub dbname_name_to_deve($) {
+	my($inp)=@_;
+	return("deve_".$inp);
+}
+
+sub dbname_deve_to_name($) {
+	my($inp)=@_;
+	return($inp=~/^deve_(.*)$/);
+}
+
+sub dbname_name_to_prod($) {
+	my($inp)=@_;
+	return("prod_".$inp);
+}
+
+sub dbname_prod_to_name($) {
+	my($inp)=@_;
+	return($inp=~/^prod_(.*)$/);
+}
+
+sub dbname_deve_to_prod($) {
+	my($inp)=@_;
+	my($name)=($inp=~/^deve_(.*)$/);
+	return(&name_to_prod($name));
+}
+
+sub dbname_prod_to_deve($) {
+	my($inp)=@_;
+	my($name)=($inp=~/^prod_(.*)$/);
+	return(&name_to_deve($name));
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -251,7 +297,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ops.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -261,7 +307,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Give this module a few parameters and it will create a database for you.
+This module does various database related tasks like exporting from
+databases in a generic fashion, translating database names so that
+development environments could use the same DB server as production
+environments and not have to worry about messing with the same
+actual databases, cleaning out databases and other tasks that fall
+in no other modules ballpark.
 
 =head1 FUNCTIONS
 
@@ -272,6 +323,13 @@ Give this module a few parameters and it will create a database for you.
 	import($)
 	san($$$$$$$$)
 	sindex($$$)
+	clean_sa($)
+	dbname_name_to_deve($)
+	dbname_deve_to_name($)
+	dbname_name_to_prod($)
+	dbname_prod_to_name($)
+	dbname_deve_to_prod($)
+	dbname_prod_to_deve($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -316,6 +374,36 @@ This will actually do the sanity tests.
 
 This will check that all indices are ok in the database.
 
+=item B<clean_sa($)>
+
+This is a clean stand alone method. Give it a database handle already
+connected to a database and it will clean it out by finding out which
+tables it has and issuing a DELETE statement for each.
+
+=item B<dbname_name_to_deve($)>
+
+This method translates a db name from cannonical to development.
+
+=item B<dbname_deve_to_name($)>
+
+This method translates a db name from development to cannonical.
+
+=item B<dbname_name_to_prod($)>
+
+This method translates a db name from cannonical to production.
+
+=item B<dbname_prod_to_name($)>
+
+This method translates a db name from production to cannonical.
+
+=item B<dbname_deve_to_prod($)>
+
+This method translates a db name from development to production.
+
+=item B<dbname_prod_to_deve($)>
+
+This method translates a db name from production to development.
+
 =item B<TEST($)>
 
 Test suite for this object.
@@ -351,6 +439,9 @@ None.
 	0.09 MV improve the movie db xml
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV move tests to modules
+	0.13 MV download scripts
+	0.14 MV weblog issues
 
 =head1 SEE ALSO
 
@@ -358,4 +449,4 @@ Meta::Db::Dbi(3), Meta::Db::Info(3), Meta::Sql::Stat(3), Meta::Sql::Stats(3), Me
 
 =head1 TODO
 
--make a routine to just provide the statement lists for creation.
+Nothing.

@@ -17,8 +17,8 @@ use Meta::Sql::Stats qw();
 my($def_file,$connections_file,$name,$con_name,$clean,$verb,$dire,$thumb_y,$thumb_x);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("def_file","what def XML file to use ?","xmlx/def/pics.xml",\$def_file);
-$opts->def_devf("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("def_file","what def XML file to use ?","xmlx/def/pics.xml",\$def_file);
+$opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("name","name of the database to use ?",undef,\$name);
 $opts->def_stri("con_name","name of the connection to use ?",undef,\$con_name);
 $opts->def_bool("clean","clean the database before import ?",1,\$clean);
@@ -29,11 +29,11 @@ $opts->def_inte("thumb_x","what x size for the thumbs ?",96,\$thumb_x);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($def)=Meta::Db::Def->new_deve($def_file);
+my($def)=Meta::Db::Def->new_modu($def_file);
 if(!defined($name)) {
 	$name=$def->get_name();
 }
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection);
 if(defined($con_name)) {
 	$connection=$connections->get($con_name);
@@ -143,7 +143,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_import.pl
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -191,15 +191,19 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
 
-=item B<def_file> (type: devf, default: xmlx/def/pics.xml)
+=item B<def_file> (type: modu, default: xmlx/def/pics.xml)
 
 what def XML file to use ?
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 what connections XML file to use ?
 
@@ -263,6 +267,8 @@ None.
 	0.12 MV improve the movie db xml
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV move tests to modules
+	0.16 MV web site development
 
 =head1 SEE ALSO
 

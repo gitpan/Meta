@@ -5,16 +5,20 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Test qw();
 use Meta::Ds::Enum qw();
-use Meta::Ds::Set qw();
+use Meta::Ds::Oset qw();
 use Meta::Utils::Output qw();
 
-my($bool,$inte,$stri,$floa,$dire,$file,$dbtype);
+my($bool,$inte,$stri,$floa,$dire,$file,$senum,$urls);
 my($enum)=Meta::Ds::Enum->new();
 $enum->insert("mysql");
 $enum->insert("oracle");
 $enum->insert("postgres");
 $enum->insert("informix");
-my($set)=Meta::Ds::Set->new();
+my($set)=Meta::Ds::Oset->new();
+$set->insert("one");
+$set->insert("two");
+$set->insert("three");
+my($sset)=Meta::Ds::Oset->new();
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("bool","just a bool",1,\$bool);
@@ -23,8 +27,9 @@ $opts->def_stri("stri","just a string","mark",\$stri);
 $opts->def_floa("floa","just a float",3.14,\$floa);
 $opts->def_dire("dire","just a directory",".",\$dire);
 $opts->def_file("file","just a file","/etc/passwd",\$file);
-$opts->def_enum("dbtype","what database type do you want ?","mysql",\$dbtype,$enum);
-$opts->def_setx("flist","list of files","one,two",\$set,$enum);
+$opts->def_enum("enum","a selection out of an enumerated type","mysql",\$senum,$enum);
+$opts->def_setx("sset","list of files","one,two",\$sset,$set);
+$opts->def_urls("urls","url string read from","http://www.cpan.org",\$urls);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
@@ -36,10 +41,9 @@ Meta::Utils::Output::print("stri is [".$stri."]\n");
 Meta::Utils::Output::print("floa is [".$floa."]\n");
 Meta::Utils::Output::print("dire is [".$dire."]\n");
 Meta::Utils::Output::print("file is [".$file."]\n");
-Meta::Utils::Output::print("dbtype is [".$dbtype."]\n");
-Meta::Utils::Output::print("list is [");
-$set->print(Meta::Utils::Output::get_file());
-Meta::Utils::Output::print("]\n");
+Meta::Utils::Output::print("senum is [".$senum."]\n");
+Meta::Utils::Output::print("sset size is [".$sset->size()."]\n");
+#Meta::Utils::Output::print("urls is [".$urls."]\n");
 
 Meta::Baseline::Test::redirect_off();
 
@@ -76,7 +80,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: opts.pl
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -120,6 +124,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -148,17 +156,21 @@ just a directory
 
 just a file
 
-=item B<dbtype> (type: enum, default: mysql)
+=item B<enum> (type: enum, default: mysql)
 
-what database type do you want ?
+a selection out of an enumerated type
 
 options [mysql,oracle,postgres,informix]
 
-=item B<flist> (type: setx, default: one,two)
+=item B<sset> (type: setx, default: one,two)
 
 list of files
 
-options [mysql,oracle,postgres,informix]
+options [one,two,three]
+
+=item B<urls> (type: urls, default: http://www.cpan.org)
+
+url string read from
 
 =back
 
@@ -196,10 +208,13 @@ None.
 	0.16 MV improve the movie db xml
 	0.17 MV web site automation
 	0.18 MV SEE ALSO section fix
+	0.19 MV move tests to modules
+	0.20 MV download scripts
+	0.21 MV bring movie data
 
 =head1 SEE ALSO
 
-Meta::Baseline::Test(3), Meta::Ds::Enum(3), Meta::Ds::Set(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Test(3), Meta::Ds::Enum(3), Meta::Ds::Oset(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

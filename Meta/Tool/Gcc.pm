@@ -14,7 +14,7 @@ use Meta::Lang::Cpp::Libs qw();
 use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub get_path();
@@ -91,7 +91,7 @@ sub get_dom($) {
 sub link($$$$$$$$$$$$$$$$) {
 	my($verb,$demo,$proc,$trg0,$trg1,$trg2,$trg3,$src0,$src1,$src2,$src3,$prm0,$prm1,$prm2,$prm3,$path)=@_;
 	
-	my($options)=Meta::Utils::Options::new_deve("data/baseline/cook/ccxx.txt");
+	my($options)=Meta::Utils::Options->new_deve("data/baseline/cook/ccxx.txt");
 	my($einc)=$options->get("base_cook_lang_ccxx_incl");
 	my($elib)=$options->get("base_cook_lang_ccxx_link");
 
@@ -261,7 +261,7 @@ sub compile($) {
 	my(@comps)=split('/',$targ);
 	my($dire)=join('/',$comps[0],$comps[1]);
 #	Meta::Utils::Output::print("dire is [".$dire."]\n");
-	my($options)=Meta::Utils::Options::new_deve("data/baseline/cook/ccxx.txt");
+	my($options)=Meta::Utils::Options->new_deve("data/baseline/cook/ccxx.txt");
 	my($einc)=$options->get("base_cook_lang_ccxx_incl");
 	my($elib)=$options->get("base_cook_lang_ccxx_link");
 #	Meta::Utils::Output::print("ccxx is [".$srcx."]\n");
@@ -472,7 +472,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Gcc.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -605,6 +605,7 @@ None.
 	0.23 MV website construction
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
+	0.26 MV bring movie data
 
 =head1 SEE ALSO
 

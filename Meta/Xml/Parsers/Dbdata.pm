@@ -11,9 +11,11 @@ use Meta::Db::Info qw();
 use Meta::Sql::Stats qw();
 use Meta::Utils::File::File qw();
 use Meta::Xml::Parsers::Base qw();
+use Meta::Utils::Time qw();
+use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.18";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -125,6 +127,12 @@ sub handle_end($$) {
 		my($number)=$def->get_field_number($self->{TABLE_NAME},$self->{FIELD_NAME})+1;
 		my($type)=$field->get_type();
 		my($stat)=$self->{STAT};
+#		Meta::Utils::Output::print("name is [".$type->get_name()."]\n");
+		if($type->get_name() eq "datetime") {
+#			Meta::Utils::Output::print("before [".$field_data."]\n");
+			$field_data=Meta::Utils::Time::unixdate2mysql($field_data);
+#			Meta::Utils::Output::print("after [".$field_data."]\n");
+		}
 		for(my($i)=0;$i<$stat->size();$i++) {
 			my($curr_stat)=$stat->getx($i);
 			my($curr_info)=$info->getx($i);
@@ -144,10 +152,16 @@ sub handle_char($$) {
 #	Meta::Utils::Output::print("in here with elem [".$elem."]\n");
 	my($context)=join(".",$self->context());
 	if($context eq "dbdata.connections") {
-		$self->{CONNECTIONS}=Meta::Db::Connections->new_deve($elem);
+		my($module)=Meta::Development::Module->new_name($elem);
+		$self->{CONNECTIONS}=Meta::Db::Connections->new_modu($module);
 	}
 	if($context eq "dbdata.def") {
-		$self->{DEF}=Meta::Db::Def->new_deve($elem);
+		my($module)=Meta::Development::Module->new_name($elem);
+		$self->{DEF}=Meta::Db::Def->new_modu($module);
+	}
+	if($context eq "dbdata.sets.set") {
+		# import $elem into the database
+		Meta::Utils::Output::print("going to import set [".$elem."]\n");
 	}
 	if($context eq "dbdata.tables.table.name") {
 		$self->{TABLE_NAME}=$elem;
@@ -204,7 +218,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbdata.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -307,10 +321,12 @@ None.
 	0.14 MV website construction
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV download scripts
+	0.18 MV weblog issues
 
 =head1 SEE ALSO
 
-Meta::Db::Connections(3), Meta::Db::Info(3), Meta::Ds::Array(3), Meta::Sql::Stats(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::Parsers::Base(3), strict(3)
+Meta::Db::Connections(3), Meta::Db::Info(3), Meta::Development::Module(3), Meta::Ds::Array(3), Meta::Sql::Stats(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Time(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw();
 
 #sub BEGIN();
@@ -36,7 +36,7 @@ sub start($) {
 
 sub report($) {
 	my($self)=@_;
-	Meta::Utils::Output::print("index is [".$self->get_index()."]\n");
+	#Meta::Utils::Output::print("index is [".$self->get_index()."]\n");
 	$self->set_index($self->get_index()+1);
 }
 
@@ -83,7 +83,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Progress.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -161,6 +161,7 @@ None.
 	0.03 MV web site development
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV download scripts
 
 =head1 SEE ALSO
 

@@ -16,7 +16,7 @@ use Meta::Xml::Parsers::Checker qw();
 use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.07";
 @ISA=qw();
 
 #sub catalog_setup();
@@ -33,6 +33,7 @@ $VERSION="0.05";
 #sub resolve_dtd($);
 #sub resolve_xml($);
 #sub get_type($);
+#sub BEGIN();
 #sub TEST($);
 
 #__DATA__
@@ -40,9 +41,13 @@ $VERSION="0.05";
 our($errors);
 
 sub catalog_setup() {
-	my($path)=Meta::Baseline::Aegis::search_path_list();
-	my($value)=$path->get_catenate(":","dtdx/CATALOG");
-	Meta::Utils::Env::set("XML_CATALOG_FILES",$value);
+	if(Meta::Baseline::Aegis::have_aegis()) {
+		my($path)=Meta::Baseline::Aegis::search_path_list();
+		my($value)=$path->get_catenate(":","dtdx/CATALOG");
+		Meta::Utils::Env::set("XML_CATALOG_FILES",$value);
+	} else {
+		Meta::Utils::Env::set("XML_CATALOG_FILES","/local/tools/htdocs/dtdx/CATALOG");
+	}
 }
 
 sub get_prefix() {
@@ -73,8 +78,15 @@ sub setup($) {
 }
 
 sub setup_path() {
-	my($path)=Meta::Baseline::Aegis::search_path();
-	my($list)=&get_search_list($path);
+	my($patho);
+	if(Meta::Baseline::Aegis::have_aegis()) {
+		$patho=Meta::Baseline::Aegis::search_path_object();
+	} else {
+		$patho=Meta::Utils::File::Patho->new();
+		$patho->push("/local/tools/htdocs");
+	}
+	$patho->append("/dtdx");
+	my($list)=$patho->list();
 	XML::Checker::Parser::set_sgml_search_path(@$list);
 }
 
@@ -239,6 +251,10 @@ sub get_type($) {
 	return($parser->get_result());
 }
 
+sub BEGIN() {
+	setup_path();
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -277,7 +293,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xml.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -290,6 +306,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 This class will help you with xml related tasks.
 0. checking an xml file for correctness according to dtd.
+1. setting up the search path for xml parser to find dtds.
+2. extracting dependencies from XML files.
+3. resolving dtds and xmls.
+4. give you the type (root element) of XML files.
+5. setup search path for XML CATALOG files.
+6. Be able to strip all from XML file but content.
 
 =head1 FUNCTIONS
 
@@ -307,6 +329,7 @@ This class will help you with xml related tasks.
 	resolve_dtd($)
 	resolve_xml($)
 	get_type($)
+	BEGIN()
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -397,6 +420,11 @@ of the project.
 This method receives a file name of an XML document and returns the type
 of the document (the highest element in it).
 
+=item B<BEGIN()>
+
+This block will be executed whenever you use this module and it will setup
+the XML search path for you.
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -426,6 +454,8 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV move tests into modules
+	0.07 MV web site development
 
 =head1 SEE ALSO
 
@@ -440,3 +470,5 @@ Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Env(3), Meta:
 -the way I'm cutting full xmls into chunks using perl regexps is not right. Use a real XML parser and emit everything except the stuff I'm removing now.
 
 -c2chun and chunk have same code. Unify it using IO:: objects.
+
+-find all modules who use setup_path and make them stop it. (we have it in our begin block).

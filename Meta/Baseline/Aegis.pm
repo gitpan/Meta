@@ -11,9 +11,10 @@ use Meta::Utils::System qw();
 use Meta::Utils::Parse::Text qw();
 use Meta::Utils::File::Path qw();
 use Meta::Utils::Output qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.47";
+$VERSION="0.48";
 @ISA=qw();
 
 #sub aesub($);
@@ -79,7 +80,11 @@ $VERSION="0.47";
 
 #sub no_missing_files($);
 
+#sub checkout_file($);
 #sub checkout_hash($);
+
+#sub in_change($);
+#sub have_aegis();
 
 #sub TEST($);
 
@@ -87,7 +92,7 @@ $VERSION="0.47";
 
 sub aesub($) {
 	my($stri)=@_;
-	my($resu)=Meta::Utils::System::system_out_val("aesub",["'$stri'"]);
+	my($resu)=Meta::Utils::System::system_out_val("/local/tools/bin/aesub",["'$stri'"]);
 	chop($resu);
 	return($resu);
 }
@@ -491,6 +496,11 @@ sub no_missing_files($) {
 	return(Meta::Utils::List::empty($list));
 }
 
+sub checkout_file($) {
+	my($file)=@_;
+	return(Meta::Utils::System::system_nodie("aegis",["-Copy_File",$file]));
+}
+
 sub checkout_hash($) {
 	my($hash)=@_;
 	my(@list)=keys(%$hash);
@@ -511,6 +521,21 @@ sub checkout_hash($) {
 #		}
 #	}
 #	return($resu);
+}
+
+sub in_change($) {
+	my($file)=@_;
+	my($hash)=&change_files_hash(1,1,0,1,1,0);
+	if(exists($hash->{$file})) {
+		return(1);
+	} else {
+		return(0);
+	}
+}
+
+sub have_aegis() {
+	my($patho)=Meta::Utils::File::Patho->new_path();
+	return($patho->exists("aegis"));
 }
 
 sub TEST($) {
@@ -551,7 +576,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aegis.pm
 	PROJECT: meta
-	VERSION: 0.47
+	VERSION: 0.48
 
 =head1 SYNOPSIS
 
@@ -629,7 +654,10 @@ The services here are divided into several categories:
 	extra_files_list($)
 	total_files_list($$)
 	no_missing_files($)
+	checkout_file($)
 	checkout_hash($)
+	in_change($)
+	have_aegis()
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -923,10 +951,24 @@ This method is the same as total_files_hash expect it returns a list.
 This routine returns a boolean according to whether there are or aren't any
 missing files.
 
+=item B<checkout_file($)>
+
+This method will check out a single file.
+
 =item B<checkout_hash($)>
 
 This will receive a hash reference and will check out all the files in
 the hash.
+
+=item B<in_change($)>
+
+This function recevies a file name and returns true iff the file is part
+of the current change.
+
+=item B<have_aegis()>
+
+This function returns whether the current environment is an Aegis environment
+or not. Currently it only checks whether aegis is in the path. This is bad.
 
 =item B<TEST($)>
 
@@ -999,10 +1041,11 @@ None.
 	0.45 MV website construction
 	0.46 MV web site automation
 	0.47 MV SEE ALSO section fix
+	0.48 MV web site development
 
 =head1 SEE ALSO
 
-Meta::Utils::File::Collect(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
+Meta::Utils::File::Collect(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::File::Patho(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

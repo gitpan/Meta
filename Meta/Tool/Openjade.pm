@@ -9,7 +9,7 @@ use Meta::Baseline::Utils qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.17";
 @ISA=qw();
 
 #sub c2psxx($);
@@ -193,7 +193,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Openjade.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -323,6 +323,7 @@ None.
 	0.14 MV website construction
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV bring movie data
 
 =head1 SEE ALSO
 

@@ -13,7 +13,7 @@ $opts->def_devf("author_file","what XML/author file to use ?","xmlx/author/autho
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($author)=Meta::Info::Author::new_deve($file);
+my($author)=Meta::Info::Author->new_deve($file);
 Meta::Utils::Output::print($author->get_vcard());
 Meta::Utils::System::exit(1);
 
@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: email_vcard.pl
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -92,6 +92,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -125,6 +129,8 @@ None.
 	0.05 MV improve the movie db xml
 	0.06 MV web site automation
 	0.07 MV SEE ALSO section fix
+	0.08 MV move tests to modules
+	0.09 MV bring movie data
 
 =head1 SEE ALSO
 

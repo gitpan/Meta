@@ -37,7 +37,7 @@ __END__
 
 =head1 NAME
 
-pgn.pl - what does your program do.
+pgn.pl - demo pgn reading and writing capabilities.
 
 =head1 COPYRIGHT
 
@@ -64,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pgn.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -106,6 +106,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -129,6 +133,8 @@ None.
 
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
+	0.02 MV move tests to modules
+	0.03 MV bring movie data
 
 =head1 SEE ALSO
 

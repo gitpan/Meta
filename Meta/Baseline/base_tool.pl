@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool.pl
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -105,6 +105,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -117,13 +121,13 @@ should I be noisy ?
 
 type of tool
 
-options [aspe,temp,ccxx,cxxx,sgml,chun,java,lily,perl,pyth,rule,txtx,data,rcxx,patc,ascx,html,cssx,dirx,cook,aegi,xmlx,pngx,jpgx,epsx,awkx,conf,targ,texx,deps,chec,clas,dvix,objs,psxx,info,rtfx,mifx,midi,bins,dlls,libs,pyob,dtdx,swig,gzxx,pack,dslx,pdfx,dbxx,manx,nrfx,bdbx,late,lyxx]
+options [aspe,temp,ccxx,cxxx,sgml,chun,java,lily,perl,pyth,rule,txtx,data,rcxx,patc,ascx,html,cssx,dirx,cook,aegi,xmlx,xslt,pngx,jpgx,epsx,awkx,conf,targ,texx,deps,chec,clas,dvix,objs,psxx,info,rtfx,mifx,midi,bins,dlls,libs,pyob,dtdx,swig,gzxx,pack,dslx,pdfx,dbxx,manx,nrfx,bdbx,late,lyxx]
 
 =item B<lang> (type: enum, default: )
 
 language
 
-options [aspe,temp,ccxx,cxxx,sgml,chun,java,lily,perl,pyth,rule,txtx,data,rcxx,patc,ascx,html,cssx,dirx,cook,aegi,xmlx,pngx,jpgx,epsx,awkx,conf,targ,texx,deps,chec,clas,dvix,objs,psxx,info,rtfx,mifx,midi,bins,dlls,libs,pyob,dtdx,swig,gzxx,pack,dslx,pdfx,dbxx,manx,nrfx,bdbx,late,lyxx]
+options [aspe,temp,ccxx,cxxx,sgml,chun,java,lily,perl,pyth,rule,txtx,data,rcxx,patc,ascx,html,cssx,dirx,cook,aegi,xmlx,xslt,pngx,jpgx,epsx,awkx,conf,targ,texx,deps,chec,clas,dvix,objs,psxx,info,rtfx,mifx,midi,bins,dlls,libs,pyob,dtdx,swig,gzxx,pack,dslx,pdfx,dbxx,manx,nrfx,bdbx,late,lyxx]
 
 =back
 
@@ -157,6 +161,7 @@ None.
 	0.11 MV improve the movie db xml
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV move tests to modules
 
 =head1 SEE ALSO
 

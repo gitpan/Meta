@@ -7,7 +7,7 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub BEGIN($);
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Verbose.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -84,6 +84,10 @@ Inherit objects from this one and you get get/set verbose methods
 and a method "verbose" which prints the string given to it
 only if verbose is turned on.
 
+The idea is to not write this kind of method again and again
+in every object which is a drag and to make the code more
+readable (not full of remarks).
+
 =head1 FUNCTIONS
 
 	BEGIN()
@@ -96,7 +100,8 @@ only if verbose is turned on.
 
 =item B<BEGIN()>
 
-This is a constructor for the Meta::Development::Verbose object.
+This is a setup method for the class which sets up the get_verbose
+and set_verbose methods.
 
 =item B<verbose($$)>
 
@@ -129,6 +134,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV bring movie data
 
 =head1 SEE ALSO
 
@@ -136,4 +142,4 @@ Meta::Class::MethodMaker(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-be able to set the verbosity flag on construction according to reading the option from some kind of data base/config file according to the class name which is actually being constructed.

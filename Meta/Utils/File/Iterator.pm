@@ -5,14 +5,16 @@ package Meta::Utils::File::Iterator;
 use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 use Meta::Ds::Stack qw();
+use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub BEGIN();
 #sub init($);
 #sub add_directory($$);
+#sub get_relative($);
 #sub start($);
 #sub next($);
 #sub fini($);
@@ -41,6 +43,14 @@ sub init($) {
 sub add_directory($$) {
 	my($self,$valx)=@_;
 	$self->{STACK_DIR}->push($valx);
+}
+
+sub get_relative($) {
+	my($self)=@_;
+	my($stack_dir)=$self->{STACK_DIR};
+#	my($full)=$stack_dir->join('/');
+	my($full)=$stack_dir->top();
+	return(Meta::Utils::Utils::minus($self->get_curr(),$full));
 }
 
 sub start($) {
@@ -138,7 +148,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Iterator.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -186,6 +196,7 @@ The default behaviour is to iterate just the files.
 	BEGIN()
 	init($)
 	add_directory($)
+	get_relative($)
 	start($)
 	next($)
 	fini($)
@@ -209,6 +220,11 @@ This is an internal post-constructor.
 This method will set the directory that this iterator will
 scan. Right now, if you add the same directory with different
 names, it will get iteraterd twice. This is on the todo list.
+
+=item B<get_relative($)>
+
+This method will return the relative path of the current file in relation
+to the directory doing the scanning.
 
 =item B<start($)>
 
@@ -266,10 +282,11 @@ None.
 	0.12 MV web site development
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV move tests to modules
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Ds::Stack(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Ds::Stack(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

@@ -107,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: website_cleanout.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -150,6 +150,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -203,6 +207,7 @@ None.
 	0.08 MV web site development
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV move tests to modules
 
 =head1 SEE ALSO
 

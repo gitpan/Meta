@@ -17,7 +17,7 @@ Meta::Baseline::Test::redirect_on();
 #Meta::Utils::Output::print("in here\n");
 my($file)=Meta::Baseline::Aegis::which("xmlx/temp/xmlx/perlpkgs/meta.xml");
 #Meta::Utils::Output::print("in there\n");
-my($object)=Meta::Lang::Perl::Perlpkgs::new_file($file);
+my($object)=Meta::Lang::Perl::Perlpkgs->new_file($file);
 Meta::Utils::Output::print("number of packages is [".$object->size()."]\n");
 for(my($i)=0;$i<$object->size();$i++) {
 	my($curr)=$object->getx($i);
@@ -87,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perlpkgs.pl
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -130,6 +130,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -165,6 +169,8 @@ None.
 	0.11 MV improve the movie db xml
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV move tests to modules
+	0.15 MV bring movie data
 
 =head1 SEE ALSO
 

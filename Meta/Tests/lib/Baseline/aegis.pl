@@ -48,6 +48,12 @@ my($work_dir)=Meta::Baseline::Aegis::work_dir();
 Meta::Utils::Output::print("work_dir is [".$work_dir."]\n");
 my($file)=Meta::Baseline::Aegis::which_f("/tmp/tmp");
 Meta::Utils::Output::print("file is [".$file."]\n");
+my($in_change)=Meta::Baseline::Aegis::in_change("txtx/todo/todo.txt");
+Meta::Utils::Output::print("in_change todo.txt [".$in_change."]\n");
+my($in_change_2)=Meta::Baseline::Aegis::in_change("foo");
+Meta::Utils::Output::print("in_change foo [".$in_change_2."]\n");
+my($have_aegis)=Meta::Baseline::Aegis::have_aegis();
+Meta::Utils::Output::print("have_aegis is [".$have_aegis."]\n");
 
 Meta::Baseline::Test::redirect_off();
 
@@ -84,7 +90,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: aegis.pl
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -128,6 +134,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -173,6 +183,8 @@ None.
 	0.20 MV improve the movie db xml
 	0.21 MV web site automation
 	0.22 MV SEE ALSO section fix
+	0.23 MV move tests to modules
+	0.24 MV web site development
 
 =head1 SEE ALSO
 

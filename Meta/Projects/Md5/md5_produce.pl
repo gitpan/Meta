@@ -4,11 +4,12 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use IO qw();
-use XML::Writer qw();
+use Meta::Xml::Writer qw();
 use Meta::Digest::MD5 qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::File::Iterator qw();
 use MIME::Base64 qw();
+use Meta::Utils::File::Time qw();
 
 my($verb,$outp,$dire);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -21,7 +22,12 @@ $opts->analyze(\@ARGV);
 
 
 my($output)=IO::File->new("> ".$outp);
-my($writer)=new XML::Writer(OUTPUT=>$output,DATA_MODE=>1,DATA_INDENT=>8);
+my($writer)=Meta::Xml::Writer->new(OUTPUT=>$output,DATA_MODE=>1,DATA_INDENT=>8);
+# emit a proper XML header
+$writer->xmlDecl();
+# emit a DOCTYPE declaration
+$writer->doctype("md5","-//META//DTD MD5 V1.0//EN","deve/xml/md5.dtd");
+# now start the primary element
 $writer->startTag("md5");
 
 my($iterator)=Meta::Utils::File::Iterator->new();
@@ -34,14 +40,16 @@ while(!$iterator->get_over()) {
 		Meta::Utils::Output::print("working on [".$curr."]\n");
 	}
 	my($sum)=Meta::Digest::MD5::get_filename_digest($curr);
+	my($time)=Meta::Utils::File::Time::time($curr);
 	$writer->startTag("stamp");
 	$writer->dataElement("filename",$curr);
-	$writer->dataElement("moddate","0123456789");
+	$writer->dataElement("moddate",$time);
 	$writer->dataElement("md5sum",MIME::Base64::encode($sum,""));
 	$writer->endTag("stamp");
 	$iterator->next();
 }
 $iterator->fini();
+#close the main element
 $writer->endTag("md5");
 $writer->end();
 $output->close();
@@ -78,7 +86,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_produce.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -132,6 +140,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -177,10 +189,11 @@ None.
 	0.09 MV improve the movie db xml
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV move tests to modules
 
 =head1 SEE ALSO
 
-IO(3), MIME::Base64(3), Meta::Digest::MD5(3), Meta::Utils::File::Iterator(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::Writer(3), strict(3)
+IO(3), MIME::Base64(3), Meta::Digest::MD5(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Time(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::Writer(3), strict(3)
 
 =head1 TODO
 

@@ -6,6 +6,7 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Test qw();
 use Meta::Tool::Aegis qw();
 use Meta::Utils::Output qw();
+use Meta::Info::Authors qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -14,8 +15,9 @@ $opts->analyze(\@ARGV);
 
 Meta::Baseline::Test::redirect_on();
 
+my($authors)=Meta::Info::Authors->new();
 my($module)="aegi/repo/file_hstry.rpt";
-my($revision)=Meta::Tool::Aegis::history($module);
+my($revision)=Meta::Tool::Aegis::history($module,$authors);
 Meta::Utils::Output::print("revision in xml is [".$revision->docbook_revhistory()."]\n");
 $revision->print(Meta::Utils::Output::get_file());
 Meta::Utils::Output::print("perl_pod is [".$revision->perl_pod()."]\n");
@@ -56,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: aegis.pl
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -98,6 +100,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -136,10 +142,12 @@ None.
 	0.14 MV improve the movie db xml
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV move tests to modules
+	0.18 MV bring movie data
 
 =head1 SEE ALSO
 
-Meta::Baseline::Test(3), Meta::Tool::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Test(3), Meta::Info::Authors(3), Meta::Tool::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

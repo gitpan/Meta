@@ -102,7 +102,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_notify.pl
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -144,6 +144,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -202,6 +206,7 @@ None.
 	0.24 MV improve the movie db xml
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
+	0.27 MV move tests to modules
 
 =head1 SEE ALSO
 

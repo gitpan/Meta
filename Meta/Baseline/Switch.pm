@@ -66,6 +66,7 @@ use Meta::Ds::Enum qw();
 use Meta::Utils::Output qw();
 use Meta::Pdmt::BuildInfo qw();
 use Meta::Tool::Gzip qw();
+use Meta::Tool::Ps2Pdf qw();
 
 our($VERSION,@ISA);
 $VERSION="0.54";
@@ -673,6 +674,10 @@ sub run_module($$$$$$) {
 			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
+		if($type eq "pdfx") {
+			$scod=Meta::Tool::Ps2Pdf::c2pdfx($buil);
+			$foun=1;
+		}
 	}
 	if($lang eq "info") {
 	}
@@ -932,7 +937,7 @@ None.
 
 =head1 SEE ALSO
 
-Meta::Baseline::Lang::Aegi(3), Meta::Baseline::Lang::Ascx(3), Meta::Baseline::Lang::Aspe(3), Meta::Baseline::Lang::Awkx(3), Meta::Baseline::Lang::Bdbx(3), Meta::Baseline::Lang::Bins(3), Meta::Baseline::Lang::Ccxx(3), Meta::Baseline::Lang::Chec(3), Meta::Baseline::Lang::Chun(3), Meta::Baseline::Lang::Clas(3), Meta::Baseline::Lang::Conf(3), Meta::Baseline::Lang::Cook(3), Meta::Baseline::Lang::Cssx(3), Meta::Baseline::Lang::Cxxx(3), Meta::Baseline::Lang::Data(3), Meta::Baseline::Lang::Dbxx(3), Meta::Baseline::Lang::Deps(3), Meta::Baseline::Lang::Dirx(3), Meta::Baseline::Lang::Dlls(3), Meta::Baseline::Lang::Dslx(3), Meta::Baseline::Lang::Dtdx(3), Meta::Baseline::Lang::Dvix(3), Meta::Baseline::Lang::Epsx(3), Meta::Baseline::Lang::Gzxx(3), Meta::Baseline::Lang::Html(3), Meta::Baseline::Lang::Info(3), Meta::Baseline::Lang::Java(3), Meta::Baseline::Lang::Jpgx(3), Meta::Baseline::Lang::Late(3), Meta::Baseline::Lang::Libs(3), Meta::Baseline::Lang::Lily(3), Meta::Baseline::Lang::Lyxx(3), Meta::Baseline::Lang::Manx(3), Meta::Baseline::Lang::Midi(3), Meta::Baseline::Lang::Mifx(3), Meta::Baseline::Lang::Nrfx(3), Meta::Baseline::Lang::Objs(3), Meta::Baseline::Lang::Pack(3), Meta::Baseline::Lang::Patc(3), Meta::Baseline::Lang::Pdfx(3), Meta::Baseline::Lang::Perl(3), Meta::Baseline::Lang::Pgnx(3), Meta::Baseline::Lang::Pngx(3), Meta::Baseline::Lang::Psxx(3), Meta::Baseline::Lang::Pyob(3), Meta::Baseline::Lang::Pyth(3), Meta::Baseline::Lang::Rcxx(3), Meta::Baseline::Lang::Rtfx(3), Meta::Baseline::Lang::Rule(3), Meta::Baseline::Lang::Sgml(3), Meta::Baseline::Lang::Swig(3), Meta::Baseline::Lang::Targ(3), Meta::Baseline::Lang::Temp(3), Meta::Baseline::Lang::Texx(3), Meta::Baseline::Lang::Txtx(3), Meta::Baseline::Lang::Xmlx(3), Meta::Baseline::Lang::Xslt(3), Meta::Ds::Array(3), Meta::Ds::Enum(3), Meta::Pdmt::BuildInfo(3), Meta::Tool::Gzip(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Lang::Aegi(3), Meta::Baseline::Lang::Ascx(3), Meta::Baseline::Lang::Aspe(3), Meta::Baseline::Lang::Awkx(3), Meta::Baseline::Lang::Bdbx(3), Meta::Baseline::Lang::Bins(3), Meta::Baseline::Lang::Ccxx(3), Meta::Baseline::Lang::Chec(3), Meta::Baseline::Lang::Chun(3), Meta::Baseline::Lang::Clas(3), Meta::Baseline::Lang::Conf(3), Meta::Baseline::Lang::Cook(3), Meta::Baseline::Lang::Cssx(3), Meta::Baseline::Lang::Cxxx(3), Meta::Baseline::Lang::Data(3), Meta::Baseline::Lang::Dbxx(3), Meta::Baseline::Lang::Deps(3), Meta::Baseline::Lang::Dirx(3), Meta::Baseline::Lang::Dlls(3), Meta::Baseline::Lang::Dslx(3), Meta::Baseline::Lang::Dtdx(3), Meta::Baseline::Lang::Dvix(3), Meta::Baseline::Lang::Epsx(3), Meta::Baseline::Lang::Gzxx(3), Meta::Baseline::Lang::Html(3), Meta::Baseline::Lang::Info(3), Meta::Baseline::Lang::Java(3), Meta::Baseline::Lang::Jpgx(3), Meta::Baseline::Lang::Late(3), Meta::Baseline::Lang::Libs(3), Meta::Baseline::Lang::Lily(3), Meta::Baseline::Lang::Lyxx(3), Meta::Baseline::Lang::Manx(3), Meta::Baseline::Lang::Midi(3), Meta::Baseline::Lang::Mifx(3), Meta::Baseline::Lang::Nrfx(3), Meta::Baseline::Lang::Objs(3), Meta::Baseline::Lang::Pack(3), Meta::Baseline::Lang::Patc(3), Meta::Baseline::Lang::Pdfx(3), Meta::Baseline::Lang::Perl(3), Meta::Baseline::Lang::Pgnx(3), Meta::Baseline::Lang::Pngx(3), Meta::Baseline::Lang::Psxx(3), Meta::Baseline::Lang::Pyob(3), Meta::Baseline::Lang::Pyth(3), Meta::Baseline::Lang::Rcxx(3), Meta::Baseline::Lang::Rtfx(3), Meta::Baseline::Lang::Rule(3), Meta::Baseline::Lang::Sgml(3), Meta::Baseline::Lang::Swig(3), Meta::Baseline::Lang::Targ(3), Meta::Baseline::Lang::Temp(3), Meta::Baseline::Lang::Texx(3), Meta::Baseline::Lang::Txtx(3), Meta::Baseline::Lang::Xmlx(3), Meta::Baseline::Lang::Xslt(3), Meta::Ds::Array(3), Meta::Ds::Enum(3), Meta::Pdmt::BuildInfo(3), Meta::Tool::Gzip(3), Meta::Tool::Ps2Pdf(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -3,30 +3,41 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use CGI qw();
-use DBI qw();
+use Meta::Cgi::SqlTable qw();
+use Meta::Db::Dbi qw();
+use Meta::Db::Def qw();
+use Meta::Utils::Output qw();
 
+my($con_modu,$con_name,$db_name,$def_modu,$uid,$limit);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
+$opts->def_modu("con_modu","file with connection info","xmlx/connections/connections.xml",\$con_modu);
+$opts->def_stri("con_name","connection name",undef,\$con_name);
+$opts->def_stri("db_name","db name","movie",\$db_name);
+$opts->def_modu("def_modu","database definition file","xmlx/def/movie.xml",\$def_modu);
+$opts->def_stri("uid","user id",1,\$uid);
+$opts->def_stri("limit","limit on number of entries",30,\$limit);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($dbi)=DBI->connect("dbi:mysql:movie:host=localhost","devel","XXX");
-if(!$dbi) {
-	Meta::Utils::System::die("Error connecting to db [".DBI->errstr()."]");
-}
-my($ar)=$dbi->selectall_arrayref("select id,name from movie order by id");
-
-my($p)=CGI->new();
+my($def)=Meta::Db::Def->new_modu($def_modu);
+my($dbi)=Meta::Db::Dbi->new();
+$dbi->Meta::Db::Dbi::connect_xml($con_modu->get_abs_path(),$con_name,$db_name);
+#my($stat)="select id,name,description,release_date from movie order by name";
+my($stat)="select movie.id,movie.name,view.date from movie,view where view.movie=movie.id order by view.date desc";
+#my($columns)=[ "movie.id","movie.name","view.date" ];
+#Meta::Utils::Output::print("columns is [".$columns."]\n");
+#my($stat)="select name,date from movie,view where view.movie=movie.id order by date desc";
+#my($stat)="select name,date from movie INNER JOIN view ON (view.movie=movie.id) order by date desc";
+#Meta::Utils::Output::print("stat is [".$stat."]\n");
+my($p)=Meta::Cgi::SqlTable->new();
 print $p->header();
-print $p->start_html();
-print $p->start_table();
-print $p->caption("this is my list of movies");
-print $p->Tr($p->th(['id','name']));
-for(my($i)=0;$i<=$#$ar;$i++) {
-	print $p->Tr($p->td([$ar->[$i][0],$ar->[$i][1]]));
-}
-print $p->end_table();
+print $p->start_html(
+	-title=>"Mark Veltzer's home page",
+	-style=>{'src'=>'http://www.veltzer.org/cssx/projects/Website/main.css'},
+);
+print $p->sql_table($stat,$def,$dbi,$limit);
+#print $p->core_code($stat,$def,$dbi,$limit,$columns);
 print $p->end_html();
 
 Meta::Utils::System::exit(1);
@@ -35,7 +46,7 @@ __END__
 
 =head1 NAME
 
-movie_cgi.pl - what does your program do.
+movie_cgi.pl - Perl/CGI interface to the movie database.
 
 =head1 COPYRIGHT
 
@@ -62,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: movie_cgi.pl
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -107,9 +118,37 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
+
+=item B<con_modu> (type: modu, default: xmlx/connections/connections.xml)
+
+file with connection info
+
+=item B<con_name> (type: stri, default: )
+
+connection name
+
+=item B<db_name> (type: stri, default: movie)
+
+db name
+
+=item B<def_modu> (type: modu, default: xmlx/def/movie.xml)
+
+database definition file
+
+=item B<uid> (type: stri, default: 1)
+
+user id
+
+=item B<limit> (type: stri, default: 30)
+
+limit on number of entries
 
 =back
 
@@ -132,10 +171,14 @@ None.
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
 	0.03 MV put all tests in modules
+	0.04 MV move tests to modules
+	0.05 MV download scripts
+	0.06 MV bring movie data
+	0.07 MV weblog issues
 
 =head1 SEE ALSO
 
-CGI(3), DBI(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Meta::Cgi::SqlTable(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -8,23 +8,44 @@ use Meta::Baseline::Aegis qw();
 use Meta::Ds::Oset qw();
 use Meta::Utils::File::Copy qw();
 use Meta::Utils::Output qw();
+use Meta::Utils::Utils qw();
+use Meta::Utils::File::Prop qw();
+use Meta::Lang::Perl::Perl qw();
+use Meta::Development::Scripts qw();
+use XML::XPath qw();
 
-my($file,$targ,$verbose);
+my($modules,$targ,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("file","file name to transfer","html/temp/html/projects/Website/main.html",\$file);
+$opts->def_modu("modules","XML modules file to copy","xmlx/modules/website.xml",\$modules);
 $opts->def_dire("directory","directory to copy to","/local/tools/htdocs",\$targ);
-#$opts->def_dire("directory","directory to copy to","/var/www/html",\$targ);
 $opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
+my($par)=XML::Parser->new();
+if(!defined($par)) {
+	Meta::Utils::System::die("unable to create XML::Parser");
+}
+my($parser)=XML::XPath::XMLParser->new(filename=>$modules->get_abs_path(),parser=>$par);
+if(!defined($parser)) {
+	Meta::Utils::System::die("unable to create XML::XPath::XMLParser");
+}
+my($root_node)=$parser->parse();
+my($set)=Meta::Ds::Oset->new();
+my($nodes)=$root_node->find('/modules/module/name');
+foreach my $node ($nodes->get_nodelist()) {
+	my($name)=$node->getChildNode(1)->getValue();
+	if($verbose) {
+		Meta::Utils::Output::print("inserting [".$name."]\n");
+	}
+	$set->insert($name);
+}
+
 if($verbose) {
 	Meta::Utils::Output::print("reading dependendencies...\n");
 }
-my($graph)=Meta::Baseline::Cook::read_deps_full($file);
-my($set)=Meta::Ds::Oset->new();
-$set->insert($file);
+my($graph)=Meta::Baseline::Cook::read_deps_set($set);
 my($output_set)=Meta::Ds::Oset->new();
 if($verbose) {
 	Meta::Utils::Output::print("getting span...\n");
@@ -33,11 +54,19 @@ $graph->all_ou_new($set,$output_set);
 
 for(my($i)=0;$i<$output_set->size();$i++) {
 	my($curr)=$output_set->elem($i);
-	if($verbose) {
-		Meta::Utils::Output::print("working on [".$curr."]\n");
+	if(Meta::Utils::Utils::is_relative($curr)) {
+		if($verbose) {
+			Meta::Utils::Output::print("working on [".$curr."]\n");
+		}
+		my($real)=Meta::Baseline::Aegis::which($curr);
+		my($outf)=$targ."/".$curr;
+		Meta::Utils::File::Copy::syscopy_mkdir($real,$outf);
+		#Meta::Utils::File::Prop::same_mode($real,$outf);
+		if(Meta::Lang::Perl::Perl::is_bin($curr)) {
+			Meta::Development::Scripts::set_runline($outf,"#!/local/tools/bin/perl -I".$targ."/perl/lib");
+			Meta::Utils::File::Prop::chmod_x($outf);
+		}
 	}
-	my($real)=Meta::Baseline::Aegis::which($curr);
-	Meta::Utils::File::Copy::copy_mkdir($real,$targ."/".$curr);
 }
 
 Meta::Utils::System::exit(1);
@@ -73,7 +102,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: website_copy.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -120,13 +149,17 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
 
-=item B<file> (type: devf, default: html/temp/html/projects/Website/main.html)
+=item B<modules> (type: modu, default: xmlx/modules/website.xml)
 
-file name to transfer
+XML modules file to copy
 
 =item B<directory> (type: dire, default: /local/tools/htdocs)
 
@@ -155,10 +188,13 @@ None.
 
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
+	0.02 MV move tests to modules
+	0.03 MV web site development
+	0.04 MV weblog issues
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Ds::Oset(3), Meta::Utils::File::Copy(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Development::Scripts(3), Meta::Ds::Oset(3), Meta::Lang::Perl::Perl(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Prop(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), XML::XPath(3), strict(3)
 
 =head1 TODO
 
@@ -169,3 +205,7 @@ Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Ds::Oset(3), Meta::Util
 -make this script remove files which are not needed on the target.
 
 -make this script use a generic transfer agent (which could do copy but could also do ftp, sftp etc...)
+
+-make this script get a list of files and not a single one out of some generic XML description.
+
+-get ridd of the hardcoding of the perl interpreter here.

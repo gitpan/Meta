@@ -12,9 +12,10 @@ use Meta::Db::User qw();
 use Meta::Db::Member qw();
 use Meta::Db::Constraint qw();
 use Meta::Xml::Parsers::Base qw();
+use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.45";
+$VERSION="0.47";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -124,7 +125,9 @@ sub handle_char($$) {
 		$self->{TEMP_DEF}->set_description($elem);
 	}
 	if($self->in_ccontext("def.parents.parent")) {
-		$self->{TEMP_PARENT}=Meta::Db::Def->new_deve($elem);
+		my($module)=Meta::Development::Module->new();
+		$module->set_name($elem);
+		$self->{TEMP_PARENT}=Meta::Db::Def->new_modu($module);
 	}
 	if($self->in_ccontext("def.sets.set.name")) {
 		$self->{TEMP_SET}->set_name($elem);
@@ -171,20 +174,20 @@ sub handle_char($$) {
 	if($self->in_ccontext("def.tables.table.fields.field.type")) {
 		$self->{TEMP_FIELD}->get_type()->set_name($elem);
 	}
-	if($self->in_ccontext("def.tables.table.fields.field.table_ref")) {
-		$self->{TEMP_FIELD}->get_type()->set_table_ref($elem);
+	if($self->in_ccontext("def.tables.table.fields.field.tableref")) {
+		$self->{TEMP_FIELD}->get_type()->set_tableref($elem);
 	}
-	if($self->in_ccontext("def.tables.table.fields.field.field_ref")) {
-		$self->{TEMP_FIELD}->get_type()->set_field_ref($elem);
+	if($self->in_ccontext("def.tables.table.fields.field.fieldref")) {
+		$self->{TEMP_FIELD}->get_type()->set_fieldref($elem);
 	}
 	if($self->in_ccontext("def.tables.table.fields.field.optimized")) {
 		$self->{TEMP_FIELD}->get_type()->set_optimized($elem);
 	}
-	if($self->in_ccontext("def.tables.table.fields.field.set_ref")) {
-		$self->{TEMP_FIELD}->get_type()->set_set_ref($elem);
+	if($self->in_ccontext("def.tables.table.fields.field.setref")) {
+		$self->{TEMP_FIELD}->get_type()->set_setref($elem);
 	}
-	if($self->in_ccontext("def.tables.table.fields.field.enum_ref")) {
-		$self->{TEMP_FIELD}->get_type()->set_enum_ref($elem);
+	if($self->in_ccontext("def.tables.table.fields.field.enumref")) {
+		$self->{TEMP_FIELD}->get_type()->set_enumref($elem);
 	}
 	if($self->in_ccontext("def.tables.table.fields.field.null")) {
 		$self->{TEMP_FIELD}->get_type()->set_null($elem);
@@ -201,7 +204,7 @@ sub handle_char($$) {
 	if($self->in_ccontext("def.tables.table.constraints.constraint.type")) {
 		$self->{TEMP_CONSTRAINT}->set_type($elem);
 	}
-	if($self->in_ccontext("def.tables.table.constraints.constraint.field_refs.field_ref")) {
+	if($self->in_ccontext("def.tables.table.constraints.constraint.fieldrefs.fieldref")) {
 		$self->{TEMP_CONSTRAINT}->insert($elem);
 	}
 	if($self->in_ccontext("def.users.user.name")) {
@@ -262,7 +265,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.45
+	VERSION: 0.47
 
 =head1 SYNOPSIS
 
@@ -392,10 +395,12 @@ None.
 	0.43 MV website construction
 	0.44 MV web site automation
 	0.45 MV SEE ALSO section fix
+	0.46 MV download scripts
+	0.47 MV web site development
 
 =head1 SEE ALSO
 
-Meta::Db::Constraint(3), Meta::Db::Def(3), Meta::Db::Enum(3), Meta::Db::Field(3), Meta::Db::Member(3), Meta::Db::Set(3), Meta::Db::Table(3), Meta::Db::User(3), Meta::Xml::Parsers::Base(3), strict(3)
+Meta::Db::Constraint(3), Meta::Db::Def(3), Meta::Db::Enum(3), Meta::Db::Field(3), Meta::Db::Member(3), Meta::Db::Set(3), Meta::Db::Table(3), Meta::Db::User(3), Meta::Development::Module(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

@@ -7,9 +7,10 @@ use Meta::Baseline::Lang qw();
 use Meta::Baseline::Utils qw();
 use XML::Doctype qw();
 use File::Basename qw();
+use Meta::Lang::Dtd::Html qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.19";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -28,19 +29,23 @@ sub c2deps($) {
 
 sub c2chec($) {
 	my($buil)=@_;
-	my($dtd)=XML::Doctype->new();
-	my($base,$path,$suffix)=File::Basename::fileparse($buil->get_srcx(),"\.dtd");
-	my($res)=$dtd->parse_dtd_file($base,$buil->get_srcx());
-	if($res) {
-		Meta::Baseline::Utils::file_emblem($buil->get_targ());
-	}
-	return($res);
+	# the following check does not have a search path for included DTDs.
+	#my($dtd)=XML::Doctype->new();
+	#my($base,$path,$suffix)=File::Basename::fileparse($buil->get_srcx(),"\.dtd");
+	#my($res)=$dtd->parse_dtd_file($base,$buil->get_srcx());
+	#if($res) {
+	#	Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	#}
+	#return($res);
+	Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	return(1);
 }
 
 sub c2html($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::file_emblem($buil->get_targ());
-	return(1);
+	my($res)=Meta::Lang::Dtd::Html::c2html($buil);
+#	Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	return($res);
 }
 
 sub my_file($$) {
@@ -107,7 +112,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dtdx.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -191,10 +196,12 @@ None.
 	0.15 MV website construction
 	0.16 MV web site automation
 	0.17 MV SEE ALSO section fix
+	0.18 MV move tests into modules
+	0.19 MV move tests into modules
 
 =head1 SEE ALSO
 
-File::Basename(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), XML::Doctype(3), strict(3)
+File::Basename(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Lang::Dtd::Html(3), XML::Doctype(3), strict(3)
 
 =head1 TODO
 

@@ -9,19 +9,19 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.17";
 @ISA=qw();
 
-#sub history($);
-#sub history_add($);
+#sub history($$);
+#sub history_add($$);
 #sub TEST($);
 
 #__DATA__
 
-sub history($) {
-	my($file)=@_;
+sub history($$) {
+	my($file,$authors)=@_;
 	my(@args);
-	my($prog)="aegis";
+	my($prog)="/local/tools/bin/aegis";
 	push(@args,"-Report");
 	push(@args,"-File");
 	push(@args,Meta::Baseline::Aegis::which("aegi/repo/file_hstry.rpt"));
@@ -37,26 +37,33 @@ sub history($) {
 		my($type,$action,$delta,$weekday,$month,$day,$hour,$year,$change,$number,$remark)=
 			($line=~/^(\w+) (\w+) (\d+) (\w+) (\w+) *(\d+) (\d\d:\d\d:\d\d) (\d+) (\d+) (\d+|current) (.*)$/);
 		my($date)=join(" ",$weekday,$month,$day,$hour,$year);
-		my($initials)="MV";
 		my($curr)=Meta::Revision::Entry->new();
 		$curr->set_number($number);
 		$curr->set_date($date);
-		$curr->set_initials($initials);
 		$curr->set_remark($remark);
 		$curr->set_action($action);
 		$curr->set_change($change);
+		# now find whos the owner of the change
+		# then find the author object for that owner.
+		# then set the initials to his initials.
+		my($initials)="MV";
+		$curr->set_initials($initials);
 		$curr->set_delta($delta);
 		$revision->push($curr);
 	}
 	return($revision);
 }
 
-sub history_add($) {
-	my($file)=@_;
-	my($revision)=history($file);
+sub history_add($$) {
+	my($file,$authors)=@_;
+	my($revision)=history($file,$authors);
 	my($curr)=Meta::Revision::Entry->new();
 	$curr->set_number($revision->size());
-	$curr->set_initials("MV");
+	# get the current user name
+	# find the author object of the current user name
+	# get his initials
+	my($initials)="MV";
+	$curr->set_initials($initials);
 	$curr->set_remark(Meta::Baseline::Aegis::change_description());
 	$revision->push($curr);
 	return($revision);
@@ -100,34 +107,39 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aegis.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Tool::Aegis qw();
 	my($object)=Meta::Tool::Aegis->new();
-	my($revision)=$object->history("config");
+	my($author)=Meta::Info::Author->new("author.xml");
+	my($revision)=$object->history("config",$author);
 
 =head1 DESCRIPTION
 
 This module will enable you to interact with Aegis cleanly and will hide
 the complexity of doing so from you.
 
+Currently it only supports extracting history objects from aegis registered
+source files.
+
 =head1 FUNCTIONS
 
-	history($)
-	history_add($)
+	history($$)
+	history_add($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<history($)>
+=item B<history($$)>
 
 This method will return a Meta::Revision::Revision object representing the
-revisions of the module supplied to it.
+revisions of the module supplied to it. You also need to supply author
+information.
 
 =item B<history_add($)>
 
@@ -174,6 +186,7 @@ None.
 	0.14 MV website construction
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV bring movie data
 
 =head1 SEE ALSO
 

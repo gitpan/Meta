@@ -7,9 +7,10 @@ use Meta::Ds::Array qw();
 use IO::String qw();
 use XML::Writer qw();
 use Meta::Math::Pad qw();
+use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.17";
 @ISA=qw(Meta::Ds::Array);
 
 #sub print($$);
@@ -21,6 +22,8 @@ $VERSION="0.16";
 #sub docbook_edition($);
 #sub docbook_date_print($$);
 #sub docbook_date($);
+#sub docbook_copyright_print($$$);
+#sub docbook_copyright($$);
 #sub html_last_print($$);
 #sub html_last($);
 #sub TEST($);
@@ -106,6 +109,30 @@ sub docbook_date($) {
 	return($string);
 }
 
+sub docbook_copyright_print($$$) {
+	my($self,$writ,$author)=@_;
+	$writ->startTag("copyright");
+	$writ->startTag("year");
+	# FIXME this needs to be extracted from the revision information.
+	$writ->characters(Meta::Baseline::Aegis::copyright_years());
+	$writ->endTag("year");
+	$writ->startTag("holder");
+	$writ->characters($author->get_full_name());
+	$writ->endTag("holder");
+	$writ->endTag("copyright");
+}
+
+sub docbook_copyright($$) {
+	my($self,$author)=@_;
+	my($self)=@_;
+	my($string);
+	my($io)=IO::String->new($string);
+	my($writer)=XML::Writer->new(OUTPUT=>$io);
+	$self->docbook_copyright_print($writer,$author);
+	$io->close();
+	return($string);
+}
+
 sub html_last_print($$) {
 	my($self,$writ)=@_;
 	$writ->startTag("p");
@@ -164,7 +191,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Revision.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -190,6 +217,8 @@ The object is able to print itself in DocBook xml format.
 	docbook_edition($)
 	docbook_date_print($$)
 	docbook_date($)
+	docbook_copyright_print($$$)
+	docbook_copyright($$)
 	html_last_print($$)
 	html_last($)
 	TEST($)
@@ -236,6 +265,14 @@ This will print the date information to a XML::Writer type object.
 =item B<docbook_date($)>
 
 This method will create an XML string representing the current date information.
+
+=item B<docbook_copyright_print($$$)>
+
+This will print the copyright information to a XML::Writer type object.
+
+=item B<docbook_copyright($$)>
+
+This method will create an XML string representing the current copyright information.
 
 =item B<html_last_print($$)>
 
@@ -285,10 +322,11 @@ None.
 	0.14 MV website construction
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV bring movie data
 
 =head1 SEE ALSO
 
-IO::String(3), Meta::Ds::Array(3), Meta::Math::Pad(3), XML::Writer(3), strict(3)
+IO::String(3), Meta::Baseline::Aegis(3), Meta::Ds::Array(3), Meta::Math::Pad(3), XML::Writer(3), strict(3)
 
 =head1 TODO
 

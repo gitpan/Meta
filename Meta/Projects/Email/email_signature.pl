@@ -5,16 +5,37 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Info::Author qw();
 use Meta::Utils::Output qw();
+use Meta::Template::Sub qw();
+use Meta::Utils::File::File qw();
+use Meta::Baseline::Aegis qw();
+use XML::LibXSLT qw();
+use XML::LibXML qw();
 
-my($file);
+my($xml_file,$xslt_file,$outf);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("author_file","what author/XML file to use as input ?","xmlx/author/author.xml",\$file);
+$opts->def_devf("author_file","what author/XML file to use as input ?","xmlx/author/author.xml",\$xml_file);
+$opts->def_devf("xslt_file","what XSL file to use for the transformation ?","xslt/signature.xsl",\$xslt_file);
+$opts->def_stri("output_file","what output file to write ?","[% home_dir %]/.signature",\$outf);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($author)=Meta::Info::Author::new_deve($file);
-Meta::Utils::Output::print($author->get_email_signature());
+$xml_file=Meta::Baseline::Aegis::which($xml_file);
+$xslt_file=Meta::Baseline::Aegis::which($xslt_file);
+$outf=Meta::Template::Sub::interpolate($outf);
+
+my($parser)=XML::LibXML->new();
+my($xslt)=XML::LibXSLT->new();
+my($source)=$parser->parse_file($xml_file);
+my($style_doc)=$parser->parse_file($xslt_file);
+my($stylesheet)=$xslt->parse_stylesheet($style_doc);
+my($results)=$stylesheet->transform($source);
+my($out)=$stylesheet->output_string($results);
+Meta::Utils::File::File::save($outf,$out);
+
+#my($author)=Meta::Info::Author->new_deve($file);
+#Meta::Utils::File::File::save($outf,$author->get_email_signature());
+#Meta::Utils::Output::print($author->get_email_signature());
 
 Meta::Utils::System::exit(1);
 
@@ -49,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: email_signature.pl
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -96,6 +117,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -103,6 +128,14 @@ show history and exit
 =item B<author_file> (type: devf, default: xmlx/author/author.xml)
 
 what author/XML file to use as input ?
+
+=item B<xslt_file> (type: devf, default: xslt/signature.xsl)
+
+what XSL file to use for the transformation ?
+
+=item B<output_file> (type: stri, default: [% home_dir %]/.signature)
+
+what output file to write ?
 
 =back
 
@@ -129,10 +162,13 @@ None.
 	0.05 MV improve the movie db xml
 	0.06 MV web site automation
 	0.07 MV SEE ALSO section fix
+	0.08 MV move tests to modules
+	0.09 MV bring movie data
+	0.10 MV web site development
 
 =head1 SEE ALSO
 
-Meta::Info::Author(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Info::Author(3), Meta::Template::Sub(3), Meta::Utils::File::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::LibXML(3), XML::LibXSLT(3), strict(3)
 
 =head1 TODO
 

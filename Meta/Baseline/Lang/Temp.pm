@@ -10,7 +10,7 @@ use Meta::Tool::Aegis qw();
 use Meta::Utils::Hash qw();
 use Meta::Utils::List qw();
 use Meta::Development::Module qw();
-use Meta::Info::Author qw();
+use Meta::Info::Authors qw();
 use Meta::Lang::Tt::Tt qw();
 use Meta::Baseline::Cook qw();
 use Meta::Utils::Text::Checker qw();
@@ -18,7 +18,7 @@ use Meta::Utils::File::File qw();
 use Meta::Lang::Xml::Xml qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.18";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -63,14 +63,20 @@ sub c2deps($) {
 
 sub get_vars($) {
 	my($modu)=@_;
-	my($author_obje)=Meta::Info::Author::new_deve("xmlx/author/author.xml");
-	my($copy)=$author_obje->get_html_copyright();
-	my($info)=$author_obje->get_html_info();
+	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($author)=$authors->get_default();
+	my($copy)=$author->get_html_copyright();
+	my($info)=$author->get_html_info();
+	my($hist)=Meta::Tool::Aegis::history($modu,$authors);
 	my($vars)={
-		"docbook_revhistory"=>Meta::Tool::Aegis::history($modu)->docbook_revhistory(),
-		"docbook_edition"=>Meta::Tool::Aegis::history($modu)->docbook_edition(),
-		"docbook_date"=>Meta::Tool::Aegis::history($modu)->docbook_date(),
-		"html_last"=>Meta::Tool::Aegis::history($modu)->html_last(),
+		"docbook_revhistory"=>$hist->docbook_revhistory(),
+		"docbook_edition"=>$hist->docbook_edition(),
+		"docbook_date"=>$hist->docbook_date(),
+		"docbook_copyright"=>$hist->docbook_copyright($author),
+		"docbook_author"=>$author->get_docbook_author(),
+		"docbook_address"=>$author->get_docbook_address(),
+		"docbook_trademarks"=>\&mac_docbook_trademarks,
+		"html_last"=>$hist->html_last(),
 		"html_copyright"=>"<p><small>".$copy."</small></p>",
 		"html_info"=>$info,
 		"devfile"=>\&mac_devfile,
@@ -101,6 +107,15 @@ sub c2some($) {
 		Meta::Utils::Output::print("error in Template processing [".$template->error()."]\n");
 	}
 	return($scod);
+}
+
+sub mac_docbook_trademarks($) {
+	#my($devf)=@_;
+	#my($abso)=Meta::Baseline::Aegis::which($devf);
+	# now load the trademarks
+	# find which are participating in the current document
+	#this is a hack for now
+	return(&mac_include_sgml("sgml/deve/include/trademarks.sgml"));
 }
 
 sub mac_devfile($) {
@@ -228,7 +243,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Temp.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -357,10 +372,12 @@ None.
 	0.14 MV more web page stuff
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV bring movie data
+	0.18 MV move tests into modules
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Info::Author(3), Meta::Lang::Tt::Tt(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aegis(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Text::Checker(3), Template(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Info::Authors(3), Meta::Lang::Tt::Tt(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aegis(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Text::Checker(3), Template(3), strict(3)
 
 =head1 TODO
 

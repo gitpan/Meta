@@ -6,10 +6,12 @@ use strict qw(vars refs subs);
 use Digest::MD5 qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw(Digest::MD5);
 
-#sub get_filename_digest($$);
+#sub get_filename_digest($);
+#sub get_filename_hexdigest($);
+#sub get_filename_b64digest($);
 #sub TEST($);
 
 #__DATA__
@@ -21,6 +23,24 @@ sub get_filename_digest($) {
 	$md->addfile(*FILE);
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$name."]");
 	return($md->digest());
+}
+
+sub get_filename_hexdigest($) {
+	my($name)=@_;
+	my($md)=Digest::MD5->new();
+	open(FILE,$name) || Meta::Utils::System::die("unable to open file [".$name."]");
+	$md->addfile(*FILE);
+	close(FILE) || Meta::Utils::System::die("unable to close file [".$name."]");
+	return($md->hexdigest());
+}
+
+sub get_filename_b64digest($) {
+	my($name)=@_;
+	my($md)=Digest::MD5->new();
+	open(FILE,$name) || Meta::Utils::System::die("unable to open file [".$name."]");
+	$md->addfile(*FILE);
+	close(FILE) || Meta::Utils::System::die("unable to close file [".$name."]");
+	return($md->b64digest());
 }
 
 sub TEST($) {
@@ -61,7 +81,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MD5.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -79,14 +99,16 @@ I try very hard not to override existing MD5 methods.
 
 =head1 FUNCTIONS
 
-	get_filename_digest($$)
+	get_filename_digest($)
+	get_filename_hexdigest($)
+	get_filename_b64digest($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<get_filename_digest($$)>
+=item B<get_filename_digest($)>
 
 This method adds a file name to the current Meta::Digest::MD5 object.
 The reason we use the object oriented methodology here (creating an
@@ -94,6 +116,14 @@ object and then adding the file using the addfile method) is that it
 could be that this method is much more memory effective since we don't
 have to load the entire blob to memory at one time as we would do if
 we had uploaded everything and then used the "md5" method of the package.
+
+=item B<get_filename_hexdigest($)>
+
+Same as get_filename_digest but returns the result in hex.
+
+=item B<get_filename_b64digest($)>
+
+Same as get_filename_digest but returns the result in base 64.
 
 =item B<TEST($)>
 
@@ -129,6 +159,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV move tests to modules
 
 =head1 SEE ALSO
 

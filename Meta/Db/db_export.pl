@@ -6,14 +6,16 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Db::Def qw();
 use Meta::Db::Connections qw();
 use Meta::Db::Dbi qw();
+use Meta::Db::Ops qw();
 
-my($def_file,$connections_file,$name,$con_name);
+my($def_file,$connections_file,$name,$con_name,$out);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("def_file","which definition file to use ?","xmlx/def/contacts.xml",\$def_file);
+$opts->def_devf("def_file","which definition file to use ?",undef,\$def_file);
 $opts->def_devf("connections_file","which connections file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("name","which database name to use ?",undef,\$name);
 $opts->def_stri("con_name","which connection name to use ?",undef,\$con_name);
+$opts->def_newf("outfile","which file to write to ?",undef,\$out);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
@@ -31,7 +33,7 @@ if(defined($con_name)) {
 
 my($dbi)=Meta::Db::Dbi->new();
 $dbi->connect_name($connection,$name);
-#call export here
+Meta::Db::Ops::export_file($dbi,$def,$out,$connection);
 $dbi->disconnect();
 
 Meta::Utils::System::exit(1);
@@ -67,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_export.pl
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -111,11 +113,15 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
 
-=item B<def_file> (type: devf, default: xmlx/def/contacts.xml)
+=item B<def_file> (type: devf, default: )
 
 which definition file to use ?
 
@@ -130,6 +136,10 @@ which database name to use ?
 =item B<con_name> (type: stri, default: )
 
 which connection name to use ?
+
+=item B<outfile> (type: newf, default: )
+
+which file to write to ?
 
 =back
 
@@ -163,10 +173,11 @@ None.
 	0.12 MV improve the movie db xml
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
+	0.15 MV move tests to modules
 
 =head1 SEE ALSO
 
-Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Db::Ops(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

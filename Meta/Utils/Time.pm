@@ -8,7 +8,7 @@ use Time::Local qw();
 use Date::Manip qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.27";
 @ISA=qw();
 
 #sub tm_to_string($);
@@ -16,6 +16,7 @@ $VERSION="0.26";
 #sub now_tm();
 #sub now_string();
 #sub now_epoch();
+#sub now_mysql();
 #sub unixdate2mysql($);
 #sub stat2mysql($);
 #sub TEST($);
@@ -55,6 +56,10 @@ sub now_string() {
 
 sub now_epoch() {
 	return(tm_to_epoch(now_tm()));
+}
+
+sub now_mysql() {
+	return(&now_string());
 }
 
 sub unixdate2mysql($) {
@@ -107,7 +112,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Time.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -134,6 +139,7 @@ by yourself...(sad but true...).
 	now_tm()
 	now_string()
 	now_epoch()
+	now_mysql()
 	unixdate2mysql($)
 	stat2mysql($)
 	TEST($)
@@ -163,6 +169,11 @@ each element , larget to smaller of the current date and time up to the second.
 
 Routine that returns the current time in epoch terms (seconds since
 1/1/1970). Dont ask why we need this (something to do with cook).
+
+=item B<now_mysql()>
+
+Routine that returns the current time in a format that mysql can import as
+part of SQL statements.
 
 =item B<unixdate2mysql($)>
 
@@ -225,6 +236,7 @@ None.
 	0.24 MV website construction
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
+	0.27 MV weblog issues
 
 =head1 SEE ALSO
 
@@ -237,3 +249,5 @@ Date::Manip(3), Time::Local(3), Time::localtime(3), strict(3)
 -add more functionality. (to postress, to oracle etc...).
 
 -maybe use a different module than Date::Manip since it's supposed to be slow.
+
+-add now_postgres, now_oracle etc...

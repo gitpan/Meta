@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: java_run.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -99,6 +99,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -122,6 +126,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV put all tests in modules
+	0.01 MV move tests to modules
 
 =head1 SEE ALSO
 

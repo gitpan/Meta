@@ -24,12 +24,7 @@ if(!defined($name)) {
 	$name=$def->get_name();
 }
 my($connections)=Meta::Db::Connections->new_deve($connections_file);
-my($connection);
-if(defined($con_name)) {
-	$connection=$connections->get($con_name);
-} else {
-	$connection=$connections->get_def_con();
-}
+my($connection)=$connections->get_con_null($con_name);
 
 my($dbi)=Meta::Db::Dbi->new();
 $dbi->connect_name($connection,$name);
@@ -77,7 +72,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_clean.pl
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -121,6 +116,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -173,6 +172,8 @@ None.
 	0.11 MV improve the movie db xml
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV move tests to modules
+	0.15 MV download scripts
 
 =head1 SEE ALSO
 

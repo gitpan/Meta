@@ -8,7 +8,7 @@ use Meta::Utils::Utils qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub chown($$$);
@@ -18,6 +18,7 @@ $VERSION="0.29";
 #sub chmod_x($);
 #sub chmod_agw($);
 #sub chmod_rgw($);
+#sub same_mode($$);
 #sub is_r($);
 #sub size($);
 #sub stat($);
@@ -48,14 +49,14 @@ sub mode($) {
 
 sub chmod_r($) {
 	my($file)=@_;
-	if(!chmod(0444,$file)) {
+	if(!CORE::chmod(0444,$file)) {
 		Meta::Utils::System::die("unable to chmod file [".$file."] to [0444]");
 	}
 }
 
 sub chmod_x($) {
 	my($file)=@_;
-	if(!chmod(0755,$file)) {
+	if(!CORE::chmod(0755,$file)) {
 		Meta::Utils::Output::print("unable to chmod file [".$file."] to [0755]\n");
 		return(0);
 	}
@@ -64,15 +65,23 @@ sub chmod_x($) {
 
 sub chmod_agw($) {
 	my($file)=@_;
-	if(!chmod(mode($file) | 00020,$file)) {
+	if(!CORE::chmod(mode($file) | 00020,$file)) {
 		Meta::Utils::System::die("unable to chmod file [".$file."] to [| 00020]");
 	}
 }
 
 sub chmod_rgw($) {
 	my($file)=@_;
-	if(!chmod(mode($file) & 07757,$file)) {
+	if(!CORE::chmod(mode($file) & 07757,$file)) {
 		Meta::Utils::System::die("unable to chmod file [".$file."] to [& 07757]");
+	}
+}
+
+sub same_mode($$) {
+	my($fn1,$fn2)=@_;
+	my($mode)=&mode($fn1);
+	if(!CORE::chmod($mode,$fn2)) {
+		Meta::Utils::System::die("unable to chmod file [".$fn2."] to [".$mode."]");
 	}
 }
 
@@ -137,7 +146,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Prop.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -158,6 +167,7 @@ This module eases setting permissions on files.
 	chmod_x($)
 	chmod_agw($)
 	chmod_rgw($)
+	same_mode($$)
 	is_r($)
 	size($)
 	stat($)
@@ -198,6 +208,11 @@ This functions adds a g+w permission to a file or a directory.
 =item B<chmod_rgw($)>
 
 This function adds a g-w permission to a file or a directory.
+
+=item B<same_mode($$)>
+
+This function gets two file names and makes the mode of the second be like
+the first.
 
 =item B<is_r($)>
 
@@ -264,6 +279,7 @@ None.
 	0.27 MV website construction
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
+	0.30 MV web site development
 
 =head1 SEE ALSO
 

@@ -9,7 +9,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw(Frontier::Daemon);
 
 #sub new($);
@@ -17,6 +17,7 @@ $VERSION="0.10";
 #sub run($);
 #sub quit($);
 #sub test($);
+#sub print($);
 #sub TEST($);
 
 #__DATA__
@@ -26,8 +27,9 @@ sub new($) {
 	my($self)=Frontier::Daemon->new(
 		LocalPort=>1080,
 		methods=>{
-			'test'=>\&test,
 			'quit'=>\&quit,
+			'test'=>\&test,
+			'print'=>\&print,
 		},
 	);
 	if(!$self) {
@@ -78,6 +80,11 @@ sub test($) {
 	return(1972);
 }
 
+sub print($) {
+	Meta::Utils::Output::print("in print\n");
+	return(0);
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -116,7 +123,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Server.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -137,6 +144,7 @@ a server communication class.
 	run($)
 	quit($)
 	test($)
+	print($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -162,6 +170,10 @@ This method quits the server.
 =item B<test($)>
 
 This method tests the server.
+
+=item B<print($)>
+
+This method prints a small message on the server.
 
 =item B<TEST($)>
 
@@ -197,6 +209,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV move tests into modules
 
 =head1 SEE ALSO
 
@@ -204,4 +217,4 @@ Frontier::Daemon(3), Meta::Lang::Perl::Interface(3), Meta::Utils::Output(3), Met
 
 =head1 TODO
 
-Nothing.
+-make the actuall dispatching of methods according to object but make it in a derived class.

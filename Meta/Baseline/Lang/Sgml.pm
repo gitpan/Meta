@@ -21,7 +21,7 @@ use Meta::Tool::Openjade qw();
 #use Meta::Tool::Nsgmls qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.16";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -78,64 +78,63 @@ sub c2deps($) {
 
 sub c2texx($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2texx($buil));
-	return(Meta::Tool::Openjade::c2texx($buil));
+	return(Meta::Tool::Sgmltoolslite::c2texx($buil));
+#	return(Meta::Tool::Openjade::c2texx($buil));
 }
 
 sub c2dvix($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2dvix($buil));
-	return(Meta::Tool::Openjade::c2dvix($buil));
+	return(Meta::Tool::Sgmltoolslite::c2dvix($buil));
+#	return(Meta::Tool::Openjade::c2dvix($buil));
 }
 
 sub c2psxx($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2psxx($buil));
-	return(Meta::Tool::Openjade::c2psxx($buil));
+	return(Meta::Tool::Sgmltoolslite::c2psxx($buil));
+#	return(Meta::Tool::Openjade::c2psxx($buil));
 }
 
 sub c2txtx($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2txtx($buil));
-	return(Meta::Tool::Openjade::c2txtx($buil));
+	return(Meta::Tool::Sgmltoolslite::c2txtx($buil));
+#	return(Meta::Tool::Openjade::c2txtx($buil));
 }
 
 sub c2html($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2html($buil));
-	return(Meta::Tool::Openjade::c2html($buil));
+	return(Meta::Tool::Sgmltoolslite::c2html($buil));
+#	return(Meta::Tool::Openjade::c2html($buil));
 }
 
 sub c2rtfx($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2rtfx($buil));
-	return(Meta::Tool::Openjade::c2rtfx($buil));
+	return(Meta::Tool::Sgmltoolslite::c2rtfx($buil));
+#	return(Meta::Tool::Openjade::c2rtfx($buil));
 }
 
 sub c2manx($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Docbook2::c2manx($buil));
-	return(Meta::Tool::Openjade::c2rtfx($buil));
+	return(Meta::Tool::Docbook2::c2manx($buil));
+#	return(Meta::Tool::Openjade::c2rtfx($buil));
 }
 
 sub c2mifx($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2mifx($buil));
-	return(Meta::Tool::Openjade::c2mifx($buil));
+	return(Meta::Tool::Sgmltoolslite::c2mifx($buil));
+#	return(Meta::Tool::Openjade::c2mifx($buil));
 }
 
 sub c2info($) {
 	my($buil)=@_;
 #	return(Meta::Tool::Sgmltools::c2info($buil));
-#	return(Meta::Tool::Sgmltoolslite::c2info($buil));
 #	return(Meta::Tool::Sgml2::c2info($buil));
 	return(Meta::Tool::Openjade::c2info($buil));
 }
 
 sub c2pdfx($) {
 	my($buil)=@_;
-#	return(Meta::Tool::Sgmltoolslite::c2pdfx($buil));
-	return(Meta::Tool::Openjade::c2pdfx($buil));
+	return(Meta::Tool::Sgmltoolslite::c2pdfx($buil));
+#	return(Meta::Tool::Openjade::c2pdfx($buil));
 }
 
 sub c2chun($) {
@@ -207,7 +206,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -366,6 +365,7 @@ None.
 	0.13 MV website construction
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
+	0.16 MV bring movie data
 
 =head1 SEE ALSO
 

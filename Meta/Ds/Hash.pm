@@ -6,16 +6,17 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.37";
+$VERSION="0.38";
 @ISA=qw();
 
 #sub new($);
 #sub insert($$$);
+#sub put($$$);
+#sub overwrite($$$);
 #sub remove($$);
 #sub size($);
 #sub has($$);
 #sub check_elem($$);
-#sub elem($$);
 #sub get($$);
 #sub print($$);
 #sub read($$);
@@ -34,27 +35,53 @@ sub new($) {
 }
 
 sub insert($$$) {
-	my($self,$elem,$valx)=@_;
+	my($self,$keyx,$valx)=@_;
 #	Meta::Utils::Arg::check_arg_num(\@_,3);
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
-#	Meta::Utils::Arg::check_arg($elem,"ANY");
+#	Meta::Utils::Arg::check_arg($keyx,"ANY");
 #	Meta::Utils::Arg::check_arg($valx,"ANY");
-	my($hash)=$self->{HASH};
-	if(exists($hash->{$elem})) {
+	if($self->has($keyx)) {
+		$self->overwrite($keyx,$valx);
 		return(0);
 	} else {
-		$hash->{$elem}=$valx;
-		$self->{SIZE}++;
+		$self->put($keyx,$valx);
 		return(1);
 	}
 }
 
+sub put($$$) {
+	my($self,$keyx,$valx)=@_;
+#	Meta::Utils::Arg::check_arg_num(\@_,3);
+#	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
+#	Meta::Utils::Arg::check_arg($keyx,"ANY");
+#	Meta::Utils::Arg::check_arg($valx,"ANY");
+	my($hash)=$self->{HASH};
+	if(exists($hash->{$keyx})) {
+		Meta::Utils::System::die("already have element [".$keyx."]");
+	}
+	$hash->{$keyx}=$valx;
+	$self->{SIZE}++;
+}
+
+sub overwrite($$$) {
+	my($self,$keyx,$valx)=@_;
+#	Meta::Utils::Arg::check_arg_num(\@_,3);
+#	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
+#	Meta::Utils::Arg::check_arg($keyx,"ANY");
+#	Meta::Utils::Arg::check_arg($valx,"ANY");
+	my($hash)=$self->{HASH};
+	if(!exists($hash->{$keyx})) {
+		Meta::Utils::System::die("dont have element [".$keyx."]");
+	}
+	$hash->{$keyx}=$valx;
+}
+
 sub remove($$) {
-	my($self,$elem)=@_;
+	my($self,$keyx)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
 	my($hash)=$self->{HASH};
-	if(exists($hash->{$elem})) {
-		delete($hash->{$elem});
+	if(exists($hash->{$keyx})) {
+		delete($hash->{$keyx});
 		$self->{SIZE}--;
 		return(1);
 	} else {
@@ -69,10 +96,10 @@ sub size($) {
 }
 
 sub has($$) {
-	my($self,$elem)=@_;
+	my($self,$keyx)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Hash");
 	my($hash)=$self->{HASH};
-	if(exists($hash->{$elem})) {
+	if(exists($hash->{$keyx})) {
 		return(1);
 	} else {
 		return(0);
@@ -80,22 +107,18 @@ sub has($$) {
 }
 
 sub check_elem($$) {
-	my($self,$elem)=@_;
-	if(!($self->has($elem))) {
-		Meta::Utils::System::die("elem [".$elem."] is not a member of the hash");
+	my($self,$keyx)=@_;
+	if(!($self->has($keyx))) {
+		Meta::Utils::System::die("elem [".$keyx."] is not a member of the hash");
 	}
-}
-
-sub elem($$) {
-	my($self,$elem)=@_;
 }
 
 sub get($$) {
-	my($self,$elem)=@_;
-	if(!$self->has($elem)) {
-		Meta::Utils::System::die("I dont have an elem [".$elem."]");
+	my($self,$keyx)=@_;
+	if(!$self->has($keyx)) {
+		Meta::Utils::System::die("I dont have an elem [".$keyx."]");
 	}
-	return($self->{HASH}->{$elem});
+	return($self->{HASH}->{$keyx});
 }
 
 sub print($$) {
@@ -172,7 +195,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Hash.pm
 	PROJECT: meta
-	VERSION: 0.37
+	VERSION: 0.38
 
 =head1 SYNOPSIS
 
@@ -200,11 +223,12 @@ so it effectivly acts as a set.
 
 	new($)
 	insert($$$)
+	put($$$)
+	overwrite($$$)
 	remove($$)
 	size($)
 	has($$)
 	check_elem($$)
-	elem($$)
 	get($$)
 	print($$)
 	read($$)
@@ -221,12 +245,30 @@ Gives you a new Hash object.
 
 =item B<insert($$$)>
 
-Inserts an element into the hash.
+Inserts an element into the hash. If the element already exists this DOES NOTHING.
 This receives:
 0. Hash object.
 1. Element to insert.
 2. Value to insert.
 This returns whether the value was actually inserted.
+
+=item B<put($$$)>
+
+This will put a new element in the hash.
+If the element is already a part of the hash it will throw an exception.
+Arguments:
+0. Hash object.
+1. Element to insert.
+2. Value to insert.
+
+=item B<overwrite($$$)>
+
+This will overwrite an element in the hash.
+If the element is not already in the hash it will throw an exception.
+Arguments:
+0. Hash object.
+1. Element to insert.
+2. Value to insert.
 
 =item B<remove($$)>
 
@@ -254,10 +296,6 @@ This receives:
 
 This method will verify that a certain element is indeed a member of the hash.
 If it is not - the method will raise an exception.
-
-=item B<elem($$)>
-
-This returns a specific element in the hash.
 
 =item B<get($$)>
 
@@ -340,6 +378,7 @@ None.
 	0.35 MV website construction
 	0.36 MV web site automation
 	0.37 MV SEE ALSO section fix
+	0.38 MV move tests to modules
 
 =head1 SEE ALSO
 

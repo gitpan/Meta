@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Ds::Oset qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.26";
 @ISA=qw(Meta::Ds::Oset);
 
 #sub get_default($);
+#sub is_selected($$$);
 #sub TEST($);
 
 #__DATA__
@@ -17,6 +18,18 @@ $VERSION="0.25";
 sub get_default($) {
 	my($self)=@_;
 	return($self->elem(0));
+}
+
+sub is_selected($$$) {
+	my($self,$selected,$val)=@_;
+	if(!$self->has($val)) {
+		Meta::Utils::System::die("value [".$val."] is not part of the enum");
+	}
+	if($selected eq $val) {
+		return(1);
+	} else {
+		return(0);
+	}
 }
 
 sub TEST($) {
@@ -57,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Enum.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -78,6 +91,7 @@ This is an object to store a the definition for an enumeration type.
 =head1 FUNCTIONS
 
 	get_default($)
+	is_selected($$$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -88,6 +102,13 @@ This is an object to store a the definition for an enumeration type.
 
 This gives you the default enumerated value. Currently implemented as the first value
 but this needs to be changed.
+
+=item B<is_selected($$$)>
+
+Give this method an Enum object and two values. One entered by some outside source
+and one that your software wants to check it against. The method will return
+whether they are the same. Why not use eq ? well - this method raises an exception
+if the value in your source is not part of the enum...:)
 
 =item B<TEST($)>
 
@@ -138,6 +159,7 @@ None.
 	0.23 MV website construction
 	0.24 MV web site automation
 	0.25 MV SEE ALSO section fix
+	0.26 MV bring movie data
 
 =head1 SEE ALSO
 

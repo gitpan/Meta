@@ -15,7 +15,7 @@ use Meta::Baseline::Utils qw();
 use Meta::Development::Deps qw();
 
 our($VERSION,@ISA);
-$VERSION="0.47";
+$VERSION="0.48";
 @ISA=qw();
 
 #sub new($);
@@ -37,6 +37,8 @@ $VERSION="0.47";
 
 #sub read_deps($$$);
 #sub read_deps_full($);
+#sub read_deps_set($);
+
 #sub TEST($);
 
 #__DATA__
@@ -294,6 +296,16 @@ sub read_deps_full($) {
 	return($graph);
 }
 
+sub read_deps_set($) {
+	my($set)=@_;
+	my($graph)=Meta::Development::Deps->new();
+	for(my($i)=0;$i<$set->size();$i++) {
+		my($curr)=$set->elem($i);
+		read_deps($graph,$curr,1);
+	}
+	return($graph);
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -332,7 +344,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cook.pm
 	PROJECT: meta
-	VERSION: 0.47
+	VERSION: 0.48
 
 =head1 SYNOPSIS
 
@@ -520,6 +532,7 @@ None.
 	0.45 MV website construction
 	0.46 MV web site automation
 	0.47 MV SEE ALSO section fix
+	0.48 MV web site development
 
 =head1 SEE ALSO
 

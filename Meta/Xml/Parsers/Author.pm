@@ -8,7 +8,7 @@ use Meta::Xml::Parsers::Collector qw();
 #use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw(Meta::Xml::Parsers::Collector);
 
 #sub new($);
@@ -63,6 +63,9 @@ sub handle_endchar($$$) {
 	}
 	if($self->in_context("author.surname",$name)) {
 		$self->{TEMP_AUTHOR}->set_surname($elem);
+	}
+	if($self->in_context("author.title",$name)) {
+		$self->{TEMP_AUTHOR}->set_title($elem);
 	}
 	if($self->in_context("author.cpanid",$name)) {
 		$self->{TEMP_AUTHOR}->set_cpanid($elem);
@@ -146,7 +149,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Author.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -229,6 +232,7 @@ None.
 	0.09 MV website construction
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV web site development
 
 =head1 SEE ALSO
 

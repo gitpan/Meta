@@ -5,7 +5,7 @@ package Meta::Cgi::Patch;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw();
 
 #sub new($);
@@ -62,7 +62,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Patch.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -73,7 +73,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put a lot of documentation here to show what your class does.
+This class generates a CGI interface for browsing patch/diff files.
+It is able to show you the files that are patched and the nature of
+the change in each.
 
 =head1 FUNCTIONS
 
@@ -118,6 +120,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV SEE ALSO section fix
+	0.01 MV bring movie data
 
 =head1 SEE ALSO
 

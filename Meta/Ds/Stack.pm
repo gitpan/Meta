@@ -7,7 +7,7 @@ use Meta::Ds::Set qw();
 use Meta::Utils::Arg qw();
 
 our($VERSION,@ISA);
-$VERSION="0.33";
+$VERSION="0.34";
 @ISA=qw();
 
 #sub new($);
@@ -21,6 +21,8 @@ $VERSION="0.33";
 
 #sub empty($);
 #sub notempty($);
+
+#sub join($$);
 
 #sub print($$);
 #sub TEST($);
@@ -101,6 +103,12 @@ sub notempty($) {
 	return($self->size()>0);
 }
 
+sub join($$) {
+	my($self,$string)=@_;
+	my($array)=$self->{ARRA};
+	return(CORE::join($string,@$array));
+}
+
 sub print($$) {
 	my($self,$file)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Stack");
@@ -150,7 +158,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stack.pm
 	PROJECT: meta
-	VERSION: 0.33
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
@@ -178,6 +186,7 @@ stack... This is mainly a OO wraper for a stack...
 	size($)
 	empty($)
 	notempty($)
+	join($$)
 	print($$)
 	TEST($)
 
@@ -217,6 +226,10 @@ Tell me if the stack is empty or not.
 =item B<notempty($)>
 
 Tell me if the stack is notempty or not.
+
+=item B<join($$)>
+
+This method will return the result of join on the elements of the stack.
 
 =item B<print($$)>
 
@@ -280,6 +293,7 @@ None.
 	0.31 MV website construction
 	0.32 MV web site automation
 	0.33 MV SEE ALSO section fix
+	0.34 MV move tests to modules
 
 =head1 SEE ALSO
 

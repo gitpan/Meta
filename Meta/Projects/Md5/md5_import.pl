@@ -173,7 +173,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_import.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -182,8 +182,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 =head1 DESCRIPTION
 
 This script receives a directory, traverses it, and adds it's data
-to a given Md5 database. The resulting data base will have most of
-the information about the hirarchy of the directory and checksum
+to a given Md5 database. The resulting data base will the 
+information about the hirarchy of the directory and checksum
 information on each file.
 
 =head1 OPTIONS
@@ -217,6 +217,10 @@ show license and exit
 =item B<copyright> (type: bool, default: 0)
 
 show copyright and exit
+
+=item B<description> (type: bool, default: 0)
+
+show description and exit
 
 =item B<history> (type: bool, default: 0)
 
@@ -278,6 +282,8 @@ None.
 	0.08 MV improve the movie db xml
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV move tests to modules
+	0.12 MV download scripts
 
 =head1 SEE ALSO
 

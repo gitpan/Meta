@@ -11,10 +11,20 @@ use Meta::Utils::File::File qw();
 use Compress::Zlib qw();
 use Meta::Tool::Groff qw();
 use Meta::Utils::Progress qw();
+use Meta::Db::Ops qw();
+use Meta::Db::Connections qw();
+use Meta::Db::Dbi qw();
+use Meta::Class::DBI qw();
+use File::MMagic qw();
 
-my($sections,$pages,$demo,$import_description,$import_troff,$import_ascii,$import_ps,$import_dvi,$import_html);
+my($connections_file,$con_name,$name,$verbose,$clean,$sections,$pages,$demo,$import_description,$import_troff,$import_ascii,$import_ps,$import_dvi,$import_html,$dlst);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
+$opts->def_devf("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_stri("con_name","what connection name ?",undef,\$con_name);
+$opts->def_stri("name","what database name ?","dbman",\$name);
+$opts->def_bool("verbose","should I be noisy ?",0,\$verbose);
+$opts->def_bool("clean","should I clean the database before ?",1,\$clean);
 $opts->def_bool("sections","import sections ?",1,\$sections);
 $opts->def_bool("pages","import pages ?",1,\$pages);
 $opts->def_bool("demo","fake it ?",0,\$demo);
@@ -24,8 +34,25 @@ $opts->def_bool("import_ascii","import ascii format ?",1,\$import_ascii);
 $opts->def_bool("import_ps","import ps format ?",1,\$import_ps);
 $opts->def_bool("import_dvi","import dvi format ?",1,\$import_dvi);
 $opts->def_bool("import_html","import html format ?",1,\$import_html);
+#$opts->def_dlst("dirs","directory path to scan","/usr/local/man",\$dlst);
+$opts->def_dlst("dirs","directory path to scan","/local/tools/man",\$dlst);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
+
+my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connection)=$connections->get_con_null($con_name);
+
+my($mm)=File::MMagic->new();
+
+if($clean) {
+	#clean the database
+	my($dbi)=Meta::Db::Dbi->new();
+	$dbi->connect_name($connection,$name);
+	Meta::Db::Ops::clean_sa($dbi);
+	$dbi->disconnect();
+}
+
+Meta::Class::DBI::set_connection($connection,$name);
 
 my(%map_hash)=(
 	"1","1",
@@ -117,21 +144,22 @@ if($pages) {
 		my($curr)=$sections[$i];
 		$mapping{$curr->tag()}=$curr->id();
 	}
-	my($dirs)=[
+	my(@dirs)=split(':',$dlst);
+#	my($dirs)=[
 #		"/local/tools/man",
 #		"/usr/share/man",
-		"/usr/local/man",
+#		"/usr/local/man",
 #		"/usr/X11R6/man",
 #		"/usr/kerberos/man",
 #		"/usr/lib/perl5/man",
 #		"/usr/man",
 #		"/local/tools/share/aegis/en",
 #		"/local/tools/share/aegis",
-	];
+#	];
 
 	my($iter)=Meta::Utils::File::Iter->new();
-	for(my($i)=0;$i<=$#$dirs;$i++) {
-		my($curr)=$dirs->[$i];
+	for(my($i)=0;$i<=$#dirs;$i++) {
+		my($curr)=$dirs[$i];
 		$iter->add_directory($curr);
 	}
 	$iter->set_want_dirs(0);
@@ -140,22 +168,29 @@ if($pages) {
 	$progress->start();
 	while(!($iter->get_over())) {
 		my($curr)=$iter->get_curr();
-		#Meta::Utils::Output::print("curr is [".$curr."]\n");
+		if($verbose) {
+			Meta::Utils::Output::print("curr is [".$curr."]\n");
+		}
 		my($doit)=0;
-		my($name,$description,$tag,$content_troff,$content_troff_unzipped);
+		my($name,$description,$tag,$contenttroff,$contenttroff_unzipped);
 		#uncompressed file
-		if($curr=~m/\/man.*\/.*\..*$/) {
+		my($res)=$mm->checktype_filename($curr);
+#		if($verbose) {
+#			Meta::Utils::Output::print("type is [".$res."]\n");
+#		}
+		if($res eq "text/x-roff") {
+		#if($curr=~m/\/man.*\/.*\..*$/) {
 			#Meta::Utils::Output::print("curr is [".$curr."]\n");
-			$content_troff_unzipped=Meta::Utils::File::File::load($curr);
+			$contenttroff_unzipped=Meta::Utils::File::File::load($curr);
 			#compress is
-			$content_troff=Compress::Zlib::memGzip($content_troff_unzipped);
+			$contenttroff=Compress::Zlib::memGzip($contenttroff_unzipped);
 			($name,$tag)=($curr=~/\/man.*\/(.*)\.(.*)$/);
 			$doit=1;
 		}
 		#compressed file
 		if($curr=~m/\/man.*\/.*\..*\.gz$/) {
-			$content_troff=Meta::Utils::File::File::load($curr);
-			$content_troff_unzipped=Compress::Zlib::memGunzip($content_troff);
+			$contenttroff=Meta::Utils::File::File::load($curr);
+			$contenttroff_unzipped=Compress::Zlib::memGunzip($contenttroff);
 			($name,$tag)=($curr=~/\/man.*\/(.*)\.(.*)\.gz$/);
 			$doit=1;
 		}
@@ -188,22 +223,29 @@ if($pages) {
 				$page->section($section);
 				$page->name($name);
 				if($import_description) {
-					$description=Meta::Tool::Groff::get_oneliner($content_troff_unzipped);
+					$description=Meta::Tool::Groff::get_oneliner($contenttroff_unzipped);
 					$page->description($description);
 				}
 				if($import_troff) {
-					$page->content_troff($content_troff);
+					$page->contenttroff($contenttroff);
 				}
 				if($import_ascii) {
-					my($content_ascii)=Compress::Zlib::memGzip(Meta::Tool::Groff::process($content_troff_unzipped));
-					$page->content_ascii($content_ascii);
+					my($contentascii)=Compress::Zlib::memGzip(Meta::Tool::Groff::process($contenttroff_unzipped,"ascii"));
+					$page->contentascii($contentascii);
 				}
 				if($import_ps) {
+					my($content)=Compress::Zlib::memGzip(Meta::Tool::Groff::process($contenttroff_unzipped,"ps"));
+					$page->contentps($content);
 				}
 				if($import_dvi) {
+					my($content)=Compress::Zlib::memGzip(Meta::Tool::Groff::process($contenttroff_unzipped,"dvi"));
+					$page->contentdvi($content);
 				}
 				if($import_html) {
+					my($content)=Compress::Zlib::memGzip(Meta::Tool::Groff::process($contenttroff_unzipped,"html"));
+					$page->contenthtml($content);
 				}
+				$page->filename($curr);
 				$page->commit();
 			}
 		} else {
@@ -249,7 +291,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbman_import.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -292,9 +334,33 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
+
+=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+
+what connections XML file to use ?
+
+=item B<con_name> (type: stri, default: )
+
+what connection name ?
+
+=item B<name> (type: stri, default: dbman)
+
+what database name ?
+
+=item B<verbose> (type: bool, default: 0)
+
+should I be noisy ?
+
+=item B<clean> (type: bool, default: 1)
+
+should I clean the database before ?
 
 =item B<sections> (type: bool, default: 1)
 
@@ -332,6 +398,10 @@ import dvi format ?
 
 import html format ?
 
+=item B<dirs> (type: dlst, default: /local/tools/man)
+
+directory path to scan
+
 =back
 
 no free arguments are allowed
@@ -356,10 +426,12 @@ None.
 	0.04 MV improve the movie db xml
 	0.05 MV web site automation
 	0.06 MV SEE ALSO section fix
+	0.07 MV move tests to modules
+	0.08 MV download scripts
 
 =head1 SEE ALSO
 
-Compress::Zlib(3), Meta::Projects::Dbman::Page(3), Meta::Projects::Dbman::Section(3), Meta::Tool::Groff(3), Meta::Utils::File::File(3), Meta::Utils::File::Iter(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::Progress(3), Meta::Utils::System(3), strict(3)
+Compress::Zlib(3), File::MMagic(3), Meta::Class::DBI(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Ops(3), Meta::Projects::Dbman::Page(3), Meta::Projects::Dbman::Section(3), Meta::Tool::Groff(3), Meta::Utils::File::File(3), Meta::Utils::File::Iter(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::Progress(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
@@ -367,8 +439,13 @@ Compress::Zlib(3), Meta::Projects::Dbman::Page(3), Meta::Projects::Dbman::Sectio
 
 -take care of all the warnings that come out when doing a full import.
 
--make the list of directories to be scanned be read from an option file.
-
 -make the db user and password and connection info also be read from a configuration file.
 
 -do the ps,dvi and html importing.
+
+-do file types with File::Mime or someting and not according to the file name.
+
+-handle symbolic links by having multiple entries with the same manual content (two tables).
+
+-make the ability to run man --path and get the result in order to get the actual directories. Actually make a man tool which can either run man --path or read the man conf files (/etc/man.config) to in order to get the relevant paths.
+

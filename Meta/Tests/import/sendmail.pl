@@ -65,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: sendmail.pl
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -108,6 +108,10 @@ show license and exit
 
 show copyright and exit
 
+=item B<description> (type: bool, default: 0)
+
+show description and exit
+
 =item B<history> (type: bool, default: 0)
 
 show history and exit
@@ -145,6 +149,7 @@ None.
 	0.13 MV improve the movie db xml
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
+	0.16 MV move tests to modules
 
 =head1 SEE ALSO
 

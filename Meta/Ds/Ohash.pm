@@ -6,11 +6,13 @@ use strict qw(vars refs subs);
 use Meta::Ds::Hash qw();
 
 our($VERSION,@ISA);
-$VERSION="0.34";
+$VERSION="0.35";
 @ISA=qw(Meta::Ds::Hash);
 
 #sub new($);
 #sub insert($$$);
+#sub put($$$);
+#sub overwrite($$$);
 #sub remove($$);
 #sub elem($$);
 #sub keyx($$);
@@ -34,23 +36,43 @@ sub new($) {
 sub insert($$$) {
 	my($self,$keyx,$valx)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Ohash");
-	if($self->Meta::Ds::Hash::insert($keyx,$valx)) {
-		my($list)=$self->{KEYX};
-		my($num1)=push(@$list,$keyx);
-		my($tsil)=$self->{VALX};
-		my($num2)=push(@$tsil,$valx);
-		my($numb)=$num1-1;#arbitrary
-		$self->{OHASH}->{$keyx}=$numb;
-		return(1);
-	} else {
-		return(0);
-	}
+	return($self->SUPER::insert($keyx,$valx));
+#	if($self->SUPER::insert($keyx,$valx)) {
+#		my($list)=$self->{KEYX};
+#		my($num1)=push(@$list,$keyx);
+#		my($tsil)=$self->{VALX};
+#		my($num2)=push(@$tsil,$valx);
+#		my($numb)=$num1-1;#arbitrary
+#		$self->{OHASH}->{$keyx}=$numb;
+#		return(1);
+#	} else {
+#		return(0);
+#	}
+}
+
+sub put($$$) {
+	my($self,$keyx,$valx)=@_;
+	$self->SUPER::put($keyx,$valx);
+	my($list)=$self->{KEYX};
+	my($num1)=push(@$list,$keyx);
+	my($tsil)=$self->{VALX};
+	my($num2)=push(@$tsil,$valx);
+	my($numb)=$num1-1;#arbitrary
+	$self->{OHASH}->{$keyx}=$numb;
+}
+
+sub overwrite($$$) {
+	my($self,$keyx,$valx)=@_;
+	$self->SUPER::overwrite($keyx,$valx);
+	my($num)=$self->get_elem_number($keyx);
+	my($tsil)=$self->{VALX};
+	$tsil->[$num]=$valx;
 }
 
 sub remove($$) {
 	my($self,$elem)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Ohash");
-	if($self->Meta::Ds::Hash::remove($elem)) {
+	if($self->SUPER::remove($elem)) {
 		my($numb)=$self->{OHASH}->{$elem};
 		#now remove the element number $numb from both list and tsil
 		#and update ohash accordingly.
@@ -141,7 +163,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ohash.pm
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -157,6 +179,8 @@ element.
 
 	new($)
 	insert($$$)
+	put($$$)
+	overwrite($$$)
 	remove($$)
 	elem($$)
 	keyx($$)
@@ -179,10 +203,20 @@ Inserts an element into the hash.
 This just does a Hash insert and updates the list if the hash was actually
 inserted.
 
+=item B<put($$$)>
+
+Overriden put method so that we could do our own accounting. Refer to the SUPER
+implementation.
+
+=item B<overwrite($$$)>
+
+Overriden overwrite method so that we could do our own accounting. Refer to the SUPER
+implementation.
+
 =item B<remove($$)>
 
 Remove an element from the hash.
-This just calls the Meta::Ds::Hash remove and removes the element from the
+This just calls the SUPER remove and removes the element from the
 list if it was successful.
 
 =item B<elem($$)>
@@ -263,6 +297,7 @@ None.
 	0.32 MV website construction
 	0.33 MV web site automation
 	0.34 MV SEE ALSO section fix
+	0.35 MV move tests to modules
 
 =head1 SEE ALSO
 

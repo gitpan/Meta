@@ -5,21 +5,21 @@ package Meta::Lang::Perl::Upload;
 use strict qw(vars refs subs);
 use Net::FTP qw();
 use Meta::Development::Verbose qw();
-#use HTTP::Request::Common qw();
+use HTTP::Request::Common qw();
 use LWP::UserAgent qw();
 #use HTTP::Status qw();
-#use File::Basename qw();
+use File::Basename qw();
 use Meta::Class::MethodMaker qw();
 use Meta::Lang::Perl::Perlpkgs qw();
 
 our($VERSION,@ISA);
-$VERSION="0.04";
+$VERSION="0.05";
 @ISA=qw(Meta::Development::Verbose);
 
 #sub BEGIN();
 #sub new($);
 #sub init($);
-#sub upload($$);
+#sub upload($$$$);
 #sub finish($);
 #sub ftp_init($);
 #sub ftp_upload($$$);
@@ -78,20 +78,24 @@ sub init($) {
 	$self->http_init();
 }
 
-sub upload($$) {
-	my($self,$perlpkg)=@_;
-	my($perlpkg_obj)=Meta::Lang::Perl::Perlpkgs::new_deve($perlpkg);
+sub upload($$$$) {
+	my($self,$perlpkg,$do_ftp,$do_http)=@_;
+	my($perlpkg_obj)=Meta::Lang::Perl::Perlpkgs->new_deve($perlpkg);
 	for(my($i)=0;$i<$perlpkg_obj->size();$i++) {
 		my($pkg)=$perlpkg_obj->getx($i);
 		my($file)=$pkg->get_pack_file_name();
 		my($abs)=Meta::Baseline::Aegis::which($file);
 		$self->verbose("doing package [".$file."] abs [".$abs."]\n");
-		$self->verbose("before ftping\n");
-		$self->ftp_upload($abs,$pkg);
-		$self->verbose("after ftping\n");
-		$self->verbose("before pausing\n");
-		$self->http_upload($abs,$pkg);
-		$self->verbose("after pausing\n");
+		if($do_ftp) {
+			$self->verbose("before ftping\n");
+			$self->ftp_upload($abs,$pkg);
+			$self->verbose("after ftping\n");
+		}
+		if($do_http) {
+			$self->verbose("before pausing\n");
+			$self->http_upload($abs,$pkg);
+			$self->verbose("after pausing\n");
+		}
 	}
 	return(1);
 }
@@ -179,14 +183,14 @@ sub http_upload($$$) {
 		Meta::Utils::System::die("Failed to create UserAgent: $!\n");
 	}
 	$agent->agent($self->get_program()."/".$self->get_version());
-	$agent->from($self->get_mailto());
+	$agent->from($pack->get_author()->get_cpanemail());
 	if($self->get_use_http_proxy()) {
 		$agent->proxy(['http'],$self->get_http_proxy());
 	}
 	# Post an upload message to the PAUSE web site for each file
-	my($basename)=basename($file);
+	my($basename)=File::Basename::basename($file);
 	# Create the request to add the file
-	my($request)=POST($self->get_pause_add_uri(),
+	my($request)=HTTP::Request::Common::POST($self->get_pause_add_uri(),
 		{
 			HIDDENNAME=>$pack->get_author()->get_cpanid(),
 			pause99_add_uri_upload=>$basename,
@@ -260,7 +264,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Upload.pm
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -268,8 +272,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 	use Meta::Lang::Perl::Upload qw();
 	my($uploader)=Meta::Lang::Perl::Upload->new();
 	$uploader->init();
-	$uploader->upload("my_first_package.xml");
-	$uploader->upload("my_second_package.xml");
+	$uploader->upload("my_first_package.xml",1,1);
+	$uploader->upload("my_second_package.xml",1,1);
 	$uploader->finish();
 
 =head1 DESCRIPTION
@@ -305,7 +309,7 @@ product to CPAN (instead of all the manual clicking and web browsing).
 	BEGIN()
 	new($)
 	init($)
-	upload($$)
+	upload($$$$)
 	finish($)
 	ftp_init($)
 	ftp_upload($$$)
@@ -334,7 +338,7 @@ This method does internal house keeping.
 Initialize the upload process (this includes access to the internet
 and making the relevant persistant connections).
 
-=item B<upload($$)>
+=item B<upload($$$$)>
 
 This method does the actual uploading based on the HTTP protocol.
 The method receives an uploader object and an XML/PERLPKG file
@@ -411,10 +415,11 @@ None.
 	0.02 MV SEE ALSO section fix
 	0.03 MV put all tests in modules
 	0.04 MV move tests to modules
+	0.05 MV bring movie data
 
 =head1 SEE ALSO
 
-LWP::UserAgent(3), Meta::Class::MethodMaker(3), Meta::Development::Verbose(3), Meta::Lang::Perl::Perlpkgs(3), Net::FTP(3), strict(3)
+File::Basename(3), HTTP::Request::Common(3), LWP::UserAgent(3), Meta::Class::MethodMaker(3), Meta::Development::Verbose(3), Meta::Lang::Perl::Perlpkgs(3), Net::FTP(3), strict(3)
 
 =head1 TODO
 
