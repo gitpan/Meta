@@ -13,7 +13,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.39";
+$VERSION="0.40";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub get_jars();
@@ -94,7 +94,7 @@ sub c2clas($) {
 	}
 	my($pthc)=join(":",$jarx,@lptc);
 	my($pths)=join(":",$jarx,@lpts);
-	my($prog)="javac";
+	my($prog)="/local/tools/j2sdk1.4.1_01/bin/javac";
 	my(@args);
 	push(@args,"-O");
 	# Add this if you want errors about deprecated features.
@@ -204,7 +204,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Java.pm
 	PROJECT: meta
-	VERSION: 0.39
+	VERSION: 0.40
 
 =head1 SYNOPSIS
 
@@ -399,6 +399,7 @@ None.
 	0.37 MV web site automation
 	0.38 MV SEE ALSO section fix
 	0.39 MV put all tests in modules
+	0.40 MV md5 issues
 
 =head1 SEE ALSO
 

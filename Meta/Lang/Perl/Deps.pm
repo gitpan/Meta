@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Development::Deps qw();
 use Meta::Utils::Utils qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw();
 
 #sub is_internal($);
@@ -185,6 +186,11 @@ sub add_deps_rec($$$$$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($modu)="perl/lib/Meta/Utils/File/File.pm";
+	my($grap)=Meta::Development::Deps->new();
+	Meta::Lang::Perl::Deps::add_deps_rec($grap,$modu,1,1,{});
+	Meta::Utils::Output::print("number of nodes is [".$grap->node_size()."]\n");
+	Meta::Utils::Output::print("number of edges is [".$grap->edge_size()."]\n");
 	return(1);
 }
 
@@ -221,7 +227,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Deps.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -307,6 +313,8 @@ and all the modules that it depends on.
 =item B<TEST($)>
 
 Test suite for this module.
+Currenlty it tries to check the recursive dependencies
+of a certain module.
 
 =back
 
@@ -341,10 +349,11 @@ None.
 	0.11 MV website construction
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Utils(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

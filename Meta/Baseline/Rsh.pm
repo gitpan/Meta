@@ -11,7 +11,7 @@ use Meta::Utils::Pc qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub rsh($$$$$);
@@ -118,6 +118,8 @@ sub cook_rsh($$$$) {
 
 sub TEST($) {
 	my($context)=@_;
+	#my($scod)=Meta::Baseline::Rsh::rsh(0,1,"localhost","echo","Hello,\ World!");
+	#return($scod);
 	return(1);
 }
 
@@ -154,7 +156,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Rsh.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -206,6 +208,8 @@ pc hosts correctly.
 =item B<TEST($)>
 
 Test suite for this module.
+The way it does it is just to run the routine for a couple of random
+host names.
 
 =back
 
@@ -257,6 +261,7 @@ None.
 	0.28 MV website construction
 	0.29 MV web site automation
 	0.30 MV SEE ALSO section fix
+	0.31 MV teachers project
 
 =head1 SEE ALSO
 

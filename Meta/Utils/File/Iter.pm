@@ -8,9 +8,11 @@ use Meta::Ds::Stack qw();
 use Meta::Ds::Hash qw();
 use DirHandle qw();
 use File::stat qw();
+use Meta::Utils::Output qw();
+use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub BEGIN();
@@ -32,6 +34,7 @@ sub BEGIN() {
 		-java=>"_want_dirs",
 		-java=>"_over",
 		-java=>"_curr",
+		-java=>"_curr_base",
 		-java=>"_level",
 	);
 }
@@ -134,6 +137,17 @@ sub fini($) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($dire)=Meta::Utils::Utils::get_home_dir()."/.kde/share/apps";
+	my($iter)=Meta::Utils::File::Iter->new();
+	$iter->add_directory($dire);
+	$iter->set_want_dirs(0);
+	$iter->nstart();
+	while(!($iter->get_over())) {
+		my($curr)=$iter->get_curr();
+		Meta::Utils::Output::print("got [".$curr."]\n");
+		$iter->nnext();
+	}
+	$iter->fini();
 	return(1);
 }
 
@@ -170,7 +184,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Iter.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -305,10 +319,12 @@ None.
 	0.07 MV web site development
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
+	0.10 MV finish papers
+	0.11 MV md5 issues
 
 =head1 SEE ALSO
 
-DirHandle(3), File::stat(3), Meta::Class::MethodMaker(3), Meta::Ds::Hash(3), Meta::Ds::Stack(3), strict(3)
+DirHandle(3), File::stat(3), Meta::Class::MethodMaker(3), Meta::Ds::Hash(3), Meta::Ds::Stack(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 
@@ -319,3 +335,5 @@ DirHandle(3), File::stat(3), Meta::Class::MethodMaker(3), Meta::Ds::Hash(3), Met
 -enable different options for filtering which files get delivered (suffixes, regexps, types etc...).
 
 -when doing add_directory translate it to cannonical form and add it to a HashStack which will only keep distinct values.
+
+-add support for recursive via non recursive iteration (and even control the depth of the recursion).

@@ -9,6 +9,7 @@ use Meta::Db::Dbi qw();
 use Meta::Db::Def qw();
 use Meta::Db::Connections qw();
 use Meta::Widget::Gtk::SqlList qw();
+use Meta::Development::Module qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -20,9 +21,11 @@ sub quit($) {
 	Gtk->main_quit();
 }
 
-my($def)=Meta::Db::Def->new_deve("xmlx/def/contacts.xml");
+my($module)=Meta::Development::Module->new_name("xmlx/def/contacts.xml");
+my($def)=Meta::Db::Def->new_modu($module);
 
-my($connections)=Meta::Db::Connections->new_deve("xmlx/connections/connections.xml");
+my($cmodule)=Meta::Development::Module->new_name("xmlx/connections/connections.xml");
+my($connections)=Meta::Db::Connections->new_modu($cmodule);
 my($connection)=$connections->get_def_con();
 
 my($dbi)=Meta::Db::Dbi->new();
@@ -71,7 +74,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: contacts_ui.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -151,10 +154,11 @@ None.
 	0.08 MV web site automation
 	0.09 MV SEE ALSO section fix
 	0.10 MV move tests to modules
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 
-Gtk(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), Meta::Widget::Gtk::SqlList(3), strict(3)
+Gtk(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Development::Module(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), Meta::Widget::Gtk::SqlList(3), strict(3)
 
 =head1 TODO
 

@@ -28,9 +28,10 @@ use Meta::Info::Author qw();
 use Meta::Info::Authors qw();
 use Meta::Lang::Perl::Perl qw();
 use Meta::Utils::Env qw();
+use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.59";
+$VERSION="0.62";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub env();
@@ -52,6 +53,7 @@ $VERSION="0.59";
 #sub check_list_pm($$$);
 #sub fix_runline($$$$$);
 #sub docify($);
+
 #sub c2objs($);
 #sub c2manx($);
 #sub c2nrfx($);
@@ -452,7 +454,8 @@ sub check_pods($$$$$$) {
 		$resu=0;
 	}
 	# check COPYRIGHT
-	my($author_obje)=Meta::Info::Author->new_deve("xmlx/author/author.xml");
+	my($au_module)=Meta::Development::Module->new_name("xmlx/author/author.xml");
+	my($author_obje)=Meta::Info::Author->new_modu($au_module);
 	my($pod_copy)=$hash->{"COPYRIGHT"};
 	my($copy)=$author_obje->get_perl_copyright();
 	my($need_copy)=$copy."\n";
@@ -492,7 +495,8 @@ sub check_pods($$$$$$) {
 		}
 	}
 	# get history stuff before checking things to do with history
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($au_module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($au_module);
 	my($hist_obje)=Meta::Tool::Aegis::history($module,$authors);
 	# check DETAILS
 	my($pod_deta)=$hash->{"DETAILS"};
@@ -793,7 +797,8 @@ sub create_file($$) {
 	my($base)=File::Basename::basename($file);
 	my($modu)=Meta::Lang::Perl::Perl::file_to_module($file);
 	my($lice)=Meta::Utils::File::File::load_deve("data/baseline/lice/lice.txt");
-	my($author)=Meta::Info::Author->new_deve("xmlx/author/author.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/author/author.xml");
+	my($author)=Meta::Info::Author->new_modu($module);
 	my($perl_copyright)=$author->get_perl_copyright();
 	my($author_perl_source)=$author->get_perl_source();
 	my($author_handle)=$author->get_handle();
@@ -881,7 +886,8 @@ sub fix_pod($$$$$) {
 
 sub fix_history($$$) {
 	my($self,$modu,$curr)=@_;
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($need)=Meta::Tool::Aegis::history($modu,$authors)->perl_pod();
 	my($before_pod)="HISTORY";
 	my($after_pod)="SEE ALSO";
@@ -890,7 +896,8 @@ sub fix_history($$$) {
 
 sub fix_history_add($$$) {
 	my($self,$modu,$curr)=@_;
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($need)=Meta::Tool::Aegis::history_add($modu,$authors)->perl_pod();
 	my($before_pod)="HISTORY";
 	my($after_pod)="SEE ALSO";
@@ -907,7 +914,8 @@ sub fix_options($$$) {
 
 sub fix_details($$$) {
 	my($self,$modu,$curr)=@_;
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($hist_obje)=Meta::Tool::Aegis::history($modu,$authors);
 	my($need)="\tMANIFEST: ".File::Basename::basename($curr)."\n\tPROJECT: ".Meta::Baseline::Aegis::project()."\n\tVERSION: ".$hist_obje->perl_current()."\n";
 	my($before_pod)="DETAILS";
@@ -917,7 +925,8 @@ sub fix_details($$$) {
 
 sub fix_details_add($$$) {
 	my($self,$modu,$curr)=@_;
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($hist_obje)=Meta::Tool::Aegis::history_add($modu,$authors);
 	my($need)="\tMANIFEST: ".File::Basename::basename($curr)."\n\tPROJECT: ".Meta::Baseline::Aegis::project()."\n\tVERSION: ".$hist_obje->perl_current()."\n";
 	my($before_pod)="DETAILS";
@@ -935,7 +944,9 @@ sub fix_license($$$) {
 
 sub fix_author($$$) {
 	my($self,$modu,$curr)=@_;
-	my($need)=Meta::Info::Author->new_deve("xmlx/author/author.xml")->get_perl_source();
+	my($module)=Meta::Development::Module->new_name("xmlx/author/author.xml");
+	my($author)=Meta::Info::Author->new_modu($module);
+	my($need)=$author->get_perl_source();
 	my($before_pod)="AUTHOR";
 	my($after_pod)="HISTORY";
 	fix_pod($self,$curr,$need,$before_pod,$after_pod);
@@ -943,7 +954,8 @@ sub fix_author($$$) {
 
 sub fix_copyright($$$) {
 	my($self,$modu,$curr)=@_;
-	my($author)=Meta::Info::Author->new_deve("xmlx/author/author.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/author/author.xml");
+	my($author)=Meta::Info::Author->new_modu($module);
 	my($need)=$author->get_perl_copyright();
 	my($before_pod)="COPYRIGHT";
 	my($after_pod)="LICENSE";
@@ -952,7 +964,8 @@ sub fix_copyright($$$) {
 
 sub fix_version($$$) {
 	my($self,$modu,$curr)=@_;
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($hist_obje)=Meta::Tool::Aegis::history($modu,$authors);
 	my($version)=$hist_obje->perl_current();
 	my($text)=Meta::Utils::File::File::load($curr);
@@ -984,7 +997,8 @@ sub fix_see($$$) {
 
 sub fix_version_add($$$) {
 	my($self,$modu,$curr)=@_;
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($hist_obje)=Meta::Tool::Aegis::history_add($modu,$authors);
 	my($version)=$hist_obje->perl_current();
 	my($text)=Meta::Utils::File::File::load($curr);
@@ -1029,7 +1043,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perl.pm
 	PROJECT: meta
-	VERSION: 0.59
+	VERSION: 0.62
 
 =head1 SYNOPSIS
 
@@ -1377,10 +1391,13 @@ None.
 	0.57 MV put all tests in modules
 	0.58 MV move tests to modules
 	0.59 MV bring movie data
+	0.60 MV finish papers
+	0.61 MV teachers project
+	0.62 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-DB_File(3), Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Info::Author(3), Meta::Info::Authors(3), Meta::Lang::Perl::Deps(3), Meta::Lang::Perl::Perl(3), Meta::Tool::Aegis(3), Meta::Utils::Env(3), Meta::Utils::File::Copy(3), Meta::Utils::File::File(3), Meta::Utils::File::Move(3), Meta::Utils::File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Text::Lines(3), Pod::Checker(3), Pod::Html(3), Pod::LaTeX(3), Pod::Man(3), Pod::Text(3), Template(3), strict(3)
+DB_File(3), Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Info::Author(3), Meta::Info::Authors(3), Meta::Lang::Perl::Deps(3), Meta::Lang::Perl::Perl(3), Meta::Tool::Aegis(3), Meta::Utils::Env(3), Meta::Utils::File::Copy(3), Meta::Utils::File::File(3), Meta::Utils::File::Move(3), Meta::Utils::File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Text::Lines(3), Pod::Checker(3), Pod::Html(3), Pod::LaTeX(3), Pod::Man(3), Pod::Text(3), Template(3), strict(3)
 
 =head1 TODO
 

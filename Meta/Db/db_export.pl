@@ -11,19 +11,19 @@ use Meta::Db::Ops qw();
 my($def_file,$connections_file,$name,$con_name,$out);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("def_file","which definition file to use ?",undef,\$def_file);
-$opts->def_devf("connections_file","which connections file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("def_file","which definition file to use ?",undef,\$def_file);
+$opts->def_modu("connections_file","which connections file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("name","which database name to use ?",undef,\$name);
 $opts->def_stri("con_name","which connection name to use ?",undef,\$con_name);
 $opts->def_newf("outfile","which file to write to ?",undef,\$out);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($def)=Meta::Db::Def->new_deve($def_file);
+my($def)=Meta::Db::Def->new_modu($def_file);
 if(!defined($name)) {
 	$name=$def->get_name();
 }
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection);
 if(defined($con_name)) {
 	$connection=$connections->get($con_name);
@@ -69,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_export.pl
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -121,11 +121,11 @@ show description and exit
 
 show history and exit
 
-=item B<def_file> (type: devf, default: )
+=item B<def_file> (type: modu, default: )
 
 which definition file to use ?
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 which connections file to use ?
 
@@ -174,6 +174,7 @@ None.
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
 	0.15 MV move tests to modules
+	0.16 MV teachers project
 
 =head1 SEE ALSO
 

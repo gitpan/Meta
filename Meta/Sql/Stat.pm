@@ -3,12 +3,12 @@
 package Meta::Sql::Stat;
 
 use strict qw(vars refs subs);
-use Meta::Ds::String qw();
+use Meta::Types::String qw();
 use SQL::Statement qw();
 
 our($VERSION,@ISA);
-$VERSION="0.20";
-@ISA=qw(Meta::Ds::String);
+$VERSION="0.21";
+@ISA=qw(Meta::Types::String);
 
 #sub execute($$);
 #sub check($);
@@ -97,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stat.pm
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -155,7 +155,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-Meta::Ds::String(3)
+Meta::Types::String(3)
 
 =head1 BUGS
 
@@ -191,10 +191,11 @@ None.
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
 	0.20 MV weblog issues
+	0.21 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-Meta::Ds::String(3), SQL::Statement(3), strict(3)
+Meta::Types::String(3), SQL::Statement(3), strict(3)
 
 =head1 TODO
 

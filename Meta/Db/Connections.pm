@@ -8,7 +8,7 @@ use Meta::Xml::Parsers::Connections qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub new($);
@@ -18,7 +18,6 @@ $VERSION="0.35";
 #sub get_con_null($$);
 #sub new_handle($$);
 #sub new_file($$);
-#sub new_deve($$);
 #sub new_modu($$);
 #sub TEST($);
 
@@ -71,11 +70,6 @@ sub new_file($$) {
 	return($parser->get_result());
 }
 
-sub new_deve($$) {
-	my($clas,$deve)=@_;
-	return(&new_file($clas,Meta::Baseline::Aegis::which($deve)));
-}
-
 sub new_modu($$) {
 	my($clas,$modu)=@_;
 	return(&new_file($clas,$modu->get_abs_path()));
@@ -83,6 +77,9 @@ sub new_modu($$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($module)=Meta::Development::Module->new_name("xmlx/connections/connections.xml");
+	my($obje)=__PACKAGE__->new_modu($module);
+	Meta::Utils::Output::dump($obje);
 	return(1);
 }
 
@@ -119,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connections.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -141,7 +138,6 @@ This is an array of many connections to the database.
 	get_con_null($$)
 	new_handle($$)
 	new_file($$)
-	new_deve($$)
 	new_modu($$)
 	TEST($)
 
@@ -194,18 +190,6 @@ This method returns:
 How it does it:
 The method uses the Meta::Xml::Parsers::Connections expat parser to do
 its thing.
-Remarks:
-This method is static.
-
-=item B<new_deve($$)>
-
-This method receives:
-0. A class name.
-1. A development related file name.
-This method returns:
-0. A Connections object constructed from the file.
-How it does it:
-This method uses the new_file method of the same package.
 Remarks:
 This method is static.
 
@@ -280,6 +264,7 @@ None.
 	0.33 MV SEE ALSO section fix
 	0.34 MV download scripts
 	0.35 MV web site development
+	0.36 MV teachers project
 
 =head1 SEE ALSO
 

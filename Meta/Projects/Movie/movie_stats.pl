@@ -28,6 +28,7 @@ my($doc)=$parser->parsefile($file);
 my($director_number)=$doc->getElementsByTagName("director")->getLength();
 my($film_number)=$doc->getElementsByTagName("title")->getLength();
 my($viewdate_number)=$doc->getElementsByTagName("viewdate")->getLength();
+my($viewdetail_number)=$doc->getElementsByTagName("viewdetail")->getLength();
 
 #It is important that the my() will be on it's own line since otherwise,
 #the getElementsByTagName will not return the correct value
@@ -51,11 +52,12 @@ for(my($i)=0;$i<$tickets->getLength();$i++) {
 Meta::Utils::Output::print("number of director is [".$director_number."]\n");
 Meta::Utils::Output::print("number of title is [".$film_number."]\n");
 Meta::Utils::Output::print("number of viewdate is [".$viewdate_number."]\n");
-Meta::Utils::Output::print("==========counts============\n");
+Meta::Utils::Output::print("number of viewdetail is [".$viewdetail_number."]\n");
+Meta::Utils::Output::print("==========accumulation============\n");
 Meta::Utils::Output::print("number of views is [".$views_number."]\n");
 Meta::Utils::Output::print("number of tickets is [".$tickets_number."]\n");
-Meta::Utils::Output::print("==========total============\n");
-Meta::Utils::Output::print("total is [".($viewdate_number+$views_number)."]\n");
+Meta::Utils::Output::print("==========total===================\n");
+Meta::Utils::Output::print("total is [".($viewdetail_number+$viewdate_number+$views_number)."]\n");
 
 Meta::Utils::System::exit(1);
 
@@ -90,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: movie_stats.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -188,6 +190,7 @@ None.
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
 	0.12 MV move tests to modules
+	0.13 MV teachers project
 
 =head1 SEE ALSO
 

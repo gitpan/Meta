@@ -12,11 +12,12 @@ use XML::Handler::BuildDOM qw();
 use XML::Driver::HTML qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw();
 
 #sub c2deps($);
 #sub c2dom($);
+#sub c2dom_io($);
 #sub TEST($);
 
 #__DATA__
@@ -87,6 +88,19 @@ sub c2dom($) {
 	return($dom);
 }
 
+sub c2dom_io($) {
+	my($io)=@_;
+	my($builder)=XML::Handler::BuildDOM->new();
+	my($html)=XML::Driver::HTML->new(
+		'Handler'=>$builder,
+		'Source'=>{
+			'ByteStream'=>$io,
+		}
+	);
+	my($dom)=$html->parse();
+	return($dom);
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -125,7 +139,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Html.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -146,6 +160,7 @@ It knows how to:
 
 	c2deps($)
 	c2dom($)
+	c2dom_io($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -160,6 +175,10 @@ a dependency object for that file.
 =item B<c2dom($)>
 
 This method converts an HTML string to a DOM object using the SAX modules.
+
+=item B<c2dom_io($)>
+
+This method converts an HTML io handle to a DOM object using the SAX modules.
 
 =item B<TEST($)>
 
@@ -190,6 +209,7 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV teachers project
 
 =head1 SEE ALSO
 

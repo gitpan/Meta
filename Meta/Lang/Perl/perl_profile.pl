@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_profile.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -121,6 +121,7 @@ None.
 
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
+	0.02 MV teachers project
 
 =head1 SEE ALSO
 
@@ -128,4 +129,4 @@ Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), s
 
 =head1 TODO
 
-Nothing.
+-add ability to pass options to the script that is profiled. (I accept arguments but do not pass them).

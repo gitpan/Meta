@@ -7,7 +7,7 @@ use Meta::Info::Address qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub BEGIN();
@@ -19,6 +19,8 @@ $VERSION="0.12";
 sub BEGIN() {
 	Meta::Class::MethodMaker->new_with_init("new");
 	Meta::Class::MethodMaker->get_set(
+		-java=>"_title",
+		-java=>"_jobtitle",
 		-java=>"_orgname",
 		-java=>"_address",
 	);
@@ -67,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Affiliation.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -78,7 +80,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This class provides affiliation information according to the DocBook DTD.
+This class provides affiliation information.
+This is a super set of the information needed for such systems
+as DocBook DTD.
 
 =head1 FUNCTIONS
 
@@ -93,7 +97,11 @@ This class provides affiliation information according to the DocBook DTD.
 =item B<BEGIN()>
 
 This method sets up the attribute access methods for this
-object which are: "orgname" and "address".
+object which are:
+0. "title" - title of the affiliation.
+1. "jobtitle" - job title at the affilated organization.
+2. "orgname" - name of the organization/company.
+3. "address" - address of the organization/company (object).
 
 =item B<init($)>
 
@@ -102,6 +110,8 @@ This method does instance initialization. It is internal.
 =item B<TEST($)>
 
 Test suite for thie module.
+
+This test currently does nothing.
 
 =back
 
@@ -135,6 +145,7 @@ None.
 	0.10 MV web site development
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV finish papers
 
 =head1 SEE ALSO
 

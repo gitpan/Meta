@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.38";
+$VERSION="0.40";
 @ISA=qw();
 
 #sub new($);
@@ -16,11 +16,13 @@ $VERSION="0.38";
 #sub remove($$);
 #sub size($);
 #sub has($$);
+#sub hasnt($$);
 #sub check_elem($$);
 #sub get($$);
 #sub print($$);
 #sub read($$);
 #sub write($$);
+#sub clear($);
 #sub TEST($);
 
 #__DATA__
@@ -106,6 +108,11 @@ sub has($$) {
 	}
 }
 
+sub hasnt($$) {
+	my($self,$keyx)=@_;
+	return(!$self->has($keyx));
+}
+
 sub check_elem($$) {
 	my($self,$keyx)=@_;
 	if(!($self->has($keyx))) {
@@ -157,6 +164,12 @@ sub write($$) {
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
 }
 
+sub clear($) {
+	my($self)=@_;
+	$self->{HASH}={};
+	$self->{SIZE}=0;
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -195,7 +208,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Hash.pm
 	PROJECT: meta
-	VERSION: 0.38
+	VERSION: 0.40
 
 =head1 SYNOPSIS
 
@@ -203,7 +216,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 	use Meta::Ds::Hash qw();
 	my($hash)=Meta::Ds::Hash->new();
 	$hash->insert("mark","veltzer");
-	$hash->insert("doro","linus");
+	$hash->insert("linus","torvals");
 	$hash->remove("mark");
 	if($hash->has("mark")) {
 		Meta::Utils::System::die("error");
@@ -228,11 +241,13 @@ so it effectivly acts as a set.
 	remove($$)
 	size($)
 	has($$)
+	hasnt($$)
 	check_elem($$)
 	get($$)
 	print($$)
 	read($$)
 	write($$)
+	clear($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -287,7 +302,15 @@ This receives:
 =item B<has($$)>
 
 Returns a boolean value according to whether the specified element is
-in the hash or not.
+in the hash.
+This receives:
+0. Hash object.
+1. Element to check for.
+
+=item B<hasnt($$)>
+
+Returns a boolean value according to whether the specified element is
+not in the hash.
 This receives:
 0. Hash object.
 1. Element to check for.
@@ -316,6 +339,10 @@ file.
 
 This will write a hash table as in the read method. See that methods
 documentation for details.
+
+=item B<clear($)>
+
+This method will clear all elements in the hash. It is fast.
 
 =item B<TEST($)>
 
@@ -379,6 +406,8 @@ None.
 	0.36 MV web site automation
 	0.37 MV SEE ALSO section fix
 	0.38 MV move tests to modules
+	0.39 MV weblog issues
+	0.40 MV teachers project
 
 =head1 SEE ALSO
 
@@ -391,3 +420,5 @@ Meta::Utils::System(3), strict(3)
 -add a limitation on the types of objects going into the hash (they must be inheritors from some kind of object).
 
 -make option for hash to be strict (that insert twice will yell).
+
+-make all methods here return the hash object so more ops could be performed.

@@ -8,7 +8,7 @@ use Meta::Baseline::Aegis qw();
 #require 'sys/ioctl.ph';
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub check_mult_regexp($$$);
@@ -188,12 +188,20 @@ sub cmp($$) {
 
 sub exist($) {
 	my($file)=@_;
-	return(-f $file);
+	if(-f $file) {
+		return(1);
+	} else {
+		return(0);
+	}
 }
 
 sub exec($) {
 	my($file)=@_;
-	return(-x $file);
+	if(-x $file) {
+		return(1);
+	} else {
+		return(0);
+	}
 }
 
 sub notexist($) {
@@ -288,7 +296,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: File.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -392,10 +400,14 @@ comparison...
 =item B<exist($)>
 
 This routine returns whether a cetain file is a regular file
+I cannot just return the result of "-f $file" since it will be
+nothing (which is not good for boolean arithmetic) if the file is not there.
 
 =item B<notexist($)>
 
 This routine returns whether a certain file not exist as a regular file
+I cannot just return the result of "-x $file" since it will be
+nothing (which is not good for boolean arithmetic) if the file is not there.
 
 =item B<check_exist($)>
 
@@ -479,6 +491,7 @@ None.
 	0.28 MV SEE ALSO section fix
 	0.29 MV move tests to modules
 	0.30 MV download scripts
+	0.31 MV finish papers
 
 =head1 SEE ALSO
 

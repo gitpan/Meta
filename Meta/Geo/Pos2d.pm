@@ -7,10 +7,10 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw();
 
-#sub BEGIN($);
+#sub BEGIN();
 #sub add($$);
 #sub sub($$);
 #sub mul($$);
@@ -24,7 +24,6 @@ sub BEGIN() {
 		-java=>"_x",
 		-java=>"_y",
 	);
-	Meta::Class::MethodMaker->print(["x","y"]);
 }
 
 sub add($$) {
@@ -54,7 +53,7 @@ sub TEST($) {
 	$point2->set_x(5);
 	$point2->set_y(6);
 	$point1->add($point2);
-	$point1->print(Meta::Utils::Output::get_file());
+	Meta::Utils::Output::dump($point1);
 	return(1);
 }
 
@@ -91,7 +90,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pos2d.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -180,6 +179,7 @@ None.
 	0.17 MV website construction
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
+	0.20 MV teachers project
 
 =head1 SEE ALSO
 

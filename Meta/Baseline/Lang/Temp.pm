@@ -18,7 +18,7 @@ use Meta::Utils::File::File qw();
 use Meta::Lang::Xml::Xml qw();
 
 our($VERSION,@ISA);
-$VERSION="0.18";
+$VERSION="0.21";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -63,10 +63,11 @@ sub c2deps($) {
 
 sub get_vars($) {
 	my($modu)=@_;
-	my($authors)=Meta::Info::Authors->new_deve("xmlx/authors/authors.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/authors/authors.xml");
+	my($authors)=Meta::Info::Authors->new_modu($module);
 	my($author)=$authors->get_default();
 	my($copy)=$author->get_html_copyright();
-	my($info)=$author->get_html_info();
+	my($html_info)=$author->get_html_info();
 	my($hist)=Meta::Tool::Aegis::history($modu,$authors);
 	my($vars)={
 		"docbook_revhistory"=>$hist->docbook_revhistory(),
@@ -78,13 +79,15 @@ sub get_vars($) {
 		"docbook_trademarks"=>\&mac_docbook_trademarks,
 		"html_last"=>$hist->html_last(),
 		"html_copyright"=>"<p><small>".$copy."</small></p>",
-		"html_info"=>$info,
+		"html_info"=>$html_info,
 		"devfile"=>\&mac_devfile,
 		"devfile_rel"=>\&mac_devfile_rel,
 		"devfile_abs"=>\&mac_devfile_abs,
 		"devlist_reg"=>\&mac_devlist_reg,
 		"include_sgml"=>\&mac_include_sgml,
 		"include_xml"=>\&mac_include_xml,
+		"dtd_copyright"=>$hist->dtd_copyright($author),
+		"dtd_history"=>$hist->dtd_history(),
 		"module"=>$modu,
 	};
 	$curr_modu=$modu;
@@ -104,7 +107,7 @@ sub c2some($) {
 	$vars->{"target"}=$buil->get_targ();
 	my($scod)=$template->process($buil->get_srcx(),$vars,$buil->get_targ());
 	if(!$scod) {
-		Meta::Utils::Output::print("error in Template processing [".$template->error()."]\n");
+		Meta::Utils::Output::print("error in Template processing of [".$modu."] error is [".$template->error()."]\n");
 	}
 	return($scod);
 }
@@ -243,7 +246,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Temp.pm
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
@@ -374,6 +377,9 @@ None.
 	0.16 MV SEE ALSO section fix
 	0.17 MV bring movie data
 	0.18 MV move tests into modules
+	0.19 MV weblog issues
+	0.20 MV finish papers
+	0.21 MV teachers project
 
 =head1 SEE ALSO
 

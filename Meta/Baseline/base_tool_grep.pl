@@ -7,23 +7,21 @@ use Meta::Utils::Hash qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Tool::Editor qw();
 use Meta::Utils::File::File qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 use Meta::Utils::Output qw();
 
 my($freg,$type,$acti,$repe,$demo,$verb,$prin,$lrep,$lreg,$match);
 my($opts)=Meta::Utils::Opts::Opts->new();
-my($type_enum)=Meta::Ds::Enum->new();
-$type_enum->insert("change");
-$type_enum->insert("project");
-$type_enum->insert("source");
-my($action_enum)=Meta::Ds::Enum->new();
-$action_enum->insert("none");
-$action_enum->insert("print");
-$action_enum->insert("edit");
-$action_enum->insert("replace");
-$action_enum->insert("checkout");
-$action_enum->insert("checkout_edit");
-$action_enum->insert("checkout_replace");
+my($type_enum)=Meta::Baseline::Aegis::get_enum();
+my($action_enum)=Meta::Info::Enum->new();
+$action_enum->insert("none","dont do anything");
+$action_enum->insert("print","print the matches");
+$action_enum->insert("edit","edit the files");
+$action_enum->insert("replace","do replacement on the files content");
+$action_enum->insert("checkout","checkout the files");
+$action_enum->insert("checkout_edit","checkout the files and edit them");
+$action_enum->insert("checkout_replace","checkout the files and replace the content");
+$action_enum->set_default("print");
 $opts->set_standard();
 $opts->def_stri("fileregexp","regular expression on the file names","",\$freg);
 $opts->def_enum("type","what types of files to look at ?","source",\$type,$type_enum);
@@ -156,7 +154,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool_grep.pl
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -232,13 +230,23 @@ regular expression on the file names
 
 what types of files to look at ?
 
-options [change,project,source]
+options:
+	change - just files from the current change
+	project - just files from the current baseline
+	source - complete source manifest
 
 =item B<action> (type: enum, default: print)
 
 what action to be done with the files found ?
 
-options [none,print,edit,replace,checkout,checkout_edit,checkout_replace]
+options:
+	none - dont do anything
+	print - print the matches
+	edit - edit the files
+	replace - do replacement on the files content
+	checkout - checkout the files
+	checkout_edit - checkout the files and edit them
+	checkout_replace - checkout the files and replace the content
 
 =item B<replace> (type: stri, default: )
 
@@ -321,10 +329,12 @@ None.
 	0.32 MV SEE ALSO section fix
 	0.33 MV move tests to modules
 	0.34 MV bring movie data
+	0.35 MV finish papers
+	0.36 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Ds::Enum(3), Meta::Tool::Editor(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Info::Enum(3), Meta::Tool::Editor(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

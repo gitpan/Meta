@@ -7,16 +7,17 @@ use Meta::Projects::Dbman::Page qw();
 use Meta::Tool::Less qw();
 use Meta::Utils::Output qw();
 use Compress::Zlib qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 
 my($choice);
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("description");
-$enum->insert("troff");
-$enum->insert("ascii");
-$enum->insert("ps");
-$enum->insert("dvi");
-$enum->insert("html");
+my($enum)=Meta::Info::Enum->new();
+$enum->insert("description","the description of the page");
+$enum->insert("troff","the troff version of the page");
+$enum->insert("ascii","the plain ascii text version of the page");
+$enum->insert("ps","the postscript version");
+$enum->insert("dvi","the dvi version");
+$enum->insert("html","the html version");
+$enum->set_default("ascii");
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_enum("display","what should I display ?","ascii",\$choice,$enum);
@@ -83,7 +84,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbman_man.pl
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -137,7 +138,13 @@ show history and exit
 
 what should I display ?
 
-options [description,troff,ascii,ps,dvi,html]
+options:
+	description - the description of the page
+	troff - the troff version of the page
+	ascii - the plain ascii text version of the page
+	ps - the postscript version
+	dvi - the dvi version
+	html - the html version
 
 =back
 
@@ -167,10 +174,12 @@ None.
 	0.07 MV move tests to modules
 	0.08 MV download scripts
 	0.09 MV bring movie data
+	0.10 MV finish papers
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 
-Compress::Zlib(3), Meta::Ds::Enum(3), Meta::Projects::Dbman::Page(3), Meta::Tool::Less(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Compress::Zlib(3), Meta::Info::Enum(3), Meta::Projects::Dbman::Page(3), Meta::Tool::Less(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

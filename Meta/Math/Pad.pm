@@ -4,27 +4,41 @@ package Meta::Math::Pad;
 
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
-use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
+#sub pad_easy($$);
 #sub pad($$);
+#sub unpad($);
 #sub TEST($);
 
 #__DATA__
 
-sub pad($$) {
+sub pad_easy($$) {
 	my($numb,$digi)=@_;
-	if(length($numb)>$digi) {
-		Meta::Utils::System::die("length of number received already more than required number of digits");
-	}
 	my($retu)=$numb;
 	while(length($retu)<$digi) {
 		$retu="0".$retu;
 	}
 	return($retu);
+}
+
+sub pad($$) {
+	my($numb,$digi)=@_;
+	if(length($numb)>$digi) {
+		Meta::Utils::System::die("length of number received already more than required number of digits [".$numb."] [".$digi."]");
+	}
+	return(&pad_easy($numb,$digi));
+}
+
+sub unpad($) {
+	my($numb)=@_;
+	#Meta::Utils::Output::print("got [".$numb."]\n");
+	my($res)=CORE::int($numb);
+	#Meta::Utils::Output::print("returning [".$res."]\n");
+	return($res);
 }
 
 sub TEST($) {
@@ -37,7 +51,6 @@ sub TEST($) {
 	} else {
 		$res=0;
 	}
-	Meta::Utils::Output::print("padded number is [".$padded."]\n");
 	return(1);
 }
 
@@ -74,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pad.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -92,16 +105,29 @@ in the future.
 
 =head1 FUNCTIONS
 
+	pad_easy($$)
 	pad($$)
+	unpad($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
+=item B<pad_easy($$)>
+
+This function will pad a number to the required number of digits.
+If the number is longer then it will do nothing.
+
 =item B<pad($$)>
 
-This will pad a number to the required number of digits.
+This function will pad a number to the required number of digits.
+If the number is longer then it will raise an exception.
+
+=item B<unpad($)>
+
+This function will "unpad" a number. If you give it something "002"
+it will give you "2".
 
 =item B<TEST($)>
 
@@ -137,10 +163,11 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV weblog issues
 
 =head1 SEE ALSO
 
-Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -4,9 +4,10 @@ package Meta::Ds::Set;
 
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.37";
 @ISA=qw();
 
 #sub new($);
@@ -17,8 +18,11 @@ $VERSION="0.35";
 #sub hasnt($$);
 #sub check_elem($$);
 #sub check_not_elem($$);
-#sub print($$);
+#sub read($$);
 #sub size($);
+#sub contained($$);
+#sub subtract($$);
+#sub get_hash($);
 #sub TEST($);
 
 #__DATA__
@@ -104,14 +108,21 @@ sub check_not_elem($$) {
 	}
 }
 
-sub print($$) {
+sub read($$) {
 	my($self,$file)=@_;
 #	Meta::Utils::Arg::check_arg($self,"Meta::Ds::Set");
 #	Meta::Utils::Arg::check_arg($file,"ANY");
-	my($hash)=$self->{HASH};
-	while(my($keyx,$valx)=each(%$hash)) {
-		print $file $keyx."\n";
+	my($io)=IO::File->new($file,"r");
+	if(!$io) {
+		Meta::Utils::System::die("unable to open file [".$file."] for reading");
 	}
+	my($line)=$io->getline();
+	while(!$io->eof()) {
+		chop($line);
+		$self->insert($line);
+		$line=$io->getline();
+	}
+	$io->close();
 }
 
 sub size($) {
@@ -120,8 +131,48 @@ sub size($) {
 	return($self->{SIZE});
 }
 
+sub contained($$) {
+	my($self,$other_set)=@_;
+	my($res)=1;
+	my($hash)=$self->{HASH};
+	while(my($keyx,$valx)=each(%$hash)) {
+# The next line which is more efficient isn't used cause
+# it wont put the internal hash iterator into starting position.
+# If there is a way to do that then we should bring this back
+# and do it at the end of the method
+#	while((my($keyx,$valx)=each(%$hash)) && $res) {
+		#Meta::Utils::Output::print("keyx is [".$keyx."]\n");
+		if($other_set->hasnt($keyx)) {
+			$res=0;
+		}
+	}
+	return($res);
+}
+
+sub subtract($$) {
+	my($self,$other_set)=@_;
+	my($res_set)=Meta::Ds::Set->new();
+	my($hash)=$self->{HASH};
+	while(my($keyx,$valx)=each(%$hash)) {
+#		Meta::Utils::Output::print("keyx is [".$keyx."]\n");
+		if($other_set->hasnt($keyx)) {
+#			Meta::Utils::Output::print("in here\n");
+			$res_set->insert($keyx);
+		}
+	}
+	return($res_set);
+}
+
+sub get_hash($) {
+	my($self)=@_;
+	return($self->{HASH});
+}
+
 sub TEST($) {
 	my($context)=@_;
+	my($set)=Meta::Ds::Set->new();
+	$set->read("/etc/passwd");
+	Meta::Utils::Output::dump($set);
 	return(1);
 }
 
@@ -158,7 +209,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Set.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -197,8 +248,11 @@ keys in the table.
 	hasnt($$)
 	check_elem($$)
 	check_not_elem($$)
-	print($$)
+	read($$)
 	size($)
+	contained($$)
+	subtract($$)
+	get_hash($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -245,12 +299,13 @@ This method receives:
 1. The element to check for.
 This method does not return anything.
 
-=item B<print($$)>
+=item B<read($$)>
 
-Prints the current set to a specified file.
+This method reads a file into the current set object. It does not
+remove previously stored elements in the set.
 This method receives:
 0. The object handle.
-1. The file handle to print to.
+1. The file name to read from.
 This method returns nothing.
 
 =item B<size($)>
@@ -260,9 +315,25 @@ This method receives:
 0. The object handle.
 This method returns the size of the set object in question.
 
+=item B<contained($$)>
+
+This method will return a boolean value according to whether the current set
+is contained in another one supplied.
+
+=item B<subtract($$)>
+
+This method will return the set which is the result of subtracting the current
+set from some other set.
+
+=item B<get_hash($)>
+
+This method provides access to the underlying hash. Take heed. Use this for read
+only purposes.
+
 =item B<TEST($)>
 
 Test suite for this module.
+Currently this just reads a set and prints it.
 
 =back
 
@@ -319,10 +390,12 @@ None.
 	0.33 MV website construction
 	0.34 MV web site automation
 	0.35 MV SEE ALSO section fix
+	0.36 MV finish papers
+	0.37 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

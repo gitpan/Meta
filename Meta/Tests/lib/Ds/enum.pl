@@ -4,9 +4,9 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Test qw();
-use Meta::Ds::Enum qw();
-use Meta::Ds::String qw();
+use Meta::Info::Enum qw();
 use Meta::Utils::Output qw();
+use Data::Dumper qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -15,17 +15,12 @@ $opts->analyze(\@ARGV);
 
 Meta::Baseline::Test::redirect_on();
 
-my($enum)=Meta::Ds::Enum->new();
-my($string_mark)=Meta::Ds::String->new();
-$string_mark->set_text("mark");
-my($string_doro)=Meta::Ds::String->new();
-$string_doro->set_text("doro");
-$enum->insert($string_mark);
-$enum->insert($string_doro);
-$enum->print(Meta::Utils::Output::get_file());
-Meta::Utils::Output::print("mark is elemet [".$enum->has("mark")."]\n");
-Meta::Utils::Output::print("string_mark is elemet [".$enum->has($string_mark)."]\n");
-Meta::Utils::Output::print("size of enum is [".$enum->size()."]\n");
+my($enum)=Meta::Info::Enum->new();
+$enum->insert("red","the color red");
+$enum->insert("blue","the color blue");
+$enum->insert("green","the color green");
+$enum->set_default("red");
+Meta::Utils::Output::print(Data::Dumper::Dumper($enum));
 
 Meta::Baseline::Test::redirect_off();
 
@@ -35,7 +30,7 @@ __END__
 
 =head1 NAME
 
-enum.pl - testing program for the Meta::Ds::Enum.pm module.
+enum.pl - testing program for the Meta::Info::Enum.pm module.
 
 =head1 COPYRIGHT
 
@@ -62,7 +57,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: enum.pl
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -70,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This will test the Meta::Ds::Enum.pm module.
+This will test the Meta::Info::Enum.pm module.
 Currently it creates an object and queries about values.
 
 =head1 OPTIONS
@@ -153,10 +148,12 @@ None.
 	0.20 MV SEE ALSO section fix
 	0.21 MV move tests to modules
 	0.22 MV bring movie data
+	0.23 MV finish papers
+	0.24 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Test(3), Meta::Ds::Enum(3), Meta::Ds::String(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Data::Dumper(3), Meta::Baseline::Test(3), Meta::Info::Enum(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -3,12 +3,19 @@
 package Meta::Ds::Oset;
 
 use strict qw(vars refs subs);
+use Meta::Class::MethodMaker qw();
 use Meta::Ds::Array qw();
+use Meta::Types::String qw();
+use Meta::Utils::Output qw();
+use Meta::Utils::String qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.32";
 @ISA=qw();
 
+#sub BEGIN();
+#sub keyx($$);
+#sub valx($$);
 #sub new($);
 #sub clear($);
 #sub insert($$);
@@ -24,6 +31,24 @@ $VERSION="0.30";
 #sub TEST($);
 
 #__DATA__
+
+sub BEGIN() {
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_name",
+		-java=>"_description",
+		-java=>"_default",
+	);
+}
+
+sub keyx($$) {
+	my($self,$elem)=@_;
+	return("bug");
+}
+
+sub valx($$) {
+	my($self,$elem)=@_;
+	return("bug");
+}
 
 sub new($) {
 	my($clas)=@_;
@@ -137,6 +162,22 @@ sub sort($$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($setx)=__PACKAGE__->new();
+	my($string_mark)=Meta::Types::String->new_stri("mark");
+	my($string_velt)=Meta::Types::String->new_stri("velt");
+	my($string_abra)=Meta::Types::String->new_stri("abra");
+	$setx->insert($string_mark);
+	$setx->insert($string_velt);
+	$setx->insert($string_abra);
+	$setx->sort(\&Meta::Types::String::cmp);
+	Meta::Utils::Output::dump($setx);
+
+	my($setx)=Meta::Ds::Oset->new();
+	$setx->insert("mark");
+	$setx->insert("velt");
+	$setx->insert("abra");
+	$setx->sort(\&Meta::Utils::String::compare);
+	Meta::Utils::Output::dump($setx);
 	return(1);
 }
 
@@ -173,7 +214,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Oset.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -191,6 +232,7 @@ the Meta::Ds::Set class.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	new($)
 	clear($)
 	insert($$)
@@ -208,6 +250,10 @@ the Meta::Ds::Set class.
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+Bootstrap method for "name", "description" and "default" atrributes.
 
 =item B<new($)>
 
@@ -276,6 +322,7 @@ And sorts the set according to the comparison function.
 =item B<TEST($)>
 
 Test suite for this module.
+currently it just constructs a Oset object and prints it out.
 
 =back
 
@@ -327,10 +374,12 @@ None.
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
 	0.30 MV download scripts
+	0.31 MV finish papers
+	0.32 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-Meta::Ds::Array(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Ds::Array(3), Meta::Types::String(3), Meta::Utils::Output(3), Meta::Utils::String(3), strict(3)
 
 =head1 TODO
 

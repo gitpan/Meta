@@ -195,7 +195,7 @@ my($cdpa,$cdch,$colo,$lsco,$long,$pete,$nprj,$nchn,$blxx,$chxx,$ps1x,$page,$manp
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_dire("aegi","where is your aegis located","/local/tools/bin",\$aegi);
-$opts->def_path("tvbi","extra path for the shell runner","/usr/sbin:/local/tools/bin",\$tvbi);
+$opts->def_path("tvbi","extra path for the shell runner","/usr/games:/usr/sbin:/local/tools/bin",\$tvbi);
 $opts->def_path("tvld","extra path for the dynamic linkder","/local/tools/lib",\$tvld);
 $opts->def_path("tvma","extra path for the man pager","/local/tools/man",\$tvma);
 $opts->def_path("tvin","extra path for the info pager","/local/tools/info",\$tvin);
@@ -463,7 +463,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: develop_rc.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -552,7 +552,7 @@ show history and exit
 
 where is your aegis located
 
-=item B<tvbi> (type: path, default: /usr/sbin:/local/tools/bin)
+=item B<tvbi> (type: path, default: /usr/games:/usr/sbin:/local/tools/bin)
 
 extra path for the shell runner
 
@@ -746,6 +746,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV finish papers
 
 =head1 SEE ALSO
 

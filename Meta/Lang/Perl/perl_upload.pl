@@ -10,16 +10,16 @@ my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("verbose","noisy or quiet ?",0,\$verbose);
 $opts->def_bool("ftp","do the ftp part ?",1,\$do_ftp);
-$opts->def_bool("http","noisy or quiet ?",1,\$do_http);
+$opts->def_bool("http","do the http part ?",1,\$do_http);
 $opts->def_devf("perlpkg","what package description to use ?","xmlx/temp/xmlx/perlpkgs/meta.xml",\$perlpkg);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($uploader)=Meta::Lang::Perl::Upload->new();
 $uploader->set_verbose($verbose);
-$uploader->init();
-$uploader->upload($perlpkg,$do_ftp,$do_http);
-$uploader->finish();
+$uploader->set_do_ftp($do_ftp);
+$uploader->set_do_http($do_http);
+$uploader->fast_upload($perlpkg);
 
 Meta::Utils::System::exit(1);
 
@@ -54,7 +54,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_upload.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -118,7 +118,7 @@ do the ftp part ?
 
 =item B<http> (type: bool, default: 1)
 
-noisy or quiet ?
+do the http part ?
 
 =item B<perlpkg> (type: devf, default: xmlx/temp/xmlx/perlpkgs/meta.xml)
 
@@ -142,6 +142,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV weblog issues
 
 =head1 SEE ALSO
 

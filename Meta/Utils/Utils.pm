@@ -11,7 +11,7 @@ use POSIX qw();
 use Cwd qw();
 
 our($VERSION,@ISA);
-$VERSION="0.43";
+$VERSION="0.44";
 @ISA=qw();
 
 #sub bnot($);
@@ -26,6 +26,7 @@ $VERSION="0.43";
 #sub is_prefix($$);
 #sub is_suffix($$);
 #sub cuid();
+#sub cuname();
 #sub cgid();
 #sub get_home_dir();
 #sub get_user_home_dir($);
@@ -142,6 +143,11 @@ sub cuid() {
 #	return($>);
 }
 
+sub cuname() {
+	my($uid)=POSIX::getuid();
+	return((POSIX::getpwuid($uid))[0]);
+}
+
 sub cgid() {
 	return(POSIX::getegid());
 }
@@ -237,7 +243,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Utils.pm
 	PROJECT: meta
-	VERSION: 0.43
+	VERSION: 0.44
 
 =head1 SYNOPSIS
 
@@ -262,6 +268,7 @@ This is a general utility module for either miscelleneous commands which are har
 	is_prefix($$)
 	is_suffix($$)
 	cuid()
+	cuname()
 	cgid()
 	get_home_dir()
 	get_user_home_dir($)
@@ -330,6 +337,10 @@ suffix is a suffix for that string
 =item B<cuid()>
 
 This routine returns the numerical value of the current user (uid).
+
+=item B<cuname()>
+
+This routine returns the current user name (uname).
 
 =item B<cgid()>
 
@@ -452,6 +463,7 @@ None.
 	0.41 MV SEE ALSO section fix
 	0.42 MV move tests to modules
 	0.43 MV web site development
+	0.44 MV finish papers
 
 =head1 SEE ALSO
 

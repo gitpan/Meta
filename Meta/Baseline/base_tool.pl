@@ -63,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool.pl
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -121,13 +121,125 @@ should I be noisy ?
 
 type of tool
 
-options [aspe,temp,ccxx,cxxx,sgml,chun,java,lily,perl,pyth,rule,txtx,data,rcxx,patc,ascx,html,cssx,dirx,cook,aegi,xmlx,xslt,pngx,jpgx,epsx,awkx,conf,targ,texx,deps,chec,clas,dvix,objs,psxx,info,rtfx,mifx,midi,bins,dlls,libs,pyob,dtdx,swig,gzxx,pack,dslx,pdfx,dbxx,manx,nrfx,bdbx,late,lyxx]
+options:
+	aspe - aspe
+	temp - temp
+	ccxx - ccxx
+	cxxx - cxxx
+	sgml - sgml
+	chun - chun
+	java - java
+	lily - lily
+	perl - perl
+	pyth - pyth
+	rule - rule
+	txtx - txtx
+	data - data
+	rcxx - rcxx
+	patc - patc
+	ascx - ascx
+	html - html
+	cssx - cssx
+	dirx - dirx
+	cook - cook
+	aegi - aegi
+	xmlx - xmlx
+	xslt - xslt
+	pngx - pngx
+	jpgx - jpgx
+	epsx - epsx
+	awkx - awkx
+	conf - conf
+	targ - targ
+	texx - texx
+	deps - deps
+	chec - chec
+	clas - clas
+	dvix - dvix
+	objs - objs
+	psxx - psxx
+	info - info
+	rtfx - rtfx
+	mifx - mifx
+	midi - midi
+	bins - bins
+	dlls - dlls
+	libs - libs
+	pyob - pyob
+	dtdx - dtdx
+	swig - swig
+	gzxx - gzxx
+	pack - pack
+	dslx - dslx
+	pdfx - pdfx
+	dbxx - dbxx
+	manx - manx
+	nrfx - nrfx
+	bdbx - bdbx
+	late - late
+	lyxx - lyxx
 
 =item B<lang> (type: enum, default: )
 
 language
 
-options [aspe,temp,ccxx,cxxx,sgml,chun,java,lily,perl,pyth,rule,txtx,data,rcxx,patc,ascx,html,cssx,dirx,cook,aegi,xmlx,xslt,pngx,jpgx,epsx,awkx,conf,targ,texx,deps,chec,clas,dvix,objs,psxx,info,rtfx,mifx,midi,bins,dlls,libs,pyob,dtdx,swig,gzxx,pack,dslx,pdfx,dbxx,manx,nrfx,bdbx,late,lyxx]
+options:
+	aspe - aspe
+	temp - temp
+	ccxx - ccxx
+	cxxx - cxxx
+	sgml - sgml
+	chun - chun
+	java - java
+	lily - lily
+	perl - perl
+	pyth - pyth
+	rule - rule
+	txtx - txtx
+	data - data
+	rcxx - rcxx
+	patc - patc
+	ascx - ascx
+	html - html
+	cssx - cssx
+	dirx - dirx
+	cook - cook
+	aegi - aegi
+	xmlx - xmlx
+	xslt - xslt
+	pngx - pngx
+	jpgx - jpgx
+	epsx - epsx
+	awkx - awkx
+	conf - conf
+	targ - targ
+	texx - texx
+	deps - deps
+	chec - chec
+	clas - clas
+	dvix - dvix
+	objs - objs
+	psxx - psxx
+	info - info
+	rtfx - rtfx
+	mifx - mifx
+	midi - midi
+	bins - bins
+	dlls - dlls
+	libs - libs
+	pyob - pyob
+	dtdx - dtdx
+	swig - swig
+	gzxx - gzxx
+	pack - pack
+	dslx - dslx
+	pdfx - pdfx
+	dbxx - dbxx
+	manx - manx
+	nrfx - nrfx
+	bdbx - bdbx
+	late - late
+	lyxx - lyxx
 
 =back
 
@@ -162,6 +274,7 @@ None.
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
 	0.14 MV move tests to modules
+	0.15 MV finish papers
 
 =head1 SEE ALSO
 

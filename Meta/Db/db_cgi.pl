@@ -8,7 +8,7 @@ use CGI qw();
 
 my($def_file);
 my($opts)=Meta::Utils::Opts::Opts->new();
-$opts->def_devf("def_file","which definition file to use ?","xmlx/def/qbopt.xml",\$def_file);
+$opts->def_modu("def_file","which definition file to use ?","xmlx/def/qbopt.xml",\$def_file);
 $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
@@ -17,7 +17,7 @@ my($c)=CGI->new();
 print $c->header();
 print $c->start_html();
 # load the def and print it.
-my($def)=Meta::Db::Def->new_deve($def_file);
+my($def)=Meta::Db::Def->new_modu($def_file);
 print $def->printc($c);
 print $c->end_html();
 
@@ -54,7 +54,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_cgi.pl
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -75,7 +75,7 @@ at the modules used by this module since the script itself doesnt do much.
 
 =over 4
 
-=item B<def_file> (type: devf, default: xmlx/def/qbopt.xml)
+=item B<def_file> (type: modu, default: xmlx/def/qbopt.xml)
 
 which definition file to use ?
 
@@ -136,6 +136,7 @@ None.
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
 	0.03 MV move tests to modules
+	0.04 MV teachers project
 
 =head1 SEE ALSO
 

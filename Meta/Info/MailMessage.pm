@@ -6,9 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 use Mail::Sendmail qw();
 use Meta::Class::MethodMaker qw();
+use Meta::Baseline::Test qw();
+use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw();
 
 #sub BEGIN();
@@ -44,10 +46,13 @@ sub send($) {
 	my($to)=join("\,\ ",@list);
 	my(%mail)=(
 		To=>$to,
-		From=>$self->get_from(),
+#		From=>$self->get_from(),
 		Subject=>$self->get_subject(),
 		Message=>$self->get_text()
 	);
+	if(defined($self->get_from())) {
+		$mail{"From"}=$self->get_from();
+	}
 	my($scod)=Mail::Sendmail::sendmail(%mail);
 	if($scod) {
 		$self->set_error($Mail::Sendmail::log);
@@ -59,7 +64,21 @@ sub send($) {
 
 sub TEST($) {
 	my($context)=@_;
-	return(1);
+	my($user)=Meta::Baseline::Test::get_user();
+	my($host)=Meta::Baseline::Test::get_host();
+	my($domain)=Meta::Baseline::Test::get_domain();
+
+	my($message)=Meta::Info::MailMessage->new();
+	$message->set_subject("Meta::Info::MailMessage::TEST()");
+	$message->set_text("This is a dummy message sent from Meta::Info::MailMessage TEST()");
+	my($sender)=Meta::Utils::Utils::cuname();
+	$message->set_from($sender."\@".$domain);
+	$message->get_recipients()->push($user."\@".$host);
+	my($scod)=$message->send();
+	if(!$scod) {
+		Meta::Utils::Output::print("error was [".$message->get_error()."]\n");
+	}
+	return($scod);
 }
 
 1;
@@ -95,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MailMessage.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -133,7 +152,12 @@ module.
 =item B<BEGIN()>
 
 This method sets up accessor methods for the attributes of this class.
-The attributes are: "subject", "text", "from", "recipients", "error".
+The attributes are:
+0. "subject" - subject of the message.
+1. "text" - text of the message.
+2. "from" - for field for the message.
+3. "recipients" - recipient list for the message.
+4. "error" - error message string (retrieve in case of error).
 
 =item B<init($)>
 
@@ -147,6 +171,11 @@ The method returns the result of the send.
 =item B<TEST($)>
 
 Test suite for this module.
+Currently it creates a message and sends it. The information about the
+recipent is taken from the Test module.
+
+This test currently creates a short message and sends it to the consenting
+to be abused user.
 
 =back
 
@@ -181,11 +210,14 @@ None.
 	0.11 MV web site development
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV finish papers
 
 =head1 SEE ALSO
 
-Mail::Sendmail(3), Meta::Class::MethodMaker(3), Meta::Ds::Array(3), strict(3)
+Mail::Sendmail(3), Meta::Baseline::Test(3), Meta::Class::MethodMaker(3), Meta::Ds::Array(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 
--add more capabilities here.
+-add more capabilities here. (attachments and signatures for instance). Also add fields from which email program this was send (X-Mailer or some tags).
+
+-do the test stuff.

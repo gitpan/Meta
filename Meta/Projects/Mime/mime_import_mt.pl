@@ -14,7 +14,7 @@ use Meta::Class::DBI qw();
 my($connections_file,$con_name,$name,$verb,$clean);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("con_name","what connection name ?",undef,\$con_name);
 $opts->def_stri("name","what database name ?","mime",\$name);
 $opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
@@ -22,7 +22,7 @@ $opts->def_bool("clean","should I clean the database before ?",1,\$clean);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection)=$connections->get_con_null($con_name);
 
 if($clean) {
@@ -119,7 +119,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: mime_import_mt.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -170,7 +170,7 @@ show description and exit
 
 show history and exit
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 what connections XML file to use ?
 
@@ -209,6 +209,7 @@ None.
 
 	0.00 MV bring movie data
 	0.01 MV move tests into modules
+	0.02 MV teachers project
 
 =head1 SEE ALSO
 

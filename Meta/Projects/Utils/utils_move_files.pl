@@ -6,12 +6,13 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::File::Move qw();
 use File::Basename qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 use Meta::Utils::String qw();
 
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("rename");
-$enum->insert("process");
+my($enum)=Meta::Info::Enum->new();
+$enum->insert("rename","rename the files");
+$enum->insert("process","process the files");
+$enum->set_default("rename");
 my($verbose,$demo,$from,$to,$filter);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -88,7 +89,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: utils_move_files.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -160,7 +161,9 @@ what suffix to move to ?
 
 what filter to apply to the files ?
 
-options [rename,process]
+options:
+	rename - rename the files
+	process - process the files
 
 =back
 
@@ -187,10 +190,12 @@ None.
 	0.04 MV SEE ALSO section fix
 	0.05 MV move tests to modules
 	0.06 MV bring movie data
+	0.07 MV finish papers
+	0.08 MV teachers project
 
 =head1 SEE ALSO
 
-File::Basename(3), Meta::Ds::Enum(3), Meta::Utils::File::Move(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::String(3), Meta::Utils::System(3), strict(3)
+File::Basename(3), Meta::Info::Enum(3), Meta::Utils::File::Move(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::String(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

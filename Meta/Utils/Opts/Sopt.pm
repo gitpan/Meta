@@ -11,9 +11,11 @@ use Meta::Utils::File::Path qw();
 use LWP::Simple qw();
 use Meta::Utils::Output qw();
 use Meta::Development::Module qw();
+use Data::Dumper qw();
+use Meta::Template::Sub qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.33";
 @ISA=qw();
 
 #sub BEGIN();
@@ -29,26 +31,19 @@ sub BEGIN() {
 		-java=>"_name",
 		-java=>"_description",
 		-java=>"_type",
-		-java=>"_defa",
-		-java=>"_poin",
-		-java=>"_valu",
+		-java=>"_default",
+		-java=>"_pointer",
+		-java=>"_value",
 		-java=>"_enum",
+		-java=>"_set",
+		-java=>"_tt",
 	);
-	Meta::Class::MethodMaker->print([
-		"name",
-		"description",
-		"type",
-		"defa",
-		"poin",
-		"valu",
-		"enum",
-	]);
 }
 
 sub setup_value($$) {
 	my($self,$valu)=@_;
 	if($self->get_type() eq "setx") {
-		my($poin)=$self->get_poin();
+		my($poin)=$self->get_pointer();
 		$$poin->clear();
 		my(@list)=split(',',$valu);
 		for(my($i)=0;$i<=$#list;$i++) {
@@ -58,16 +53,16 @@ sub setup_value($$) {
 		return;
 	}
 	if($self->get_type() eq "urls") {
-		$self->set_valu(LWP::Simple::get($valu));
+		$self->set_value(LWP::Simple::get($valu));
 		return;
 	}
 	if($self->get_type() eq "modu") {
 		my($modu)=Meta::Development::Module->new();
 		$modu->set_name($valu);
-		$self->set_valu($modu);
+		$self->set_value($modu);
 		return;
 	}
-	$self->set_valu($valu);
+	$self->set_value($valu);
 }
 
 sub verify($$) {
@@ -75,7 +70,7 @@ sub verify($$) {
 	my($type)=$self->get_type();
 #	Meta::Utils::Output::print("in verify with type [".$type."]\n");
 	if($type eq "dire") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Utils::File::Dir::exist($valu);
 		if(!$scod) {
 			$$erro="directory [".$valu."] does not exist";
@@ -83,7 +78,7 @@ sub verify($$) {
 		return($scod);
 	}
 	if($type eq "newd") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Utils::File::Dir::exist($valu);
 		if($scod) {
 			$$erro="directory [".$valu."] exists";
@@ -91,7 +86,7 @@ sub verify($$) {
 		return(!$scod);
 	}
 	if($type eq "devd") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Baseline::Aegis::direxists($valu);
 		if(!$scod) {
 			$$erro="directory [".$valu."] does not exist as a development directory";
@@ -99,7 +94,7 @@ sub verify($$) {
 		return($scod);
 	}
 	if($type eq "file") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Utils::File::File::exist($valu);
 		if(!$scod) {
 			$$erro="file [".$valu."] does not exist";
@@ -107,15 +102,27 @@ sub verify($$) {
 		return($scod);
 	}
 	if($type eq "newf") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
+		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
 		my($scod)=Meta::Utils::File::File::exist($valu);
+#		Meta::Utils::Output::print("result is [".$scod."] for file [".$valu."]\n");
 		if($scod) {
 			$$erro="file [".$valu."] exists";
 		}
 		return(!$scod);
 	}
+	if($type eq "ovwf") {
+		my($valu)=$self->get_value();
+		$valu=Meta::Template::Sub::interpolate($valu);#FIXME
+		my($scod)=Meta::Utils::File::File::exist($valu);
+#		Meta::Utils::Output::print("result is [".$scod."] for file [".$valu."]\n");
+		if(!$scod) {
+			$$erro="file [".$valu."] exists";
+		}
+		return($scod);
+	}
 	if($type eq "devf") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Baseline::Aegis::exists($valu);
 		if(!$scod) {
 			$$erro="file [".$valu."] does not exist as a development file";
@@ -132,7 +139,7 @@ sub verify($$) {
 		return(1);
 	}
 	if($type eq "enum") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($enum)=$self->get_enum();
 		my($scod)=$enum->has($valu);
 		if(!$scod) {
@@ -141,7 +148,7 @@ sub verify($$) {
 		return($scod);
 	}
 	if($type eq "setx") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($setx)=$self->get_enum();
 		#Meta::Utils::Output::print("in setx [".$valu."]\n");
 		my($scod)=1;
@@ -157,7 +164,7 @@ sub verify($$) {
 		return($scod);
 	}
 	if($type eq "path") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Utils::File::Path::check($valu,':');
 		if(!$scod) {
 			$$erro="value [".$valu."] is not a valid path";
@@ -165,7 +172,7 @@ sub verify($$) {
 		return($scod);
 	}
 	if($type eq "flst") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Utils::File::Path::check_flst($valu,':');
 		if(!$scod) {
 			$$erro="value [".$valu."] is not a valid file list";
@@ -173,7 +180,7 @@ sub verify($$) {
 		return($scod);
 	}
 	if($type eq "dlst") {
-		my($valu)=$self->get_valu();
+		my($valu)=$self->get_value();
 		my($scod)=Meta::Utils::File::Path::check($valu,':');
 		if(!$scod) {
 			$$erro="value [".$valu."] is not a valid directory list";
@@ -185,6 +192,14 @@ sub verify($$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($name);
+	my($obje)=Meta::Utils::Opts::Sopt->new();
+	$obje->set_name("options");
+	$obje->set_description("name of user");
+	$obje->set_type("stri");
+	$obje->set_default("mark");
+	$obje->set_pointer(\$name);
+	Data::Dumper::Dumper($obje);
 	return(1);
 }
 
@@ -221,7 +236,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sopt.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.33
 
 =head1 SYNOPSIS
 
@@ -252,11 +267,12 @@ attributes:
 1. name  - name of the parameter.
 2. description - short description of the parameter.
 3. type - type of the parameter.
-4. defa - default value of the parameter.
-5. poin - pointer for the parameter storage area.
-6. valu - value of the parameter.
+4. default - default value of the parameter.
+5. pointer - pointer for the parameter storage area.
+6. value - value of the parameter.
 7. enum - enumerated set from which to select an enumerated parameter.
 8. set - set from which to select a set parameter.
+9. tt - should the value pass through TT before going to user.
 
 =item B<setup_value($$)>
 
@@ -324,14 +340,13 @@ None.
 	0.30 MV move tests to modules
 	0.31 MV download scripts
 	0.32 MV web site development
+	0.33 MV finish papers
 
 =head1 SEE ALSO
 
-LWP::Simple(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Development::Module(3), Meta::Utils::File::Dir(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::Output(3), strict(3)
+Data::Dumper(3), LWP::Simple(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Development::Module(3), Meta::Template::Sub(3), Meta::Utils::File::Dir(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
-
--add set type.
 
 -add limited range intergers.
 

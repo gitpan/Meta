@@ -3,34 +3,27 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Baseline::Aegis qw();
 use BerkeleyDB qw();
+use Meta::Template::Sub qw();
 
 my($file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("file","which berkeley db file ?","bdbx/addressbook.db",\$file);
+$opts->def_stri("file","which berkeley db input file ?","[% home_dir %]/evolution/local/Contacts/addressbook.db",\$file);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-$file=Meta::Baseline::Aegis::which($file);
-Meta::Utils::Output::print("file is [".$file."]\n");
-#my($db)=BerkeleyDB::Hash->new(-Filename=>$file);
-#the flags in the next statement are somehow necessary...
-#how do I open the DB for read only ?!?
-#my($db)=BerkeleyDB::Hash->new(-Filename=>$file,-Flags=>BerkeleyDB::DB_CREATE());
-#my($db)=BerkeleyDB::Hash->new(-Filename=>$file,-Flags=>0);
-#my($db)=BerkeleyDB::Hash->new(-Filename=>$file,-Mode=>0444);
+$file=Meta::Template::Sub::interpolate($file);
+
 my($db)=BerkeleyDB::Hash->new(-Filename=>$file,-Flags=>BerkeleyDB::DB_RDONLY());
-#my($db)=BerkeleyDB::Hash->new(-Filename=>$file,-Flags=>BerkeleyDB::DB_CREATE());
 if(!$db) {
 	Meta::Utils::System::die("no db with error [".$BerkeleyDB::Error."]");
 }
-my($k,$v)=("","");
+my($k,$v);
 my($cursor)=$db->db_cursor();
-while($cursor->c_get($k,$v,BerkeleyDB::DB_NEXT())==0)
-{
-	Meta::Utils::Output::print($k." -> ".$v."\n");
+while($cursor->c_get($k,$v,BerkeleyDB::DB_NEXT())==0) {
+	Meta::Utils::Output::print("key is [".$k."]\n");
+	Meta::Utils::Output::print("value is [".$v."]\n");
 }
 
 Meta::Utils::System::exit(1);
@@ -66,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: evolution_from.pl
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -119,9 +112,9 @@ show description and exit
 
 show history and exit
 
-=item B<file> (type: devf, default: bdbx/addressbook.db)
+=item B<file> (type: stri, default: [% home_dir %]/evolution/local/Contacts/addressbook.db)
 
-which berkeley db file ?
+which berkeley db input file ?
 
 =back
 
@@ -145,11 +138,14 @@ None.
 	0.02 MV web site automation
 	0.03 MV SEE ALSO section fix
 	0.04 MV move tests to modules
+	0.05 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-BerkeleyDB(3), Meta::Baseline::Aegis(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+BerkeleyDB(3), Meta::Template::Sub(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-make it take the current users evolution file instead of a constant file from the baseline.
+
+-add verbosity flag.

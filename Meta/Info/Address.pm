@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw();
 
 #sub BEGIN();
@@ -18,9 +18,16 @@ sub BEGIN() {
 	Meta::Class::MethodMaker->new("new");
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_country",
+		-java=>"_state",
+		-java=>"_county",
 		-java=>"_city",
+		-java=>"_suburb",
 		-java=>"_street",
-		-java=>"_email",
+		-java=>"_house_number",
+		-java=>"_flat_number",
+		-java=>"_floor_number",
+		-java=>"_entrance_number",
+		-java=>"_mail",
 		-java=>"_phone",
 		-java=>"_fax",
 		-java=>"_postcode",
@@ -65,7 +72,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Address.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -91,12 +98,27 @@ You can also write it in other formats.
 
 =item B<BEGIN()>
 
-This method sets up attribute accessors to this object which
-are currently only email.
+This method sets up attribute accessors to this object which are:
+0. "country" - country of the address.
+1. "state" - state of the address (US and countries with states only).
+2. "county" - municipal county of the address.
+3. "city" - city name.
+4. "suburb" - suburb name.
+5. "street" - street name.
+6. "house_number" - house number.
+7. "flat_number" - flat number.
+8. "floor_number" - floor (high rise buildings only).
+9. "entrance_number" - entrance number (buildings with several entries only).
+10. "mail" - email at that location.
+11. "phone" - land line at that location.
+12. "fax" - fax at that location.
+13. "postcode" - postal code at that location.
 
 =item B<TEST($)>
 
 Test suite for this module.
+
+This test currently does nothing.
 
 =back
 
@@ -131,6 +153,7 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV bring movie data
+	0.14 MV finish papers
 
 =head1 SEE ALSO
 

@@ -3,17 +3,16 @@
 package Meta::Info::User;
 
 use strict qw(vars refs subs);
-#use Meta::Xml::Parsers::User qw();
-use Meta::Baseline::Aegis qw();
+use Meta::Xml::Parsers::User qw();
 use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.03";
 @ISA=qw();
 
 #sub BEGIN();
 #sub new_file($);
-#sub new_deve($);
+#sub new_modu($);
 #sub TEST($);
 
 #__DATA__
@@ -29,18 +28,16 @@ sub BEGIN() {
 	);
 }
 
-sub new_file($) {
-	my($file)=@_;
-#	my($parser)=Meta::Xml::Parsers::User->new();
-#	$parser->parsefile($file);
-#	return($parser->get_result());
-	return(undef);
+sub new_file($$) {
+	my($class,$file)=@_;
+	my($parser)=Meta::Xml::Parsers::User->new();
+	$parser->parsefile($file);
+	return($parser->get_result());
 }
 
-sub new_deve($) {
-	my($modu)=@_;
-	my($file)=Meta::Baseline::Aegis::which($modu);
-	return(new_file($file));
+sub new_modu($) {
+	my($class,$modu)=@_;
+	return(&new_file($class,$modu->get_abs_path()));
 }
 
 sub TEST($) {
@@ -81,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: User.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -98,7 +95,7 @@ This class provides user information according to the users/DTD.
 
 	BEGIN()
 	new_file($)
-	new_deve($)
+	new_modu($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -108,15 +105,20 @@ This class provides user information according to the users/DTD.
 =item B<BEGIN()>
 
 This method builds the attribute access method for this class.
-The attributes are: "name" "firstname" "surname" "password".
+The attributes are:
+0. "name" - name of the user (username).
+1. "firstname" - first name of the user.
+2. "surname" - sur name of the user.
+3. "email" - email of the user.
+4. "password" - password of the user.
 
 =item B<new_file($)>
 
 This method creates a new user object from a file.
 
-=item B<new_deve($)>
+=item B<new_modu($)>
 
-This method creates a new user object from a development file.
+This method creates a new user object from a development module.
 
 =item B<TEST($)>
 
@@ -144,10 +146,11 @@ None.
 	0.00 MV web site development
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
+	0.03 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Xml::Parsers::User(3), strict(3)
 
 =head1 TODO
 

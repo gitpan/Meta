@@ -7,35 +7,44 @@ use Meta::Info::Author qw();
 use Meta::Utils::Output qw();
 use Meta::Template::Sub qw();
 use Meta::Utils::File::File qw();
-use Meta::Baseline::Aegis qw();
 use XML::LibXSLT qw();
 use XML::LibXML qw();
+use Meta::Info::Enum qw();
 
-my($xml_file,$xslt_file,$outf);
+my($enum)=Meta::Info::Enum->new();
+$enum->set_name("type selector");
+$enum->set_description("this selects which type of signature you want");
+$enum->insert("default","standard type");
+$enum->insert("friends","signature for friends");
+$enum->insert("business","signature for business associates");
+$enum->insert("kernel","signature for kernel hacking");
+$enum->set_default("source");
+
+my($xml_modu,$xslt_modu,$outf,$write,$type);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("author_file","what author/XML file to use as input ?","xmlx/author/author.xml",\$xml_file);
-$opts->def_devf("xslt_file","what XSL file to use for the transformation ?","xslt/signature.xsl",\$xslt_file);
+$opts->def_modu("authors_file","what authors/XML file to use as input ?","xmlx/authors/authors.xml",\$xml_modu);
+$opts->def_modu("xslt_file","what XSL file to use for the transformation ?","xslt/signature.xsl",\$xslt_modu);
 $opts->def_stri("output_file","what output file to write ?","[% home_dir %]/.signature",\$outf);
+$opts->def_bool("write","write output file or print to stdout ?",0,\$write);
+$opts->def_enum("type","what type of signature ?","default",\$type,$enum);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-$xml_file=Meta::Baseline::Aegis::which($xml_file);
-$xslt_file=Meta::Baseline::Aegis::which($xslt_file);
 $outf=Meta::Template::Sub::interpolate($outf);
 
-my($parser)=XML::LibXML->new();
-my($xslt)=XML::LibXSLT->new();
-my($source)=$parser->parse_file($xml_file);
-my($style_doc)=$parser->parse_file($xslt_file);
-my($stylesheet)=$xslt->parse_stylesheet($style_doc);
+my($xml_parser)=XML::LibXML->new();
+my($xslt_parser)=XML::LibXSLT->new();
+my($source)=$xml_parser->parse_file($xml_modu->get_abs_path());
+my($style_doc)=$xml_parser->parse_file($xslt_modu->get_abs_path());
+my($stylesheet)=$xslt_parser->parse_stylesheet($style_doc);
 my($results)=$stylesheet->transform($source);
 my($out)=$stylesheet->output_string($results);
-Meta::Utils::File::File::save($outf,$out);
-
-#my($author)=Meta::Info::Author->new_deve($file);
-#Meta::Utils::File::File::save($outf,$author->get_email_signature());
-#Meta::Utils::Output::print($author->get_email_signature());
+if($write) {
+	Meta::Utils::File::File::save($outf,$out);
+} else {
+	Meta::Utils::Output::print($out);
+}
 
 Meta::Utils::System::exit(1);
 
@@ -70,7 +79,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: email_signature.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -83,7 +92,10 @@ all of your personal information (email, name, address etc...).
 It reads this information and provides you with a text which looks
 good as a signature at the end of your emails. You can use this
 software from your email client directly if it supports running an
-external program to provide your signature.
+external program to provide your signature. This script support having
+different types of signatures and if your email client supports running
+different stuff for different users then you can combine the two
+to make different signatures for different people.
 
 =head1 OPTIONS
 
@@ -125,17 +137,31 @@ show description and exit
 
 show history and exit
 
-=item B<author_file> (type: devf, default: xmlx/author/author.xml)
+=item B<authors_file> (type: modu, default: xmlx/authors/authors.xml)
 
-what author/XML file to use as input ?
+what authors/XML file to use as input ?
 
-=item B<xslt_file> (type: devf, default: xslt/signature.xsl)
+=item B<xslt_file> (type: modu, default: xslt/signature.xsl)
 
 what XSL file to use for the transformation ?
 
 =item B<output_file> (type: stri, default: [% home_dir %]/.signature)
 
 what output file to write ?
+
+=item B<write> (type: bool, default: 0)
+
+write output file or print to stdout ?
+
+=item B<type> (type: enum, default: default)
+
+what type of signature ?
+
+options:
+	default - standard type
+	friends - signature for friends
+	business - signature for business associates
+	kernel - signature for kernel hacking
 
 =back
 
@@ -165,11 +191,17 @@ None.
 	0.08 MV move tests to modules
 	0.09 MV bring movie data
 	0.10 MV web site development
+	0.11 MV finish papers
+	0.12 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Info::Author(3), Meta::Template::Sub(3), Meta::Utils::File::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::LibXML(3), XML::LibXSLT(3), strict(3)
+Meta::Info::Author(3), Meta::Info::Enum(3), Meta::Template::Sub(3), Meta::Utils::File::File(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::LibXML(3), XML::LibXSLT(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-append my public key automatically.
+
+-do some fortune type stuff.
+
+-do different XSLT running according to type received.

@@ -4,16 +4,33 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Tool::Xmllint qw();
+use Meta::Lang::Xml::Xml qw();
+use Meta::Baseline::Aegis qw();
+use Meta::Utils::Output qw();
+use Meta::Xml::LibXML qw();
 
-my($file);
+my($modu);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-#$opts->def_devf("file","what file to check ?","xmlx/import/projects/Imdb/result.xml",\$file);
-$opts->def_devf("file","what file to check ?","xmlx/author/author.xml",\$file);
+$opts->def_modu("file","what file to check ?",undef,\$modu);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($scod)=Meta::Tool::Xmllint::check_deve($file);
+#my($scod)=Meta::Tool::Xmllint::check_modu($modu);
+
+#my($build)=Meta::Pdmt::BuildInfo->new();
+#$build->set_srcx($modu->get_abs_path());
+#$build->set_modu($modu->get_name());
+#$build->set_path(Meta::Baseline::Aegis::search_path());
+#my($scod)=Meta::Lang::Xml::Xml::check($build);
+
+my($parser)=Meta::Xml::LibXML->new_aegis();
+$parser->validation(1);
+$parser->pedantic_parser(1);
+$parser->load_ext_dtd(1);
+my($scod)=$parser->check_file($modu->get_abs_path());
+#Meta::Utils::Output::print("scod is [".$scod."]\n");
+
 Meta::Utils::System::exit($scod);
 
 __END__
@@ -47,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: xml_lint.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -98,7 +115,7 @@ show description and exit
 
 show history and exit
 
-=item B<file> (type: devf, default: xmlx/author/author.xml)
+=item B<file> (type: modu, default: )
 
 what file to check ?
 
@@ -121,11 +138,12 @@ None.
 
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
+	0.02 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Tool::Xmllint(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Xmllint(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::LibXML(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-add method to check using LibXML directly and not xmllint extenral executable.

@@ -6,12 +6,8 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Lang::Perl qw();
 use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
-use Meta::Ds::Enum qw();
 
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("change");
-$enum->insert("project");
-$enum->insert("source");
+my($enum)=Meta::Baseline::Aegis::get_enum();
 
 my($type);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -78,7 +74,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_check.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -133,7 +129,10 @@ show history and exit
 
 what source files to take ?
 
-options [change,project,source]
+options:
+	change - just files from the current change
+	project - just files from the current baseline
+	source - complete source manifest
 
 =back
 
@@ -155,10 +154,12 @@ None.
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
 	0.02 MV bring movie data
+	0.03 MV finish papers
+	0.04 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Ds::Enum(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Lang::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

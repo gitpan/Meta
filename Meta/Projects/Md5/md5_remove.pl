@@ -51,17 +51,18 @@ sub handle_end($$) {
 	}
 }
 
-my($input,$verb,$remove,$dire,$leave_tag,$leave_suffix,$list,$list_file);
+my($input,$verb,$remove,$dire,$leave_tag,$leave_suffix,$list,$list_file,$stats);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_flst("input","what input files to use ?","/tmp/file.xml",\$input);
-$opts->def_bool("verbose","noisy or quiet ?",1,\$verb);
+$opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
 $opts->def_bool("remove","actually remove files ?",1,\$remove);
 $opts->def_dire("directory","directory to scan",".",\$dire);
 $opts->def_bool("leave_tag","leave tag about removed files ?",1,\$leave_tag);
 $opts->def_stri("leave_suffix","what suffix to leave ?",".rem",\$leave_suffix);
 $opts->def_bool("list","make a list of removed files ?",0,\$list);
 $opts->def_newf("list_file","what file to write the list to ?","/tmp/list_file.txt",\$list_file);
+$opts->def_bool("stats","show statistics ?",1,\$stats);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
@@ -89,11 +90,14 @@ $iterator->start();
 
 my($array)=Meta::Ds::Array->new();
 
+my($removed)=0;
+my($scanned)=0;
 while(!$iterator->get_over()) {
 	my($curr)=$iterator->get_curr();
 	if($verb) {
 		Meta::Utils::Output::print("working on [".$curr."]\n");
 	}
+	$scanned++;
 	my($sum)=Meta::Digest::MD5::get_filename_digest($curr);
 	if($collection->has_sum($sum)) {
 		if($verb) {
@@ -107,6 +111,7 @@ while(!$iterator->get_over()) {
 			if(!$res) {
 				Meta::Utils::Output::print("unable to remove file [".$curr."]\n");
 			} else {
+				$removed++;
 				if($leave_tag) {
 					my($content)="file removed and exists in [".$collection->get_file($sum)."]\n";
 					my($new_file)=$curr.$leave_suffix;
@@ -123,6 +128,10 @@ while(!$iterator->get_over()) {
 $iterator->fini();
 if($list) {
 	#print the $array Meta::Ds::Array to the file $list_file
+}
+if($stats) {
+	Meta::Utils::Output::print("removed is [".$removed."]\n");
+	Meta::Utils::Output::print("scanned is [".$scanned."]\n");
 }
 
 Meta::Utils::System::exit(1);
@@ -158,7 +167,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_remove.pl
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -216,7 +225,7 @@ show history and exit
 
 what input files to use ?
 
-=item B<verbose> (type: bool, default: 1)
+=item B<verbose> (type: bool, default: 0)
 
 noisy or quiet ?
 
@@ -244,6 +253,10 @@ make a list of removed files ?
 
 what file to write the list to ?
 
+=item B<stats> (type: bool, default: 1)
+
+show statistics ?
+
 =back
 
 no free arguments are allowed
@@ -267,6 +280,7 @@ None.
 	0.03 MV move tests to modules
 	0.04 MV download scripts
 	0.05 MV bring movie data
+	0.06 MV finish papers
 
 =head1 SEE ALSO
 

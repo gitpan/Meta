@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw(Class::MethodMaker);
 
 #sub print($$);
@@ -70,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MethodMaker.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -126,6 +126,7 @@ None.
 	0.03 MV web site development
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV finish papers
 
 =head1 SEE ALSO
 
@@ -133,4 +134,10 @@ Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-make an option to make a class out of a DTD definition.
+
+-make a new get_set method (to override the parent) where I don't need to pass -java and the underscore.
+
+-add method which dumps the object in XML.
+
+-add method which reads the object from XML.

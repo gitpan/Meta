@@ -21,7 +21,7 @@ use Meta::Tool::Openjade qw();
 #use Meta::Tool::Nsgmls qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.17";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -72,8 +72,9 @@ sub c2chec($) {
 
 sub c2deps($) {
 	my($buil)=@_;
-	my($deps)=Meta::Lang::Sgml::Sgml::c2deps($buil->get_modu(),$buil->get_srcx());
+	my($deps)=Meta::Lang::Sgml::Sgml::c2deps($buil);
 	Meta::Baseline::Cook::print_deps($deps,$buil->get_targ());
+	return(1);
 }
 
 sub c2texx($) {
@@ -206,7 +207,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -366,6 +367,7 @@ None.
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
 	0.16 MV bring movie data
+	0.17 MV finish papers
 
 =head1 SEE ALSO
 

@@ -3,39 +3,55 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
-use Meta::Pdmt::Graph qw();
-use Meta::Pdmt::FileNode qw();
+use Meta::Pdmt::Pdmt qw();
+use Meta::Pdmt::Cvs::Aegis qw();
+use Meta::Pdmt::Handlers::PerlChecker qw();
+use Meta::Pdmt::Handlers::PerlPod qw();
+use Meta::Pdmt::Handlers::Dtd2Html qw();
+use Meta::Pdmt::Shell qw();
 
-my($verb);
+my($prompt,$startup,$startup_file,$history,$history_file,$verbose);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_bool("verbose","noisy or quiet ?",1,\$verb);
+$opts->def_stri("opt_prompt","what prompt to use ?","PDMT [% node_number %] # ",\$prompt);
+$opts->def_bool("opt_startup","use startup file ?",1,\$startup);
+$opts->def_stri("opt_startup_file","what startup file ?","[% home_dir %]/.pdmt_shell.rc",\$startup_file);
+$opts->def_bool("opt_history","use history ?",1,\$history);
+$opts->def_stri("opt_history_file","what history file to use ?","[% home_dir %]/.pdmt_shell.hist",\$history_file);
+$opts->def_bool("opt_verbose","be verbose ?",1,\$verbose);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($graph)=Meta::Pdmt::Graph->new();
-if($verb) {
-	Meta::Utils::Output::print("reading sources from SCCS\n");
-}
-my($list)=Meta::Baseline::Aegis::source_files_list(1,1,0,1,1,0);
-for(my($i)=0;$i<=$#$list;$i++) {
-	my($curr)=$list->[$i];
-	my($node)=Meta::Pdmt::FileNode->new();
-	$node->set_name($curr);
-	$node->set_path($curr);
-	$node->set_rule(\&print);
-	$graph->add_vertex($node);
-#	if($curr=~/*\.temp$/) {
-#		my($suffix)=get_suffix($curr);
-#		my($dire)=suffix_to_directory($suffix);
-#		my($new)=$dire."/".remove_suffix($curr).".".$
-#	}
-}
-Meta::Utils::Output::print("graph has [".$graph->vertices_num()."] nodes\n");
-Meta::Utils::Output::print("graph has [".$graph->edges_num()."] edges\n");
-#$graph->build();
+#$prompt=Meta::Template::Sub::interpolate($prompt);
+$startup_file=Meta::Template::Sub::interpolate($startup_file);
+$history_file=Meta::Template::Sub::interpolate($history_file);
+
+my($pdmt)=Meta::Pdmt::Pdmt->new();
+$pdmt->set_cvs(Meta::Pdmt::Cvs::Aegis->new());
+$pdmt->get_handlers()->insert(Meta::Pdmt::Handlers::PerlChecker->new());
+$pdmt->get_handlers()->insert(Meta::Pdmt::Handlers::PerlPod->new());
+$pdmt->get_handlers()->insert(Meta::Pdmt::Handlers::Dtd2Html->new());
+#$pdmt->add_files();
+
+#Meta::Utils::Output::verbose($verb,"after add_files\n");
+
+#$pdmt->get_graph()->build_all();
+
+my($shell)=Meta::Pdmt::Shell->new();
+
+$shell->set_prompt($prompt);
+$shell->set_history($history);
+$shell->set_history_file($history_file);
+$shell->set_startup($startup);
+$shell->set_startup_file($startup_file);
+$shell->set_verbose($verbose);
+
+$shell->set_pdmt($pdmt);
+$shell->set_graph($pdmt->get_graph());
+$pdmt->get_graph()->set_verbose(1);
+
+$shell->run();
 
 Meta::Utils::System::exit(1);
 
@@ -70,7 +86,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pdmt.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -137,9 +153,29 @@ show description and exit
 
 show history and exit
 
-=item B<verbose> (type: bool, default: 1)
+=item B<opt_prompt> (type: stri, default: PDMT [% node_number %] # )
 
-noisy or quiet ?
+what prompt to use ?
+
+=item B<opt_startup> (type: bool, default: 1)
+
+use startup file ?
+
+=item B<opt_startup_file> (type: stri, default: [% home_dir %]/.pdmt_shell.rc)
+
+what startup file ?
+
+=item B<opt_history> (type: bool, default: 1)
+
+use history ?
+
+=item B<opt_history_file> (type: stri, default: [% home_dir %]/.pdmt_shell.hist)
+
+what history file to use ?
+
+=item B<opt_verbose> (type: bool, default: 1)
+
+be verbose ?
 
 =back
 
@@ -170,10 +206,12 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV teachers project
+	0.13 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Pdmt::FileNode(3), Meta::Pdmt::Graph(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Pdmt::Cvs::Aegis(3), Meta::Pdmt::Handlers::Dtd2Html(3), Meta::Pdmt::Handlers::PerlChecker(3), Meta::Pdmt::Handlers::PerlPod(3), Meta::Pdmt::Pdmt(3), Meta::Pdmt::Shell(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -3,26 +3,28 @@
 package Meta::Info::Im;
 
 use strict qw(vars refs subs);
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.02";
 @ISA=qw();
 
-#sub new($);
-#sub method($);
+#sub BEGIN();
 #sub TEST($);
 
 #__DATA__
 
-sub new($) {
-	my($clas)=@_;
-	my($self)={};
-	CORE::bless($self,$clas);
-	return($self);
-}
-
-sub method($) {
-	my($self)=@_;
+sub BEGIN() {
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_title",
+		-java=>"_type",
+		-java=>"_user",
+		-java=>"_password",
+		-java=>"_old_password",
+		-java=>"_active",
+		-java=>"_remark",
+	);
 }
 
 sub TEST($) {
@@ -63,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Im.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -78,27 +80,31 @@ This class stores the details of a single IM system a person is registered with.
 
 =head1 FUNCTIONS
 
-	new($)
-	method($)
+	BEGIN()
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<new($)>
+=item B<BEGIN()>
 
-This is a constructor for the Meta::Info::Im object.
-
-=item B<method($)>
-
-This is an object method.
+Bootstrap method to set up accessors for the following attributes:
+0. "title" - title for the IM address.
+1. "type" - type of IM address.
+2. "user" - user name of IM system.
+3. "password" - password of IM system.
+4. "old_password" - the old password of IM system.
+5. "active" - is the address active.
+6. "remark" - is the free text remark regarding the account.
 
 =item B<TEST($)>
 
 This is a testing suite for the Meta::Info::Im module.
 This test is should be run by a higher level management system at integration
 or release time or just as a regular routine to check that all is well.
+
+This test currently does nothing.
 
 =back
 
@@ -120,10 +126,12 @@ None.
 =head1 HISTORY
 
 	0.00 MV web site development
+	0.01 MV finish papers
+	0.02 MV teachers project
 
 =head1 SEE ALSO
 
-strict(3)
+Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

@@ -3,11 +3,11 @@
 package Meta::Visualization::Graph;
 
 use strict qw(vars refs subs);
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 use GraphViz qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.07";
 @ISA=qw(GraphViz);
 
 #sub BEGIN();
@@ -20,28 +20,31 @@ $VERSION="0.05";
 our($enum);
 
 sub BEGIN() {
-	$enum=Meta::Ds::Enum->new();
-	$enum->insert("canon");
-	$enum->insert("text");
-	$enum->insert("ps");
-	$enum->insert("hpgl");
-	$enum->insert("pcl");
-	$enum->insert("mif");
-	$enum->insert("pic");
-	$enum->insert("gd");
-	$enum->insert("gd2");
-	$enum->insert("gif");
-	$enum->insert("jpeg");
-	$enum->insert("png");
-	$enum->insert("wbmp");
-	$enum->insert("ismap");
-	$enum->insert("imap");
-	$enum->insert("vrml");
-	$enum->insert("vtx");
-	$enum->insert("mp");
-	$enum->insert("fig");
-	$enum->insert("svg");
-	$enum->insert("plain");
+	$enum=Meta::Info::Enum->new();
+	$enum->set_name("output_type");
+	$enum->set_description("types of outputs from GraphViz");
+	$enum->insert("canon","canon");
+	$enum->insert("text","text");
+	$enum->insert("ps","ps");
+	$enum->insert("hpgl","hpgl");
+	$enum->insert("pcl","pcl");
+	$enum->insert("mif","mif");
+	$enum->insert("pic","pic");
+	$enum->insert("gd","gd");
+	$enum->insert("gd2","gd2");
+	$enum->insert("gif","gif");
+	$enum->insert("jpeg","jpeg");
+	$enum->insert("png","png");
+	$enum->insert("wbmp","wbmp");
+	$enum->insert("ismap","ismap");
+	$enum->insert("imap","imap");
+	$enum->insert("vrml","vrml");
+	$enum->insert("vtx","vtx");
+	$enum->insert("mp","mp");
+	$enum->insert("fig","fig");
+	$enum->insert("svg","svg");
+	$enum->insert("plain","plain");
+	$enum->set_default("svg");
 }
 
 sub get_enum() {
@@ -155,7 +158,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -226,10 +229,12 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV finish papers
+	0.07 MV teachers project
 
 =head1 SEE ALSO
 
-GraphViz(3), Meta::Ds::Enum(3), strict(3)
+GraphViz(3), Meta::Info::Enum(3), strict(3)
 
 =head1 TODO
 

@@ -12,12 +12,12 @@ my($re,$file,$num);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_stri("re","what regular experssion ?",".*\.pm",\$re);
-$opts->def_devf("package","what packages file ?","xmlx/perlpkgs/meta.xml",\$file);
+$opts->def_modu("package","what packages file ?","xmlx/perlpkgs/meta.xml",\$file);
 $opts->def_stri("num","what package number ?",0,\$num);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($pkgs)=Meta::Lang::Perl::Perlpkgs->new_deve($file);
+my($pkgs)=Meta::Lang::Perl::Perlpkgs->new_modu($file);
 my($pkg)=$pkgs->getx($num);
 my($modules)=$pkg->get_modules();
 my(%hash);
@@ -76,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_pkgcheck.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -130,7 +130,7 @@ show history and exit
 
 what regular experssion ?
 
-=item B<package> (type: devf, default: xmlx/perlpkgs/meta.xml)
+=item B<package> (type: modu, default: xmlx/perlpkgs/meta.xml)
 
 what packages file ?
 
@@ -158,6 +158,7 @@ None.
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
 	0.02 MV bring movie data
+	0.03 MV teachers project
 
 =head1 SEE ALSO
 

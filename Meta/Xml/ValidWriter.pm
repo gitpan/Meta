@@ -10,7 +10,7 @@ use XML::Doctype qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw(XML::ValidWriter);
 
 #sub new_file($$$$$);
@@ -60,6 +60,11 @@ sub end($) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($result);
+	my($xml)=__PACKAGE__->new_string(\$result,"dtdx/impo/xml/docbookx.dtd","email","-//OASIS//DTD DocBook XML V4.1.2//EN");
+	$xml->dataElement("email","foo\@bar.com");
+	$xml->end();
+	Meta::Utils::Output::print("result is [".$result."]\n");
 	return(1);
 }
 
@@ -96,7 +101,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: ValidWriter.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -136,6 +141,7 @@ This method overrides the native end implementation and closes the IO stream too
 =item B<TEST($)>
 
 Test suite for this module.
+Currently it just initializes an object and writes some xml.
 
 =back
 
@@ -167,6 +173,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 

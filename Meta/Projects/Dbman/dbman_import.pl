@@ -20,7 +20,7 @@ use File::MMagic qw();
 my($connections_file,$con_name,$name,$verbose,$clean,$sections,$pages,$demo,$import_description,$import_troff,$import_ascii,$import_ps,$import_dvi,$import_html,$dlst);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("con_name","what connection name ?",undef,\$con_name);
 $opts->def_stri("name","what database name ?","dbman",\$name);
 $opts->def_bool("verbose","should I be noisy ?",0,\$verbose);
@@ -39,7 +39,7 @@ $opts->def_dlst("dirs","directory path to scan","/local/tools/man",\$dlst);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection)=$connections->get_con_null($con_name);
 
 my($mm)=File::MMagic->new();
@@ -291,7 +291,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: dbman_import.pl
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -342,7 +342,7 @@ show description and exit
 
 show history and exit
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 what connections XML file to use ?
 
@@ -428,6 +428,7 @@ None.
 	0.06 MV SEE ALSO section fix
 	0.07 MV move tests to modules
 	0.08 MV download scripts
+	0.09 MV teachers project
 
 =head1 SEE ALSO
 

@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use XML::Writer qw();
 use IO qw();
 use Meta::Utils::File::File qw();
+use Meta::Utils::File::Mkdir qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub get_emblem();
@@ -23,6 +24,7 @@ $VERSION="0.28";
 #sub xml_emblem($);
 #sub html_emblem($);
 #sub cook_emblem_print($);
+#sub mkdir_emblem($);
 #sub TEST($);
 
 #__DATA__
@@ -94,6 +96,12 @@ sub cook_emblem_print($) {
 	print $file $string;
 }
 
+sub mkdir_emblem($) {
+	my($file)=@_;
+	Meta::Utils::File::Mkdir::mkdir_p_check_file($file);
+	&file_emblem($file);
+}
+
 sub TEST($) {
 	my($context)=@_;
 	return(1);
@@ -132,7 +140,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Utils.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -159,6 +167,7 @@ baseline need.
 	xml_emblem($)
 	html_emblem($)
 	cook_emblem_print($)
+	mkdir_emblem($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -216,6 +225,11 @@ This will create a stub HTML file.
 
 This method gets a file handle and prints a cook emblem into it.
 
+=item B<mkdir_emblem($)>
+
+This method will create an emblem file but will also create the directory in
+which it is supposed to reside (if it is not already created).
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -268,10 +282,11 @@ None.
 	0.26 MV website construction
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV teachers project
 
 =head1 SEE ALSO
 
-IO(3), Meta::Utils::File::File(3), XML::Writer(3), strict(3)
+IO(3), Meta::Utils::File::File(3), Meta::Utils::File::Mkdir(3), XML::Writer(3), strict(3)
 
 =head1 TODO
 

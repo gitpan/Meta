@@ -5,10 +5,16 @@ package Meta::Xml::Parsers::Author;
 use strict qw(vars refs subs);
 use Meta::Info::Author qw();
 use Meta::Xml::Parsers::Collector qw();
-#use Meta::Utils::Output qw();
+use Meta::Info::Webpage qw();
+use Meta::Info::Email qw();
+use Meta::Info::Account qw();
+use Meta::Info::Affiliation qw();
+use Meta::Info::SecurityKey qw();
+use Meta::Info::Im qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.15";
 @ISA=qw(Meta::Xml::Parsers::Collector);
 
 #sub new($);
@@ -22,12 +28,12 @@ $VERSION="0.12";
 
 sub new($) {
 	my($clas)=@_;
-	my($self)=Meta::Xml::Parsers::Collector->new();
+	my($self)=Meta::Xml::Parsers::Collector::new($clas);
 	$self->setHandlers(
 		'Start'=>\&handle_start,
 		'End'=>\&handle_end,
 	);
-	bless($self,$clas);
+	#bless($self,$clas);
 	$self->{TEMP_AUTHOR}=defined;
 	return($self);
 }
@@ -44,17 +50,59 @@ sub handle_start($$) {
 	if($elem eq "author") {
 		$self->{TEMP_AUTHOR}=Meta::Info::Author->new();
 	}
+	if($elem eq "webpage") {
+		$self->{TEMP_WEBPAGE}=Meta::Info::Webpage->new();
+	}
+	if($elem eq "email") {
+		$self->{TEMP_EMAIL}=Meta::Info::Email->new();
+	}
+	if($elem eq "account") {
+		$self->{TEMP_ACCOUNT}=Meta::Info::Account->new();
+	}
+	if($elem eq "affiliation") {
+		$self->{TEMP_AFFILIATION}=Meta::Info::Affiliation->new();
+	}
+	if($elem eq "security_key") {
+		$self->{TEMP_SECURITY_KEY}=Meta::Info::SecurityKey->new();
+	}
+	if($elem eq "im") {
+		$self->{TEMP_IM}=Meta::Info::Im->new();
+	}
 }
 
 sub handle_end($$) {
 	my($self,$elem)=@_;
 	$self->SUPER::handle_end($elem);
+	if($elem eq "webpage") {
+		my($key)=$self->{TEMP_WEBPAGE}->get_title();
+		$self->{TEMP_AUTHOR}->get_webpages()->insert($key,$self->{TEMP_WEBPAGE});
+	}
+	if($elem eq "email") {
+		my($key)=$self->{TEMP_EMAIL}->get_title();
+		$self->{TEMP_AUTHOR}->get_emails()->insert($key,$self->{TEMP_EMAIL});
+	}
+	if($elem eq "account") {
+		my($key)=$self->{TEMP_ACCOUNT}->get_name();
+		$self->{TEMP_AUTHOR}->get_accounts()->insert($key,$self->{TEMP_ACCOUNT});
+	}
+	if($elem eq "affiliation") {
+		my($key)=$self->{TEMP_AFFILIATION}->get_title();
+		$self->{TEMP_AUTHOR}->get_affiliations()->insert($key,$self->{TEMP_AFFILIATION});
+	}
+	if($elem eq "security_key") {
+		my($key)=$self->{TEMP_SECURITY_KEY}->get_title();
+		$self->{TEMP_AUTHOR}->get_security_keys()->insert($key,$self->{TEMP_SECURITY_KEY});
+	}
+	if($elem eq "im") {
+		my($key)=$self->{TEMP_IM}->get_type();
+		$self->{TEMP_AUTHOR}->get_ims()->insert($key,$self->{TEMP_IM});
+	}
 }
 
 sub handle_endchar($$$) {
 	my($self,$elem,$name)=@_;
-#	Meta::Utils::Output::print("in here with elem [".$elem."],[".join(',',$self->context())."]\n");
-	$self->SUPER::handle_endchar($elem);
+#	Meta::Utils::Output::print("in here with elem [".$elem."],[".join(',',$self->context(),$name)."]\n");
+	$self->SUPER::handle_endchar($elem,$name);
 	if($self->in_context("author.honorific",$name)) {
 		$self->{TEMP_AUTHOR}->set_honorific($elem);
 	}
@@ -64,50 +112,149 @@ sub handle_endchar($$$) {
 	if($self->in_context("author.surname",$name)) {
 		$self->{TEMP_AUTHOR}->set_surname($elem);
 	}
-	if($self->in_context("author.title",$name)) {
-		$self->{TEMP_AUTHOR}->set_title($elem);
-	}
-	if($self->in_context("author.cpanid",$name)) {
-		$self->{TEMP_AUTHOR}->set_cpanid($elem);
-	}
-	if($self->in_context("author.cpanpassword",$name)) {
-		$self->{TEMP_AUTHOR}->set_cpanpassword($elem);
-	}
-	if($self->in_context("author.cpanemail",$name)) {
-		$self->{TEMP_AUTHOR}->set_cpanemail($elem);
-	}
-	if($self->in_context("author.sourceforgeid",$name)) {
-		$self->{TEMP_AUTHOR}->set_sourceforgeid($elem);
-	}
-	if($self->in_context("author.sourceforgepassword",$name)) {
-		$self->{TEMP_AUTHOR}->set_sourceforgepassword($elem);
-	}
-	if($self->in_context("author.sourceforgeemail",$name)) {
-		$self->{TEMP_AUTHOR}->set_sourceforgeemail($elem);
-	}
-	if($self->in_context("author.advogatoid",$name)) {
-		$self->{TEMP_AUTHOR}->set_advogatoid($elem);
-	}
-	if($self->in_context("author.advogatopassword",$name)) {
-		$self->{TEMP_AUTHOR}->set_advogatopassword($elem);
-	}
-	if($self->in_context("author.advogatoemail",$name)) {
-		$self->{TEMP_AUTHOR}->set_advogatoemail($elem);
-	}
 	if($self->in_context("author.initials",$name)) {
 		$self->{TEMP_AUTHOR}->set_initials($elem);
 	}
-	if($self->in_context("author.handle",$name)) {
-		$self->{TEMP_AUTHOR}->set_handle($elem);
+	if($self->in_context("author.webpages.webpage.title",$name)) {
+		$self->{TEMP_WEBPAGE}->set_title($elem);
 	}
-	if($self->in_context("author.homepage",$name)) {
-		$self->{TEMP_AUTHOR}->set_homepage($elem);
+	if($self->in_context("author.webpages.webpage.value",$name)) {
+		$self->{TEMP_WEBPAGE}->set_value($elem);
 	}
-	if($self->in_context("author.affiliation.orgname",$name)) {
-		$self->{TEMP_AUTHOR}->get_affiliation()->set_orgname($elem);
+	if($self->in_context("author.emails.email.title",$name)) {
+		$self->{TEMP_EMAIL}->set_title($elem);
 	}
-	if($self->in_context("author.affiliation.address.email",$name)) {
-		$self->{TEMP_AUTHOR}->get_affiliation()->get_address()->set_email($elem);
+	if($self->in_context("author.emails.email.value",$name)) {
+		$self->{TEMP_EMAIL}->set_value($elem);
+	}
+	if($self->in_context("author.accounts.account.name",$name)) {
+		$self->{TEMP_ACCOUNT}->set_name($elem);
+	}
+	if($self->in_context("author.accounts.account.type",$name)) {
+		$self->{TEMP_ACCOUNT}->set_type($elem);
+	}
+	if($self->in_context("author.accounts.account.user",$name)) {
+		$self->{TEMP_ACCOUNT}->set_user($elem);
+	}
+	if($self->in_context("author.accounts.account.password",$name)) {
+		$self->{TEMP_ACCOUNT}->set_password($elem);
+	}
+	if($self->in_context("author.accounts.account.system_name",$name)) {
+		$self->{TEMP_ACCOUNT}->set_system_name($elem);
+	}
+	if($self->in_context("author.accounts.account.system_url",$name)) {
+		$self->{TEMP_ACCOUNT}->set_system_url($elem);
+	}
+	if($self->in_context("author.accounts.account.mail",$name)) {
+		$self->{TEMP_ACCOUNT}->set_mail($elem);
+	}
+	if($self->in_context("author.accounts.account.url",$name)) {
+		$self->{TEMP_ACCOUNT}->set_url($elem);
+	}
+	if($self->in_context("author.accounts.account.directory",$name)) {
+		$self->{TEMP_ACCOUNT}->set_directory($elem);
+	}
+	if($self->in_context("author.accounts.account.ssh",$name)) {
+		$self->{TEMP_ACCOUNT}->set_ssh($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.title",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_title($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.code",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_code($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.title",$name)) {
+		$self->{TEMP_AFFILIATION}->set_title($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.jobtitle",$name)) {
+		$self->{TEMP_AFFILIATION}->set_jobtitle($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.orgname",$name)) {
+		$self->{TEMP_AFFILIATION}->set_orgname($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.country",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_country($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.state",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_state($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.county",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_county($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.city",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_city($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.suburb",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_suburb($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.street",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_street($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.house_number",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_house_number($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.flat_number",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_flat_number($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.floor_number",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_floor_number($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.entrance_number",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_entrance_number($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.mail",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_mail($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.phone",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_phone($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.fax",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_fax($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.postcode",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_postcode($elem);
+	}
+	if($self->in_context("author.affiliations.affiliation.address.",$name)) {
+		$self->{TEMP_AFFILIATION}->get_address()->set_($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.server",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_server($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.passphrase",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_passphrase($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.public_key_url",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_public_key_url($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.sig_name",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_sig_name($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.sig_comment",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_sig_comment($elem);
+	}
+	if($self->in_context("author.security_keys.security_key.sig_email",$name)) {
+		$self->{TEMP_SECURITY_KEY}->set_sig_email($elem);
+	}
+	if($self->in_context("author.ims.im.title",$name)) {
+		$self->{TEMP_IM}->set_title($elem);
+	}
+	if($self->in_context("author.ims.im.type",$name)) {
+		$self->{TEMP_IM}->set_type($elem);
+	}
+	if($self->in_context("author.ims.im.user",$name)) {
+		$self->{TEMP_IM}->set_user($elem);
+	}
+	if($self->in_context("author.ims.im.password",$name)) {
+		$self->{TEMP_IM}->set_password($elem);
+	}
+	if($self->in_context("author.ims.im.old_password",$name)) {
+		$self->{TEMP_IM}->set_old_password($elem);
+	}
+	if($self->in_context("author.ims.im.active",$name)) {
+		$self->{TEMP_IM}->set_active($elem);
+	}
+	if($self->in_context("author.ims.im.remark",$name)) {
+		$self->{TEMP_IM}->set_remark($elem);
 	}
 }
 
@@ -149,7 +296,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Author.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -233,10 +380,13 @@ None.
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
 	0.12 MV web site development
+	0.13 MV weblog issues
+	0.14 MV finish papers
+	0.15 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Info::Author(3), Meta::Xml::Parsers::Collector(3), strict(3)
+Meta::Info::Account(3), Meta::Info::Affiliation(3), Meta::Info::Author(3), Meta::Info::Email(3), Meta::Info::Im(3), Meta::Info::SecurityKey(3), Meta::Info::Webpage(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Collector(3), strict(3)
 
 =head1 TODO
 

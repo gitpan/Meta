@@ -8,7 +8,7 @@ use Meta::Utils::Env qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.06";
+$VERSION="0.07";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -18,6 +18,7 @@ $VERSION="0.06";
 #sub minimize($$$);
 #sub exists($$);
 #sub resolve($$);
+#sub mtime($$);
 #sub append_data($$$);
 #sub append($$);
 #sub check($);
@@ -76,6 +77,15 @@ sub resolve($$) {
 		}
 	}
 	return(undef);
+}
+
+sub mtime($$) {
+	my($self,$file)=@_;
+	my($resolved)=$self->resolve($file);
+	if(defined($resolved)) {
+		return(Meta::Utils::File::Time::mtime($resolved));
+	} else {
+	}
 }
 
 sub append_data($$$) {
@@ -146,7 +156,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Patho.pm
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -176,6 +186,7 @@ operations.
 	minimize($)
 	exists($$)
 	resolve($$)
+	mtime($$)
 	append_data($$$)
 	append($$)
 	check($)
@@ -220,6 +231,10 @@ be relative to the path.
 =item B<resolve($$)>
 
 This method will return a file resolved according to a path.
+
+=item B<mtime($$)>
+
+This method will return the files resolved modification time.
 
 =item B<append_data($$$)>
 
@@ -267,6 +282,7 @@ None.
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
 	0.06 MV web site development
+	0.07 MV teachers project
 
 =head1 SEE ALSO
 

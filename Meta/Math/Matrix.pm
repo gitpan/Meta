@@ -7,7 +7,7 @@ use Meta::Geo::Pos2d qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.18";
+$VERSION="0.19";
 @ISA=qw();
 
 #sub new($);
@@ -15,7 +15,6 @@ $VERSION="0.18";
 #sub set_elem($$$);
 #sub get_elem($$);
 #sub check_pos($$);
-#sub print($$);
 #sub TEST($);
 
 #__DATA__
@@ -62,19 +61,6 @@ sub check_pos($$) {
 	}
 }
 
-sub print($$) {
-	my($self,$file)=@_;
-	for(my($x)=0;$x<$self->{SIZE}->get_x();$x++) {
-		for(my($y)=0;$y<$self->{SIZE}->get_y();$y++) {
-			my($posx)=Meta::Geo::Pos2d->new();
-			$posx->set_x($x);
-			$posx->set_y($y);
-			print $file $self->get_elem($posx).",";
-		}
-		print $file "\n";
-	}
-}
-
 sub TEST($) {
 	my($context)=@_;
 	my($matrix)=Meta::Math::Matrix->new();
@@ -93,7 +79,7 @@ sub TEST($) {
 		}
 		$summ+=$x;
 	}
-	$matrix->print(Meta::Utils::Output::get_file());
+	Meta::Utils::Output::dump($matrix);
 	return(1);
 }
 
@@ -130,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Matrix.pm
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -160,7 +146,6 @@ want in this matrix.
 	set_elem($$$)
 	get_elem($$)
 	check_pos($$)
-	print($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -186,10 +171,6 @@ This will retrieve an element from the matrix.
 =item B<check_pos($$)>
 
 This will check that a position is legal.
-
-=item B<print($$)>
-
-This will print out the matrix to a file.
 
 =item B<TEST($)>
 
@@ -233,6 +214,7 @@ None.
 	0.16 MV website construction
 	0.17 MV web site automation
 	0.18 MV SEE ALSO section fix
+	0.19 MV teachers project
 
 =head1 SEE ALSO
 

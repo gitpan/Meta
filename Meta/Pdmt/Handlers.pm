@@ -3,11 +3,11 @@
 package Meta::Pdmt::Handlers;
 
 use strict qw(vars refs subs);
-use Meta::Ds::Ohash qw();
+use Meta::Ds::Oset qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
-@ISA=qw(Meta::Ds::Ohash);
+$VERSION="0.11";
+@ISA=qw(Meta::Ds::Oset);
 
 #sub TEST($);
 
@@ -51,7 +51,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Handlers.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -81,7 +81,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-Meta::Ds::Ohash(3)
+Meta::Ds::Oset(3)
 
 =head1 BUGS
 
@@ -107,10 +107,11 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Ds::Ohash(3), strict(3)
+Meta::Ds::Oset(3), strict(3)
 
 =head1 TODO
 

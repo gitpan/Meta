@@ -14,6 +14,7 @@ use Meta::Widget::Gtk::SqlList qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::File::File qw();
 use Meta::Utils::File::Remove qw();
+use Meta::Development::Module qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -82,9 +83,11 @@ Gtk->init();
 my($window)=Gtk::Window->new();
 $window->signal_connect("destroy",\&db_quit);
 
-my($def)=Meta::Db::Def->new_deve("xmlx/def/pics.xml");
+my($module)=Meta::Development::Module->new_name("xmlx/def/pics.xml");
+my($def)=Meta::Db::Def->new_modu($module);
  
-my($connections)=Meta::Db::Connections->new_deve("xmlx/connections/connections.xml");
+ my($cmodule)=Meta::Development::Module->new_name("xmlx/connections/connections.xml");
+my($connections)=Meta::Db::Connections->new_modu($cmodule);
 my($connection)=$connections->get_def_con();
 
 my($dbi)=Meta::Db::Dbi->new();
@@ -204,7 +207,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_ui.pl
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -290,10 +293,11 @@ None.
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
 	0.17 MV move tests to modules
+	0.18 MV teachers project
 
 =head1 SEE ALSO
 
-Gtk(3), Gtk::Gdk(3), Gtk::Gdk::ImlibImage(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Meta::Widget::Gtk::SqlList(3), strict(3)
+Gtk(3), Gtk::Gdk(3), Gtk::Gdk::ImlibImage(3), Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Development::Module(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Meta::Widget::Gtk::SqlList(3), strict(3)
 
 =head1 TODO
 

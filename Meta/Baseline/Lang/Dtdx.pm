@@ -8,9 +8,10 @@ use Meta::Baseline::Utils qw();
 use XML::Doctype qw();
 use File::Basename qw();
 use Meta::Lang::Dtd::Html qw();
+use XML::LibXML qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -37,8 +38,26 @@ sub c2chec($) {
 	#	Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	#}
 	#return($res);
-	Meta::Baseline::Utils::file_emblem($buil->get_targ());
-	return(1);
+	
+	#Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	#return(1);
+
+	my($public_id)=undef;
+	my($dtd)=XML::LibXML::Dtd->new($public_id,$buil->get_srcx());
+	my($res);
+	if(defined($dtd)) {
+		Meta::Baseline::Utils::file_emblem($buil->get_targ());
+		$res=1;
+	} else {
+		Meta::Utils::Output::print("errors parsing DTD\n");
+		$res=0;
+	}
+	return($res);
+#	my($res)=$dtd->is_valid();
+#	if($res) {
+#		Meta::Baseline::Utils::file_emblem($buil->get_targ());
+#	}
+#	return($res);
 }
 
 sub c2html($) {
@@ -112,7 +131,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dtdx.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -198,10 +217,11 @@ None.
 	0.17 MV SEE ALSO section fix
 	0.18 MV move tests into modules
 	0.19 MV move tests into modules
+	0.20 MV finish papers
 
 =head1 SEE ALSO
 
-File::Basename(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Lang::Dtd::Html(3), XML::Doctype(3), strict(3)
+File::Basename(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Lang::Dtd::Html(3), XML::Doctype(3), XML::LibXML(3), strict(3)
 
 =head1 TODO
 

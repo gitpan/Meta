@@ -11,7 +11,7 @@ use Meta::Utils::Hash qw();
 use Meta::Utils::Net::Ftp qw();
 use Time::localtime qw();
 
-my($debug,$verbose,$doit,$mod,$upload,$remove,$empty_dir,$mode,$site_name,$file);
+my($debug,$verbose,$doit,$mod,$upload,$remove,$empty_dir,$mode,$site_name,$file,$pass_file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("debug","debug the connection ?",0,\$debug);
@@ -24,10 +24,11 @@ $opts->def_bool("empty_dir","should I remove empty directories ?",1,\$empty_dir)
 $opts->def_stri("mode","what type of transfer should I use ?","binary",\$mode);
 $opts->def_stri("site_name","name of site",undef,\$site_name);
 $opts->def_stri("file","file name to transfer","html/temp/html/projects/Website/main.html",\$file);
+$opts->def_modu("passwords","passwords file","xmlx/passwords/passwords.xml",\$pass_file);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($sites)=Meta::Info::Password->new_deve("xmlx/passwords/passwords.xml");
+my($sites)=Meta::Info::Password->new_modu($pass_file);
 my($my_site)=$sites->get($site_name);
 my($site)=$my_site->get_ftp_address();
 my($user)=$my_site->get_ftp_user();
@@ -177,7 +178,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: website_upload.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -285,6 +286,10 @@ name of site
 
 file name to transfer
 
+=item B<passwords> (type: modu, default: xmlx/passwords/passwords.xml)
+
+passwords file
+
 =back
 
 no free arguments are allowed
@@ -314,6 +319,7 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV teachers project
 
 =head1 SEE ALSO
 

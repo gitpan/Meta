@@ -4,12 +4,12 @@ package Meta::Development::TestInfo;
 
 use strict qw(vars refs subs);
 use Meta::Class::MethodMaker qw();
-use Meta::Baseline::Aegis qw();
 use XML::Simple qw();
 use Meta::Utils::Output qw();
+use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.02";
 @ISA=qw();
 
 #sub new($);
@@ -27,26 +27,7 @@ sub BEGIN() {
 		-java=>"_host",
 		-java=>"_domain",
 		-java=>"_temp_directory",
-		-java=>"_mysqldsn",
-		-java=>"_mysqluser",
-		-java=>"_mysqlpass",
-		-java=>"_pgdsn",
-		-java=>"_pguser",
-		-java=>"_pgpass",
 	);
-	Meta::Class::MethodMaker->print([
-		"user",
-		"password",
-		"host",
-		"domain",
-		"temp_directory",
-		"mysqldsn",
-		"mysqluser",
-		"mysqlpass",
-		"pgdsn",
-		"pguser",
-		"pgpass",
-	]);
 }
 
 sub read($$) {
@@ -57,24 +38,19 @@ sub read($$) {
 	$self->set_host($config->{"config"}->{"host"}->{"value"});
 	$self->set_domain($config->{"config"}->{"domain"}->{"value"});
 	$self->set_temp_directory($config->{"config"}->{"temp_directory"}->{"value"});
-	$self->set_mysqldsn($config->{"config"}->{"mysqldsn"}->{"value"});
-	$self->set_mysqluser($config->{"config"}->{"mysqluser"}->{"value"});
-	$self->set_mysqlpass($config->{"config"}->{"mysqlpass"}->{"value"});
-	$self->set_pgdsn($config->{"config"}->{"pgdsn"}->{"value"});
-	$self->set_pguser($config->{"config"}->{"pguser"}->{"value"});
-	$self->set_pgpass($config->{"config"}->{"pgpass"}->{"value"});
 }
 
-sub read_deve($$) {
-	my($self,$file)=@_;
-	$self->read(Meta::Baseline::Aegis::which($file));
+sub read_modu($$) {
+	my($self,$modu)=@_;
+	$self->read($modu->get_abs_path());
 }
 
 sub TEST($) {
 	my($context)=@_;
-	my($new_object)=Meta::Development::TestInfo->new();
-	$new_object->read_deve("xmlx/configs/test.xml");
-	$new_object->print(Meta::Utils::Output::get_file());
+	my($new_object)=__PACKAGE__->new();
+	my($module)=Meta::Development::Module->new_name("xmlx/configs/test.xml");
+	$new_object->read_modu($module);
+	Meta::Utils::Output::dump($new_object);
 	return(1);
 }
 
@@ -111,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: TestInfo.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -139,7 +115,7 @@ Feel free to add more information to this object as it becomes neccessary.
 
 	BEGIN()
 	read($$)
-	read_deve($$)
+	read_modu($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -162,7 +138,7 @@ This method sets up accessor methods to the following attributes:
 This method reads the TestInfo object from an XML config file.
 The method uses the XML::Simple parser to do it's work.
 
-=item B<read_deve($$)>
+=item B<read_modu($$)>
 
 This method is exactly like the above read method except the input
 file is relative to the development system.
@@ -192,10 +168,11 @@ None.
 
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
+	0.02 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Utils::Output(3), XML::Simple(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Development::Module(3), Meta::Utils::Output(3), XML::Simple(3), strict(3)
 
 =head1 TODO
 

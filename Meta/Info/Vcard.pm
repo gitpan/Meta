@@ -5,7 +5,7 @@ package Meta::Info::Vcard;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.03";
 @ISA=qw();
 
 #sub new($);
@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Vcard.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -83,6 +83,65 @@ Services that this class provides:
 3. reading and writing of the object in my own XML/DTD type format.
 4. sending the object via sms to GSM type phones using GSM::SMS and others.
 5. conversion of this object to various other formats.
+
+Here is an example of a full VCARD taken from evolution version 1.0.8:
+BEGIN:VCARD
+X-EVOLUTION-FILE-AS:field_fileas
+FN:field_title field_first field_middle field_last field_suffix
+N:field_last;field_first;field_middle;field_title;field_suffix
+ADR;WORK:field_business_po_box;field_business_address_2;field_business_address;field_business_city;field_business_state_province;field_business_zipcode;field_business_country
+ADR;HOME:field_home_pobox;field_home_address_2;field_home_address;field_home_city;field_home_state/province;field_home_zipcode;field_home_country
+ADR;POSTAL:field_other_pobox;field_other_address_2;field_other_address;field_other_city;field_other_state/province;field_other_zipcode;field_other_country
+LABEL;QUOTED-PRINTABLE;WORK:field_business_po_box field_business_address=0Afield_business_address_2=0A=
+field_business_city, field_business_state_province field_business_zipcode=0A=
+field_business_country
+LABEL;QUOTED-PRINTABLE;HOME:field_home_pobox field_home_address=0Afield_home_address_2=0Afield_home_ci=
+ty, field_home_state/province field_home_zipcode=0Afield_home_country
+LABEL;QUOTED-PRINTABLE;POSTAL:field_other_pobox field_other_address=0Afield_other_address_2=0Afield_othe=
+r_city, field_other_state/province field_other_zipcode=0Afield_other_count=
+ry
+TEL;X-EVOLUTION-ASSISTANT:field_assistant
+TEL;WORK;VOICE:field_business
+TEL;WORK;VOICE:field_business_2
+TEL;WORK;FAX:field_business_fax
+TEL;X-EVOLUTION-CALLBACK:field_callback
+TEL;CAR:field_car
+TEL;WORK:field_company
+TEL;HOME:field_home
+TEL;HOME:field_home_2
+TEL;HOME;FAX:field_home_fax
+TEL;ISDN:field_ISDN
+TEL;CELL:field_mobile
+TEL;VOICE:field_other
+TEL;FAX:field_other_fax
+TEL;PAGER:field_pager
+TEL;PREF:field_primary
+TEL;X-EVOLUTION-RADIO:field_radio
+TEL;X-EVOLUTION-TELEX:field_telex
+TEL;X-EVOLUTION-TTYTDD:field_tty/tdd
+EMAIL;INTERNET:field_primary_email
+EMAIL;INTERNET:field_email2
+EMAIL;INTERNET:field_email3
+URL:field_web_page_address
+ORG:field_organization;field_department
+X-EVOLUTION-OFFICE:field_office
+TITLE:field_job_title
+ROLE:field_profession
+X-EVOLUTION-MANAGER:field_managers_name
+X-EVOLUTION-ASSISTANT:field_assistants_name
+NICKNAME:field_nickname
+X-EVOLUTION-SPOUSE:field_spouse
+CALURI:field_public_calendar_url
+FBURL:field_free/budy_url
+NOTE:field_notes
+X-EVOLUTION-RELATED_CONTACTS:E<lt>?xml version="1.0"?E<gt>E<lt>destinationsE<gt>E<lt>destination html_mail="no"E<gt>E<lt>emailE<gt>field_contactsE<lt>/emailE<gt>E<lt>/destinationE<gt>E<lt>/destinationsE<gt>
+CATEGORIES:field_categories
+UID:pas-id-3DCDA17B00000000
+END:VCARD
+
+All fields here are full and this is the base reference for deriving the actual info.
+As evolution progresses though this standard will tend to expand (evolution has already
+strained this too much in my opinion (xml would have done better)).
 
 =head1 FUNCTIONS
 
@@ -123,6 +182,7 @@ None.
 	0.00 MV web site development
 	0.01 MV web site automation
 	0.02 MV SEE ALSO section fix
+	0.03 MV more pdmt stuff
 
 =head1 SEE ALSO
 

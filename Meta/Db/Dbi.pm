@@ -8,7 +8,7 @@ use Meta::Utils::System qw();
 use Meta::Db::Connections qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub new($);
@@ -26,6 +26,7 @@ $VERSION="0.28";
 #sub commit($);
 #sub quote_simple($$);
 #sub quote($$$);
+#sub dis($);
 #sub disconnect($$);
 #sub table_info($);
 #sub TEST($);
@@ -108,7 +109,7 @@ sub execute($$$$) {
 			$self->execute_single($curr.";");
 		}
 		if($stat->is_reconnect()) {
-			$self->disconnect();
+			$self->dis();
 			$self->connect_name($conn,$stat->get_reconnect_name());
 		}
 	}
@@ -149,12 +150,17 @@ sub quote($$$) {
 	return($self->{HANDLE}->quote($string,$type));
 }
 
-sub disconnect($$) {
-	my($self,$conn)=@_;
+sub dis($) {
+	my($self)=@_;
 	my($resu)=$self->{HANDLE}->disconnect();
 	if(!$resu) {
 		Meta::Utils::System::die("error in disconnect");
 	}
+}
+
+sub disconnect($$) {
+	my($self,$conn)=@_;
+	$self->dis();
 }
 
 sub table_info($) {
@@ -204,7 +210,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbi.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -239,6 +245,7 @@ This is the reason that this object just stores a handle and not IS a handle.
 	commit($)
 	quote_simple($$)
 	quote($$$)
+	dis($)
 	disconnect($$)
 	table_info($)
 	TEST($)
@@ -323,6 +330,11 @@ This is the most basic quoting mechanism without type specification.
 
 This is the two argument Dbi quote function.
 
+=item B<dis($)>
+
+This method will disconnect the Dbi object with no regard to connection
+data.
+
 =item B<disconnect($$)>
 
 This method will disconnect the Dbi object according to the specified
@@ -384,6 +396,7 @@ None.
 	0.26 MV web site automation
 	0.27 MV SEE ALSO section fix
 	0.28 MV download scripts
+	0.29 MV teachers project
 
 =head1 SEE ALSO
 

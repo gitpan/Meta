@@ -12,9 +12,11 @@ use Meta::Utils::Parse::Text qw();
 use Meta::Utils::File::Path qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::File::Patho qw();
+use Meta::Info::Enum qw();
+use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.48";
+$VERSION="0.49";
 @ISA=qw();
 
 #sub aesub($);
@@ -85,6 +87,8 @@ $VERSION="0.48";
 
 #sub in_change($);
 #sub have_aegis();
+
+#sub get_enum();
 
 #sub TEST($);
 
@@ -538,8 +542,61 @@ sub have_aegis() {
 	return($patho->exists("aegis"));
 }
 
+sub get_enum() {
+	my($enum)=Meta::Info::Enum->new();
+	$enum->set_name("source file selector");
+	$enum->set_description("this selects which source file set you want");
+	$enum->insert("change","just files from the current change");
+	$enum->insert("project","just files from the current baseline");
+	$enum->insert("source","complete source manifest");
+	$enum->set_default("source");
+	return($enum);
+}
+
 sub TEST($) {
 	my($context)=@_;
+	my($search_path)=Meta::Baseline::Aegis::search_path();
+	Meta::Utils::Output::print("search_path is [".$search_path."]\n");
+	my($baseline)=Meta::Baseline::Aegis::baseline();
+	Meta::Utils::Output::print("baseline is [".$baseline."]\n");
+	my($project)=Meta::Baseline::Aegis::project();
+	Meta::Utils::Output::print("project is [".$project."]\n");
+	my($change)=Meta::Baseline::Aegis::change();
+	Meta::Utils::Output::print("change is [".$change."]\n");
+	my($version)=Meta::Baseline::Aegis::version();
+	Meta::Utils::Output::print("version is [".$version."]\n");
+	my($architecture)=Meta::Baseline::Aegis::architecture();
+	Meta::Utils::Output::print("architecture is [".$architecture."]\n");
+	my($state)=Meta::Baseline::Aegis::state();
+	Meta::Utils::Output::print("state is [".$state."]\n");
+	my($developer)=Meta::Baseline::Aegis::developer();
+	Meta::Utils::Output::print("developer is [".$developer."]\n");
+	my($developer_list)=Meta::Baseline::Aegis::developer_list();
+	Meta::Utils::Output::print("developer_list is [".$developer_list."]\n");
+	my($reviewer_list)=Meta::Baseline::Aegis::reviewer_list();
+	Meta::Utils::Output::print("reviewer_list is [".$reviewer_list."]\n");
+	my($integrator_list)=Meta::Baseline::Aegis::integrator_list();
+	Meta::Utils::Output::print("integrator_list is [".$integrator_list."]\n");
+	my($administrator_list)=Meta::Baseline::Aegis::administrator_list();
+	Meta::Utils::Output::print("administrator_list is [".$administrator_list."]\n");
+	my($history_directory)=Meta::Baseline::Aegis::history_directory();
+	Meta::Utils::Output::print("history_directory is [".$history_directory."]\n");
+	my($deve)=Meta::Baseline::Aegis::deve();
+	Meta::Utils::Output::print("deve is [".$deve."]\n");
+	my($inte)=Meta::Baseline::Aegis::inte();
+	Meta::Utils::Output::print("inte is [".$inte."]\n");
+	my($work_dir)=Meta::Baseline::Aegis::work_dir();
+	Meta::Utils::Output::print("work_dir is [".$work_dir."]\n");
+	my($file)=Meta::Baseline::Aegis::which_f("/tmp/tmp");
+	Meta::Utils::Output::print("file is [".$file."]\n");
+	my($in_change)=Meta::Baseline::Aegis::in_change("txtx/todo/todo.txt");
+	Meta::Utils::Output::print("in_change todo.txt [".$in_change."]\n");
+	my($in_change_2)=Meta::Baseline::Aegis::in_change("foo");
+	Meta::Utils::Output::print("in_change foo [".$in_change_2."]\n");
+	my($have_aegis)=Meta::Baseline::Aegis::have_aegis();
+	Meta::Utils::Output::print("have_aegis is [".$have_aegis."]\n");
+	my($enum)=Meta::Baseline::Aegis::get_enum();
+	Meta::Utils::Output::print("enum is [".Data::Dumper::Dumper($enum)."]\n");
 	return(1);
 }
 
@@ -576,7 +633,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aegis.pm
 	PROJECT: meta
-	VERSION: 0.48
+	VERSION: 0.49
 
 =head1 SYNOPSIS
 
@@ -658,6 +715,7 @@ The services here are divided into several categories:
 	checkout_hash($)
 	in_change($)
 	have_aegis()
+	get_enum()
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -970,9 +1028,17 @@ of the current change.
 This function returns whether the current environment is an Aegis environment
 or not. Currently it only checks whether aegis is in the path. This is bad.
 
+=item B<get_enum()>
+
+This method will return an enumeated object depicting all types of source selections
+that one can make in Aegis.
+
 =item B<TEST($)>
 
 Test suite for this module.
+This just prints out some statistics out of that module.
+This does not pring state related information (for instance - the
+development_directory feature is only available in development...).
 
 =back
 
@@ -1042,10 +1108,11 @@ None.
 	0.46 MV web site automation
 	0.47 MV SEE ALSO section fix
 	0.48 MV web site development
+	0.49 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Utils::File::Collect(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::File::Patho(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
+Data::Dumper(3), Meta::Info::Enum(3), Meta::Utils::File::Collect(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::File::Patho(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

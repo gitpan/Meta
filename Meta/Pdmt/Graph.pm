@@ -5,53 +5,77 @@ package Meta::Pdmt::Graph;
 use strict qw(vars refs subs);
 use Meta::Graph::Directed qw();
 use Meta::Utils::Output qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.23";
 @ISA=qw(Meta::Graph::Directed);
 
-#sub build($$);
-#sub calc_need_rebuilding($);
-#sub need_rebuilding($$);
-#sub can_remove($$);
+#sub BEGIN();
+#sub add_vertex($$);
+#sub build_all($);
+#sub build_nodes($$);
+#sub build_node($$);
 #sub TEST($);
 
 #__DATA__
 
-sub build($$) {
-	my($self,$node)=@_;
-	my(@nodes)=$self->successors($node);
-	for(my($j)=0;$j<=$#nodes;$j++) {
-		my($curr)=$nodes[$j];
-		Meta::Utils::Output::print("building [".$curr->get_name()."]\n");
-		$self->build($curr);
-	}
-	if(!$node->uptodate($self)) {
-		Meta::Utils::Output::print("building [".$node->get_name()."]\n");
-		$node->build($self);
-	}
+sub BEGIN() {
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_pdmt",
+		-java=>"_verbose",
+	);
 }
 
-sub calc_need_rebuilding($) {
+sub add_vertex($$) {
+	my($self,$node)=@_;
+	my($handlers)=$self->get_pdmt()->get_handlers();
+	#Meta::Utils::Output::print("handlers size is [".$handlers->size()."]\n");
+	for(my($i)=0;$i<$handlers->size();$i++) {
+		my($curr)=$handlers->elem($i);
+		$curr->add_node($node,$self);
+	}
+	return($self->SUPER::add_vertex($node));
+}
+
+sub build_all($) {
 	my($self)=@_;
-	my($list)=$self->get_roots();
-	for(my($i)=0;$i<$list->size();$i++) {
-		my($curr)=$list->elem($i);
-		$self->need_rebuilding($curr);
-	}
+	my(@nodes)=$self->vertices();
+	return($self->build_nodes(\@nodes));
 }
 
-sub need_rebuilding($$) {
-	my($self,$node)=@_;
+sub build_nodes($$) {
+	my($self,$nodes)=@_;
+	my($res)=1;
+	for(my($j)=0;$j<=$#$nodes;$j++) {
+		my($curr)=$nodes->[$j];
+		#Meta::Utils::Output::print("building [".$curr->get_name()."]\n");
+		my($cres)=$self->build_node($curr);
+		if(!$cres) {
+			$res=0;
+		}
+	}
+	return($res);
 }
 
-sub can_remove($$) {
+sub build_node($$) {
 	my($self,$node)=@_;
-	if($self->edge_ou($node)->size()==0) {
-		return(1);
-	} else {
-		return(0);
+	my($res)=1;
+	my(@nodes)=$self->successors($node);
+	my($cres)=$self->build_nodes(\@nodes);
+	if(!$cres) {
+		$res=0;
 	}
+	if($res) {
+		if(!$node->uptodate($self)) {
+			Meta::Utils::Output::verbose($self->get_verbose(),"doing [".$node->get_name()."]\n");
+			my($cres)=$node->build($self);
+			if(!$cres) {
+				$res=0;
+			}
+		}
+	}
+	return($res);
 }
 
 sub TEST($) {
@@ -92,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.23
 
 =head1 SYNOPSIS
 
@@ -102,29 +126,51 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 =head1 DESCRIPTION
 
 This is the dependency graph object for the Pdmt project.
-The graph is a graph which represents object (files, db records or whatever)
+The graph is a graph which represents objects (files, db records or whatever)
 that need to be maintained up to date one relative to the other.
 
 Each node in the graph needs to implement two methods:
 uptodate and build.
 
-uptodate is a method which returns whether this file is up to date.
+uptodate is a method which returns whether this object is up to date.
 build is the method which builds the nodes from other nodes.
 
 both of these method of the node receive the graph that it is a member of.
 
 =head1 FUNCTIONS
 
-	build($$)
-	calc_need_rebuilding($)
-	can_remove($$)
+	BEGIN()
+	add_vertex($$)
+	build_all($)
+	build_nodes($$)
+	build_node($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<build($$)>
+=item B<BEGIN()>
+
+Bootstrap method to have accessors to the parent pdmt.
+
+=item B<add_vertex($$)>
+
+Overriding the default graph vertex additio so we could call handlers to
+manipulate the graph.
+
+=item B<build_all($)>
+
+This method will build the entire graph (make sure that all nodes
+are up to date).
+The method returns the result of the build.
+
+=item B<build_nodes($$)>
+
+This method will build a set of nodes passed to it.
+The method returns the result of the build.
+
+=item B<build_node($$)>
 
 This is the most important method - the build method.
 The method returns the result of the build.
@@ -164,24 +210,10 @@ information.
 
 The object (graph) needs to supply (quickly) the forest of things to be done.
 
-=item B<calc_need_rebuilding($)>
-
-This method calculates which nodes in the graph need rebuilding.
-The algorithm:
-1. get the roots of all trees.
-2. recusivly calc for each node if it needs rebuilding.
-
-=item B<need_rebuilding($$)>
-
-This method returns whether a specific node needs rebuilding.
-
-=item B<can_remove($$)>
-
-This method will return whether removing a certain node from Pdmt is allowed.
-
 =item B<TEST($)>
 
 Test suite for this module.
+The test currently does nothing.
 
 =back
 
@@ -225,11 +257,12 @@ None.
 	0.20 MV website construction
 	0.21 MV web site automation
 	0.22 MV SEE ALSO section fix
+	0.23 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Graph::Directed(3), Meta::Utils::Output(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Graph::Directed(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-enable to build methods to stop on errors.

@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Ds::Dhash qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Class::MethodMaker qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.33";
 @ISA=qw();
 
 #sub BEGIN();
@@ -16,7 +17,6 @@ $VERSION="0.32";
 #sub analyze($$);
 #sub get_string($);
 #sub get_dire($);
-#sub print($$);
 #sub get_obj_directory($);
 #sub get_lib_directory($);
 #sub get_dll_directory($);
@@ -86,17 +86,6 @@ sub from_dire($$) {
 	$self->analyze($arch);
 }
 
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "cpu: [".$self->get_cpu()."]\n";
-	print $file "os: [".$self->get_os()."]\n";
-	print $file "os_version: [".$self->get_os_version()."]\n";
-	print $file "compiler: [".$self->get_compiler()."]\n";
-	print $file "compiler_version: [".$self->get_compiler_version()."]\n";
-	print $file "flagset_primary: [".$self->get_flagset_primary()."]\n";
-	print $file "flagset_secondary: [".$self->get_flagset_secondary()."]\n";
-}
-
 sub get_obj_directory($) {
 	my($self)=@_;
 	my($temp)=$self->get_flagset_primary();
@@ -135,6 +124,11 @@ sub get_bin_directory($) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($arch)=Meta::Baseline::Arch->new();
+	$arch->analyze("i686-linux-2.2.17-g++-2.95.2-obj-dbg");
+	Meta::Utils::Output::dump($arch);
+	$arch->from_dire("bins/reg.cxx.bin.dbg");
+	Meta::Utils::Output::dump($arch);
 	return(1);
 }
 
@@ -171,7 +165,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Arch.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.33
 
 =head1 SYNOPSIS
 
@@ -193,7 +187,6 @@ from them.
 	analyze($$)
 	get_string($)
 	get_dire($)
-	print($$)
 	get_obj_directory($)
 	get_lib_directory($)
 	get_dll_directory($)
@@ -239,10 +232,6 @@ This will give you a directory name which uniquely identified this architecture.
 
 This will perform the reverse of analyze using the reverse hash.
 
-=item B<print($$)>
-
-This will print the current object for debugging or other purposes.
-
 =item B<get_obj_directory($)>
 
 This will return the object directory for this architecture.
@@ -262,6 +251,8 @@ This will return the binary directory for this architecture.
 =item B<TEST($)>
 
 Test suite for this module.
+It currently just creates an object, puts an architecture in it and checks
+the translation into directory names.
 
 =back
 
@@ -315,10 +306,11 @@ None.
 	0.30 MV web site development
 	0.31 MV web site automation
 	0.32 MV SEE ALSO section fix
+	0.33 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Dhash(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Dhash(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

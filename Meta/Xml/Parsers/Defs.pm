@@ -13,9 +13,10 @@ use Meta::Db::User qw();
 use Meta::Db::Member qw();
 use Meta::Db::Constraint qw();
 use Meta::Xml::Parsers::Base qw();
+use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -131,7 +132,8 @@ sub handle_char($$) {
 		$self->{TEMP_DEF}->set_description($elem);
 	}
 	if($self->in_ccontext("defs.def.parents.parent")) {
-		$self->{TEMP_PARENT}=Meta::Db::Def->new_deve($elem);
+		my($module)=Meta::Development::Module->new_name($elem);
+		$self->{TEMP_PARENT}=Meta::Db::Def->new_modu($module);
 	}
 	if($self->in_ccontext("defs.def.sets.set.name")) {
 		$self->{TEMP_SET}->set_name($elem);
@@ -269,7 +271,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Defs.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -354,10 +356,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV web site development
+	0.01 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Db::Constraint(3), Meta::Db::Def(3), Meta::Db::Defs(3), Meta::Db::Enum(3), Meta::Db::Field(3), Meta::Db::Member(3), Meta::Db::Set(3), Meta::Db::Table(3), Meta::Db::User(3), Meta::Xml::Parsers::Base(3), strict(3)
+Meta::Db::Constraint(3), Meta::Db::Def(3), Meta::Db::Defs(3), Meta::Db::Enum(3), Meta::Db::Field(3), Meta::Db::Member(3), Meta::Db::Set(3), Meta::Db::Table(3), Meta::Db::User(3), Meta::Development::Module(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

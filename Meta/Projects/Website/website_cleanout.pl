@@ -5,22 +5,21 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::Net::Ftp qw();
-#use Meta::Info::Passwords qw();
+use Meta::Info::Passwords qw();
 
 my($debug,$verbose,$remove_files,$remove_dirs,$site_name,$ftp_name);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-
 $opts->def_bool("debug","debug the connection ?",0,\$debug);
 $opts->def_bool("verbose","should I be noisy ?",1,\$verbose);
 $opts->def_bool("remove","should I files ?",1,\$remove_files);
 $opts->def_bool("empty_dir","should I remove directories ?",1,\$remove_dirs);
 $opts->def_stri("site_name","what site name should I contact ?",undef,$site_name);
-
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($sites)=Meta::Info::Passwords->new_deve("xmlx/passwords/passwords.xml");
+my($module)=Meta::Development::Module->new_name("xmlx/passwords/passwords.xml");
+my($sites)=Meta::Info::Passwords->new_modu($module);
 my($site)=$sites->get_site($site_name);
 my($ftp_address)=$site->ftp_address();
 my($ftp_user)=$site->ftp_user();
@@ -107,7 +106,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: website_cleanout.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -208,10 +207,11 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Utils::Net::Ftp(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Info::Passwords(3), Meta::Utils::Net::Ftp(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

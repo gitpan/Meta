@@ -4,9 +4,12 @@ package Meta::Xml::Writer;
 
 use strict qw(vars refs subs);
 use XML::Writer qw();
+use Meta::Lang::Docb::Params qw();
+use IO::String qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw(XML::Writer);
 
 #sub my_doctype($$$);
@@ -28,6 +31,18 @@ sub base_comment($) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($var);
+	my($io)=IO::String->new(\$var);
+	my($xml)=__PACKAGE__->new(OUTPUT=>$io);
+	$xml->xmlDecl();
+	$xml->doctype(
+		"section",
+		Meta::Lang::Docb::Params::get_public(),
+	);
+	$xml->startTag("section");
+	$xml->endTag("section");
+	$xml->end();
+	Meta::Utils::Output::print("result is [".$var."]\n");
 	return(1);
 }
 
@@ -64,7 +79,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Writer.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -106,6 +121,7 @@ not be edited.
 =item B<TEST($)>
 
 Test suite for this module.
+Currently it just initializes an object and writer some xml.
 
 =back
 
@@ -140,10 +156,11 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV move tests to modules
+	0.14 MV teachers project
 
 =head1 SEE ALSO
 
-XML::Writer(3), strict(3)
+IO::String(3), Meta::Lang::Docb::Params(3), Meta::Utils::Output(3), XML::Writer(3), strict(3)
 
 =head1 TODO
 

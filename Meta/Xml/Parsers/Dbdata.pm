@@ -15,7 +15,7 @@ use Meta::Utils::Time qw();
 use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.18";
+$VERSION="0.19";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -60,6 +60,8 @@ sub handle_start($$) {
 		my($name)=$table->get_name();
 		my($select)=$def->getsql_select($info,$name);
 		my($insert)=$def->getsql_insert($info,$name);
+		#Meta::Utils::Output::print("select is [".$select."]\n");
+		#Meta::Utils::Output::print("insert is [".$insert."]\n");
 		my($stat)=$self->{STAT};
 		my($dbi)=$self->{DBI};
 		for(my($i)=0;$i<$dbi->size();$i++) {
@@ -161,7 +163,7 @@ sub handle_char($$) {
 	}
 	if($context eq "dbdata.sets.set") {
 		# import $elem into the database
-		Meta::Utils::Output::print("going to import set [".$elem."]\n");
+		#Meta::Utils::Output::print("going to import set [".$elem."]\n");
 	}
 	if($context eq "dbdata.tables.table.name") {
 		$self->{TABLE_NAME}=$elem;
@@ -218,7 +220,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbdata.pm
 	PROJECT: meta
-	VERSION: 0.18
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -323,6 +325,7 @@ None.
 	0.16 MV SEE ALSO section fix
 	0.17 MV download scripts
 	0.18 MV weblog issues
+	0.19 MV teachers project
 
 =head1 SEE ALSO
 

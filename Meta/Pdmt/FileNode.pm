@@ -3,66 +3,52 @@
 package Meta::Pdmt::FileNode;
 
 use strict qw(vars refs subs);
-use Meta::Pdmt::Node qw();
+use Meta::Pdmt::Md5Node qw();
 use Meta::Utils::File::File qw();
 use Meta::Class::MethodMaker qw();
 use Meta::Utils::File::Time qw();
+use Meta::Digest::MD5 qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
-@ISA=qw(Meta::Pdmt::Node);
+$VERSION="0.03";
+@ISA=qw(Meta::Pdmt::Md5Node);
 
 #sub BEGIN();
-#sub exist($);
+#sub md5($);
+#sub exists($);
 #sub remove($);
-#sub date($);
-#sub uptodate($$);
+#sub mtime($);
 #sub TEST($);
 
 #__DATA__
+
+our($patho)=Meta::Baseline::Aegis::search_path_object();
 
 sub BEGIN() {
 	Meta::Class::MethodMaker->new("new");
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_path",
-		-java=>"_md5",
 	);
-	Meta::Class::MethodMaker->print(["path","md5"]);
 }
 
-sub exist($) {
+sub md5($) {
 	my($self)=@_;
-	return(Meta::Utils::File::File::exist($self->get_path()));
+	return(Meta::Digest::MD5::get_filename_digest($self->get_path()));
+}
+
+sub exists($) {
+	my($self)=@_;
+	return($patho->exists($self->get_path()));
 }
 
 sub remove($) {
 	my($self)=@_;
-	return(Meta::Utils::File::File::rm_nodie($self->get_path()));
+	return(Meta::Utils::File::File::rm($self->get_path()));
 }
 
-sub date($) {
+sub mtime($) {
 	my($self)=@_;
-	my($res)=Meta::Utils::File::Time::ntime($self->get_path());
-#	Meta::Utils::Output::print("path is [".$self->get_path()."]\n");
-#	Meta::Utils::Output::print("returning [".$res."]\n");
-	return($res);
-}
-
-sub uptodate($$) {
-	my($self,$pdmt)=@_;
-	if(!$self->exist()) {
-		return(0);
-	}
-	#get all nodes which this edge depends on
-	my($date)=$self->date();
-	my(@nodes)=$pdmt->successors($self);
-	for(my($i)=0;$i<=$#nodes;$i++) {
-		my($curr)=$nodes[$i];
-		if($curr->date()>$date) {
-			return(0);
-		}
-	}
-	return(1);
+	return($patho->mtime($self->get_path()));
 }
 
 sub TEST($) {
@@ -103,7 +89,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: FileNode.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -119,10 +105,10 @@ This is a node in the PDMT graph representing a file in the file system.
 =head1 FUNCTIONS
 
 	BEGIN()
-	exist($)
+	md5($)
+	exists($)
 	remove($)
-	date($)
-	uptodate($$)
+	mtime($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -133,10 +119,14 @@ This is a node in the PDMT graph representing a file in the file system.
 
 This initialization method sets up a default constructor and accessor methods
 for the following attributes:
-1. path.
-2. md5
+1. path - path of the file in the file system.
 
-=item B<exist($)>
+=item B<md5($)>
+
+This method overrides the abstract interface in the parent Md5Node and implement
+a regular file md5 algorithm.
+
+=item B<exists($)>
 
 This method returns whether the file exists or not.
 
@@ -144,14 +134,10 @@ This method returns whether the file exists or not.
 
 This file removes the current file ("make clean").
 
-=item B<date($)>
+=item B<mtime($)>
 
-This method returns the modification date of the current file.
-
-=item B<uptodate($$)>
-
-This is an overriding method to implement what does it mean for a disk
-file to be up to date.
+This method returns the modification date of the current file. 0 means that
+the file doesn't exist (or very old).
 
 =item B<TEST($)>
 
@@ -161,7 +147,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-Meta::Pdmt::Node(3)
+Meta::Pdmt::Md5Node(3)
 
 =head1 BUGS
 
@@ -179,10 +165,11 @@ None.
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
 	0.02 MV bring movie data
+	0.03 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Class::MethodMaker(3), Meta::Pdmt::Node(3), Meta::Utils::File::File(3), Meta::Utils::File::Time(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Digest::MD5(3), Meta::Pdmt::Md5Node(3), Meta::Utils::File::File(3), Meta::Utils::File::Time(3), strict(3)
 
 =head1 TODO
 

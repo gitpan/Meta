@@ -59,7 +59,7 @@ sub handle_end($$) {
 			if($doit) {
 				Meta::Utils::Output::print("a. remove [".$file."]\n");
 				Meta::Utils::Output::print("b. remove [".$curr_filename."]\n");
-				Meta::Utils::Output::print("c. integrrupt.\n");
+				Meta::Utils::Output::print("c. interrupt.\n");
 				Meta::Utils::Output::print("s. skip.\n");
 				my($char);
 				if(defined($char=Term::ReadKey::ReadKey(0))) {
@@ -150,7 +150,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_finddup.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -238,6 +238,8 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV finish papers
+	0.13 MV more pdmt stuff
 
 =head1 SEE ALSO
 

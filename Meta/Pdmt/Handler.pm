@@ -3,18 +3,14 @@
 package Meta::Pdmt::Handler;
 
 use strict qw(vars refs subs);
+use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub new($);
-#sub set_graph($$);
-#sub get_graph($);
-#sub handle_init($);
-#sub handle_add_node($$);
-#sub handle_del_node($$);
-#sub handle_update_node($$);
+#sub add_node($$$);
 #sub TEST($);
 
 #__DATA__
@@ -26,28 +22,10 @@ sub new($) {
 	return($self);
 }
 
-sub set_graph($$) {
-	my($self)=@_;
-}
-
-sub get_grapg($) {
-	my($self)=@_;
-}
-
-sub handle_init($) {
-	my($self)=@_;
-}
-
-sub handle_add_node($) {
-	my($self)=@_;
-}
-
-sub handle_del_node($) {
-	my($self)=@_;
-}
-
-sub handle_update_node($) {
-	my($self)=@_;
+sub add_node($$$) {
+	my($self,$node,$graph)=@_;
+	Meta::Utils::System::die("this is an abstract method and should not be called");
+	return(0);
 }
 
 sub TEST($) {
@@ -88,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Handler.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -99,18 +77,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This is a module which handles PDMT communication with the SCS (source
-control system).
+This module is an abstract interface for an object which manipulates
+the Pdmt graph at various events. Override it's methods to get
+different behaviour.
 
 =head1 FUNCTIONS
 
 	new($)
-	set_graph($$)
-	get_graph($)
-	handle_init($)
-	handle_add_node($$)
-	handle_del_node($$)
-	handle_update_node($$)
+	add_node($$$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -121,18 +95,17 @@ control system).
 
 This is a constructor for the Meta::Pdmt::Handler object.
 
-=item B<set_graph($$)>
+=item B<add_node($$$)>
 
-This will set the graph so it will be accessible to the handler.
-
-=item B<handle_init($)>
-
-This method will init the handler.
-In this meta handler it does nothing.
+This method will handle adding a node. Override this and
+actually manipulate the graph if the node added is any
+of your objects business.
 
 =item B<TEST($)>
 
 Test suite for this module.
+
+Currently this test does nothing.
 
 =back
 
@@ -164,10 +137,11 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 
-strict(3)
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

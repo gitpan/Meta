@@ -3,18 +3,28 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Movie::Person qw();
+use Meta::Db::Connections qw();
+use Meta::Class::DBI qw();
+use Meta::Projects::Movie::Person qw();
 
+my($connections_file,$con_name,$name);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
+$opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_stri("con_name","what connection name ?",undef,\$con_name);
+$opts->def_stri("name","what database name ?","movie",\$name);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($person)=Meta::Movie::Person->retrieve(7);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
+my($connection)=$connections->get_con_null($con_name);
+Meta::Class::DBI::set_connection($connection,$name);
+
+my($person)=Meta::Projects::Movie::Person->retrieve(7);
 Meta::Utils::Output::print("firstname is [".$person->firstname()."]\n");
 
 #my(@person)=Meta::Movie::Person->retrieve_all();
-my(@person)=Meta::Movie::Person->search("surname","Allen");
+my(@person)=Meta::Projects::Movie::Person->search("surname","Allen");
 for(my($i)=0;$i<=$#person;$i++) {
 	my($curr)=$person[$i];
 	Meta::Utils::Output::print("firstname is [".$curr->firstname()."]\n");
@@ -53,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: movie_find.pl
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -103,6 +113,18 @@ show description and exit
 
 show history and exit
 
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
+
+what connections XML file to use ?
+
+=item B<con_name> (type: stri, default: )
+
+what connection name ?
+
+=item B<name> (type: stri, default: movie)
+
+what database name ?
+
 =back
 
 no free arguments are allowed
@@ -127,10 +149,11 @@ None.
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
 	0.06 MV move tests to modules
+	0.07 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Movie::Person(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+Meta::Class::DBI(3), Meta::Db::Connections(3), Meta::Projects::Movie::Person(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

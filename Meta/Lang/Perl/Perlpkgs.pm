@@ -5,15 +5,15 @@ package Meta::Lang::Perl::Perlpkgs;
 use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 use Meta::Xml::Parsers::Perlpkgs qw();
-use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
+use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.15";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new_file($$);
-#sub new_deve($$);
+#sub new_modu($$);
 #sub add_deps($$$);
 #sub TEST($);
 
@@ -29,9 +29,9 @@ sub new_file($$) {
 	return($parser->get_result());
 }
 
-sub new_deve($$) {
-	my($class,$file)=@_;
-	return(&new_file($class,Meta::Baseline::Aegis::which($file)));
+sub new_modu($$) {
+	my($class,$modu)=@_;
+	return(&new_file($class,$modu->get_abs_path()));
 }
 
 sub add_deps($$$) {
@@ -43,6 +43,9 @@ sub add_deps($$$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($module)=Meta::Development::Module->new_name("xmlx/temp/xmlx/perlpkgs/meta.xml");
+	my($object)=Meta::Lang::Perl::Perlpkgs->new_modu($module);
+	Meta::Utils::Output::print(Data::Dumper::Dumper($object));
 	return(1);
 }
 
@@ -79,7 +82,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perlpkgs.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -95,7 +98,7 @@ This module stores multiple perl package information.
 =head1 FUNCTIONS
 
 	new_file($$)
-	new_deve($$)
+	new_modu($$)
 	add_deps($$$)
 	TEST($)
 
@@ -108,10 +111,9 @@ This module stores multiple perl package information.
 This method will read an XML file that contains Perlpkgs information
 using the Meta::Xml::Parser::Perlpkgs parser.
 
-=item B<new_deve($$)>
+=item B<new_modu($$)>
 
-This method is exactly like new_file except it searches for the
-requested file in the development path.
+This method will create an instance with a development module.
 
 =item B<add_deps($$$)>
 
@@ -155,10 +157,12 @@ None.
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
 	0.13 MV bring movie data
+	0.14 MV finish papers
+	0.15 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Ds::Array(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Perlpkgs(3), strict(3)
+Data::Dumper(3), Meta::Ds::Array(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Perlpkgs(3), strict(3)
 
 =head1 TODO
 

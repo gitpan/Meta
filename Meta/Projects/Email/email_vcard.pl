@@ -9,11 +9,11 @@ use Meta::Utils::Output qw();
 my($file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("author_file","what XML/author file to use ?","xmlx/author/author.xml",\$file);
+$opts->def_modu("author_file","what XML/author file to use ?","xmlx/author/author.xml",\$file);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($author)=Meta::Info::Author->new_deve($file);
+my($author)=Meta::Info::Author->new_modu($file);
 Meta::Utils::Output::print($author->get_vcard());
 Meta::Utils::System::exit(1);
 
@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: email_vcard.pl
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -100,7 +100,7 @@ show description and exit
 
 show history and exit
 
-=item B<author_file> (type: devf, default: xmlx/author/author.xml)
+=item B<author_file> (type: modu, default: xmlx/author/author.xml)
 
 what XML/author file to use ?
 
@@ -131,6 +131,7 @@ None.
 	0.07 MV SEE ALSO section fix
 	0.08 MV move tests to modules
 	0.09 MV bring movie data
+	0.10 MV teachers project
 
 =head1 SEE ALSO
 

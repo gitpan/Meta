@@ -17,7 +17,7 @@ use Meta::Db::Connections qw();
 my($verbose,$connections_file,$con_name,$name,$url,$port);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->def_bool("verbose","should I be noisy",0,\$verbose);
-$opts->def_devf("connections_file","what XML/connections file to use","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("connections_file","what XML/connections file to use","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("con_name","what connection name",undef,\$con_name);
 $opts->def_stri("database","what database to work on","elems",\$name);
 $opts->def_stri("url","what url to serve","www.veltzer.org",\$url);
@@ -29,7 +29,7 @@ $opts->analyze(\@ARGV);
 # connet to the database and prepare a select statement
 
 #my($dbi)=Meta::Db::Dbi->new();
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 #$dbi->Meta::Db::Dbi::connect_xml($connections,$con_name,$name);
 
 Meta::Class::DBI::set_connection($connections->get_con_null($con_name),$name);
@@ -150,7 +150,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: elems_httpd.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -175,7 +175,7 @@ What does this server do:
 
 should I be noisy
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 what XML/connections file to use
 
@@ -249,6 +249,7 @@ None.
 =head1 HISTORY
 
 	0.00 MV download scripts
+	0.01 MV teachers project
 
 =head1 SEE ALSO
 

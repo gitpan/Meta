@@ -13,13 +13,14 @@ use Meta::Class::MethodMaker qw();
 use Meta::Lang::Perl::Perlpkgs qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.07";
 @ISA=qw(Meta::Development::Verbose);
 
 #sub BEGIN();
 #sub new($);
 #sub init($);
-#sub upload($$$$);
+#sub upload($$);
+#sub fast_upload($$);
 #sub finish($);
 #sub ftp_init($);
 #sub ftp_upload($$$);
@@ -47,6 +48,8 @@ sub BEGIN() {
 		-java=>"_http_proxy",
 		-java=>"_program",
 		-java=>"_version",
+		-java=>"_do_ftp",
+		-java=>"_do_http",
 	);
 }
 
@@ -74,24 +77,29 @@ sub init($) {
 	$self->set_http_proxy('');
 	$self->set_program('');
 	$self->set_version('');
-	$self->ftp_init();
-	$self->http_init();
+	if($self->get_do_ftp()) {
+		$self->ftp_init();
+	}
+	if(self->get_do_http()) {
+		$self->http_init();
+	}
 }
 
-sub upload($$$$) {
-	my($self,$perlpkg,$do_ftp,$do_http)=@_;
-	my($perlpkg_obj)=Meta::Lang::Perl::Perlpkgs->new_deve($perlpkg);
+sub upload($$) {
+	my($self,$perlpkg)=@_;
+	my($module)=Meta::Development::Module->new_name($perlpkg);
+	my($perlpkg_obj)=Meta::Lang::Perl::Perlpkgs->new_modu($module);
 	for(my($i)=0;$i<$perlpkg_obj->size();$i++) {
 		my($pkg)=$perlpkg_obj->getx($i);
 		my($file)=$pkg->get_pack_file_name();
 		my($abs)=Meta::Baseline::Aegis::which($file);
 		$self->verbose("doing package [".$file."] abs [".$abs."]\n");
-		if($do_ftp) {
+		if($self->get_do_ftp()) {
 			$self->verbose("before ftping\n");
 			$self->ftp_upload($abs,$pkg);
 			$self->verbose("after ftping\n");
 		}
-		if($do_http) {
+		if($self->get_do_http()) {
 			$self->verbose("before pausing\n");
 			$self->http_upload($abs,$pkg);
 			$self->verbose("after pausing\n");
@@ -100,10 +108,21 @@ sub upload($$$$) {
 	return(1);
 }
 
+sub fast_upload($$) {
+	my($self,$perlpkg)=@_;
+	$self->init();
+	$self->upload($perlpkg);
+	$self->finish();
+}
+
 sub finish($) {
 	my($self)=@_;
-	$self->ftp_finish();
-	$self->http_finish();
+	if($self->get_do_ftp()) {
+		$self->ftp_finish();
+	}
+	if($self->get_do_http()) {
+		$self->http_finish();
+	}
 }
 
 sub ftp_init($) {
@@ -200,9 +219,11 @@ sub http_upload($$$) {
 	my($auth_user)=$pack->get_author()->get_cpanid();
 	my($auth_password)=$pack->get_author()->get_cpanpassword();
 	$request->authorization_basic($auth_user,$auth_password);
-	$self->verbose("----- REQUEST BEGIN -----\n".$request->as_string()."----- REQUEST END -------\n");
+	$self->verbose("auth_user is [".$auth_user."]\n");
+	$self->verbose("auth_password is [".$auth_password."]\n");
+	$self->verbose("Request is [".$request."]\n");
 	# Make the request to the PAUSE web server
-	$self->verbose("POSTing upload for [".$file."]\n");
+	$self->verbose("POST upload for [".$file."]\n");
 	my($response)=$agent->request($request);
 	if(!defined($response)) {
 		Meta::Utils::System::die("Request completely failed - we got undef back: $!\n");
@@ -217,7 +238,7 @@ sub http_upload($$$) {
 			Meta::Utils::System::die("request failed\n Error code: ".$response->code."\n Message: ".$response->message."\n");
 		}
 	} else {
-		$self->verbose("Looks OK!\n"."----- RESPONSE BEGIN -----\n".$response->as_string()."----- RESPONSE END -------\n");
+		$self->verbose("response is [".$response->as_string()."]\n");
 		$self->verbose("PAUSE add message sent ok [".$response->code."]\n");
 	}
 }
@@ -264,17 +285,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Upload.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Lang::Perl::Upload qw();
 	my($uploader)=Meta::Lang::Perl::Upload->new();
-	$uploader->init();
-	$uploader->upload("my_first_package.xml",1,1);
-	$uploader->upload("my_second_package.xml",1,1);
-	$uploader->finish();
+	$uploader->set_do_ftp(1);
+	$uploader->set_do_http(1);
+	$uploader->fast_upload("my_first_package.xml);
 
 =head1 DESCRIPTION
 
@@ -309,7 +329,7 @@ product to CPAN (instead of all the manual clicking and web browsing).
 	BEGIN()
 	new($)
 	init($)
-	upload($$$$)
+	upload($$)
 	finish($)
 	ftp_init($)
 	ftp_upload($$$)
@@ -338,13 +358,17 @@ This method does internal house keeping.
 Initialize the upload process (this includes access to the internet
 and making the relevant persistant connections).
 
-=item B<upload($$$$)>
+=item B<upload($$)>
 
 This method does the actual uploading based on the HTTP protocol.
 The method receives an uploader object and an XML/PERLPKG file
 with a description of the package. The method proceeds to
 calculate where the output package should be, and then uploads
 the package.
+
+=item B<fast_upload($$)>
+
+This method is a wrapper method to do init, upload and finish for you.
 
 =item B<finish($)>
 
@@ -416,6 +440,8 @@ None.
 	0.03 MV put all tests in modules
 	0.04 MV move tests to modules
 	0.05 MV bring movie data
+	0.06 MV weblog issues
+	0.07 MV teachers project
 
 =head1 SEE ALSO
 

@@ -24,7 +24,7 @@ $fs->create_dir("directory_remove");
 $fs->remove_last_dir("directory_remove");
 $fs->print(0);
 my($res);
-my($writ)=Meta::Xml::ValidWriter->new_string(\$res,"dtdx/deve/xml/fs.dtd","fs","-//META//DTD XML FS V1.0//EN");
+my($writ)=Meta::Xml::ValidWriter->new_string(\$res,"dtdx/temp/dtdx/deve/xml/fs.dtd","fs","-//META//DTD XML FS V1.0//EN");
 $fs->xml($writ,"root");
 $writ->end();
 Meta::Utils::Output::print("output is [".$res."]\n");
@@ -64,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: fs.pl
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -148,6 +148,7 @@ None.
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
 	0.14 MV move tests to modules
+	0.15 MV teachers project
 
 =head1 SEE ALSO
 

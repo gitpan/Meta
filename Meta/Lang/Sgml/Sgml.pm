@@ -8,12 +8,12 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw();
 
 #sub catalog_setup();
 #sub get_prefix();
-#sub c2deps($$);
+#sub c2deps($);
 #sub TEST($);
 
 #__DATA__
@@ -28,13 +28,16 @@ sub get_prefix() {
 	return("chun/sgml/");
 }
 
-sub c2deps($$) {
-	my($modu,$srcx)=@_;
+sub c2deps($) {
+	my($buil)=@_;
 	my($parser)=Meta::Xml::Parsers::Deps->new();
-	$parser->set_search_path(get_prefix());
-	$parser->set_root($modu);
-	$parser->parsefile($srcx);
-	return($parser->get_result());
+	$parser->set_doctype_prefix("dtdx/");
+	$parser->set_do_doctype(1);
+	$parser->set_externent_prefix(&get_prefix());
+	$parser->set_do_externent(1);
+	$parser->set_root($buil->get_modu());
+	$parser->parsefile($buil->get_srcx());
+	return($parser->get_deps());
 }
 
 sub TEST($) {
@@ -75,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -93,7 +96,7 @@ This class will help you with Sgml related tasks.
 
 	catalog_setup()
 	get_prefix()
-	c2deps($$)
+	c2deps($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -110,7 +113,7 @@ variable set correctly in order to find SGML catalog files.
 
 This method returns the prefix for Sgml related material in the baseline.
 
-=item B<c2deps($$)>
+=item B<c2deps($)>
 
 This method reads a source xml file and produces a deps object which describes
 the dependencies for that file.
@@ -145,6 +148,7 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV finish papers
 
 =head1 SEE ALSO
 

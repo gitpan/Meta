@@ -4,12 +4,16 @@ package Meta::Utils::File::Mkdir;
 
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
+use File::Path qw();
+use File::Basename qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.20";
 @ISA=qw();
 
 #sub mkdir_check($);
+#sub mkdir_p_check($);
+#sub mkdir_p_check_file($);
 #sub TEST($);
 
 #__DATA__
@@ -21,6 +25,21 @@ sub mkdir_check($) {
 			Meta::Utils::System::die("unable to create directory [".$dire."]");
 		}
 	}
+}
+
+sub mkdir_p_check($) {
+	my($dire)=@_;
+	if(!(-d $dire)) {
+		if(!File::Path::mkpath($dire)) {
+			Meta::Utils::System::die("unable to create directory [".$dire."]");
+		}
+	}
+}
+
+sub mkdir_p_check_file($) {
+	my($file)=@_;
+	my($dire)=File::Basename::dirname($file);
+	return(&mkdir_p_check($dire));
 }
 
 sub TEST($) {
@@ -61,7 +80,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Mkdir.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -76,6 +95,8 @@ This module takes care of making directories for you.
 =head1 FUNCTIONS
 
 	mkdir_check($)
+	mkdir_p_check($)
+	mkdir_p_check_file($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -87,6 +108,19 @@ This module takes care of making directories for you.
 This method checks that the directory given to it doesnt exist and then
 creates it using the mkdir system call. The routine will throw an exception
 if it fails to create the directory.
+
+=item B<mkdir_p_check($)>
+
+This method is exactly like mkdir_check but creates the whole hierarchy
+(you can give something like "foo/boo/bar" to it and it will create them
+all).
+
+=item B<mkdir_p_check_file($)>
+
+This method is the same as mkdir_p_check except that it receives a file
+name instead of a directory name. It extracts the directory from the
+name and calls mkdir_p_check. This is a convenience method so that
+you won't have to do it yourself.
 
 =item B<TEST($)>
 
@@ -131,10 +165,11 @@ None.
 	0.17 MV website construction
 	0.18 MV web site automation
 	0.19 MV SEE ALSO section fix
+	0.20 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+File::Basename(3), File::Path(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

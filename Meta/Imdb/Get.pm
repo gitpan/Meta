@@ -3,6 +3,7 @@
 package Meta::Imdb::Get;
 
 use strict qw(vars refs subs);
+use Meta::Class::MethodMaker qw();
 use LWP::UserAgent qw();
 use HTTP::Request qw();
 use HTTP::Request::Common qw();
@@ -12,15 +13,19 @@ use HTML::Form qw();
 use XML::XQL qw();
 use XML::XQL::DOM qw();
 use Meta::Lang::Html::Html qw();
+use Meta::Lang::Xql::Cache qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.14";
 @ISA=qw(LWP::UserAgent);
 
 #sub new($);
 #sub get_page_form($$$);
 #sub get_page($$$);
-#sub get_title($$);
+#sub get_title_html($$);
+#sub get_title_xml($$);
+#sub get_title_dom($$);
+#sub get_title_info($$);
 #sub get_director_id($$$);
 #sub get_director_id_form($$$);
 #sub get_search_page($);
@@ -29,11 +34,29 @@ $VERSION="0.13";
 
 #__DATA__
 
+our($cache);
+
+sub BEGIN() {
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_agent",
+		-java=>"_referer",
+	);
+	$cache=Meta::Lang::Xql::Cache->new();
+	$cache->insert("director","//td/(((b=~'/^Directed by/');br);a)[1]/textNode()");
+	$cache->insert("director_url","//td/(((b=~'/^Directed by/');br);a)[1]/attribute('href')");
+	$cache->insert("writer","//td/(((b=~'/^Writing credits/');br);a)[1]/textNode()");
+	$cache->insert("writer_url","//td/(((b=~'/^Writing credits/');br);a)[1]/attribute('href')");
+	$cache->insert("genre","//td/(b=~'/^Genre:/';a)[1]");
+	$cache->insert("genre_url","//td/(b=~'/^Genre:/';a)/attribute('href')");
+	$cache->insert("year","//strong[\@class='title']/small/a");
+	$cache->insert("title","//strong[\@class='title']/textNode()[0]");
+}
+
 sub new($) {
 	my($clas)=@_;
 	my($self)=LWP::UserAgent->new();
-	$self->agent("MVbrowser/v5.7 Platinum");
 	bless($self,$clas);
+	#$self->agent($self->get_agent());
 	return($self);
 }
 
@@ -49,7 +72,7 @@ sub get_page_form($$$) {
 	$form->value(featuring=>$dire);
 #	$form->dump();
 	my($req)=$form->click();
-	$req->referer("http://www.nomorebillgates.org");
+	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
 		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
@@ -61,7 +84,7 @@ sub get_page($$$) {
 	my($self,$dire,$name)=@_;
 	my($url)="http://us.imdb.com/List";
 	my($req)=HTTP::Request::Common::POST($url,[ words=>$name,featuring=>$dire ]);
-	$req->referer("http://www.nomorebillgates.org");
+	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
 		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
@@ -69,16 +92,49 @@ sub get_page($$$) {
 	return($res->content());
 }
 
-sub get_title($$) {
+sub get_title_html($$) {
 	my($self,$titl)=@_;
 	my($url)="http://us.imdb.com/Title?".$titl;
 	my($req)=HTTP::Request::Common::GET($url);
-	$req->referer("http://www.nomorebillgates.org");
+	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
 		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
 	}
 	return($res->content());
+}
+
+sub get_title_dom($$) {
+	my($self,$titl)=@_;
+	my($page)=$self->get_title_html($titl);
+#	Meta::Utils::Output::print("in here with page [".$page."]\n");
+	my($dom)=Meta::Lang::Html::Html::c2dom($page);
+#	Meta::Utils::Output::print("out here\n");
+	return($dom);
+}
+
+sub get_title_xml($$) {
+	my($self,$titl)=@_;
+#	Meta::Utils::Output::print("in get_title_xml\n");
+	my($dom)=$self->get_title_dom($titl);
+#	Meta::Utils::Output::print("out get_title_xml\n");
+	return($dom->toString());
+}
+
+sub get_title_info($$) {
+	my($self,$title)=@_;
+	my($dom)=$self->get_title_dom($title);
+	my(%info);
+	$info{"director"}=$cache->get_by_name("director")->solve_single_string($dom);
+	$info{"director_url"}=$cache->get_by_name("director_url")->solve_single_string($dom);
+	$info{"writer"}=$cache->get_by_name("writer")->solve_single_string($dom);
+	$info{"writer_url"}=$cache->get_by_name("writer_url")->solve_single_string($dom);
+	$info{"genre"}=$cache->get_by_name("genre")->solve_single_string($dom);
+	$info{"genre_url"}=$cache->get_by_name("genre_url")->solve_single_string($dom);
+	$info{"year"}=$cache->get_by_name("year")->solve_single_string($dom);
+	$info{"title"}=$cache->get_by_name("title")->solve_single_string($dom);
+	$info{"keywords_url"}="/Keywords?".$title;
+	return(\%info);
 }
 
 sub get_director_id($$$) {
@@ -86,7 +142,7 @@ sub get_director_id($$$) {
 	my($name)=$firs." ".$seco;
 	my($url)="http://us.imdb.com/search";
 	my($req)=HTTP::Request::Common::POST($url,[ name=>$name,occupation=>"Filmmakers/Crew only" ]);
-	$req->referer("http://www.nomorebillgates.org");
+	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
 		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
@@ -107,7 +163,7 @@ sub get_director_id_form($$$) {
 #	$form->value(occupation=>"Directors");
 #	$form->dump();
 	my($req)=$form->click();
-	$req->referer("http://www.nomorebillgates.org");#this is ok
+	$req->referer($self->get_referer());
 #	$req->uri($url);# this does not seem to work
 #	Meta::Utils::Output::print("req is ".$req->as_string()."\n");
 	my($res)=$self->request($req);
@@ -121,7 +177,7 @@ sub get_search_page($) {
 	my($self)=@_;
 	my($url)="http://us.imdb.com/search";
 	my($req)=HTTP::Request::Common::GET($url);
-	$req->referer("http://www.nomorebillgates.org");
+	$req->referer($self->get_referer());
 	my($res)=$self->request($req);
 	if($res->is_error()) {
 		Meta::Utils::System::die("unable to get url [".$url."] with error [".$res->status_line()."]");
@@ -133,7 +189,6 @@ sub get_birth_name($$$) {
 	my($self,$firs,$seco)=@_;
 	my($page)=$self->get_director_id_form($firs,$seco);
 	my($dom)=Meta::Lang::Html::Html::c2dom($page);
-	#this is possible due to XML::XQL and XML::XQL::DOM
 	my(@result)=$dom->xql("html/body/table/tr/td/div/table/tr/td/dl/dd");
 	#there must be 3 items here
 	if($#result!=2) {
@@ -187,7 +242,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Get.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -206,7 +261,10 @@ Just use its method and get the film info.
 	new($)
 	get_page_form($$$)
 	get_page($$$)
-	get_title($$)
+	get_title_html($$)
+	get_title_xml($$)
+	get_title_dom($$)
+	get_title_info($$)
 	get_director_id($$$)
 	get_director_id_form($$$)
 	get_search_page($)
@@ -233,9 +291,21 @@ This method receives an IMDB object, a director and a film name and gives
 you the HTML in IMDB which has that information.
 The method uses the regular Request objects to achieve this.
 
-=item B<get_title($$)>
+=item B<get_title_html($$)>
 
 This method receives a title id and returns the page for that title.
+
+=item B<get_title_xml($$)>
+
+This method retrives the title as xml format.
+
+=item B<get_title_dom($$)>
+
+This method retrieves a DOM object that describes the title.
+
+=item B<get_title_info($$)>
+
+This method receives a title id and returns the info for that title.
 
 =item B<get_director_id($$$)>
 
@@ -293,11 +363,12 @@ None.
 	0.11 MV website construction
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV teachers project
 
 =head1 SEE ALSO
 
-HTML::Form(3), HTTP::Request(3), HTTP::Request::Common(3), LWP::UserAgent(3), Meta::Baseline::Aegis(3), Meta::Lang::Html::Html(3), Meta::Utils::File::File(3), XML::XQL(3), XML::XQL::DOM(3), strict(3)
+HTML::Form(3), HTTP::Request(3), HTTP::Request::Common(3), LWP::UserAgent(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Lang::Html::Html(3), Meta::Lang::Xql::Cache(3), Meta::Utils::File::File(3), XML::XQL(3), XML::XQL::DOM(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-override set agent since agent information is not currently used.

@@ -8,12 +8,13 @@ use Meta::Utils::Output qw();
 use Meta::Development::TestInfo qw();
 use Meta::Baseline::Test qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Development::Module qw();
 
 my($verb,$block,$file,$all);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_bool("verbose","verbose or quiet ?",1,\$verb);
-$opts->def_bool("block","block output ?",1,\$block);
+$opts->def_bool("block","block output ?",0,\$block);
 $opts->def_devf("file","what file to check ?",undef,\$file);
 $opts->def_bool("all","check all modules ?",0,\$all);
 $opts->set_free_allo(0);
@@ -21,9 +22,9 @@ $opts->analyze(\@ARGV);
 
 # first prepare the testing configuration object
 
-my($test_config)="xmlx/configs/test.xml";
+my($module)=Meta::Development::Module->new_name("xmlx/configs/test.xml");
 my($info)=Meta::Development::TestInfo->new();
-$info->read_deve($test_config);
+$info->read_modu($module);
 
 my($files);
 if($all) {
@@ -97,7 +98,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_test.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -151,7 +152,7 @@ show history and exit
 
 verbose or quiet ?
 
-=item B<block> (type: bool, default: 1)
+=item B<block> (type: bool, default: 0)
 
 block output ?
 
@@ -183,10 +184,12 @@ None.
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
 	0.02 MV download scripts
+	0.03 MV finish papers
+	0.04 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Development::TestInfo(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Development::Module(3), Meta::Development::TestInfo(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

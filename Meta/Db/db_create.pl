@@ -12,18 +12,18 @@ use Meta::Sql::Stats qw();
 my($def_file,$connections_file,$name,$con_name);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("def_file","which definition file to use ?","xmlx/def/contacts.xml",\$def_file);
-$opts->def_devf("connections_file","which connections file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("def_file","which definition file to use ?","xmlx/def/contacts.xml",\$def_file);
+$opts->def_modu("connections_file","which connections file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("name","which database name ?",undef,\$name);
 $opts->def_stri("con_name","which connection name ?",undef,\$con_name);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($def)=Meta::Db::Def->new_deve($def_file);
+my($def)=Meta::Db::Def->new_modu($def_file);
 if(!defined($name)) {
 	$name=$def->get_name();
 }
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection);
 if(defined($con_name)) {
 	$connection=$connections->get($con_name);
@@ -78,7 +78,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_create.pl
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -133,11 +133,11 @@ show description and exit
 
 show history and exit
 
-=item B<def_file> (type: devf, default: xmlx/def/contacts.xml)
+=item B<def_file> (type: modu, default: xmlx/def/contacts.xml)
 
 which definition file to use ?
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 which connections file to use ?
 
@@ -186,6 +186,7 @@ None.
 	0.17 MV web site automation
 	0.18 MV SEE ALSO section fix
 	0.19 MV move tests to modules
+	0.20 MV teachers project
 
 =head1 SEE ALSO
 

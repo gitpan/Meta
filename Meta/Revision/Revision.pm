@@ -10,7 +10,7 @@ use Meta::Math::Pad qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.19";
 @ISA=qw(Meta::Ds::Array);
 
 #sub print($$);
@@ -26,6 +26,8 @@ $VERSION="0.17";
 #sub docbook_copyright($$);
 #sub html_last_print($$);
 #sub html_last($);
+#sub dtd_copyright($$);
+#sub dtd_history($);
 #sub TEST($);
 
 #__DATA__
@@ -112,10 +114,14 @@ sub docbook_date($) {
 sub docbook_copyright_print($$$) {
 	my($self,$writ,$author)=@_;
 	$writ->startTag("copyright");
-	$writ->startTag("year");
 	# FIXME this needs to be extracted from the revision information.
-	$writ->characters(Meta::Baseline::Aegis::copyright_years());
-	$writ->endTag("year");
+	my(@years)=split('\,\ ',Meta::Baseline::Aegis::copyright_years());
+	for(my($i)=0;$i<=$#years;$i++) {
+		my($curr)=$years[$i];
+		$writ->startTag("year");
+		$writ->characters($curr);
+		$writ->endTag("year");
+	}
 	$writ->startTag("holder");
 	$writ->characters($author->get_full_name());
 	$writ->endTag("holder");
@@ -151,6 +157,28 @@ sub html_last($) {
 	$self->html_last_print($writer);
 	$io->close();
 	return($string);
+}
+
+sub dtd_copyright($$) {
+	my($self,$author)=@_;
+	return(
+		"<!-- Copyright (C) ".
+		Meta::Baseline::Aegis::copyright_years()." ".
+		$author->get_full_name().";\n".
+		"All rights reserved. -->"
+	);
+}
+
+sub dtd_history($) {
+	my($self)=@_;
+	my($retu)="<!--\n";
+	#$retu.="start of revision info\n";
+	for(my($i)=0;$i<$self->size();$i++) {
+		$retu.=$self->getx($i)->perl_pod_line($i);
+	}
+	#$retu.="end of revision info";
+	$retu.="-->";
+	return($retu);
 }
 
 sub TEST($) {
@@ -191,7 +219,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Revision.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -221,6 +249,8 @@ The object is able to print itself in DocBook xml format.
 	docbook_copyright($$)
 	html_last_print($$)
 	html_last($)
+	dtd_copyright($$)
+	dtd_history($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -282,6 +312,16 @@ This will print a "page last modified at" html notice.
 
 This method will create an XML string representing the last modified information.
 
+=item B<dtd_copyright($$)>
+
+This method will produce a text suitable to be placed as copyright notice inside
+a DTD.
+
+=item B<dtd_history($)>
+
+This method will produce a text suitable to be placed as history revision inside 
+a DTD.
+
 =item B<TEST($)>
 
 Test suite for this module.
@@ -323,6 +363,8 @@ None.
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
 	0.17 MV bring movie data
+	0.18 MV weblog issues
+	0.19 MV teachers project
 
 =head1 SEE ALSO
 

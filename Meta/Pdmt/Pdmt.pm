@@ -6,36 +6,40 @@ use strict qw(vars refs subs);
 use Meta::Pdmt::Graph qw();
 use Meta::Pdmt::Handlers qw();
 use Meta::Pdmt::Listen qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
+#sub BEGIN();
 #sub new($);
-#sub get_graph($);
-#sub get_handlers($);
 #sub listen($);
 #sub TEST($);
 
 #__DATA__
 
+sub BEGIN() {
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_graph",
+		-java=>"_handlers",
+		-java=>"_cvs",
+	);
+}
+
 sub new($) {
 	my($clas)=@_;
 	my($self)={};
 	bless($self,$clas);
-	$self->{GRAPH}=Meta::Pdmt::Graph->new();
-	$self->{HANDLERS}=Meta::Pdmt::Handlers->new();
+	$self->set_graph(Meta::Pdmt::Graph->new());
+	$self->get_graph()->set_pdmt($self);
+	$self->set_handlers(Meta::Pdmt::Handlers->new());
 	return($self);
 }
 
-sub get_graph($) {
+sub add_files($) {
 	my($self)=@_;
-	return($self->{GRAPH});
-}
-
-sub get_handlers($) {
-	my($self)=@_;
-	return($self->{HANDLERS});
+	$self->get_cvs()->add_all_nodes($self->get_graph());
 }
 
 sub listen($) {
@@ -82,7 +86,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pdmt.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -97,9 +101,8 @@ This is the Pdmt main object which stores the graph handlers and all.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	new($)
-	get_graph($)
-	get_handlers($)
 	listen($)
 	TEST($)
 
@@ -107,17 +110,13 @@ This is the Pdmt main object which stores the graph handlers and all.
 
 =over 4
 
+=item B<BEGIN()>
+
+Bootstrap the class and create accessors to graph, handlers and cvs.
+
 =item B<new($)>
 
 This is a constructor for the Meta::Pdmt::Pdmt object.
-
-=item B<get_graph($)>
-
-This will give you the graph object.
-
-=item B<get_handlers($)>
-
-This will give you the handlers object.
 
 =item B<listen($)>
 
@@ -158,10 +157,11 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Pdmt::Graph(3), Meta::Pdmt::Handlers(3), Meta::Pdmt::Listen(3), strict(3)
+Meta::Class::MethodMaker(3), Meta::Pdmt::Graph(3), Meta::Pdmt::Handlers(3), Meta::Pdmt::Listen(3), strict(3)
 
 =head1 TODO
 

@@ -4,34 +4,62 @@ package Meta::Tool::Editor;
 
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
+use Meta::Utils::Env qw();
+use Meta::Utils::File::File qw();
+use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.12";
 @ISA=qw();
 
+#sub BEGIN();
+#sub set_editor($);
 #sub edit($);
 #sub edit_mult($);
 #sub edit_line_char($$$);
+#sub edit_content($);
 #sub TEST($);
 
 #__DATA__
 
+our($editor);
+our($env_var)="EDITOR";
+
+sub BEGIN() {
+	if(Meta::Utils::Env::has($env_var)) {
+		$editor=Meta::Utils::Env::get($env_var);
+	} else {
+		$editor="vim";
+	}
+}
+
+sub set_editor($) {
+	my($ieditor)=@_;
+	$editor=$ieditor;
+}
+
 sub edit($) {
 	my($file)=@_;
-	my($prog)="vim";
-	return(Meta::Utils::System::system($prog,[$file]));
+	return(Meta::Utils::System::system($editor,[$file]));
 }
 
 sub edit_mult($) {
 	my($list)=@_;
-	my($prog)="vim";
-	return(Meta::Utils::System::system($prog,$list));
+	return(Meta::Utils::System::system($editor,$list));
 }
 
 sub edit_line_char($$$) {
 	my($file,$line,$char)=@_;
-	my($prog)="vim";
-	return(Meta::Utils::System::system($prog,$file));
+	return(Meta::Utils::System::system($editor,$file));
+}
+
+sub edit_content($) {
+	my($content)=@_;
+	my($temp)=Meta::Utils::Utils::get_temp_file();
+	Meta::Utils::File::File::save($temp,$content);
+	&edit($temp);
+	my($ncontent)=Meta::Utils::File::File::load($temp);
+	return($ncontent);
 }
 
 sub TEST($) {
@@ -72,7 +100,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Editor.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -89,14 +117,26 @@ Currently just activation of the editor is supported (vi...).
 
 =head1 FUNCTIONS
 
+	BEGIN()
+	set_editor($)
 	edit($)
 	edit_mult($)
 	edit_line_char($$$)
+	edit_content($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+This is a bootstrap method which sets the editor to the preferred
+editor.
+
+=item B<set_editor($)>
+
+This class method sets the editor to be used.
 
 =item B<edit($)>
 
@@ -112,6 +152,10 @@ cursor on the specified line and character.
 =item B<edit_line_char($$$)>
 
 This will open an editor at the specified line and character number.
+
+=item B<edit_content($)>
+
+This will open the favourite editor on a specific content.
 
 =item B<TEST($)>
 
@@ -148,10 +192,11 @@ None.
 	0.09 MV website construction
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
+	0.12 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Utils::System(3), strict(3)
+Meta::Utils::Env(3), Meta::Utils::File::File(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

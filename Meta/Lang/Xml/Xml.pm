@@ -14,9 +14,10 @@ use Meta::Utils::Parse::Text qw();
 use Meta::Xml::Parsers::Type qw();
 use Meta::Xml::Parsers::Checker qw();
 use Meta::Utils::Env qw();
+use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.09";
 @ISA=qw();
 
 #sub catalog_setup();
@@ -41,13 +42,13 @@ $VERSION="0.07";
 our($errors);
 
 sub catalog_setup() {
-	if(Meta::Baseline::Aegis::have_aegis()) {
-		my($path)=Meta::Baseline::Aegis::search_path_list();
-		my($value)=$path->get_catenate(":","dtdx/CATALOG");
-		Meta::Utils::Env::set("XML_CATALOG_FILES",$value);
-	} else {
+#	if(Meta::Baseline::Aegis::have_aegis()) {
+#		my($path)=Meta::Baseline::Aegis::search_path_list();
+#		my($value)=$path->get_catenate(":","dtdx/CATALOG");
+#		Meta::Utils::Env::set("XML_CATALOG_FILES",$value);
+#	} else {
 		Meta::Utils::Env::set("XML_CATALOG_FILES","/local/tools/htdocs/dtdx/CATALOG");
-	}
+#	}
 }
 
 sub get_prefix() {
@@ -79,15 +80,15 @@ sub setup($) {
 
 sub setup_path() {
 	my($patho);
-	if(Meta::Baseline::Aegis::have_aegis()) {
-		$patho=Meta::Baseline::Aegis::search_path_object();
-	} else {
-		$patho=Meta::Utils::File::Patho->new();
-		$patho->push("/local/tools/htdocs");
-	}
-	$patho->append("/dtdx");
-	my($list)=$patho->list();
-	XML::Checker::Parser::set_sgml_search_path(@$list);
+#	if(Meta::Baseline::Aegis::have_aegis()) {
+#		$patho=Meta::Baseline::Aegis::search_path_object();
+#	} else {
+	#	$patho=Meta::Utils::File::Patho->new();
+	#	$patho->push("/local/tools/htdocs");
+#	}
+#	$patho->append("/dtdx");
+#	my($list)=$patho->list();
+#	XML::Checker::Parser::set_sgml_search_path(@$list);
 }
 
 sub fail_check($) {
@@ -121,13 +122,14 @@ sub check($) {
 
 sub c2deps($) {
 	my($buil)=@_;
-	my($srcx)=$buil->get_srcx();
-	my($modu)=$buil->get_modu();
 	my($parser)=Meta::Xml::Parsers::Deps->new();
-	$parser->set_search_path(&get_prefix());
-	$parser->set_root($modu);
-	$parser->parsefile($srcx);
-	return($parser->get_result());
+	$parser->set_doctype_prefix("dtdx/");
+	$parser->set_do_doctype(1);
+	$parser->set_externent_prefix(&get_prefix());
+	$parser->set_do_externent(1);
+	$parser->set_root($buil->get_modu());
+	$parser->parsefile($buil->get_srcx());
+	return($parser->get_deps());
 }
 
 sub c2chun($) {
@@ -293,7 +295,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xml.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -456,10 +458,12 @@ None.
 	0.05 MV SEE ALSO section fix
 	0.06 MV move tests into modules
 	0.07 MV web site development
+	0.08 MV finish papers
+	0.09 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Env(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), Meta::Xml::Parsers::Checker(3), Meta::Xml::Parsers::Deps(3), Meta::Xml::Parsers::Type(3), XML::Checker::Parser(3), XML::DOM(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Env(3), Meta::Utils::File::Patho(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), Meta::Xml::Parsers::Checker(3), Meta::Xml::Parsers::Deps(3), Meta::Xml::Parsers::Type(3), XML::Checker::Parser(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 

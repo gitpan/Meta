@@ -6,15 +6,24 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Digest::MD5 qw();
 use Meta::Utils::Output qw();
 
-my($file);
+my($files,$compat);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_file("file","what file to calculate ?",undef,\$file);
+$opts->def_flst("files","what files to calculate ?",undef,\$files);
+$opts->def_bool("compat","produce output compatible with md5sum ?",0,\$compat);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($sum)=Meta::Digest::MD5::get_filename_hexdigest($file);
-Meta::Utils::Output::print("md5sum is [".$sum."]\n");
+my(@files)=split(':',$files);
+for(my($i)=0;$i<=$#files;$i++) {
+	my($curr)=$files[$i];
+	my($sum)=Meta::Digest::MD5::get_filename_hexdigest($curr);
+	if($compat) {
+		Meta::Utils::Output::print("$sum\ \ $curr\n");
+	} else {
+		Meta::Utils::Output::print("md5sum of [".$curr."] is [".$sum."]\n");
+	}
+}
 
 Meta::Utils::System::exit(1);
 
@@ -49,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: md5_sum.pl
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -102,9 +111,13 @@ show description and exit
 
 show history and exit
 
-=item B<file> (type: file, default: )
+=item B<files> (type: flst, default: )
 
-what file to calculate ?
+what files to calculate ?
+
+=item B<compat> (type: bool, default: 0)
+
+produce output compatible with md5sum ?
 
 =back
 
@@ -124,6 +137,8 @@ None.
 =head1 HISTORY
 
 	0.00 MV move tests to modules
+	0.01 MV finish papers
+	0.02 MV md5 issues
 
 =head1 SEE ALSO
 
@@ -131,4 +146,4 @@ Meta::Digest::MD5(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::
 
 =head1 TODO
 
-Nothing.
+-add possibility to output as xml.

@@ -9,31 +9,34 @@ use Meta::Baseline::Aegis qw();
 use XML::Parser qw();
 use XML::XPath qw();
 use IO::File qw();
-use IO::Filter::sort qw();
+use Meta::Template::Sub qw();
+use Meta::Ds::Set qw();
 
-my($file,$verb,$sort,$outf);
+my($file,$verb,$outf,$sync,$set_sort,$config);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_devf("file","what contacts file to use ?","xmlx/contacts/contacts.xml",\$file);
 $opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
-$opts->def_bool("sort","sort the output to kmail ?",0,\$sort);
-$opts->def_newf("outf","what output file to generate ?","/tmp/kmail_addressbook",\$outf);
+$opts->def_ovwf("outf","what output file to generate ?","[% home_dir %]/.kde/share/apps/kmail/addressbook",\$outf);
+$opts->def_bool("sync","read kmail and check before writing ?",1,\$sync);
+$opts->def_bool("set_sort","sort output via set sorting ?",1,\$set_sort);
+$opts->def_ovwf("config","what config file to modify ?","[% home_dir %]/.kde/share/config/kmailrc",\$config);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($io);
-if($sort) {
-	$io=IO::Filter::sort->new($outf,"w");
-} else {
-	$io=IO::File->new($outf,"w");
-}
-if(!defined($io)) {
-	Meta::Utils::System::die("unable to open output file [".$outf."]");
-}
+$outf=Meta::Template::Sub::interpolate($outf);
 
-my($prefix)="# kmail addressbook file\n";
-$io->print($prefix);
+my($special)="# kmail addressbook file";
+Meta::Utils::Output::verbose($verb,"started reading old file\n");
+my($old_set)=Meta::Ds::Set->new();
+$old_set->read($outf);
+Meta::Utils::Output::verbose($verb,"finished reading old file\n");
+$old_set->remove($special);
 
+my($set)=Meta::Ds::Set->new();
+#$set->insert("# kmail addressbook file");
+
+Meta::Utils::Output::verbose($verb,"started reading xml file\n");
 Meta::Lang::Xml::Xml::setup_path();
 my($file)=Meta::Baseline::Aegis::which($file);
 my($par)=XML::Parser->new();
@@ -46,14 +49,12 @@ if(!defined($parser)) {
 }
 my($root_node)=$parser->parse();
 my($nodes)=$root_node->find('/contacts/contact');
-#my($nodes)=$root_node->find('/contacts/contact/emails/email/value');
 
 my($size)=$nodes->size();
-if($verb) {
-	Meta::Utils::Output::print("size is [".$size."]\n");
-}
+Meta::Utils::Output::verbose($verb,"size is [".$size."]\n");
 foreach my $node ($nodes->get_nodelist()) {
 	my($emails)=$node->find('emails/email/value');
+	Meta::Utils::Output::verbose($verb,"emails is [".$emails."]\n");
 	my($use_firstname)=undef;
 	my($firstname)=$node->find('firstname');
 	if($firstname->size()) {
@@ -89,14 +90,35 @@ foreach my $node ($nodes->get_nodelist()) {
 	}
 	foreach my $email ($emails->get_nodelist()) {
 		my($email_text)=$email->getChildNode(1)->getValue();
-		$io->print($name. " <".$email_text.">\n");
-#		Meta::Utils::Output::print($name. " <".$email_text.">\n");
+		my($line)=$name. " <".$email_text.">";
+		$set->insert($line);
 	}
-#	my($parent)=$node->getParentNode()->getParentNode()->getParentNode();
-#	my($set)=$parent->find("firstname");
-#	Meta::Utils::Output::print("set is [".$set."]\n");
 }
-$io->close();
+Meta::Utils::Output::verbose($verb,"finished reading xml file\n");
+if(!$sync || ($sync && $old_set->contained($set))) {
+	Meta::Utils::Output::verbose($verb,"started writing output\n");
+	my($io);
+	$io=IO::File->new($outf,"w");
+	if(!defined($io)) {
+		Meta::Utils::System::die("unable to open output file [".$outf."]");
+	}
+	$io->print($special."\n");
+	if($set_sort) {
+		my($hash)=$set->get_hash();
+		$io->print(join("\n",sort(keys(%$hash))));
+	} else {
+		my($hash)=$set->get_hash();
+		$io->print(join("\n",keys(%$hash)));
+	}
+	$io->close();
+	Meta::Utils::Output::verbose($verb,"finished writing output\n");
+} else {# only if sync requested and sets are not contained
+	Meta::Utils::Output::verbose($verb,"started subtract\n");
+	my($res_set)=$old_set->subtract($set);
+	Meta::Utils::Output::print("New info in kmail. Please Sync.\n");
+	Meta::Utils::Output::dump($res_set);
+	#Meta::Utils::System::die("cannot write output becuse of sync problems");
+}
 
 Meta::Utils::System::exit(1);
 
@@ -131,7 +153,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: contacts_export.pl
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -139,24 +161,35 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This script will read an XML/contacts file and will export it to a particular
-formats. Formats which are planned to be supported:
+This script will read an XML/contacts file and will export it to a selection
+out of the known set of export formats.
+Formats which are planned to be supported:
 1. kmail - a file that you could use so that you will have all your
 	contact information in kmail. This is a text file which only
 	has "John Doe john@doe.com\n" type entries.
 2. evolution - a file that you could use so that you will have all
 	your contact information in evolution. In essense this file
 	is a Bekeley DB file and I use perl modules for manipulating
-	Berkeley DB files to do that.
+	Berkeley DB files to do that (create the file or add entries
+	into your existing file).
 3. gnokii - a file fit to be transferred using gnokii to a Nokia cellular
-	phone (I still dont know what that format is and still is still
+	phone (I still dont know what that format is and this is still
 	not implemented).
+4. html - a file fit to be put on a web server somewhere so that you
+	will always have your contact information. Be sure to put
+	this in a protected place (using a password) if you want to
+	keep the information private. This is script is NOT responsible
+	for such security matters!!!.
+5. pdb palm pilot file - there are perl modules which can manipulate
+	such files and I plan to use them to export my contacts
+	to my palm pilot.
 
+Current script only supports the first option (kmail).
+
+Technical notes:
 Ths use of XML::Parser here is mandatory since if you do not supply your
 own parser the XML::XPath uses it's own which cannot do Aegis resolution and so
 this kills everything.
-
-Current script only supports the first option (kmail).
 
 =head1 OPTIONS
 
@@ -206,13 +239,21 @@ what contacts file to use ?
 
 noisy or quiet ?
 
-=item B<sort> (type: bool, default: 0)
-
-sort the output to kmail ?
-
-=item B<outf> (type: newf, default: /tmp/kmail_addressbook)
+=item B<outf> (type: ovwf, default: [% home_dir %]/.kde/share/apps/kmail/addressbook)
 
 what output file to generate ?
+
+=item B<sync> (type: bool, default: 1)
+
+read kmail and check before writing ?
+
+=item B<set_sort> (type: bool, default: 1)
+
+sort output via set sorting ?
+
+=item B<config> (type: ovwf, default: [% home_dir %]/.kde/share/config/kmailrc)
+
+what config file to modify ?
 
 =back
 
@@ -235,11 +276,16 @@ None.
 	0.01 MV move tests to modules
 	0.02 MV download scripts
 	0.03 MV move tests into modules
+	0.04 MV finish papers
+	0.05 MV teachers project
+	0.06 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-IO::File(3), IO::Filter::sort(3), Meta::Baseline::Aegis(3), Meta::Lang::Xml::Xml(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::Parser(3), XML::XPath(3), strict(3)
+IO::File(3), Meta::Baseline::Aegis(3), Meta::Ds::Set(3), Meta::Lang::Xml::Xml(3), Meta::Template::Sub(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), XML::Parser(3), XML::XPath(3), strict(3)
 
 =head1 TODO
 
--the sorting option somehow does not work (complain of an error - maybe it's a bug of IO::Filter::sort. Check it out).
+-make sure that kmail is not running when running this. use a general class which can make sure that a certain executable is not running.
+
+-create filters too.

@@ -13,9 +13,10 @@ use Meta::Db::Member qw();
 use Meta::Db::Constraint qw();
 use Meta::Xml::Parsers::Base qw();
 use Meta::Development::Module qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.47";
+$VERSION="0.48";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -229,6 +230,11 @@ sub handle_char($$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($module)=Meta::Development::Module->new_name("xmlx/def/contacts.xml");
+	my($pars)=__PACKAGE__->new();
+	$pars->parsefile($module->get_abs_path());
+	my($obje)=$pars->get_result();
+	Meta::Utils::Output::dump($obje);
 	return(1);
 }
 
@@ -265,7 +271,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.47
+	VERSION: 0.48
 
 =head1 SYNOPSIS
 
@@ -329,6 +335,8 @@ This currently, according to context, sets attributes for the various objects.
 =item B<TEST($)>
 
 Test suite for this module.
+Currently it will just read the "xmlx/def/chess.def" file and print out the
+resulting Def object.
 
 =back
 
@@ -397,10 +405,11 @@ None.
 	0.45 MV SEE ALSO section fix
 	0.46 MV download scripts
 	0.47 MV web site development
+	0.48 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Db::Constraint(3), Meta::Db::Def(3), Meta::Db::Enum(3), Meta::Db::Field(3), Meta::Db::Member(3), Meta::Db::Set(3), Meta::Db::Table(3), Meta::Db::User(3), Meta::Development::Module(3), Meta::Xml::Parsers::Base(3), strict(3)
+Meta::Db::Constraint(3), Meta::Db::Def(3), Meta::Db::Enum(3), Meta::Db::Field(3), Meta::Db::Member(3), Meta::Db::Set(3), Meta::Db::Table(3), Meta::Db::User(3), Meta::Development::Module(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

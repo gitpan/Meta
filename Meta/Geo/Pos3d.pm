@@ -7,14 +7,13 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.08";
 @ISA=qw();
 
-#sub BEGIN($);
+#sub BEGIN();
 #sub add($$);
 #sub sub($$);
 #sub mul($$);
-#sub print($$);
 #sub TEST($);
 
 #__DATA__
@@ -49,11 +48,6 @@ sub mul($$) {
 	$self->set_z($self->get_z()*$valx);
 }
 
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "[".$self->get_x()."][".$self->get_y()."][".$self->get_z()."]\n";
-}
-
 sub TEST($) {
 	my($context)=@_;
 	my($point1)=Meta::Geo::Pos3d->new();
@@ -65,7 +59,7 @@ sub TEST($) {
 	$point2->set_y(6);
 	$point2->set_z(7);
 	$point1->add($point2);
-	$point1->print(Meta::Utils::Output::get_file());
+	Meta::Utils::Output::dump($point1);
 	return(1);
 }
 
@@ -102,7 +96,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pos3d.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -127,7 +121,6 @@ A lot more is needed here but it's a start.
 	add($$)
 	sub($$)
 	mul($$)
-	print($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -149,10 +142,6 @@ This will subtract a position from the current positions.
 =item B<mul($$)>
 
 This will multiple the vector by a scalar.
-
-=item B<print($$)>
-
-This will print the current position.
 
 =item B<TEST($)>
 
@@ -185,6 +174,7 @@ None.
 	0.05 MV web site development
 	0.06 MV web site automation
 	0.07 MV SEE ALSO section fix
+	0.08 MV teachers project
 
 =head1 SEE ALSO
 

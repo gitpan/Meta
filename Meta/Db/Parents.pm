@@ -7,7 +7,7 @@ use Meta::Ds::Ochash qw();
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw(Meta::Ds::Ochash Meta::Ds::Connected);
 
 #sub printd($$);
@@ -78,7 +78,10 @@ sub getsql_select($$$) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		push(@arra,$self->elem($i)->getsql_select($info,$table));
 	}
-	return(join(",",@arra));
+#	Meta::Utils::Output::print("size is [".$#arra."]\n");
+	my($res)=join(",",@arra);
+#	Meta::Utils::Output::print("select returning [".$res."]\n");
+	return($res);
 }
 
 sub getsql_insert($$$) {
@@ -87,7 +90,10 @@ sub getsql_insert($$$) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		push(@arra,$self->elem($i)->getsql_insert($info,$table));
 	}
-	return(join(",",@arra));
+#	Meta::Utils::Output::print("size is [".$#arra."]\n");
+	my($res)=join(",",@arra);
+#	Meta::Utils::Output::print("insert returning [".$res."]\n");
+	return($res);
 }
 
 sub TEST($) {
@@ -128,7 +134,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Parents.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -228,6 +234,7 @@ None.
 	0.10 MV website construction
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV teachers project
 
 =head1 SEE ALSO
 

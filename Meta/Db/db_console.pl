@@ -5,16 +5,44 @@ use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Db::Console::Console qw();
 use Meta::Utils::Output qw();
+use Meta::Template::Sub qw();
 
+my($prompt,$startup,$startup_file,$history,$history_file,$verbose);
+my($connections,$connection_name,$def);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
+$opts->def_stri("opt_prompt","what prompt to use ?","XQL# ",\$prompt);
+$opts->def_bool("opt_startup","use startup file ?",1,\$startup);
+$opts->def_stri("opt_startup_file","what startup file ?","[% home_dir %]/.db_console.rc",\$startup_file);
+$opts->def_bool("opt_history","use history ?",1,\$history);
+$opts->def_stri("opt_history_file","what history file to use ?","[% home_dir %]/.db_console.hist",\$history_file);
+$opts->def_bool("opt_verbose","be verbose ?",1,\$verbose);
+
+$opts->def_modu("connections","what connections file ?","xmlx/connections/connections.xml",\$connections);
+$opts->def_stri("connection_name","what connections name ?",undef,\$connection_name);
+$opts->def_modu("def","what definitions file ?","xmlx/def/movie.xml",\$def);
+
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($console)=Meta::Db::Console::Console->new();
-$console->run();
+$prompt=Meta::Template::Sub::interpolate($prompt);
+$startup_file=Meta::Template::Sub::interpolate($startup_file);
+$history_file=Meta::Template::Sub::interpolate($history_file);
 
-Meta::Utils::Output::print("Bye bye\n");
+my($shell)=Meta::Db::Console::Console->new();
+
+$shell->set_prompt($prompt);
+$shell->set_startup($startup);
+$shell->set_startup_file($startup_file);
+$shell->set_history($history);
+$shell->set_history_file($history_file);
+$shell->set_verbose($verbose);
+
+$shell->set_connections($connections);
+$shell->set_connection_name($connection_name);
+$shell->set_def($def);
+
+$shell->run();
 
 Meta::Utils::System::exit(1);
 
@@ -49,7 +77,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_console.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -100,6 +128,42 @@ show description and exit
 
 show history and exit
 
+=item B<opt_prompt> (type: stri, default: XQL# )
+
+what prompt to use ?
+
+=item B<opt_startup> (type: bool, default: 1)
+
+use startup file ?
+
+=item B<opt_startup_file> (type: stri, default: [% home_dir %]/.db_console.rc)
+
+what startup file ?
+
+=item B<opt_history> (type: bool, default: 1)
+
+use history ?
+
+=item B<opt_history_file> (type: stri, default: [% home_dir %]/.db_console.hist)
+
+what history file to use ?
+
+=item B<opt_verbose> (type: bool, default: 1)
+
+be verbose ?
+
+=item B<connections> (type: modu, default: xmlx/connections/connections.xml)
+
+what connections file ?
+
+=item B<connection_name> (type: stri, default: )
+
+what connections name ?
+
+=item B<def> (type: modu, default: xmlx/def/movie.xml)
+
+what definitions file ?
+
 =back
 
 no free arguments are allowed
@@ -130,10 +194,11 @@ None.
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
 	0.12 MV move tests to modules
+	0.13 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Db::Console::Console(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Db::Console::Console(3), Meta::Template::Sub(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

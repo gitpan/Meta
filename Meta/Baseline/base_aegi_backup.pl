@@ -4,32 +4,38 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::Utils qw();
-use Meta::Utils::List qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
-use Meta::Ds::Enum qw();
 use Meta::Archive::Tar qw();
 use Meta::Template::Sub qw();
+use GnuPG qw();
+use Net::SCP qw();
+use Meta::Utils::File::Remove qw();
 
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("change");
-$enum->insert("project");
-$enum->insert("source");
+my($enum)=Meta::Baseline::Aegis::get_enum();
 
-my($demo,$verb,$tarf,$type);
+my($verb,$tarf,$dirf,$type,$author_file,$enc,$armor,$sign,$send,$remote_dir);
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_bool("demo","just a demo or the real thing",0,\$demo);
 $opts->def_bool("verbose","verbose or quiet ?",0,\$verb);
-$opts->def_newf("tarfile","what file to backup to","[% home_dir %]/[% project %]_[% change %]_[% time %].tar.gz",\$tarf);
-$opts->def_enum("type","what type of backup ?","source",\$type,$enum);
+$opts->def_newf("tarfile","what file to backup to","[% project %]_[% change %]_[% time %].tar.gz",\$tarf);
+$opts->def_stri("localdir","what directory to backup to ?","[% home_dir %]/backups",\$dirf);
+$opts->def_enum("type","what type of backup ?",$enum->get_default(),\$type,$enum);
+$opts->def_modu("author","author XML definition file","xmlx/author/author.xml",\$author_file);
+$opts->def_bool("encrypt","encrypt the result ?",1,\$enc);
+$opts->def_bool("armor","put ascii armor on encrypted files ?",0,\$armor);
+$opts->def_bool("sign","sign the encrypted files ?",0,\$sign);
+$opts->def_bool("send","send copy to internet ?",0,\$send);
+$opts->def_stri("remote_dir","remote directory where backups are stored","backups",\$remote_dir);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 $tarf=Meta::Template::Sub::interpolate($tarf);
+$dirf=Meta::Template::Sub::interpolate($dirf);
 
 my($list);
+Meta::Utils::Output::verbose($verb,"started getting file list\n");
 if($enum->is_selected($type,"change")) {
 	$list=Meta::Baseline::Aegis::change_files_list(1,1,1,1,1,0);
 }
@@ -39,19 +45,47 @@ if($enum->is_selected($type,"project")) {
 if($enum->is_selected($type,"source")) {
 	$list=Meta::Baseline::Aegis::source_files_list(1,1,0,1,1,0);
 }
+Meta::Utils::Output::verbose($verb,"finished getting file list\n");
 my($scod);
-if($demo) {
-	Meta::Utils::List::print(Meta::Utils::Output::get_file(),$list);
-	$scod=1;
-} else {
-	my($path)=Meta::Baseline::Aegis::search_path();
-	my($tar)=Meta::Archive::Tar->new();
-	for(my($i)=0;$i<=$#$list;$i++) {
-		my($curr)=$list->[$i];
-		$tar->add_deve($curr,$curr);
-	}
-	$scod=$tar->write($tarf);
+Meta::Utils::Output::verbose($verb,"started tarring\n");
+my($tar)=Meta::Archive::Tar->new();
+for(my($i)=0;$i<=$#$list;$i++) {
+	my($curr)=$list->[$i];
+	$tar->add_deve($curr,$curr);
 }
+Meta::Utils::Output::verbose($verb,"finished tarring\n");
+$scod=$tar->write($dirf."/".$tarf);
+if($enc) {
+	my($author)=Meta::Info::Author->new_modu($author_file);
+	my($enc_file)=$dirf."/".$tarf.".gpg";
+	my($gpg)=GnuPG->new();
+	Meta::Utils::Output::verbose($verb,"started encrypting\n");
+	$gpg->encrypt(
+		plaintext=>$dirf."/".$tarf,
+		output=>$enc_file,
+		recipient=>$author->get_default_email(),
+		armor=>$armor,
+		sign=>$sign,
+		passphrase=>$author->get_default_passphrase(),
+	);
+	Meta::Utils::Output::verbose($verb,"finished encrypting\n");
+	if($send) {
+		Meta::Utils::Output::verbose($verb,"started sending\n");
+		my($user)=$author->get_sourceforge_user();
+		my($host)=$author->get_sourceforge_ssh();
+		my($addr)=$user."@".$host.":".$remote_dir."/".$tarf.".gpg";
+		Meta::Utils::Output::verbose($verb,"addr is [".$addr."]\n");
+		my($scp)=Net::SCP->new($host,$user);
+		my($res)=$scp->scp($enc_file,$addr);
+		Meta::Utils::Output::verbose($verb,"res is [".$res."]\n");
+		if(!$res) {
+			Meta::Utils::System::die("cannot put with error [".$scp->{errstr}."]");
+		}
+		Meta::Utils::Output::verbose($verb,"finished sending\n");
+	}
+	Meta::Utils::File::Remove::rm($enc_file);
+}
+
 Meta::Utils::System::exit($scod);
 
 __END__
@@ -85,7 +119,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_aegi_backup.pl
 	PROJECT: meta
-	VERSION: 0.38
+	VERSION: 0.41
 
 =head1 SYNOPSIS
 
@@ -142,23 +176,50 @@ show description and exit
 
 show history and exit
 
-=item B<demo> (type: bool, default: 0)
-
-just a demo or the real thing
-
 =item B<verbose> (type: bool, default: 0)
 
 verbose or quiet ?
 
-=item B<tarfile> (type: newf, default: [% home_dir %]/[% project %]_[% change %]_[% time %].tar.gz)
+=item B<tarfile> (type: newf, default: [% project %]_[% change %]_[% time %].tar.gz)
 
 what file to backup to
+
+=item B<localdir> (type: stri, default: [% home_dir %]/backups)
+
+what directory to backup to ?
 
 =item B<type> (type: enum, default: source)
 
 what type of backup ?
 
-options [change,project,source]
+options:
+	change - just files from the current change
+	project - just files from the current baseline
+	source - complete source manifest
+
+=item B<author> (type: modu, default: xmlx/author/author.xml)
+
+author XML definition file
+
+=item B<encrypt> (type: bool, default: 1)
+
+encrypt the result ?
+
+=item B<armor> (type: bool, default: 0)
+
+put ascii armor on encrypted files ?
+
+=item B<sign> (type: bool, default: 0)
+
+sign the encrypted files ?
+
+=item B<send> (type: bool, default: 0)
+
+send copy to internet ?
+
+=item B<remote_dir> (type: stri, default: backups)
+
+remote directory where backups are stored
 
 =back
 
@@ -216,10 +277,13 @@ None.
 	0.36 MV move tests to modules
 	0.37 MV bring movie data
 	0.38 MV web site development
+	0.39 MV finish papers
+	0.40 MV teachers project
+	0.41 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-Meta::Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Ds::Enum(3), Meta::Template::Sub(3), Meta::Utils::List(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+GnuPG(3), Meta::Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Template::Sub(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Net::SCP(3), strict(3)
 
 =head1 TODO
 
@@ -232,3 +296,5 @@ Meta::Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Ds::Enum(3), Meta::Templa
 -when doing full backup call the result project or something.(not according to change numbers) - the date suffices.
 
 -there are some performance issues with this script due to the use of Archive::Tar which seems to hold all in memory and not be very efficient. Try to test it and imporve it.
+
+-the localdir dir show be an existing directory and not a string type if only the Opts library knew how to do TT2 transformations.

@@ -4,7 +4,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Aegis qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 use Meta::Utils::Parse::Text qw();
 use Meta::Utils::Hash qw();
 use Meta::Utils::List qw();
@@ -13,10 +13,11 @@ use Meta::Utils::Output qw();
 
 my($verb,$demo,$logx,$acti);
 my($opts)=Meta::Utils::Opts::Opts->new();
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("print");
-$enum->insert("checkout");
-$enum->insert("edit");
+my($enum)=Meta::Info::Enum->new();
+$enum->insert("print","print out the actions");
+$enum->insert("checkout","checkout the files");
+$enum->insert("edit","edit the files");
+$enum->set_default("print");
 $opts->set_standard();
 $opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
 $opts->def_bool("demo","play around or do it for real ?",0,\$demo);
@@ -101,7 +102,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: base_tool_log_do.pl
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -172,7 +173,10 @@ what log file to use ?
 
 what action to apply to the files ?
 
-options [print,checkout,edit]
+options:
+	print - print out the actions
+	checkout - checkout the files
+	edit - edit the files
 
 =back
 
@@ -214,10 +218,12 @@ None.
 	0.20 MV SEE ALSO section fix
 	0.21 MV move tests to modules
 	0.22 MV bring movie data
+	0.23 MV finish papers
+	0.24 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Ds::Enum(3), Meta::Tool::Editor(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Info::Enum(3), Meta::Tool::Editor(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

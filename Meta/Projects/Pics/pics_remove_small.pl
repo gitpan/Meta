@@ -7,12 +7,13 @@ use Meta::Utils::Output qw();
 use Meta::Utils::File::Remove qw();
 use Image::Magick qw();
 use Image::Size qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 use Meta::Utils::File::Iterator qw();
 
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("magick");
-$enum->insert("imagesize");
+my($enum)=Meta::Info::Enum->new();
+$enum->insert("magick","use Image::Magick");
+$enum->insert("imagesize","use Image::Size");
+$enum->set_default("magick");
 
 my($verbose,$demo,$summ,$x_size,$y_size,$method,$dire);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -107,7 +108,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: pics_remove_small.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -191,7 +192,9 @@ minimum y size
 
 what type of method to use ?
 
-options [magick,imagesize]
+options:
+	magick - use Image::Magick
+	imagesize - use Image::Size
 
 =item B<directory> (type: dire, default: .)
 
@@ -227,10 +230,12 @@ None.
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
 	0.12 MV bring movie data
+	0.13 MV finish papers
+	0.14 MV teachers project
 
 =head1 SEE ALSO
 
-Image::Magick(3), Image::Size(3), Meta::Ds::Enum(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Image::Magick(3), Image::Size(3), Meta::Info::Enum(3), Meta::Utils::File::Iterator(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

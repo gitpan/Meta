@@ -4,6 +4,9 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
 use Meta::Baseline::Test qw();
+use Meta::Development::Module qw();
+use Meta::Db::Connections qw();
+use Meta::Utils::Output qw();
 use DBI qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -13,9 +16,17 @@ $opts->analyze(\@ARGV);
 
 Meta::Baseline::Test::redirect_on();
 
-my($dsnx)=Meta::Baseline::Test::get_mysqldsn();
-my($mysql_user)=Meta::Baseline::Test::get_mysqluser();
-my($mysql_pass)=Meta::Baseline::Test::get_mysqlpass();
+my($file)="xmlx/connections/connections.xml";
+my($module)=Meta::Development::Module->new_name($file);
+my($connections)=Meta::Db::Connections->new_modu($module);
+
+my($connection)=$connections->get("first");
+
+#Meta::Utils::Output::dump($connection);
+
+my($dsnx)=$connection->get_dsn_nodb();
+my($mysql_user)=$connection->get_user();
+my($mysql_pass)=$connection->get_password();
 
 my($db)=DBI->connect($dsnx,$mysql_user,$mysql_pass);
 if(!$db) {
@@ -23,7 +34,7 @@ if(!$db) {
 }
 my($ref)=$db->selectall_arrayref("show databases");
 for(my($i)=0;$i<=$#$ref;$i++) {
-	print $ref->[$i]->[0]."\n";
+	Meta::Utils::Output::print($ref->[$i]->[0]."\n");
 }
 my($res)=$db->disconnect();
 if(!$res) {
@@ -65,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: mysql.pl
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -154,10 +165,11 @@ None.
 	0.19 MV web site automation
 	0.20 MV SEE ALSO section fix
 	0.21 MV move tests to modules
+	0.22 MV teachers project
 
 =head1 SEE ALSO
 
-DBI(3), Meta::Baseline::Test(3), Meta::Utils::Opts::Opts(3), Meta::Utils::System(3), strict(3)
+DBI(3), Meta::Baseline::Test(3), Meta::Db::Connections(3), Meta::Development::Module(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

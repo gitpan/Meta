@@ -70,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_graph.pl
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.02
 
 =head1 SYNOPSIS
 
@@ -130,7 +130,28 @@ what output file ?
 
 what type of output file ?
 
-options [canon,text,ps,hpgl,pcl,mif,pic,gd,gd2,gif,jpeg,png,wbmp,ismap,imap,vrml,vtx,mp,fig,svg,plain]
+options:
+	canon - canon
+	text - text
+	ps - ps
+	hpgl - hpgl
+	pcl - pcl
+	mif - mif
+	pic - pic
+	gd - gd
+	gd2 - gd2
+	gif - gif
+	jpeg - jpeg
+	png - png
+	wbmp - wbmp
+	ismap - ismap
+	imap - imap
+	vrml - vrml
+	vtx - vtx
+	mp - mp
+	fig - fig
+	svg - svg
+	plain - plain
 
 =back
 
@@ -151,6 +172,7 @@ None.
 
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
+	0.02 MV finish papers
 
 =head1 SEE ALSO
 

@@ -7,12 +7,13 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub BEGIN();
 #sub build($$);
 #sub uptodate($$);
+#sub mtime($);
 #sub TEST($);
 
 #__DATA__
@@ -21,24 +22,24 @@ sub BEGIN() {
 	Meta::Class::MethodMaker->new("new");
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
-		-java=>"_rule",
 	);
-	Meta::Class::MethodMaker->print(["name","rule"]);
 }
 
 sub build($$) {
 	my($self,$pdmt)=@_;
-	my($rule)=$self->get_rule();
-	#Meta::Utils::Output::print("rule is [".$rule."]\n");
-	if(!defined($rule)) {
-		Meta::Utils::Output::print("no rule to make target [".$self->get_name()."]\n");
-	} else {
-		$rule->($self,$pdmt);
-	}
+	Meta::Utils::System::die("this build method must be over ridden");
+	return(1);
 }
 
 sub uptodate($$) {
 	my($self,$pdmt)=@_;
+	Meta::Utils::System::die("this uptodate method must be over ridden");
+	return(1);
+}
+
+sub mtime($) {
+	my($self)=@_;
+	Meta::Utils::System::die("this mtime method must be over ridden");
 	return(1);
 }
 
@@ -80,7 +81,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Node.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -94,11 +95,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 This is a PDMT graph node. The node implements all the basic methods
 that child nodes need to override.
 
+Do not think of a node in PDMT as a file. Think of a node in PDMT
+exactly as you think of this class: a collection of three things.
+1. A method which knows how to build the node from it's ingredients.
+2. A method which knows to tell if the node is up to date.
+3. A method which reports the last modification time of the node.
+
+You may rightly ask about why both the uptodate and the mtime functions
+are needed. They are not. This class should be built as Node--TimeNode.
+The mtime stuff should only be in the TimeNode. The reason that not
+all nodes need the mtime stuff is that some nodes would rather just
+always say thet they are up to date (primary source files are a good
+example for that).
+
 =head1 FUNCTIONS
 
 	BEGIN()
 	build($$)
 	uptodate($$)
+	mtime($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -109,22 +124,27 @@ that child nodes need to override.
 
 This is an initializer for the class. It takes care for a:
 1. default constructor for the class.
-2. accessor get_ set_ methods for the attributes name,rule.
-3. print method for the class.
+2. accessor get_ set_ methods for the attribute name.
 
 =item B<build($$)>
 
-This method actually builds a node. In this generic node it does nothing.
+This method actually builds a node. In this generic node it does nothing
+and must be overriden in inherited classes.
 
 =item B<uptodate($$)>
 
-This method should be overriden by child nodes.
 This method should return whether the file is uptodate.
-This basic implementation returns true always.
+This method should be overriden by inherited classes.
+
+=item B<mtime($)>
+
+This method should return the modification date of this node.
+This method should be overriden by inherited classes.
 
 =item B<TEST($)>
 
 Test suite for this module.
+Currently this does nothing.
 
 =back
 
@@ -156,6 +176,7 @@ None.
 	0.08 MV website construction
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 

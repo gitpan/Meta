@@ -3,7 +3,7 @@
 use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 use Meta::Utils::Opts::Opts qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 use Gtk qw();
 use Meta::Utils::Output qw();
 
@@ -16,10 +16,11 @@ Gtk->init();
 
 my($bool,$inte,$stri,$floa,$dire,$file);
 my($opt)=Meta::Utils::Opts::Opts->new();
-my($enum)=Meta::Ds::Enum->new();
-$enum->insert("apples");
-$enum->insert("oranges");
-$enum->insert("bananas");
+my($enum)=Meta::Info::Enum->new();
+$enum->insert("apples","apples in detail");
+$enum->insert("oranges","oranges in detail");
+$enum->insert("bananas","bananas in detail");
+$enum->set_default("apples");
 $opt->set_standard();
 $opt->def_bool("boolean","what is the boolean ?",0,\$bool);
 $opt->def_inte("integer","what is the integer ?",1972,\$inte);
@@ -66,7 +67,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: opts.pl
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -159,10 +160,12 @@ None.
 	0.18 MV SEE ALSO section fix
 	0.19 MV move tests to modules
 	0.20 MV bring movie data
+	0.21 MV finish papers
+	0.22 MV teachers project
 
 =head1 SEE ALSO
 
-Gtk(3), Meta::Ds::Enum(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Gtk(3), Meta::Info::Enum(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -3,84 +3,70 @@
 package Meta::Db::Console::Console;
 
 use strict qw(vars refs subs);
-use Term::ReadLine qw();
+use Meta::Shell::Shell qw();
 use Meta::Utils::Output qw();
 use Meta::Db::Connections qw();
 use Meta::Db::Def qw();
 use Meta::Db::Dbi qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
-@ISA=qw(Term::ReadLine);
+$VERSION="0.17";
+@ISA=qw(Meta::Shell::Shell);
 
 #sub BEGIN();
-#sub new($);
-#sub add_vars($$);
-#sub run($);
+#sub pre($);
+#sub process($$);
+#sub post($);
 #sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-#	Meta::Class::MethodMaker->new("new");
 	Meta::Class::MethodMaker->get_set(
-		-java=>"_defs",
-		-java=>"_def_name",
 		-java=>"_connections",
 		-java=>"_connection_name",
-		-java=>"_prompt",
+		-java=>"_def",
+		-java=>"_dbif",
 	);
-	Meta::Class::MethodMaker->print([
-		"defs",
-		"def_name",
-		"connections",
-		"connection_name",
-		"prompt",
-	]);
 }
 
-sub new($) {
-	my($clas)=@_;
-	my($self)=Term::ReadLine->new();
-	bless($self,$clas);
-	return($self);
-}
-
-sub add_vars($$$) {
-	my($self,$opts,$pref)=@_;
-#	$opts->def_stri('prompt','what prompt to use','prompt>',\($self->{PROMPT}));
-#	$opts->def_url('connections','what connections url to use','aegis:xmlx/connections/connections.xml',));
-#	$opts->def_stri('con_name','what connection to use',undef,));
-#	$opts->def_url('defs','what defs file to use','aegis:xmlx/def/chess.xml',));
-#	$opts->def_stri('database_name','what database to use',undef,));
-}
-
-sub run($) {
+sub pre($) {
 	my($self)=@_;
-	my($prompt)=$self->get_prompt();
-	my($connection)=Meta::Db::Connections->new_url($self->get_connections())->get_con_null($self->get_con_name());
-	my($def)=Meta::Db::Def->new_url($self->get_defs())->get_def_null($self->get_database_name());
+	#Meta::Utils::Output::dump($self);
+	my($connections)=Meta::Db::Connections->new_modu($self->get_connections());
+	my($connection)=$connections->get_con_null($self->get_connection_name());
+	my($def)=Meta::Db::Def->new_modu($self->get_def());
 	my($dbif)=Meta::Db::Dbi->new();
 	$dbif->connect_def($connection,$def);
-#	$connection->print(Meta::Utils::Output::get_file());
-	my($line);
-	$self->ReadHistory();
-	while(defined($line=$self->readline($prompt))) {
-#		Meta::Utils::Output::print("Got command [".$line."]\n");
-		my($resu)=$dbif->execute_single($line);
-		my($ref)=CORE::ref($resu);
-		if($ref eq "ARRAY") {
-			for(my($i)=0;$i<=$#$resu;$i++) {
-				Meta::Utils::Output::print("result [".$resu->[$i]."]\n");
-			}
-		} else {
-			Meta::Utils::Output::print("result [".$resu."]\n");
-		}
+	$self->set_dbif($dbif);
+	my($attribs)=$self->Attribs;
+	$attribs->{completion_entry_function}=$attribs->{list_completion_function};
+	$attribs->{completion_word}=[qw(
+		SELECT
+		INSERT
+		UPDATE
+		COUNT
+	)];
+}
 
+sub process($$) {
+	my($self,$line)=@_;
+	my($resu)=$self->get_dbif()->execute_single($line);
+	my($ref)=CORE::ref($resu);
+	if($ref eq "ARRAY") {
+		for(my($i)=0;$i<=$#$resu;$i++) {
+			Meta::Utils::Output::print("result [".$resu->[$i]."]\n");
+		}
+	} else {
+		Meta::Utils::Output::print("result [".$resu."]\n");
 	}
-	$self->WriteHistory();
-	$dbif->disconnect($connection);
-	Meta::Utils::Output::print("\n");
+	$self->SUPER::process($line);
+}
+
+sub post($) {
+	my($self)=@_;
+	$self->SUPER::post();
+	$self->get_dbif()->dis();
 }
 
 sub TEST($) {
@@ -121,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Console.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -138,22 +124,36 @@ results on your terminal.
 
 =head1 FUNCTIONS
 
-	new($)
-	add_vars($)
-	run($)
+	BEGIN()
+	pre($)
+	process($$)
+	post($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<new($)>
+=item B<BEGIN()>
 
-This is a constructor for the Meta::Db::Console::Console object.
+Bootstrap method to setup accessor for the following attributes:
+0. connections - connections xml file.
+1. connection_name - connection name.
+2. def - database def file.
+3. dbif - the actual database interface that will be used.
 
-=item B<run($)>
+=item B<pre($)>
 
-This method will run the console in a loop.
+This method overrides the base class pre method and connects to the database.
+
+=item B<process($$)>
+
+This method overrides the base class process method and actually does the work
+of submitting the query and printing the results.
+
+=item B<post($)>
+
+This method overrides the base class post method and disconnects from the database.
 
 =item B<TEST($)>
 
@@ -163,7 +163,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-Term::ReadLine(3)
+Meta::Shell::Shell(3)
 
 =head1 BUGS
 
@@ -195,10 +195,11 @@ None.
 	0.14 MV web site automation
 	0.15 MV SEE ALSO section fix
 	0.16 MV download scripts
+	0.17 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Utils::Output(3), Term::ReadLine(3), strict(3)
+Meta::Db::Connections(3), Meta::Db::Dbi(3), Meta::Db::Def(3), Meta::Shell::Shell(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

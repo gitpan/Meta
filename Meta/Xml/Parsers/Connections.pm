@@ -8,7 +8,7 @@ use Meta::Db::Connection qw();
 use XML::Parser::Expat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw(XML::Parser::Expat);
 
 #sub new($);
@@ -144,7 +144,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connections.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -261,6 +261,7 @@ None.
 	0.33 MV website construction
 	0.34 MV web site automation
 	0.35 MV SEE ALSO section fix
+	0.36 MV teachers project
 
 =head1 SEE ALSO
 

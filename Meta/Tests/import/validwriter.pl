@@ -15,12 +15,12 @@ $opts->analyze(\@ARGV);
 
 Meta::Baseline::Test::redirect_on();
 
-my($dtd)=XML::Doctype->new();
-$dtd->parse_dtd_file("email",Meta::Baseline::Aegis::which("dtdx/deve/xml/perlpkgs.dtd"));
-my($writer)=XML::ValidWriter->new(DOCTYPE=>$dtd);
-$writer->xmlDecl();
-$writer->dataElement("email","mark\@veltzer.org");
-$writer->end();
+#my($dtd)=XML::Doctype->new();
+#$dtd->parse_dtd_file("email",Meta::Baseline::Aegis::which("dtdx/deve/xml/perlpkgs.dtd"));
+#my($writer)=XML::ValidWriter->new(DOCTYPE=>$dtd);
+#$writer->xmlDecl();
+#$writer->dataElement("email","mark\@veltzer.org");
+#$writer->end();
 
 Meta::Baseline::Test::redirect_off();
 
@@ -57,7 +57,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: validwriter.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -139,6 +139,7 @@ None.
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
 	0.12 MV move tests to modules
+	0.13 MV weblog issues
 
 =head1 SEE ALSO
 

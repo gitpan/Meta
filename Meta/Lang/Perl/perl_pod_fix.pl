@@ -11,15 +11,16 @@ use Meta::Ds::Oset qw();
 
 my($fset)=Meta::Ds::Oset->new();
 my($set)=Meta::Ds::Oset->new();
-$set->insert("copyright");
-$set->insert("license");
-$set->insert("details");
-$set->insert("author");
-$set->insert("history");
-$set->insert("see");
-$set->insert("options");
-$set->insert("version");
-$set->insert("super");
+$set->insert("copyright","fix the COPYRIGHT tag");
+$set->insert("license","fix the LICENSE tag");
+$set->insert("details","fix the DETAILS tag");
+$set->insert("author","fix the AUTHOR tag");
+$set->insert("history","fix the HISTORY tag");
+$set->insert("see","fix the SEE ALSO tag");
+$set->insert("options","fix the OPTIONS tag");
+$set->insert("version","fix the VERSION tag");
+$set->insert("super","fix the SUPER CLASSES tag");
+$set->set_default("options");
 my($verb,$all,$file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -112,7 +113,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: perl_pod_fix.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -192,7 +193,16 @@ do it for all files in the change ?
 
 what fix to apply ?
 
-options [copyright,license,details,author,history,see,options,version,super]
+options:
+	bug - bug
+	bug - bug
+	bug - bug
+	bug - bug
+	bug - bug
+	bug - bug
+	bug - bug
+	bug - bug
+	bug - bug
 
 =item B<file> (type: devf, default: )
 
@@ -218,6 +228,7 @@ None.
 	0.00 MV put all tests in modules
 	0.01 MV move tests to modules
 	0.02 MV download scripts
+	0.03 MV finish papers
 
 =head1 SEE ALSO
 

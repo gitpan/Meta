@@ -6,26 +6,33 @@ use Meta::Utils::Opts::Opts qw();
 use Meta::Utils::Output qw();
 use Meta::Imdb::Get qw();
 
-my($movie,$director,$first,$second,$title);
+my($movie,$director,$first,$second,$title_id,$agent,$referer);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
 $opts->def_stri("movie","what movie name ?","zelig",\$movie);
 $opts->def_stri("director","what director name ?","Woody Allen",\$director);
 $opts->def_stri("first","what director first name ?","Woody",\$first);
 $opts->def_stri("second","what director second name ?","Allen",\$second);
-$opts->def_stri("title","what title id ?","0086637",\$title);
+$opts->def_stri("title_id","what title id ?","0086637",\$title_id);
+$opts->def_stri("agent","what agent id to use ?","MVbrowser/v5.7 Platinum",\$agent);
+$opts->def_stri("referer","what refere url to use ?","http://www.nomorebillgates.org",\$referer);
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
 my($imdb)=Meta::Imdb::Get->new();
+$imdb->set_agent($agent);
+$imdb->set_referer($referer);
+my($info)=$imdb->get_title_info($title_id);
+#Meta::Utils::Output::print("director is [".$info."]\n");
+Meta::Utils::Output::dump($info);
 #my($html1)=$imdb->get_page($director,$movie);
 #my($html2)=$imdb->get_title($title);
 #my($html3)=$imdb->get_director_id($first,$second);
 #my($html4)=$imdb->get_search_page();
 #my($html5)=$imdb->get_page_form($director,$movie);
 #my($html6)=$imdb->get_director_id_form($first,$second);
-my($birth)=$imdb->get_birth_name($first,$second);
-Meta::Utils::Output::print("birth name is [".$birth."]\n");
+#my($birth)=$imdb->get_birth_name($first,$second);
+#Meta::Utils::Output::print("birth name is [".$birth."]\n");
 
 #Meta::Utils::Output::print($html1);
 #Meta::Utils::Output::print($html2);
@@ -67,7 +74,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: movie_get.pl
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -134,9 +141,17 @@ what director first name ?
 
 what director second name ?
 
-=item B<title> (type: stri, default: 0086637)
+=item B<title_id> (type: stri, default: 0086637)
 
 what title id ?
+
+=item B<agent> (type: stri, default: MVbrowser/v5.7 Platinum)
+
+what agent id to use ?
+
+=item B<referer> (type: stri, default: http://www.nomorebillgates.org)
+
+what refere url to use ?
 
 =back
 
@@ -167,6 +182,7 @@ None.
 	0.09 MV web site automation
 	0.10 MV SEE ALSO section fix
 	0.11 MV move tests to modules
+	0.12 MV teachers project
 
 =head1 SEE ALSO
 

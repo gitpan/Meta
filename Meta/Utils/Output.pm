@@ -4,18 +4,26 @@ package Meta::Utils::Output;
 
 use strict qw(vars refs subs);
 use IO::Handle qw();
+use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub BEGIN();
 #sub print($);
+#sub verbose($$);
+#sub dump($);
+#sub verbose_dump($$);
 #sub get_file();
 #sub get_handle();
+#sub get_block();
+#sub set_block($);
 #sub TEST($);
 
 #__DATA__
+
+our($block)=0;
 
 sub BEGIN() {
 	STDOUT->IO::Handle::autoflush(1);
@@ -24,7 +32,28 @@ sub BEGIN() {
 
 sub print($) {
 	my($stri)=@_;
-	print STDOUT $stri;
+	if(!$block) {
+		print STDOUT $stri;
+	}
+}
+
+sub verbose($$) {
+	my($verb,$stri)=@_;
+	if($verb) {
+		print STDOUT $stri;
+	}
+}
+
+sub dump($) {
+	my($struct)=@_;
+	&print(Data::Dumper::Dumper($struct));
+}
+
+sub verbose_dump($$) {
+	my($verb,$struct)=@_;
+	if($verb) {
+		&dump($struct);
+	}
 }
 
 sub get_file() {
@@ -35,8 +64,20 @@ sub get_handle() {
 	return(\*STDOUT);
 }
 
+sub get_block() {
+	return($block);
+}
+
+sub set_block($) {
+	my($iblock)=@_;
+	$block=$iblock;
+}
+
 sub TEST($) {
 	my($context)=@_;
+	&print("Hello,\ World!\n");
+	my(%hash)=("one","two","three","four");
+	&dump(\%hash);
 	return(1);
 }
 
@@ -73,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Output.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -94,8 +135,13 @@ this is a SPECIAL STDERR FILE
 
 	BEGIN()
 	print($)
+	verbose($$)
+	dump($)
+	verbose_dump($$)
 	get_file()
 	get_handle()
+	get_block()
+	set_block($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -112,7 +158,21 @@ so.
 
 =item B<print($)>
 
-This prints out an output method to the console.
+This prints out an output message to the console.
+
+=item B<verbose($$)>
+
+This method prints out an output message to the console only if the first
+parameter is true.
+
+=item B<dump($)>
+
+This method will dump to out any structure. It used Data::Dumper to do that.
+
+=item B<verbose_dump($)>
+
+This method will dump a structure only if the verbose flag is turned on. It uses
+the dump method to do it's thing.
 
 =item B<get_file()>
 
@@ -123,6 +183,14 @@ to get output on the console.
 
 This method will return the code handle that other code can write to in order
 to get output to the console.
+
+=item B<get_block()>
+
+This will retrieve whether currently printing output is blocked.
+
+=item B<set_block($)>
+
+This method will set the current blocking attribute.
 
 =item B<TEST($)>
 
@@ -161,10 +229,12 @@ None.
 	0.11 MV website construction
 	0.12 MV web site automation
 	0.13 MV SEE ALSO section fix
+	0.14 MV finish papers
+	0.15 MV teachers project
 
 =head1 SEE ALSO
 
-IO::Handle(3), strict(3)
+Data::Dumper(3), IO::Handle(3), strict(3)
 
 =head1 TODO
 
@@ -177,3 +247,7 @@ IO::Handle(3), strict(3)
 -read whether we should do the flushing from the XML options file.
 
 -get rid of the "SPECIAL STDERR FILE" tag here intended to allow using STDERR.
+
+-dont print via STDOUT and therefore don't call autoflush on it. STDOUT is for results and not for messages. Use STDERR which already flushes.
+
+-give out a file handle to /dev/null if it is requested when block is 1.

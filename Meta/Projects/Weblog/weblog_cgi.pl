@@ -23,7 +23,7 @@ $opts->analyze(\@ARGV);
 my($def)=Meta::Db::Def->new_modu($def_modu);
 my($dbi)=Meta::Db::Dbi->new();
 $dbi->Meta::Db::Dbi::connect_xml($con_modu->get_abs_path(),$con_name,$db_name);
-my($stat)="select time,name,description,content from event where personid=".$uid." order by time";
+my($stat)="select time,name,description,content from item where personid=".$uid." order by time";
 #Meta::Utils::Output::print("stat is [".$stat."]\n");
 my($p)=Meta::Cgi::SqlTable->new();
 print $p->header();
@@ -67,7 +67,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: weblog_cgi.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -164,6 +164,7 @@ None.
 	0.00 MV download scripts
 	0.01 MV web site development
 	0.02 MV weblog issues
+	0.03 MV teachers project
 
 =head1 SEE ALSO
 

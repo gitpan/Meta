@@ -3,57 +3,46 @@
 package Meta::Digest::Collection;
 
 use strict qw(vars refs subs);
-use Meta::Ds::Hash qw();
+use Meta::Ds::MapM1 qw();
 use Meta::Digest::MD5 qw();
 
 our($VERSION,@ISA);
-$VERSION="0.04";
-@ISA=qw();
+$VERSION="0.05";
+@ISA=qw(Meta::Ds::MapM1);
 
-#sub new($);
-#sub add($$$);
-#sub add_file($$);
+#sub insert_file($$);
 #sub has_file($$);
-#sub get_file($$);
 #sub has_sum($$);
+#sub get_files_by_sum($$);
+#sub get_sum_by_file($$);
 #sub TEST($);
 
 #__DATA__
 
-sub new($) {
-	my($clas)=@_;
-	my($self)={};
-	bless($self,$clas);
-	$self->{FILES}=Meta::Ds::Hash->new();
-	$self->{SUMS}=Meta::Ds::Hash->new();
-	return($self);
-}
-
-sub add($$$) {
-	my($self,$name,$sum)=@_;
-	$self->{FILES}->insert($name,$sum);
-	$self->{SUMS}->insert($sum,$name);
-}
-
-sub add_file($$) {
+sub insert_file($$) {
 	my($self,$name)=@_;
 	my($sum)=Meta::Digest::MD5::get_filename_digest($name);
-	$self->add($name,$sum);
+	$self->insert($name,$sum);
 }
 
 sub has_file($$) {
 	my($self,$name)=@_;
-	return($self->{FILES}->has($name));
-}
-
-sub get_file($$) {
-	my($self,$sum)=@_;
-	return($self->{SUMS}->get($sum));
+	return($self->has_a($name));
 }
 
 sub has_sum($$) {
 	my($self,$sum)=@_;
-	return($self->{SUMS}->has($sum));
+	return($self->has_b($sum));
+}
+
+sub get_files_by_sum($$) {
+	my($self,$sum)=@_;
+	return($self->get_a($sum));
+}
+
+sub get_sum_by_file($$) {
+	my($self,$file)=@_;
+	return($self->get_b($file));
 }
 
 sub TEST($) {
@@ -94,7 +83,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Collection.pm
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -108,32 +97,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 This object encapsulates a collection of MD5. This collection maps
 files to signatures and signatures to maps.
 
-The class is two hashes - one mapping files to sums and the other
-mapping sums to files.
+The class uses the many to one mapping object (which is all it is except
+for a few masking/convenience routines).
 
 =head1 FUNCTIONS
 
-	new($)
-	add($$$)
-	add_file($$)
+	insert_file($$)
 	has_file($$)
-	get_file($$)
 	has_sum($$)
+	get_files_by_sum($$)
+	get_sum_by_file($$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<new($)>
-
-This is a constructor for the Meta::Digest::Collection object.
-
-=item B<add($$$)>
-
-This will add a file name and a sum to the map.
-
-=item B<add_file($$)>
+=item B<insert_file($$)>
 
 Read a file, calculate it's sum and add it to the map.
 
@@ -141,13 +121,17 @@ Read a file, calculate it's sum and add it to the map.
 
 Return whether the file exists in the collection.
 
-=item B<get_file($$)>
-
-Returns the file name with the specified sum.
-
 =item B<has_sum($$)>
 
 Return whether the sum exists in the collection.
+
+=item B<get_files_by_sum($$)>
+
+Return the set of files that have the specified md5 sum.
+
+=item B<get_sum_by_file($$)>
+
+Return the md5 sum of the specified file.
 
 =item B<TEST($)>
 
@@ -157,7 +141,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-None.
+Meta::Ds::MapM1(3)
 
 =head1 BUGS
 
@@ -177,11 +161,12 @@ None.
 	0.02 MV SEE ALSO section fix
 	0.03 MV download scripts
 	0.04 MV bring movie data
+	0.05 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-Meta::Digest::MD5(3), Meta::Ds::Hash(3), strict(3)
+Meta::Digest::MD5(3), Meta::Ds::MapM1(3), strict(3)
 
 =head1 TODO
 
--this entire class should either derive from some 1-1 mapping object or from a reverse has (many to 1). implement both classes (1-1 mapping and many to 1) and then derive.
+Nothing.

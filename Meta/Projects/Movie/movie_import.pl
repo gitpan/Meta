@@ -13,8 +13,8 @@ use Meta::Db::Info qw();
 my($def_file,$connections_file,$name,$con_name,$clean,$data_file);
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
-$opts->def_devf("def_file","what def XML file to use ?","xmlx/def/movie.xml",\$def_file);
-$opts->def_devf("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("def_file","what def XML file to use ?","xmlx/def/movie.xml",\$def_file);
+$opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("name","name of the database to use ?",undef,\$name);
 $opts->def_stri("con_name","name of the connection to use ?",undef,\$con_name);
 $opts->def_bool("clean","clean the database before import ?",1,\$clean);
@@ -22,11 +22,11 @@ $opts->def_devf("data_file","what data XML file to use ?","xmlx/movie/movie.xml"
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($def)=Meta::Db::Def->new_deve($def_file);
+my($def)=Meta::Db::Def->new_modu($def_file);
 if(!defined($name)) {
 	$name=$def->get_name();
 }
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection);
 if(defined($con_name)) {
 	$connection=$connections->get($con_name);
@@ -89,7 +89,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: movie_import.pl
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -141,11 +141,11 @@ show description and exit
 
 show history and exit
 
-=item B<def_file> (type: devf, default: xmlx/def/movie.xml)
+=item B<def_file> (type: modu, default: xmlx/def/movie.xml)
 
 what def XML file to use ?
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 what connections XML file to use ?
 
@@ -195,6 +195,7 @@ None.
 	0.10 MV web site automation
 	0.11 MV SEE ALSO section fix
 	0.12 MV move tests to modules
+	0.13 MV teachers project
 
 =head1 SEE ALSO
 

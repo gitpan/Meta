@@ -3,29 +3,29 @@
 package Meta::Xml::Parsers::Movie;
 
 use strict qw(vars refs subs);
-use Meta::Xml::Parsers::Base qw();
+use Meta::Xml::Parsers::Collector qw();
 use Meta::Ds::Array qw();
 use Meta::Utils::Time qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
-@ISA=qw(Meta::Xml::Parsers::Base);
+$VERSION="0.13";
+@ISA=qw(Meta::Xml::Parsers::Collector);
 
 #sub new($);
 #sub handle_start($$);
 #sub handle_end($$);
-#sub handle_char($$);
+#sub handle_endchar($$$);
 #sub TEST($);
 
 #__DATA__
 
 sub new($) {
 	my($clas)=@_;
-	my($self)=Meta::Xml::Parsers::Base->new();
+	my($self)=Meta::Xml::Parsers::Collector->new();
 	$self->setHandlers(
 		"Start"=>\&handle_start,
 		"End"=>\&handle_end,
-		"Char"=>\&handle_char,
+#		"Char"=>\&handle_char,
 	);
 	bless($self,$clas);
 	return($self);
@@ -44,6 +44,7 @@ sub set_dbi($$) {
 
 sub handle_start($$) {
 	my($self,$elem)=@_;
+	$self->SUPER::handle_start($elem);
 	if($self->in_context("movie.directors.director",$elem)) {
 		$self->{TEMP_DIRECTOR_ID}=undef;
 		$self->{TEMP_DIRECTOR_FIRSTNAME}=undef;
@@ -64,6 +65,7 @@ sub handle_start($$) {
 
 sub handle_end($$) {
 	my($self,$elem)=@_;
+	$self->SUPER::handle_end($elem);
 	if($self->in_context("movie.directors.director",$elem)) {
 		#insert director
 		my($prep)=$self->{PREP_DIRECTOR};
@@ -169,43 +171,45 @@ sub handle_end($$) {
 	}
 }
 
-sub handle_char($$) {
-	my($self,$elem)=@_;
-	if($self->in_abs_ccontext("movie.directors.director.id")) {
-		$self->{TEMP_DIRECTOR_ID}.=$elem;
+sub handle_endchar($$$) {
+	my($self,$elem,$name)=@_;
+	$self->SUPER::handle_endchar($elem,$name);
+	if($self->in_context("movie.directors.director.id",$name)) {
+		$self->{TEMP_DIRECTOR_ID}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.directors.director.firstname")) {
-		$self->{TEMP_DIRECTOR_FIRSTNAME}.=$elem;
+	if($self->in_context("movie.directors.director.firstname",$name)) {
+		$self->{TEMP_DIRECTOR_FIRSTNAME}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.directors.director.lineage")) {
-		$self->{TEMP_DIRECTOR_LINEAGE}.=$elem;
+	if($self->in_context("movie.directors.director.lineage",$name)) {
+		$self->{TEMP_DIRECTOR_LINEAGE}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.directors.director.surname")) {
-		$self->{TEMP_DIRECTOR_SURNAME}.=$elem;
+	if($self->in_context("movie.directors.director.surname",$name)) {
+		$self->{TEMP_DIRECTOR_SURNAME}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.directors.director.sequential")) {
-		$self->{TEMP_DIRECTOR_SEQUENTIAL}.=$elem;
+	if($self->in_context("movie.directors.director.sequential",$name)) {
+		$self->{TEMP_DIRECTOR_SEQUENTIAL}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.titles.title.id")) {
-		$self->{TEMP_TITLE_ID}.=$elem;
+	if($self->in_context("movie.titles.title.id",$name)) {
+		$self->{TEMP_TITLE_ID}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.titles.title.directorids.directorid")) {
+	if($self->in_context("movie.titles.title.directorids.directorid",$name)) {
 		$self->{TEMP_TITLE_DIRECTOR_LIST}->push($elem);
 	}
-	if($self->in_abs_ccontext("movie.titles.title.name")) {
-		$self->{TEMP_TITLE_NAME}.=$elem;
+	if($self->in_context("movie.titles.title.name",$name)) {
+		$self->{TEMP_TITLE_NAME}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.titles.title.description")) {
-		$self->{TEMP_TITLE_DESCRIPTION}.=$elem;
+	if($self->in_context("movie.titles.title.description",$name)) {
+		$self->{TEMP_TITLE_DESCRIPTION}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.titles.title.views")) {
-		$self->{TEMP_TITLE_VIEWS}.=$elem;
+	if($self->in_context("movie.titles.title.views",$name)) {
+		$self->{TEMP_TITLE_VIEWS}=$elem;
 	}
-	if($self->in_abs_ccontext("movie.titles.title.viewdates.viewdate")) {
-		$self->{TEMP_TITLE_VIEW_LIST}->push(Meta::Utils::Time::unixdate2mysql($elem));
+	if($self->in_context("movie.titles.title.viewdates.viewdate",$name)) {
+		my($date)=Meta::Utils::Time::unixdate2mysql($elem);
+		$self->{TEMP_TITLE_VIEW_LIST}->push($date);
 	}
-	if($self->in_abs_ccontext("movie.titles.title.authorizations")) {
-		$self->{TEMP_TITLE_AUTHORIZATIONS}.=$elem;
+	if($self->in_context("movie.titles.title.authorizations",$name)) {
+		$self->{TEMP_TITLE_AUTHORIZATIONS}=$elem;
 	}
 }
 
@@ -247,7 +251,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Movie.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -267,7 +271,7 @@ that the entire data will be at RAM in any single time (more streamlined).
 	new($)
 	handle_start($$)
 	handle_end($$)
-	handle_char($$)
+	handle_endchar($$$)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -292,7 +296,7 @@ This will handle start tags.
 This will handle end tags.
 This currently does nothing.
 
-=item B<handle_char($$)>
+=item B<handle_endchar($$$)>
 
 This will handle actual text.
 This currently, according to context, sets attributes for the various objects.
@@ -305,7 +309,7 @@ Test suite for this module.
 
 =head1 SUPER CLASSES
 
-Meta::Xml::Parsers::Base(3)
+Meta::Xml::Parsers::Collector(3)
 
 =head1 BUGS
 
@@ -333,10 +337,11 @@ None.
 	0.10 MV website construction
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Ds::Array(3), Meta::Utils::Time(3), Meta::Xml::Parsers::Base(3), strict(3)
+Meta::Ds::Array(3), Meta::Utils::Time(3), Meta::Xml::Parsers::Collector(3), strict(3)
 
 =head1 TODO
 

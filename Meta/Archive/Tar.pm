@@ -14,7 +14,7 @@ use Meta::Utils::System qw();
 use Meta::Ds::Set qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.17";
 @ISA=qw(Archive::Tar);
 
 #sub BEGIN();
@@ -22,6 +22,7 @@ $VERSION="0.15";
 #sub add_data($$$);
 #sub add_file($$$);
 #sub add_deve($$$);
+#sub add_modu($$$);
 #sub write($$);
 #sub TEST($);
 
@@ -30,7 +31,9 @@ $VERSION="0.15";
 sub BEGIN() {
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_type",
+		-java=>"_use_uname",
 		-java=>"_uname",
+		-java=>"_use_gname",
 		-java=>"_gname",
 	);
 }
@@ -40,6 +43,9 @@ sub new($) {
 	my($self)=Archive::Tar->new();
 	bless($self,$clas);
 	$self->{SET}=Meta::Ds::Set->new();
+	$self->set_type("gzip");
+	$self->set_use_uname(0);
+	$self->set_use_gname(0);
 	return($self);
 }
 
@@ -50,15 +56,16 @@ sub add_data($$$) {
 		# the next paragraph is a bug work around
 		if($data eq "") {#make the data have something so It will go into the archive
 			$data=" ";
-			#add data with specified length
+			#add data with specified length - does not work
 			#$self->SUPER::add_data($name,$data,{ "size"=>0 });
+			#this is plain insertion which does not work
 			#$self->SUPER::add_data($name,$data);
 		}
 		my($hash)={};
-		if($self->get_uname() ne defined) {
+		if($self->get_use_uname()) {
 			$hash->{"uname"}=$self->get_uname();
 		}
-		if($self->get_gname() ne defined) {
+		if($self->get_use_gname()) {
 			$hash->{"gname"}=$self->get_gname();
 		}
 		$self->SUPER::add_data($name,$data,$hash);
@@ -69,29 +76,41 @@ sub add_data($$$) {
 sub add_file($$$) {
 	my($self,$name,$file)=@_;
 	my($set)=$self->{SET};
-#	if($set->hasnt($name)) {
-#		$set->insert($name);
+	if($set->hasnt($name)) {
 		my($data)=Meta::Utils::File::File::load($file);
-		return($self->add_data($name,$data));
-#	}
+		$self->add_data($name,$data);
+	}
 }
 
 sub add_deve($$$) {
 	my($self,$name,$file)=@_;
-	my($abso)=Meta::Baseline::Aegis::which($file);
-	return($self->add_file($name,$abso));
+	my($set)=$self->{SET};
+	if($set->hasnt($name)) {
+		my($abso)=Meta::Baseline::Aegis::which($file);
+		$self->add_file($name,$abso);
+	}
+}
+
+sub add_modu($$$) {
+	my($self,$name,$modu)=@_;
+	my($set)=$self->{SET};
+	if($set->hasnt($name)) {
+		my($abso)=$modu->get_abs_path();
+		$self->add_file($name,$abso);
+	}
 }
 
 sub write($$) {
 	my($self,$targ)=@_;
-	$self->SUPER::write($targ,9);
-}
-
-sub write_bz2($$) {
-	my($self,$targ)=@_;
-	my($temp)="/tmp/tmpi";
-	$self->SUPER::write($temp);
-	# now compress $temp to $targ using bz2
+	my($type)=$self->get_type();
+	if($type eq "gzip") {
+		$self->SUPER::write($targ,9);
+	}
+	if($type eq "bz2") {
+		my($temp)="/tmp/tmpi";
+		$self->SUPER::write($temp);
+		# now compress $temp to $targ using bz2
+	}
 }
 
 sub TEST($) {
@@ -103,7 +122,8 @@ sub TEST($) {
 	Meta::Utils::Output::print(join("\n",@list)."\n");
 	my($temp)=Meta::Utils::Utils::get_temp_file();
 	$tar->write($temp);
-	Meta::Utils::System::system("tar",["ztvf",$temp]);
+	my($out)=Meta::Utils::System::system_out("tar",["ztvf",$temp]);
+	Meta::Utils::Output::print("out is [".$$out."]\n");
 	Meta::Utils::File::Remove::rm($temp);
 	return(1);
 }
@@ -141,7 +161,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Tar.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -168,6 +188,7 @@ implementation, only the gzip mode is supported.
 	add_data($$$)
 	add_file($$$)
 	add_deve($$$)
+	add_modu($$$)
 	write($$)
 	TEST($)
 
@@ -204,6 +225,14 @@ Parameters are:
 0. Meta::Archive::Tar object handle.
 1. name under which to store the file.
 2. file name relative to the baseline root.
+
+=item B<add_modu($$$)>
+
+This method will add a module to the baseline.
+Parameters are:
+0. Meta::Archive::Tar object handle.
+1. name under which to store the file.
+2. Meta::Development::Module module.
 
 =item B<write($$)>
 
@@ -251,6 +280,8 @@ None.
 	0.13 MV web site automation
 	0.14 MV SEE ALSO section fix
 	0.15 MV move tests to modules
+	0.16 MV finish papers
+	0.17 MV teachers project
 
 =head1 SEE ALSO
 

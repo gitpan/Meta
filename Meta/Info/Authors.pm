@@ -5,19 +5,20 @@ package Meta::Info::Authors;
 use strict qw(vars refs subs);
 use Meta::Ds::Ohash qw();
 use Meta::Info::Author qw();
+use Meta::Development::Module qw();
 
 our($VERSION,@ISA);
-$VERSION="0.00";
+$VERSION="0.01";
 @ISA=qw(Meta::Ds::Ohash);
 
-#sub new_deve($$);
+#sub new_modu($$);
 #sub get_default($);
 #sub TEST($);
 
 #__DATA__
 
-sub new_deve($$) {
-	my($class,$file)=@_;
+sub new_modu($$) {
+	my($class,$modu)=@_;
 	my($self)={};
 	CORE::bless($self,$class);
 	return($self);
@@ -25,7 +26,8 @@ sub new_deve($$) {
 
 sub get_default($) {
 	my($self)=@_;
-	my($author)=Meta::Info::Author->new_deve("xmlx/author/author.xml");
+	my($module)=Meta::Development::Module->new_name("xmlx/author/author.xml");
+	my($author)=Meta::Info::Author->new_modu($module);
 	return($author);
 }
 
@@ -67,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Authors.pm
 	PROJECT: meta
-	VERSION: 0.00
+	VERSION: 0.01
 
 =head1 SYNOPSIS
 
@@ -83,7 +85,7 @@ This is an object to store information for multiple authors within a system.
 
 =head1 FUNCTIONS
 
-	new_deve($$)
+	new_modu($$)
 	get_default($)
 	TEST($)
 
@@ -91,9 +93,9 @@ This is an object to store information for multiple authors within a system.
 
 =over 4
 
-=item B<new_deve($$)>
+=item B<new_modu($$)>
 
-Will create and return a new authors object from a development file.
+Will create and return a new authors object from a development module.
 
 =item B<get_default($)>
 
@@ -102,6 +104,8 @@ This method will return the default author.
 =item B<TEST($)>
 
 Test suite for this object.
+
+This test currently does nothing.
 
 =back
 
@@ -123,10 +127,11 @@ None.
 =head1 HISTORY
 
 	0.00 MV bring movie data
+	0.01 MV finish papers
 
 =head1 SEE ALSO
 
-Meta::Ds::Ohash(3), Meta::Info::Author(3), strict(3)
+Meta::Development::Module(3), Meta::Ds::Ohash(3), Meta::Info::Author(3), strict(3)
 
 =head1 TODO
 

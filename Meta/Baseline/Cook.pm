@@ -15,7 +15,7 @@ use Meta::Baseline::Utils qw();
 use Meta::Development::Deps qw();
 
 our($VERSION,@ISA);
-$VERSION="0.48";
+$VERSION="0.49";
 @ISA=qw();
 
 #sub new($);
@@ -308,6 +308,18 @@ sub read_deps_set($) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($cook)=Meta::Baseline::Cook->new();
+	my($search_list)=$cook->search_list();
+	Meta::Utils::Output::print("search_list is [".$search_list."]\n");
+	my($inte)=$cook->inte();
+	Meta::Utils::Output::print("inte is [".$inte."]\n");
+	my($deve)=$cook->deve();
+	Meta::Utils::Output::print("deve is [".$deve."]\n");
+	my($temp_dir)=$cook->temp_dir();
+	Meta::Utils::Output::print("temp_dir is [".$temp_dir."]\n");
+
+	my($graph)=Meta::Baseline::Cook::read_deps_full("deps/html/projects/Website/computing.deps");
+	Meta::Utils::Output::print("number of nodes is [".$graph->node_size()."]\n");
 	return(1);
 }
 
@@ -344,7 +356,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cook.pm
 	PROJECT: meta
-	VERSION: 0.48
+	VERSION: 0.49
 
 =head1 SYNOPSIS
 
@@ -464,6 +476,7 @@ that graph at the end.
 =item B<TEST($)>
 
 Test suite for this module.
+This just prints out some statistics out of that module.
 
 =back
 
@@ -533,6 +546,7 @@ None.
 	0.46 MV web site automation
 	0.47 MV SEE ALSO section fix
 	0.48 MV web site development
+	0.49 MV teachers project
 
 =head1 SEE ALSO
 

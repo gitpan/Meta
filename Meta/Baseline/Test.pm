@@ -7,10 +7,11 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::System qw();
 use Meta::Utils::Utils qw();
 use XML::Simple qw();
+use Meta::Utils::Output qw();
 #use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub BEGIN();
@@ -27,9 +28,7 @@ $VERSION="0.30";
 #sub get_password();
 #sub get_host();
 #sub get_domain();
-#sub get_mysqldsn();
-#sub get_mysqluser();
-#sub get_mysqlpass();
+
 #sub TEST($);
 
 #__DATA__
@@ -110,20 +109,12 @@ sub get_domain() {
 	return($config->{"config"}->{"domain"}->{"value"});
 }
 
-sub get_mysqldsn() {
-	return($config->{"config"}->{"mysqldsn"}->{"value"});
-}
-
-sub get_mysqluser() {
-	return($config->{"config"}->{"mysqluser"}->{"value"});
-}
-
-sub get_mysqlpass() {
-	return($config->{"config"}->{"mysqlpass"}->{"value"});
-}
-
 sub TEST($) {
 	my($context)=@_;
+	Meta::Utils::Output::print("user is [".Meta::Baseline::Test::get_user()."]\n");
+	Meta::Utils::Output::print("password is [".Meta::Baseline::Test::get_password()."]\n");
+	Meta::Utils::Output::print("host is [".Meta::Baseline::Test::get_host()."]\n");
+	Meta::Utils::Output::print("domain is [".Meta::Baseline::Test::get_domain()."]\n");
 	return(1);
 }
 
@@ -160,7 +151,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Test.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -187,9 +178,6 @@ scripts for the system. Have fun.
 	get_password()
 	get_host()
 	get_domain()
-	get_mysqldsn()
-	get_mysqluser()
-	get_mysqlpass()
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -239,21 +227,10 @@ This method will return the hostname of a machine that can be abused in tests.
 
 This method will return a valid domain name which can be used in tests.
 
-=item B<get_mysqldsn($)>
-
-This method will return a valid dsn for connecting to a mysql database.
-
-=item B<get_mysqluser($)>
-
-This method will return a valid mysql user for connecting to a mysql database.
-
-=item B<get_mysqlpass($)>
-
-This method will return a valid mysql password for connecting to a mysql database.
-
 =item B<TEST($)>
 
 Test suite for this module.
+Currently this method just prints out the various configuration variables.
 
 =back
 
@@ -305,10 +282,11 @@ None.
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
 	0.30 MV bring movie data
+	0.31 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::System(3), Meta::Utils::Utils(3), XML::Simple(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), XML::Simple(3), strict(3)
 
 =head1 TODO
 

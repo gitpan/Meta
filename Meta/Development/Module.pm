@@ -12,17 +12,18 @@ use Meta::Baseline::Lang::Temp qw();
 use Meta::Utils::Text::Counter qw();
 use Meta::Lang::Xml::Xml qw();
 use Meta::Xml::Dom qw();
+use XML::XPath qw();
+use XML::Parser qw();
 
 our($VERSION,@ISA,%directories);
-$VERSION="0.07";
+$VERSION="0.08";
 @ISA=qw();
 
 #sub BEGIN();
 #sub new_name($$);
 #sub get_abs_path($);
 #sub get_sgml_name($);
-#sub get_temp_sgml_name($);
-#sub get_temp_sgml_book($);
+#sub get_temp_sgml_tag($$);
 #sub get_basename($);
 #sub get_xml_def_name($);
 #sub get_lily_filename($);
@@ -95,58 +96,27 @@ sub get_sgml_name($) {
 	return($ret);
 }
 
-sub get_temp_sgml_name($) {
+sub get_temp_sgml_tag($$) {
+	my($self,$tag)=@_;
 	my($self)=@_;
 	my($file_name)=$self->get_abs_path();
-	# process the file using the template toolkit method and get the name with XML/DOM methods.
 	my($text)=Meta::Baseline::Lang::Temp::ram_process($self->get_name(),$file_name);
-	my($parser)=Meta::Xml::Parsers::Dom->new();
-	my($doc)=$parser->parse($text);
-	my($article)=$doc->getDocumentElement();
-	if(!defined($article)) {
-		Meta::Utils::System::die("cant get article");
+	my($par)=XML::Parser->new();
+	if(!defined($par)) {
+		Meta::Utils::System::die("unable to create XML::Parser");
 	}
-	my($title);
-	$title=$article->getElementsByTagName("title",0);
-	if(!defined($title)) {
-		Meta::Utils::System::die("cant get name");
+	my($xp)=XML::XPath->new(xml=>$text,parser=>$par);
+	my($nodeset)=$xp->find($tag);
+	if($nodeset->size()!=1) {
+		Meta::Utils::System::die("found !=1 nodes [".$nodeset->size()."] in module [".$self->get_name()."]");
 	}
-	if($title->getLength()!=1) {
-		Meta::Utils::System::die("bad length for module [".$file_name."]");
-	}
-	my($ret)=$title->[0]->getFirstChild()->getData();
-	return($ret);
+	return($nodeset->get_node(0)->getChildNode(1)->getValue());
 }
 
-sub get_temp_sgml_book($) {
+sub get_basename($) {
 	my($self)=@_;
-	my($file_name)=$self->get_abs_path();
-	# process the file using the template toolkit method and get the name with XML/DOM methods.
-	my($text)=Meta::Baseline::Lang::Temp::ram_process($self->get_name(),$file_name);
-	my($parser)=Meta::Xml::Parsers::Dom->new();
-	my($doc)=$parser->parse($text);
-	my($book)=$doc->getDocumentElement();
-	if(!defined($book)) {
-		Meta::Utils::System::die("cant get article");
-	}
-	my($info);
-	$info=$book->getElementsByTagName("bookinfo",0);
-	if(!defined($info)) {
-		Meta::Utils::System::die("cant get name");
-	}
-	if($info->getLength()!=1) {
-		Meta::Utils::System::die("bad length for module [".$file_name."]");
-	}
-	my($title);
-	$title=$info->[0]->getElementsByTagName("title",0);
-	if(!defined($title)) {
-		Meta::Utils::System::die("cant get name");
-	}
-	if($title->getLength()!=1) {
-		Meta::Utils::System::die("bad length for module [".$file_name."]");
-	}
-	my($ret)=$title->[0]->getFirstChild()->getData();
-	return($ret);
+	my($name)=$self->get_name();
+	return(Meta::Utils::Utils::basename($name));
 }
 
 sub get_basename($) {
@@ -334,7 +304,6 @@ sub get_pgn_games($) {
 
 sub get_xml_num_elems($$) {
 	my($self,$elem)=@_;
-	Meta::Lang::Xml::Xml::setup_path();
 	my($file)=$self->get_abs_path();
 	my($parser)=Meta::Xml::Dom->new_vali(0);
 	my($doc)=$parser->parsefile($file);
@@ -344,7 +313,6 @@ sub get_xml_num_elems($$) {
 
 sub get_xml_sum_elems($$) {
 	my($self,$elem)=@_;
-	Meta::Lang::Xml::Xml::setup_path();
 	my($file)=$self->get_abs_path();
 	my($parser)=Meta::Xml::Dom->new_vali(0);
 	my($doc)=$parser->parsefile($file);
@@ -360,6 +328,10 @@ sub get_xml_sum_elems($$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($module)=__PACKAGE__->new();
+	$module->set_name("temp/sgml/papers/biology/neo_conflict.temp");
+	my($releaseinfo)=$module->get_temp_sgml_tag('/article/title');
+	Meta::Utils::Output::print("releaseinfo is [".$releaseinfo."]\n");
 	return(1);
 }
 
@@ -396,7 +368,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Module.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
@@ -421,8 +393,7 @@ itself could be stored inside an RDBMS.
 	new_name($$);
 	get_abs_path($)
 	get_sgml_name($)
-	get_temp_sgml_name($)
-	get_temp_sgml_book($)
+	get_temp_sgml_tag($$)
 	get_xml_def_name($)
 	get_lily_filename($)
 	get_lily_title($)
@@ -464,15 +435,11 @@ of the module.
 
 Retreives the name of the document from an SGML/Docbook document.
 
-=item B<get_temp_sgml_name($)>
+=item B<get_temp_sgml_tag($$)>
 
-This method retrieves the name of the document from a Template toolkit
-file which is transformed into an SGML/Docbook file.
-
-=item B<get_temp_sgml_book($)>
-
-This method retrieves the title of the book from a Template Toolkit
-file which is transformed into an SGML/Docbook file.
+This method retrieves a specific tag from an SGML file according to
+an XPath expression. You have to make sure to create an XPath expression
+which returns just a single element.
 
 =item B<get_xml_def_name($)>
 
@@ -582,10 +549,11 @@ None.
 	0.05 MV move tests into modules
 	0.06 MV web site development
 	0.07 MV weblog issues
+	0.08 MV more pdmt stuff
 
 =head1 SEE ALSO
 
-Meta::Baseline::Lang::Temp(3), Meta::Class::MethodMaker(3), Meta::Lang::Lily::InfoParser(3), Meta::Lang::Xml::Xml(3), Meta::Utils::File::Dir(3), Meta::Utils::Text::Counter(3), Meta::Utils::Utils(3), Meta::Xml::Dom(3), Meta::Xml::Parsers::Dom(3), strict(3)
+Meta::Baseline::Lang::Temp(3), Meta::Class::MethodMaker(3), Meta::Lang::Lily::InfoParser(3), Meta::Lang::Xml::Xml(3), Meta::Utils::File::Dir(3), Meta::Utils::Text::Counter(3), Meta::Utils::Utils(3), Meta::Xml::Dom(3), Meta::Xml::Parsers::Dom(3), XML::Parser(3), XML::XPath(3), strict(3)
 
 =head1 TODO
 
@@ -593,4 +561,4 @@ Meta::Baseline::Lang::Temp(3), Meta::Class::MethodMaker(3), Meta::Lang::Lily::In
 
 -move the linkit routine out of here!!! (where the &%*^?)
 
--the routines get_sgml_name($) get_temp_sgml_name($) get_temp_sgml_book($) return text as it appears in the SGML and contains tags and newlines. Do something about it.
+-the routine get_sgml_temp_tag returns the tag content without processing. Add text processing option to it (text wrapping etc...).

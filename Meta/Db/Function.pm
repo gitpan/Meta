@@ -3,12 +3,12 @@
 package Meta::Db::Function;
 
 use strict qw(vars refs subs);
-use Meta::Ds::Enumerated qw();
-use Meta::Ds::Enum qw();
+use Meta::Types::Enumerated qw();
+use Meta::Info::Enum qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
-@ISA=qw(Meta::Ds::Enumerated);
+$VERSION="0.27";
+@ISA=qw(Meta::Types::Enumerated);
 
 #sub BEGIN();
 #sub get_enum();
@@ -19,7 +19,7 @@ $VERSION="0.26";
 our($enum);
 
 sub BEGIN() {
-	$enum=Meta::Ds::Enum->new();
+	$enum=Meta::Info::Enum->new();
 	$enum->insert("read");
 	$enum->insert("write");
 	$enum->insert("update");
@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Function.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -115,7 +115,7 @@ Test suite for this object.
 
 =head1 SUPER CLASSES
 
-Meta::Ds::Enumerated(3)
+Meta::Types::Enumerated(3)
 
 =head1 BUGS
 
@@ -157,10 +157,11 @@ None.
 	0.24 MV website construction
 	0.25 MV web site automation
 	0.26 MV SEE ALSO section fix
+	0.27 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Ds::Enum(3), Meta::Ds::Enumerated(3), strict(3)
+Meta::Info::Enum(3), Meta::Types::Enumerated(3), strict(3)
 
 =head1 TODO
 

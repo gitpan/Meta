@@ -8,7 +8,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::Arg qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.36";
 @ISA=qw();
 
 #sub new($);
@@ -30,6 +30,7 @@ $VERSION="0.35";
 #sub numb_cycl($$$);
 #sub all_ou($$$$);
 #sub all_ou_new($$$);
+#sub clear($);
 #sub TEST($):
 
 #__DATA__
@@ -285,8 +286,21 @@ sub all_ou_new($$$) {
 	}
 }
 
+sub clear($) {
+	my($self)=@_;
+	$self->{NODE}=Meta::Ds::Oset->new();
+	$self->{EDGE}=Meta::Ds::Oset->new();
+	$self->{EDGE_OU}={};
+	$self->{EDGE_IN}={};
+}
+
 sub TEST($) {
 	my($context)=@_;
+	my($graph)=__PACKAGE__->new();
+	$graph->node_insert("mark");
+	$graph->node_insert("doron");
+	$graph->edge_insert("mark","doron");
+	Meta::Utils::Output::dump($graph);
 	return(1);
 }
 
@@ -323,7 +337,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -361,6 +375,7 @@ The graphs are directional.
 	numb_cycl($$$)
 	all_ou($$$$)
 	all_ou_new($$$)
+	clear($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -449,9 +464,14 @@ to the hash given to it.
 New and better algorithm which does the same as all_ou but with a cleaner
 set approach.
 
+=item B<clear($)>
+
+Clear the graph. Works fast.
+
 =item B<TEST($)>
 
 Test suite for this module.
+Currently it just creates a Graph object and prints it out.
 
 =back
 
@@ -508,6 +528,7 @@ None.
 	0.33 MV website construction
 	0.34 MV web site automation
 	0.35 MV SEE ALSO section fix
+	0.36 MV teachers project
 
 =head1 SEE ALSO
 

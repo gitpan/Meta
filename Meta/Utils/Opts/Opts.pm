@@ -14,14 +14,16 @@ use Meta::Ds::Ohash qw();
 use Gtk qw();
 use Meta::Utils::Output qw();
 use Meta::Class::MethodMaker qw();
+use Meta::Info::Enum qw();
 
 our($VERSION,@ISA);
-$VERSION="0.47";
+$VERSION="0.49";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub BEGIN();
 #sub new($);
 #sub inse($$$$$$$);
+#sub insert_sopt($$);
 
 #sub def_bool($$$$$);
 #sub def_inte($$$$$);
@@ -32,6 +34,8 @@ $VERSION="0.47";
 #sub def_devd($$$$$);
 #sub def_file($$$$$);
 #sub def_newf($$$$$);
+#sub def_ovwf($$$$$);
+#sub def_tnew($$$$$);
 #sub def_devf($$$$$);
 #sub def_urls($$$$$);
 #sub def_modu($$$$$);
@@ -52,6 +56,8 @@ $VERSION="0.47";
 
 #__DATA__
 
+our($type_enum);
+
 sub BEGIN() {
 	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
@@ -66,6 +72,24 @@ sub BEGIN() {
 		-java=>"_free_maxi",
 		-java=>"_free_noli",
 	);
+	$type_enum=Meta::Info::Enum->new();
+	$type_enum->insert("bool","boolean type");
+	$type_enum->insert("integer","integer type");
+	$type_enum->insert("string","any string type");
+	$type_enum->insert("float","floating point type");
+	$type_enum->insert("exist_directory","directory which already exists");
+	$type_enum->insert("exist_directory_list","list of directories which already exist");
+	$type_enum->insert("exist_file","file which already exists");
+	$type_enum->insert("exist_file_list","list of files which already exist");
+	$type_enum->insert("new_directory","directory which does not exist");
+	$type_enum->insert("new_file","file which does not exist");
+	$type_enum->insert("write_file","file which doesnt exist or exists and is writable");
+	$type_enum->insert("new_dev_directory","new directory in the development environment");
+	$type_enum->insert("new_dev_file","new development file");
+	$type_enum->insert("url","url string");
+	$type_enum->insert("module","existing development module name");
+	$type_enum->insert("enum","enumerated type");
+	$type_enum->insert("set","subset selection out of a set");
 }
 
 sub new($) {
@@ -87,11 +111,16 @@ sub inse($$$$$$$) {
 	$obje->set_name($name);
 	$obje->set_description($desc);
 	$obje->set_type($type);
-	$obje->set_defa($defa);
-	$obje->set_poin($poin);
+	$obje->set_default($defa);
+	$obje->set_pointer($poin);
 	$obje->setup_value($defa);
 	$obje->set_enum($enum);
 	$self->insert($name,$obje);
+}
+
+sub insert_sopt($$) {
+	my($self,$sopt)=@_;
+	$self->insert($sopt->get_name(),$sopt);
 }
 
 sub def_bool($$$$$) {
@@ -137,6 +166,16 @@ sub def_file($$$$$) {
 sub def_newf($$$$$) {
 	my($self,$name,$desc,$defa,$poin)=@_;
 	$self->inse($name,$desc,"newf",$defa,$poin,undef);
+}
+
+sub def_ovwf($$$$$) {
+	my($self,$name,$desc,$defa,$poin)=@_;
+	$self->inse($name,$desc,"ovwf",$defa,$poin,undef);
+}
+
+sub def_tnew($$$$$) {
+	my($self,$name,$desc,$defa,$poin)=@_;
+	$self->inse($name,$desc,"tnew",$defa,$poin,undef);
 }
 
 sub def_devf($$$$$) {
@@ -204,7 +243,7 @@ sub analyze($) {
 		my($sobj)=$self->elem($i);
 		my($name)=$sobj->get_name();
 		my($type)=$sobj->get_type();
-		my($defa)=$sobj->get_defa();
+		my($defa)=$sobj->get_default();
 		my($ostr)=$name;
 		if($type eq "bool") {
 			$ostr.="!";
@@ -218,10 +257,10 @@ sub analyze($) {
 		if($type eq "floa") {
 			$ostr.=":f";
 		}
-		if($type eq "dire" || $type eq "newd" || $type eq "devd") {
+		if($type eq "dire" || $type eq "newd" || $type eq "ovwd" || $type eq "devd" || $type eq "tnwd") {
 			$ostr.=":s";
 		}
-		if($type eq "file" || $type eq "newf" || $type eq "devf") {
+		if($type eq "file" || $type eq "newf" || $type eq "ovwf" || $type eq "devf" || $type eq "tnwf") {
 			$ostr.=":s";
 		}
 		if($type eq "urls") {
@@ -234,6 +273,9 @@ sub analyze($) {
 			$ostr.=":s";
 		}
 		if($type eq "path") {
+			$ostr.=":s";
+		}
+		if($type eq "modu") {
 			$ostr.=":s";
 		}
 		if($type eq "flst" || $type eq "dlst") {
@@ -316,7 +358,10 @@ sub analyze($) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		my($sobj)=$self->elem($i);
 		my($erro);
-		if(!$sobj->verify(\$erro)) {
+		my($res)=$sobj->verify(\$erro);
+#		Meta::Utils::Output::print("res is [".$res."]\n");
+		if(!$res) {
+#			Meta::Utils::Output::print("in here\n");
 			$self->use_color($file,"red");
 			print $file $prog.": ".$erro."\n";
 			$self->usag($file);
@@ -326,8 +371,8 @@ sub analyze($) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		my($sobj)=$self->elem($i);
 		my($curr_type)=$sobj->get_type();
-		my($curr_valu)=$sobj->get_valu();
-		my($curr_poin)=$sobj->get_poin();
+		my($curr_valu)=$sobj->get_value();
+		my($curr_poin)=$sobj->get_pointer();
 		if($curr_type ne "setx") {
 			$$curr_poin=$curr_valu;
 		}
@@ -380,9 +425,9 @@ sub usag($$) {
 		my($curr_name)=$sobj->get_name();
 		my($curr_desc)=$sobj->get_description();
 		my($curr_type)=$sobj->get_type();
-		my($curr_defa)=$sobj->get_defa();
-		my($curr_poin)=$sobj->get_poin();
-		my($curr_valu)=$sobj->get_valu();
+		my($curr_defa)=$sobj->get_default();
+		my($curr_poin)=$sobj->get_pointer();
+		my($curr_valu)=$sobj->get_value();
 		my($curr_enum)=$sobj->get_enum();
 		$self->use_color($file,"clear blue");
 		print $file $prog.": \t";
@@ -394,7 +439,7 @@ sub usag($$) {
 		if($curr_type eq "enum" || $curr_type eq "setx") {
 			my(@arra);
 			for(my($j)=0;$j<$curr_enum->size();$j++) {
-				push(@arra,$curr_enum->elem($j));
+				push(@arra,$curr_enum->keyx($j));
 			}
 			print $file $prog.":\t\toptions [".join(",",@arra)."]\n";
 		}
@@ -422,17 +467,21 @@ sub pod($$) {
 		my($curr_name)=$sobj->get_name();
 		my($curr_desc)=$sobj->get_description();
 		my($curr_type)=$sobj->get_type();
-		my($curr_defa)=$sobj->get_defa();
-		my($curr_poin)=$sobj->get_poin();
-		my($curr_valu)=$sobj->get_valu();
+		my($curr_defa)=$sobj->get_default();
+		my($curr_poin)=$sobj->get_pointer();
+		my($curr_valu)=$sobj->get_value();
 		my($curr_enum)=$sobj->get_enum();
+		my($curr_set)=$sobj->get_set();
 		print $file "=item B<".$curr_name."> (type: ".$curr_type.",\ default: ".$curr_defa.")\n\n".$curr_desc."\n\n";
 		if($curr_type eq "enum" || $curr_type eq "setx") {
-			my(@arra);
+			print $file "options:\n";
 			for(my($j)=0;$j<$curr_enum->size();$j++) {
-				push(@arra,$curr_enum->elem($j));
+				my($keyx)=$curr_enum->keyx($j);
+				my($valx)=$curr_enum->valx($j);
+				print $file "\t".$keyx." - ".$valx."\n";
 			}
-			print $file "options [".join(",",@arra)."]\n\n";
+			#print $file "options [".join(",",@arra)."]\n\n";
+			print $file "\n";
 		}
 	}
 	print $file "=back\n\n";
@@ -460,7 +509,7 @@ sub man($$) {
 sub get_valu($$) {
 	my($self,$name)=@_;
 	my($sobj)=$self->get($name);
-	return($sobj->get_valu());
+	return($sobj->get_value());
 }
 
 sub set_standard($) {
@@ -547,7 +596,7 @@ sub get_gui($) {
 			$pack->pack_start_defaults($spin);
 			$tip->set_tip($spin,$desc,"");
 		}
-		if($type eq "dire" || $type eq "newd" || $type eq "devd") {
+		if($type eq "dire" || $type eq "newd" || $type eq "ovwd" || $type eq "devd" || $type eq "tnwd") {
 			my($label)=Gtk::Label->new($name);
 			$label->show();
 			my($entry)=Gtk::Entry->new();
@@ -559,7 +608,7 @@ sub get_gui($) {
 			$pack->pack_start_defaults($entry);
 			$tip->set_tip($entry,$desc,"");
 		}
-		if($type eq "file" || $type eq "newf" || $type eq "devf") {
+		if($type eq "file" || $type eq "newf" || $type eq "ovwf" || $type eq "devf" || $type eq "tnwf") {
 			my($label)=Gtk::Label->new($name);
 			$label->show();
 			my($entry)=Gtk::Entry->new();
@@ -619,6 +668,42 @@ sub get_gui($) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($bool,$inte,$stri,$floa,$dire,$file,$senum,$urls);
+	my($enum)=Meta::Info::Enum->new();
+	$enum->insert("mysql","MySQL(tm) database");
+	$enum->insert("oracle","Oracle(tm) database");
+	$enum->insert("postgres","PostgreSQL(tm) database");
+	$enum->insert("informix","Informix(tm) database");
+	$enum->set_default("mysql");
+	my($set)=Meta::Ds::Oset->new();
+	$set->insert("one","first option");
+	$set->insert("two","second option");
+	$set->insert("three","third option");
+	$set->set_default("one,two");
+	my($sset)=Meta::Ds::Oset->new();
+	my($opts)=__PACKAGE__->new();
+	$opts->set_standard();
+	$opts->def_bool("bool","just a bool",1,\$bool);
+	$opts->def_inte("inte","just an int",7,\$inte);
+	$opts->def_stri("stri","just a string","mark",\$stri);
+	$opts->def_floa("floa","just a float",3.14,\$floa);
+	$opts->def_dire("dire","just a directory",".",\$dire);
+	$opts->def_file("file","just a file","/etc/passwd",\$file);
+	$opts->def_enum("enum","a selection out of an enumerated type","mysql",\$senum,$enum);
+	$opts->def_setx("sset","list of files","one,two",\$sset,$set);
+	$opts->def_urls("urls","url string read from","http://www.cpan.org",\$urls);
+	$opts->set_free_allo(0);
+	my(@array);
+	$opts->analyze(\@array);
+	Meta::Utils::Output::print("bool is [".$bool."]\n");
+	Meta::Utils::Output::print("inte is [".$inte."]\n");
+	Meta::Utils::Output::print("stri is [".$stri."]\n");
+	Meta::Utils::Output::print("floa is [".$floa."]\n");
+	Meta::Utils::Output::print("dire is [".$dire."]\n");
+	Meta::Utils::Output::print("file is [".$file."]\n");
+	Meta::Utils::Output::print("senum is [".$senum."]\n");
+	Meta::Utils::Output::print("sset size is [".$sset->size()."]\n");
+	#Meta::Utils::Output::print("urls is [".$urls."]\n");
 	return(1);
 }
 
@@ -655,7 +740,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Opts.pm
 	PROJECT: meta
-	VERSION: 0.47
+	VERSION: 0.49
 
 =head1 SYNOPSIS
 
@@ -704,9 +789,12 @@ Currently supported types for parameters are:
 	float			floa
 	directory		dire
 	new directory		newd
+	new directory with TT	tnwd
 	development directory	devd
 	file			file
 	new file		newf
+	file overwrite		ovwf
+	new file with TT	tnwf
 	development file	devf
 	url to be fetched	urls
 	enumerated values	enum
@@ -717,15 +805,19 @@ Currently supported types for parameters are:
 	BEGIN()
 	new($)
 	inse($$$$$$$)
+	insert_sopt($$)
 	def_bool($$$$$)
 	def_inte($$$$$)
 	def_stri($$$$$)
 	def_floa($$$$$)
 	def_dire($$$$$)
 	def_newd($$$$$)
+	def_tnwd($$$$$)
 	def_devd($$$$$)
 	def_file($$$$$)
 	def_newf($$$$$)
+	def_ovwf($$$$$)
+	def_tnwf($$$$$)
 	def_devf($$$$$)
 	def_urls($$$$$)
 	def_modu($$$$$)
@@ -772,6 +864,10 @@ Constructor for this class.
 
 Inserts an option string, with a type and a default value.
 
+=item B<insert_sopt($$)>
+
+Insert a single option object to the collection of objects.
+
 =item B<def_bool($$$$$)>
 
 Add a boolean argument to the options.
@@ -807,6 +903,14 @@ Add a file argument (checks that the file is valid).
 =item B<def_newf($$$$$)>
 
 Add a new file argument (checks that the file is non-existant).
+
+=item B<def_ovwf($$$$$)>
+
+Add a new file which already exists (checks that the file exists).
+
+=item B<def_tnwf($$$$$)>
+
+Add a new file argument with TT2 processing (checks that the file is non-existant).
 
 =item B<def_devf($$$$$)>
 
@@ -962,10 +1066,12 @@ None.
 	0.45 MV move tests to modules
 	0.46 MV download scripts
 	0.47 MV web site development
+	0.48 MV finish papers
+	0.49 MV teachers project
 
 =head1 SEE ALSO
 
-Getopt::Long(3), Gtk(3), Meta::Class::MethodMaker(3), Meta::Ds::Ohash(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Color(3), Meta::Utils::List(3), Meta::Utils::Opts::Sopt(3), Meta::Utils::Output(3), Meta::Utils::Progname(3), Meta::Utils::System(3), strict(3)
+Getopt::Long(3), Gtk(3), Meta::Class::MethodMaker(3), Meta::Ds::Ohash(3), Meta::Info::Enum(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Color(3), Meta::Utils::List(3), Meta::Utils::Opts::Sopt(3), Meta::Utils::Output(3), Meta::Utils::Progname(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

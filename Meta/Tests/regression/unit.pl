@@ -8,6 +8,7 @@ use Meta::Lang::Perl::Perl qw();
 use Meta::Utils::Output qw();
 use Meta::Development::TestInfo qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Development::Module qw();
 
 my($verb,$block,$file,$all);
 my($opts)=Meta::Utils::Opts::Opts->new();
@@ -21,41 +22,45 @@ $opts->analyze(\@ARGV);
 
 # first prepare the testing configuration object
 
-my($test_config)="xmlx/configs/test.xml";
+my($module)=Meta::Development::Module->new_name("xmlx/configs/test.xml");
 my($info)=Meta::Development::TestInfo->new();
-$info->read_deve($test_config);
+$info->read_modu($module);
 
 my($files);
 if($all) {
+	Meta::Utils::Output::verbose($verb,"started getting files\n");
 	$files=Meta::Baseline::Aegis::source_files_list(1,1,0,1,0,0);
+	Meta::Utils::Output::verbose($verb,"finished getting files\n");
 } else {
 	$files=[ $file ];
 }
 
 my($res)=1;
-for(my($i)=0;$i<=$#$files;$i++) {
+my($num)=$#$files+1;
+#Meta::Utils::Output::verbose($verb,"number of files [".$num."]\n");
+for(my($i)=0;$i<$num;$i++) {
 	my($curr)=$files->[$i];
 	if(Meta::Lang::Perl::Perl::is_lib($curr)) {
 		#lets translate file name to module
 		my($module)=Meta::Lang::Perl::Perl::file_to_module($curr);
 		#now use the module
 		Meta::Lang::Perl::Perl::load_module($module);
-		if($verb) {
-			Meta::Utils::Output::print("testing [".$module."]...");
-		}
+		Meta::Utils::Output::verbose($verb,"testing [".$module."]...");
 		#now call the method
 		if($block) {
-			Meta::Baseline::Test::redirect_on();
+			#Meta::Baseline::Test::redirect_on();
+			Meta::Utils::Output::set_block(1);
 		}
 		my($cres)=Meta::Lang::Perl::Perl::call_method($module,"TEST",[$info]);
 		if($block) {
-			Meta::Baseline::Test::redirect_off();
+			#Meta::Baseline::Test::redirect_off();
+			Meta::Utils::Output::set_block(0);
 		}
 		#now unload the module
 		#the unload doesn't work well since if I load a module after wards
 		#that needs something that I'm now unloading it created problems.
 		#Meta::Lang::Perl::Perl::unload_module($module);
-		Meta::Utils::Output::print("[".Meta::Baseline::Test::code_to_string($res)."]\n");
+		Meta::Utils::Output::verbose($verb,"[".Meta::Baseline::Test::code_to_string($cres)."]\n");
 		if(!$cres) {
 			$res=0;
 		}
@@ -95,7 +100,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: unit.pl
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.03
 
 =head1 SYNOPSIS
 
@@ -104,6 +109,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 =head1 DESCRIPTION
 
 Give this module a file name and it will run the embedded TEST method for it.
+This module will run all module internal tests.
+The basic idea behind my testing is that each module has it's
+own tests. This keeps the tests close to the code they are testing
+which makes a lot of sense since when the API's change the code to
+change is right there and the file which is checked out is also
+the test that needs to be retun!
 
 =head1 OPTIONS
 
@@ -181,13 +192,16 @@ None.
 	0.00 MV web site automation
 	0.01 MV SEE ALSO section fix
 	0.02 MV move tests to modules
+	0.03 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Development::TestInfo(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Baseline::Test(3), Meta::Development::Module(3), Meta::Development::TestInfo(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
 -sort the module alphabetically before running the tests (make it look nice).
 
 -allow to sort the modules according to modification times (shortens time).
+
+-allow user to select from change,project or source for listing files.

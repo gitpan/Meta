@@ -9,14 +9,14 @@ use Meta::Db::Dbi qw();
 
 my($connections_file,$con_name,$name);
 my($opts)=Meta::Utils::Opts::Opts->new();
-$opts->def_devf("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
+$opts->def_modu("connections_file","what connections XML file to use ?","xmlx/connections/connections.xml",\$connections_file);
 $opts->def_stri("con_name","what connection name ?",undef,\$con_name);
 $opts->def_stri("name","what database name ?",undef,\$name);
 $opts->set_standard();
 $opts->set_free_allo(0);
 $opts->analyze(\@ARGV);
 
-my($connections)=Meta::Db::Connections->new_deve($connections_file);
+my($connections)=Meta::Db::Connections->new_modu($connections_file);
 my($connection)=$connections->get_con_null($con_name);
 
 my($dbi)=Meta::Db::Dbi->new();
@@ -59,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: db_clean_sa.pl
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -82,7 +82,7 @@ database you give it.
 
 =over 4
 
-=item B<connections_file> (type: devf, default: xmlx/connections/connections.xml)
+=item B<connections_file> (type: modu, default: xmlx/connections/connections.xml)
 
 what connections XML file to use ?
 
@@ -158,6 +158,7 @@ None.
 	0.08 MV SEE ALSO section fix
 	0.09 MV move tests to modules
 	0.10 MV download scripts
+	0.11 MV teachers project
 
 =head1 SEE ALSO
 

@@ -6,43 +6,48 @@ use strict qw(vars refs subs);
 use Meta::Xml::Parsers::Base qw();
 use Meta::Development::Deps qw();
 use Meta::Utils::Output qw();
+use Meta::Class::MethodMaker qw();
+use URI qw();
+use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.18";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
+#sbu BEGIN();
 #sub new($);
-#sub get_result($);
 #sub get_root($);
 #sub set_root($$);
-#sub get_search_path($);
-#sub set_search_path($$);
 #sub handle_doctype($$$$$);
 #sub handle_externent($$$$);
 #sub TEST($);
 
 #__DATA__
 
+sub BEGIN() {
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_doctype_prefix",
+		-java=>"_do_doctype",
+		-java=>"_externent_prefix",
+		-java=>"_do_externent",
+		-java=>"_deps",
+	);
+}
+
 sub new($) {
 	my($clas)=@_;
 	my($self)=XML::Parser::Expat->new(ParseParamEnt=>0);
-	$self->{DEPS}=Meta::Development::Deps->new();
 	$self->{ROOT}=defined;
-	$self->{SEARCH_PATH}=defined;
 	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
+		Meta::Utils::System::die("couldn't get a parser");
 	}
 	$self->setHandlers(
 		'Doctype'=>\&handle_doctype,
 		'ExternEnt'=>\&handle_externent,
 	);
 	bless($self,$clas);
+	$self->set_deps(Meta::Development::Deps->new());
 	return($self);
-}
-
-sub get_result($$) {
-	my($self)=@_;
-	return($self->{DEPS});
 }
 
 sub get_root($) {
@@ -53,27 +58,26 @@ sub get_root($) {
 sub set_root($$) {
 	my($self,$valx)=@_;
 	$self->{ROOT}=$valx;
-	$self->{DEPS}->node_insert($valx);
-}
-
-sub get_search_path($) {
-	my($self)=@_;
-	return($self->{SEARCH_PATH});
-}
-
-sub set_search_path($$) {
-	my($self,$valx)=@_;
-	$self->{SEARCH_PATH}=$valx;
+	$self->get_deps()->node_insert($valx);
 }
 
 sub handle_doctype($$$$$) {
 	my($self,$name,$sysid,$pubid,$internal)=@_;
 #	Meta::Utils::Output::print("in handle_doctype\n");
-	if($sysid ne "") {
-		my($name)="dtdx/".$sysid;
-		$self->{DEPS}->node_insert($name);
-		$self->{DEPS}->edge_insert($self->get_root(),$name);
+#	Meta::Utils::Output::print("name is [".$name."]\n");
+#	Meta::Utils::Output::print("sysid is [".$sysid."]\n");
+#	Meta::Utils::Output::print("pubid is [".$pubid."]\n");
+#	Meta::Utils::Output::print("internal is [".$internal."]\n");
+	my($uri)=URI->new($sysid);
+	if(!defined($uri->scheme())) {
+		if($self->get_do_doctype()) {
+			my($name)=$self->get_doctype_prefix().$sysid;
+			$self->get_deps()->node_insert($name);
+			$self->get_deps()->edge_insert($self->get_root(),$name);
+		}
 	}
+	#this does not work,I don't know why
+	#return($self->SUPER::handle_doctype($name,$sysid,$pubid,$internal));
 }
 
 sub handle_externent($$$$) {
@@ -82,15 +86,26 @@ sub handle_externent($$$$) {
 #	Meta::Utils::Output::print("base is [".$base."]\n");
 #	Meta::Utils::Output::print("sysid is [".$sysid."]\n");
 #	Meta::Utils::Output::print("pubid is [".$pubid."]\n");
-	my($name)=$self->get_search_path().$sysid;
-	$self->{DEPS}->node_insert($name);
-	$self->{DEPS}->edge_insert($self->get_root(),$name);
-#	return($self->Meta::Xml::Parsers::Base::handle_externent($$base,$sysid,$pubid));
-	return("");
+	my($uri)=URI->new($sysid);
+	if(!defined($uri->scheme())) {
+		if($self->get_do_externent()) {
+			my($name)=$self->get_externent_prefix().$sysid;
+			$self->get_deps()->node_insert($name);
+			$self->get_deps()->edge_insert($self->get_root(),$name);
+		}
+	}
+	return($self->SUPER::handle_externent($base,$sysid,$pubid));
 }
 
 sub TEST($) {
 	my($context)=@_;
+	my($parser)=Meta::Xml::Parsers::Deps->new();
+	my($source)="temp/sgml/papers/computing/code_improvement.temp";
+	$parser->set_root($source);
+	my($file)=Meta::Baseline::Aegis::which($source);
+	$parser->parsefile($file);
+	my($deps)=$parser->get_deps();
+	Meta::Utils::Output::dump($deps);
 	return(1);
 }
 
@@ -127,7 +142,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Deps.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
@@ -135,7 +150,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 	use Meta::Xml::Parsers::Deps qw();
 	my($deps_parser)=Meta::Xml::Parsers::Deps->new();
 	$deps_parser->parsefile($file);
-	my($deps)=$desp_parser->get_result();
+	my($deps)=$deps_parser->get_deps();
 
 =head1 DESCRIPTION
 
@@ -144,8 +159,8 @@ for xml files.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	new($)
-	get_result($)
 	get_root($)
 	set_root($$)
 	handle_doctype($$$$$)
@@ -156,30 +171,24 @@ for xml files.
 
 =over 4
 
+=item B<BEGIN()>
+
+Bootstrap the class and add methods for "externent_prefix" and "doctype_prefix".
+
 =item B<new($)>
 
 This gives you a new object for a parser.
 
-=item B<get_result($)>
-
-This will return the dependency object which is the result of the parse.
-
 =item B<get_root($)>
 
 This method will retrieve the root node for the dependency object.
+This method is not built using Class::MethodMaker since setting
+the root involves changing the graph and thus root is not a standard
+attribute.
 
 =item B<set_root($$)>
 
 This will set the root node that the deps will be attached to.
-
-=item B<get_search_path($)>
-
-This method will retrieve the baseline relative path where this
-parser thinks the deps are.
-
-=item B<set_search_path($$)>
-
-This method will set the search path.
 
 =item B<handle_doctype($$$$$)>
 
@@ -197,6 +206,7 @@ dependency).
 =item B<TEST($)>
 
 Test suite for this module.
+Currently it will just read an sgml file and will print out the deps.
 
 =back
 
@@ -234,10 +244,12 @@ None.
 	0.14 MV website construction
 	0.15 MV web site automation
 	0.16 MV SEE ALSO section fix
+	0.17 MV finish papers
+	0.18 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Development::Deps(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Base(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Development::Deps(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Base(3), URI(3), strict(3)
 
 =head1 TODO
 

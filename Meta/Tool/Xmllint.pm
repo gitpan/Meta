@@ -3,15 +3,14 @@
 package Meta::Tool::Xmllint;
 
 use strict qw(vars refs subs);
-use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.06";
 @ISA=qw();
 
 #sub check_file($);
-#sub check_deve($);
+#sub check_modu($);
 #sub TEST($);
 
 #__DATA__
@@ -20,18 +19,19 @@ sub check_file($) {
 	my($file)=@_;
 	my($prog)="xmllint";
 	my(@args);
-#	push(@args,"--valid");#validate the doc according to DTD
+	push(@args,"--valid");#validate the doc according to DTD
 	push(@args,"--noout");#do not output anything
+#	you need to set SGML_CATALOG_FILES env var to use the next line
+#	push(@args,"--catalogs");#use catalog files
 	push(@args,$file);
 #	Meta::Utils::Output::print("args are [".join(',',@args)."]\n");
 	my($code)=Meta::Utils::System::system_nodie($prog,\@args);
 	return($code);
 }
 
-sub check_deve($) {
-	my($deve)=@_;
-	my($file)=Meta::Baseline::Aegis::which($deve);
-	return(check_file($file));
+sub check_modu($) {
+	my($modu)=@_;
+	return(check_file($modu->get_abs_path()));
 }
 
 sub TEST($) {
@@ -72,7 +72,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xmllint.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -82,12 +82,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This module runs xmllint to check XML files for you.
+This module runs xmllint to check XML files for you. xmllint is a tool supplied with libxml2 which is
+the gnome projects xml library. This tool currently runs the command line "xmllint" executable so
+it's not ideal but it's something...:).
 
 =head1 FUNCTIONS
 
 	check_file($)
-	check_deve($)
+	check_modu($)
 	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
@@ -98,9 +100,9 @@ This module runs xmllint to check XML files for you.
 
 This method receives a file and checks it for you.
 
-=item B<check_deve($)>
+=item B<check_modu($)>
 
-This method receives a development file and checks it for you.
+This method receives a development module and checks it for you.
 
 =item B<TEST($)>
 
@@ -131,11 +133,14 @@ None.
 	0.03 MV website construction
 	0.04 MV web site automation
 	0.05 MV SEE ALSO section fix
+	0.06 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Utils::Output(3), strict(3)
+Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
--run xmllint with DTD validation (the code is currently remarked because it cant find the DTDs - make it find them).
+-run xmllint with DTD validation (the code is currently remarked because it cant find the DTDs - make it find them). look at the libxml2 library documentation. Some env var should be good enough.
+
+-enable to the user of this tool to set and turn off options here. Turn this module into an object oriented one to do this.

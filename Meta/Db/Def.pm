@@ -4,7 +4,6 @@ package Meta::Db::Def;
 
 use strict qw(vars refs subs);
 use Meta::Sql::Stat qw();
-use Meta::Baseline::Aegis qw();
 use Meta::Xml::Parsers::Def qw();
 use Meta::Db::Parents qw();
 use Meta::Db::Sets qw();
@@ -12,10 +11,12 @@ use Meta::Db::Enums qw();
 use Meta::Db::Tables qw();
 use Meta::Db::Users qw();
 use Meta::Ds::Connected qw();
+use Meta::Db::Info qw();
+use Meta::Xml::Writer qw();
 use XML::DOM qw();
 
 our($VERSION,@ISA);
-$VERSION="0.45";
+$VERSION="0.46";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -41,7 +42,6 @@ $VERSION="0.45";
 #sub getsql_select($$$);
 #sub getsql_insert($$$);
 #sub new_file($$);
-#sub new_deve($$);
 #sub new_modu($$);
 #sub has_table($$);
 #sub has_field($$$);
@@ -264,9 +264,16 @@ sub getsql_clean($$$) {
 sub getsql_select($$$) {
 	my($self,$info,$table)=@_;
 	my(@arra);
-	if($self->has_parent_table($table)) {
-		push(@arra,$self->get_parents()->getsql_select($info,$table));
+	my($parents)=$self->get_parents();
+	for(my($i)=0;$i<$parents->size();$i++) {
+		my($curr)=$parents->elem($i);
+		if($curr->has_table($table)) {
+			push(@arra,$curr->getsql_select($info,$table));
+		}
 	}
+#	if($self->has_parent_table($table)) {
+#		push(@arra,$self->get_parents()->getsql_select($info,$table));
+#	}
 	if($self->get_tables()->has($table)) {
 		my($tab)=$self->get_tables()->get($table);
 		push(@arra,$tab->getsql_select($info));
@@ -277,9 +284,16 @@ sub getsql_select($$$) {
 sub getsql_insert($$$) {
 	my($self,$info,$table)=@_;
 	my(@arra);
-	if($self->has_parent_table($table)) {
-		push(@arra,$self->get_parents()->getsql_insert($info,$table));
+	my($parents)=$self->get_parents();
+	for(my($i)=0;$i<$parents->size();$i++) {
+		my($curr)=$parents->elem($i);
+		if($curr->has_table($table)) {
+			push(@arra,$curr->getsql_insert($info,$table));
+		}
 	}
+#	if($self->has_parent_table($table)) {
+#		push(@arra,$self->get_parents()->getsql_insert($info,$table));
+#	}
 	if($self->get_tables()->has($table)) {
 		my($tab)=$self->get_tables()->get($table);
 		push(@arra,$tab->getsql_insert($info));
@@ -292,11 +306,6 @@ sub new_file($$) {
 	my($parser)=Meta::Xml::Parsers::Def->new();
 	$parser->parsefile($file);
 	return($parser->get_result());
-}
-
-sub new_deve($$) {
-	my($clas,$deve)=@_;
-	return(&new_file($clas,Meta::Baseline::Aegis::which($deve)));
 }
 
 sub new_modu($$) {
@@ -405,6 +414,36 @@ sub add_deps($$$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($module)=Meta::Development::Module->new_name("xmlx/def/pics.xml");
+	my($def)=Meta::Db::Def->new_modu($module);
+
+	my($info)=Meta::Db::Info->new();
+	$info->set_type("mysql");
+	$info->set_name($def->get_name());
+
+	Meta::Utils::Output::print("select is [".$def->getsql_select($info,"item")."]\n");
+	Meta::Utils::Output::print("insert is [".$def->getsql_insert($info,"item")."]\n");
+	Meta::Utils::Output::print("has is [".$def->has_field("item","id")."]\n");
+	Meta::Utils::Output::print("has is [".$def->has_field("foo","koo")."]\n");
+
+	my($field)=$def->get_field("item","id");
+	Meta::Utils::Output::print("field of item,id is [".$field."]\n");
+	my($field_num)=$def->get_field_number("item","name");
+	Meta::Utils::Output::print("field_num of item,name is [".$field_num."]\n");
+
+	my($temp)=Meta::Utils::Utils::get_temp_file();
+	my($outp)=IO::File->new("> ".$temp);
+	my($writ)=Meta::Xml::Writer->new(OUTPUT=>$outp,DATA_INDENT=>1,DATA_MODE=>1,UNSAFE=>1);
+	$writ->xmlDecl();
+	$writ->comment(Meta::Lang::Docb::Params::get_comment());
+	$writ->doctype(
+		"section",
+		Meta::Lang::Docb::Params::get_public()
+	);
+	$def->printd($writ);
+	$writ->end();
+	$outp->close();
+	Meta::Utils::File::Remove::rm($temp);
 	return(1);
 }
 
@@ -441,7 +480,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.45
+	VERSION: 0.46
 
 =head1 SYNOPSIS
 
@@ -480,7 +519,6 @@ This is an object to let you read,write and manipulate a database definition.
 	getsql_select($$$)
 	getsql_insert($$$)
 	new_file($$)
-	new_deve($$)
 	new_modu($$)
 	has_table($$)
 	has_field($$$)
@@ -606,18 +644,6 @@ The method uses the Meta::Xml::Parsers::Def expat parser to achieve this.
 Remarks:
 This method is static.
 
-=item B<new_deve($$)>
-
-This method receives:
-0. A class name.
-1. A development relative file name.
-This method returns:
-0. An def object contructed from the content of that file.
-How it does it:
-The method uses the new_file method to achieve this.
-Remarks:
-This method is static.
-
 =item B<new_modu($$)>
 
 This method receives:
@@ -665,6 +691,7 @@ a dependency storing object.
 =item B<TEST($)>
 
 Test suite for this object.
+Currently this just reads a def file and prints out the result.
 
 =back
 
@@ -731,10 +758,11 @@ None.
 	0.43 MV web site automation
 	0.44 MV SEE ALSO section fix
 	0.45 MV web site development
+	0.46 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Db::Enums(3), Meta::Db::Parents(3), Meta::Db::Sets(3), Meta::Db::Tables(3), Meta::Db::Users(3), Meta::Ds::Connected(3), Meta::Sql::Stat(3), Meta::Xml::Parsers::Def(3), XML::DOM(3), strict(3)
+Meta::Db::Enums(3), Meta::Db::Info(3), Meta::Db::Parents(3), Meta::Db::Sets(3), Meta::Db::Tables(3), Meta::Db::Users(3), Meta::Ds::Connected(3), Meta::Sql::Stat(3), Meta::Xml::Parsers::Def(3), Meta::Xml::Writer(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 

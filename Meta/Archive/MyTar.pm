@@ -11,10 +11,10 @@ use Meta::Utils::File::Remove qw();
 use Meta::Ds::Array qw();
 use Meta::Ds::Set qw();
 use Meta::Class::MethodMaker qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub BEGIN();
@@ -31,7 +31,7 @@ $VERSION="0.12";
 our($compress_type_enum);
 
 sub BEGIN() {
-	$compress_type_enum=Meta::Ds::Enum->new();
+	$compress_type_enum=Meta::Info::Enum->new();
 	$compress_type_enum->insert("bzip2");
 	$compress_type_enum->insert("gzip");
 	$compress_type_enum->insert("compress");
@@ -163,7 +163,8 @@ sub TEST($) {
 	$mytar->add_deve("xmlx/movie/movie.xml","xmlx/movie/movie.xml");
 	my($temp)=Meta::Utils::Utils::get_temp_file();
 	$mytar->write($temp);
-	Meta::Utils::System::system("tar",["ztvf",$temp]);
+	my($out)=Meta::Utils::System::system_out("tar",["ztvf",$temp]);
+	Meta::Utils::Output::print("out is [".$$out."]\n");
 	Meta::Utils::File::Remove::rm($temp);
 	return(1);
 }
@@ -201,7 +202,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MyTar.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -335,10 +336,11 @@ None.
 	0.10 MV web site development
 	0.11 MV web site automation
 	0.12 MV SEE ALSO section fix
+	0.13 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Array(3), Meta::Ds::Enum(3), Meta::Ds::Set(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Array(3), Meta::Ds::Set(3), Meta::Info::Enum(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

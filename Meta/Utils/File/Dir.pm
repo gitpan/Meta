@@ -7,7 +7,7 @@ use Meta::Utils::System qw();
 #use Carp qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub empty($);
@@ -37,9 +37,6 @@ sub check_exist($) {
 	if(!exist($dire)) {
 		Meta::Utils::System::die("directory [".$dire."] does not exist");
 	}
-#	if(!(-d $dire)) {
-#		Carp::confess("directory [".$dire."] does not exist");
-#	}
 }
 
 sub fixdir($) {
@@ -114,7 +111,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dir.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -168,6 +165,7 @@ This routine checks if a directory given to it exists and if not dies.
 This routine gets a name of a file or directory and eliminated bad stuff
 from it:
 0. [pref] slash [a] slash [..] slash [suff] is turned to [pref] slash [suff]
+Currently it will only do this (removed trailing slashes) using a regexp.
 
 =item B<get_relative_path($$)>
 
@@ -226,6 +224,7 @@ None.
 	0.26 MV more web page stuff
 	0.27 MV web site automation
 	0.28 MV SEE ALSO section fix
+	0.29 MV weblog issues
 
 =head1 SEE ALSO
 

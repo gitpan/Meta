@@ -7,7 +7,7 @@ use Meta::Ds::Set qw();
 use Meta::Utils::Arg qw();
 
 our($VERSION,@ISA);
-$VERSION="0.34";
+$VERSION="0.35";
 @ISA=qw();
 
 #sub new($);
@@ -158,7 +158,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stack.pm
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -175,6 +175,12 @@ The internal representation is that of an array.
 Why should you want this ?
 Well - its not very nice to write $#$stack when you want the size of the
 stack... This is mainly a OO wraper for a stack...
+
+The current array implementation is not very good and should be replaced
+with a better 1-1 mapping with minimum and maximum and that way pushing
+and poping on either side would be very efficient. Also iteration on
+the elements would be possible. The transformation is left as an exercise
+to the reader (just kidding).
 
 =head1 FUNCTIONS
 
@@ -294,6 +300,7 @@ None.
 	0.32 MV web site automation
 	0.33 MV SEE ALSO section fix
 	0.34 MV move tests to modules
+	0.35 MV more pdmt stuff
 
 =head1 SEE ALSO
 

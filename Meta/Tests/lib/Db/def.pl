@@ -12,6 +12,7 @@ use Meta::Utils::File::Remove qw();
 use Meta::Utils::Output qw();
 use Meta::Db::Info qw();
 use IO::File qw();
+use Meta::Development::Module qw();
 
 my($opts)=Meta::Utils::Opts::Opts->new();
 $opts->set_standard();
@@ -20,7 +21,8 @@ $opts->analyze(\@ARGV);
 
 Meta::Baseline::Test::redirect_on();
 
-my($def)=Meta::Db::Def->new_deve("xmlx/def/pics.xml");
+my($module)=Meta::Development::Module->new_name("xmlx/def/pics.xml");
+my($def)=Meta::Db::Def->new_modu($module);
 
 my($info)=Meta::Db::Info->new();
 $info->set_type("mysql");
@@ -85,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: def.pl
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -184,10 +186,11 @@ None.
 	0.28 MV web site automation
 	0.29 MV SEE ALSO section fix
 	0.30 MV move tests to modules
+	0.31 MV teachers project
 
 =head1 SEE ALSO
 
-IO::File(3), Meta::Baseline::Test(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Lang::Docb::Params(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Meta::Xml::Writer(3), strict(3)
+IO::File(3), Meta::Baseline::Test(3), Meta::Db::Def(3), Meta::Db::Info(3), Meta::Development::Module(3), Meta::Lang::Docb::Params(3), Meta::Utils::File::Remove(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Meta::Xml::Writer(3), strict(3)
 
 =head1 TODO
 

@@ -62,14 +62,14 @@ use Meta::Baseline::Lang::Nrfx qw();
 use Meta::Baseline::Lang::Bdbx qw();
 use Meta::Baseline::Lang::Late qw();
 use Meta::Baseline::Lang::Lyxx qw();
-use Meta::Ds::Enum qw();
+use Meta::Info::Enum qw();
 use Meta::Utils::Output qw();
 use Meta::Pdmt::BuildInfo qw();
 use Meta::Tool::Gzip qw();
 use Meta::Tool::Ps2Pdf qw();
 
 our($VERSION,@ISA);
-$VERSION="0.54";
+$VERSION="0.56";
 @ISA=qw();
 
 #sub get_count($);
@@ -185,127 +185,70 @@ sub get_module($) {
 }
 
 sub get_type_enum() {
-	my($type_enum)=Meta::Ds::Enum->new();
-	$type_enum->insert("aspe");
-	$type_enum->insert("temp");
-	$type_enum->insert("ccxx");
-	$type_enum->insert("cxxx");
-	$type_enum->insert("sgml");
-	$type_enum->insert("chun");
-	$type_enum->insert("java");
-	$type_enum->insert("lily");
-	$type_enum->insert("perl");
-	$type_enum->insert("pyth");
-	$type_enum->insert("rule");
-	$type_enum->insert("txtx");
-	$type_enum->insert("data");
-	$type_enum->insert("rcxx");
-	$type_enum->insert("patc");
-	$type_enum->insert("ascx");
-	$type_enum->insert("html");
-	$type_enum->insert("cssx");
-	$type_enum->insert("dirx");
-	$type_enum->insert("cook");
-	$type_enum->insert("aegi");
-	$type_enum->insert("xmlx");
-	$type_enum->insert("xslt");
-	$type_enum->insert("pngx");
-	$type_enum->insert("jpgx");
-	$type_enum->insert("epsx");
-	$type_enum->insert("awkx");
-	$type_enum->insert("conf");
-	$type_enum->insert("targ");
-	$type_enum->insert("texx");
-	$type_enum->insert("deps");
-	$type_enum->insert("chec");
-	$type_enum->insert("clas");
-	$type_enum->insert("dvix");
-	$type_enum->insert("chun");
-	$type_enum->insert("objs");
-	$type_enum->insert("psxx");
-	$type_enum->insert("info");
-	$type_enum->insert("rtfx");
-	$type_enum->insert("mifx");
-	$type_enum->insert("midi");
-	$type_enum->insert("bins");
-	$type_enum->insert("dlls");
-	$type_enum->insert("libs");
-	$type_enum->insert("pyob");
-	$type_enum->insert("dtdx");
-	$type_enum->insert("swig");
-	$type_enum->insert("gzxx");
-	$type_enum->insert("pack");
-	$type_enum->insert("dslx");
-	$type_enum->insert("pdfx");
-	$type_enum->insert("dbxx");
-	$type_enum->insert("manx");
-	$type_enum->insert("nrfx");
-	$type_enum->insert("bdbx");
-	$type_enum->insert("late");
-	$type_enum->insert("lyxx");
-	return($type_enum);
+	my($enum)=Meta::Info::Enum->new();
+	$enum->insert("aspe","aspe");
+	$enum->insert("temp","temp");
+	$enum->insert("ccxx","ccxx");
+	$enum->insert("cxxx","cxxx");
+	$enum->insert("sgml","sgml");
+	$enum->insert("chun","chun");
+	$enum->insert("java","java");
+	$enum->insert("lily","lily");
+	$enum->insert("perl","perl");
+	$enum->insert("pyth","pyth");
+	$enum->insert("rule","rule");
+	$enum->insert("txtx","txtx");
+	$enum->insert("data","data");
+	$enum->insert("rcxx","rcxx");
+	$enum->insert("patc","patc");
+	$enum->insert("ascx","ascx");
+	$enum->insert("html","html");
+	$enum->insert("cssx","cssx");
+	$enum->insert("dirx","dirx");
+	$enum->insert("cook","cook");
+	$enum->insert("aegi","aegi");
+	$enum->insert("xmlx","xmlx");
+	$enum->insert("xslt","xslt");
+	$enum->insert("pngx","pngx");
+	$enum->insert("jpgx","jpgx");
+	$enum->insert("epsx","epsx");
+	$enum->insert("awkx","awkx");
+	$enum->insert("conf","conf");
+	$enum->insert("targ","targ");
+	$enum->insert("texx","texx");
+	$enum->insert("deps","deps");
+	$enum->insert("chec","chec");
+	$enum->insert("clas","clas");
+	$enum->insert("dvix","dvix");
+	$enum->insert("chun","chun");
+	$enum->insert("objs","objs");
+	$enum->insert("psxx","psxx");
+	$enum->insert("info","info");
+	$enum->insert("rtfx","rtfx");
+	$enum->insert("mifx","mifx");
+	$enum->insert("midi","midi");
+	$enum->insert("bins","bins");
+	$enum->insert("dlls","dlls");
+	$enum->insert("libs","libs");
+	$enum->insert("pyob","pyob");
+	$enum->insert("dtdx","dtdx");
+	$enum->insert("swig","swig");
+	$enum->insert("gzxx","gzxx");
+	$enum->insert("pack","pack");
+	$enum->insert("dslx","dslx");
+	$enum->insert("pdfx","pdfx");
+	$enum->insert("dbxx","dbxx");
+	$enum->insert("manx","manx");
+	$enum->insert("nrfx","nrfx");
+	$enum->insert("bdbx","bdbx");
+	$enum->insert("late","late");
+	$enum->insert("lyxx","lyxx");
+	$enum->set_default(undef);
+	return($enum);
 }
 
 sub get_lang_enum() {
-	my($lang_enum)=Meta::Ds::Enum->new();
-	$lang_enum->insert("aspe");
-	$lang_enum->insert("temp");
-	$lang_enum->insert("ccxx");
-	$lang_enum->insert("cxxx");
-	$lang_enum->insert("sgml");
-	$lang_enum->insert("chun");
-	$lang_enum->insert("java");
-	$lang_enum->insert("lily");
-	$lang_enum->insert("perl");
-	$lang_enum->insert("pyth");
-	$lang_enum->insert("rule");
-	$lang_enum->insert("txtx");
-	$lang_enum->insert("data");
-	$lang_enum->insert("rcxx");
-	$lang_enum->insert("patc");
-	$lang_enum->insert("ascx");
-	$lang_enum->insert("html");
-	$lang_enum->insert("cssx");
-	$lang_enum->insert("dirx");
-	$lang_enum->insert("cook");
-	$lang_enum->insert("aegi");
-	$lang_enum->insert("xmlx");
-	$lang_enum->insert("xslt");
-	$lang_enum->insert("pngx");
-	$lang_enum->insert("jpgx");
-	$lang_enum->insert("epsx");
-	$lang_enum->insert("awkx");
-	$lang_enum->insert("conf");
-	$lang_enum->insert("targ");
-	$lang_enum->insert("texx");
-	$lang_enum->insert("deps");
-	$lang_enum->insert("chec");
-	$lang_enum->insert("clas");
-	$lang_enum->insert("dvix");
-	$lang_enum->insert("chun");
-	$lang_enum->insert("objs");
-	$lang_enum->insert("psxx");
-	$lang_enum->insert("info");
-	$lang_enum->insert("rtfx");
-	$lang_enum->insert("mifx");
-	$lang_enum->insert("midi");
-	$lang_enum->insert("bins");
-	$lang_enum->insert("dlls");
-	$lang_enum->insert("libs");
-	$lang_enum->insert("pyob");
-	$lang_enum->insert("dtdx");
-	$lang_enum->insert("swig");
-	$lang_enum->insert("gzxx");
-	$lang_enum->insert("pack");
-	$lang_enum->insert("dslx");
-	$lang_enum->insert("pdfx");
-	$lang_enum->insert("dbxx");
-	$lang_enum->insert("manx");
-	$lang_enum->insert("nrfx");
-	$lang_enum->insert("bdbx");
-	$lang_enum->insert("late");
-	$lang_enum->insert("lyxx");
-	return($lang_enum);
+	return(&get_type_enum());
 }
 
 sub run_module($$$$$$) {
@@ -345,6 +288,10 @@ sub run_module($$$$$$) {
 			$foun=1;
 		}
 		if($type eq "xmlx") {
+			$scod=Meta::Baseline::Lang::Temp::c2some($buil);
+			$foun=1;
+		}
+		if($type eq "dtdx") {
 			$scod=Meta::Baseline::Lang::Temp::c2some($buil);
 			$foun=1;
 		}
@@ -767,6 +714,18 @@ sub run_module($$$$$$) {
 
 sub TEST($) {
 	my($context)=@_;
+	my($fil0)="perl/lib/my.pm";
+	my($mod0)=Meta::Baseline::Switch::get_module($fil0);
+	Meta::Utils::Output::print("modu for file [".$fil0."] is [".$mod0."]\n");
+	my($fil1)="pyth/that.py";
+	my($mod1)=Meta::Baseline::Switch::get_module($fil1);
+	Meta::Utils::Output::print("modu for file [".$fil1."] is [".$mod1."]\n");
+	my($fil2)="ccxx/other.tt";
+	my($mod2)=Meta::Baseline::Switch::get_module($fil2);
+	Meta::Utils::Output::print("modu for file [".$fil2."] is [".$mod2."]\n");
+	my($fil3)="rule/law.rule";
+	my($mod3)=Meta::Baseline::Switch::get_module($fil3);
+	Meta::Utils::Output::print("modu for file [".$fil3."] is [".$mod3."]\n");
 	return(1);
 }
 
@@ -803,7 +762,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Switch.pm
 	PROJECT: meta
-	VERSION: 0.54
+	VERSION: 0.56
 
 =head1 SYNOPSIS
 
@@ -859,6 +818,7 @@ This will run a module for you.
 =item B<TEST($)>
 
 Test suite for this module.
+It currently just checks to see that it gets the perl module for "my.pm".
 
 =back
 
@@ -934,10 +894,12 @@ None.
 	0.52 MV web site automation
 	0.53 MV SEE ALSO section fix
 	0.54 MV move tests to modules
+	0.55 MV finish papers
+	0.56 MV teachers project
 
 =head1 SEE ALSO
 
-Meta::Baseline::Lang::Aegi(3), Meta::Baseline::Lang::Ascx(3), Meta::Baseline::Lang::Aspe(3), Meta::Baseline::Lang::Awkx(3), Meta::Baseline::Lang::Bdbx(3), Meta::Baseline::Lang::Bins(3), Meta::Baseline::Lang::Ccxx(3), Meta::Baseline::Lang::Chec(3), Meta::Baseline::Lang::Chun(3), Meta::Baseline::Lang::Clas(3), Meta::Baseline::Lang::Conf(3), Meta::Baseline::Lang::Cook(3), Meta::Baseline::Lang::Cssx(3), Meta::Baseline::Lang::Cxxx(3), Meta::Baseline::Lang::Data(3), Meta::Baseline::Lang::Dbxx(3), Meta::Baseline::Lang::Deps(3), Meta::Baseline::Lang::Dirx(3), Meta::Baseline::Lang::Dlls(3), Meta::Baseline::Lang::Dslx(3), Meta::Baseline::Lang::Dtdx(3), Meta::Baseline::Lang::Dvix(3), Meta::Baseline::Lang::Epsx(3), Meta::Baseline::Lang::Gzxx(3), Meta::Baseline::Lang::Html(3), Meta::Baseline::Lang::Info(3), Meta::Baseline::Lang::Java(3), Meta::Baseline::Lang::Jpgx(3), Meta::Baseline::Lang::Late(3), Meta::Baseline::Lang::Libs(3), Meta::Baseline::Lang::Lily(3), Meta::Baseline::Lang::Lyxx(3), Meta::Baseline::Lang::Manx(3), Meta::Baseline::Lang::Midi(3), Meta::Baseline::Lang::Mifx(3), Meta::Baseline::Lang::Nrfx(3), Meta::Baseline::Lang::Objs(3), Meta::Baseline::Lang::Pack(3), Meta::Baseline::Lang::Patc(3), Meta::Baseline::Lang::Pdfx(3), Meta::Baseline::Lang::Perl(3), Meta::Baseline::Lang::Pgnx(3), Meta::Baseline::Lang::Pngx(3), Meta::Baseline::Lang::Psxx(3), Meta::Baseline::Lang::Pyob(3), Meta::Baseline::Lang::Pyth(3), Meta::Baseline::Lang::Rcxx(3), Meta::Baseline::Lang::Rtfx(3), Meta::Baseline::Lang::Rule(3), Meta::Baseline::Lang::Sgml(3), Meta::Baseline::Lang::Swig(3), Meta::Baseline::Lang::Targ(3), Meta::Baseline::Lang::Temp(3), Meta::Baseline::Lang::Texx(3), Meta::Baseline::Lang::Txtx(3), Meta::Baseline::Lang::Xmlx(3), Meta::Baseline::Lang::Xslt(3), Meta::Ds::Array(3), Meta::Ds::Enum(3), Meta::Pdmt::BuildInfo(3), Meta::Tool::Gzip(3), Meta::Tool::Ps2Pdf(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+Meta::Baseline::Lang::Aegi(3), Meta::Baseline::Lang::Ascx(3), Meta::Baseline::Lang::Aspe(3), Meta::Baseline::Lang::Awkx(3), Meta::Baseline::Lang::Bdbx(3), Meta::Baseline::Lang::Bins(3), Meta::Baseline::Lang::Ccxx(3), Meta::Baseline::Lang::Chec(3), Meta::Baseline::Lang::Chun(3), Meta::Baseline::Lang::Clas(3), Meta::Baseline::Lang::Conf(3), Meta::Baseline::Lang::Cook(3), Meta::Baseline::Lang::Cssx(3), Meta::Baseline::Lang::Cxxx(3), Meta::Baseline::Lang::Data(3), Meta::Baseline::Lang::Dbxx(3), Meta::Baseline::Lang::Deps(3), Meta::Baseline::Lang::Dirx(3), Meta::Baseline::Lang::Dlls(3), Meta::Baseline::Lang::Dslx(3), Meta::Baseline::Lang::Dtdx(3), Meta::Baseline::Lang::Dvix(3), Meta::Baseline::Lang::Epsx(3), Meta::Baseline::Lang::Gzxx(3), Meta::Baseline::Lang::Html(3), Meta::Baseline::Lang::Info(3), Meta::Baseline::Lang::Java(3), Meta::Baseline::Lang::Jpgx(3), Meta::Baseline::Lang::Late(3), Meta::Baseline::Lang::Libs(3), Meta::Baseline::Lang::Lily(3), Meta::Baseline::Lang::Lyxx(3), Meta::Baseline::Lang::Manx(3), Meta::Baseline::Lang::Midi(3), Meta::Baseline::Lang::Mifx(3), Meta::Baseline::Lang::Nrfx(3), Meta::Baseline::Lang::Objs(3), Meta::Baseline::Lang::Pack(3), Meta::Baseline::Lang::Patc(3), Meta::Baseline::Lang::Pdfx(3), Meta::Baseline::Lang::Perl(3), Meta::Baseline::Lang::Pgnx(3), Meta::Baseline::Lang::Pngx(3), Meta::Baseline::Lang::Psxx(3), Meta::Baseline::Lang::Pyob(3), Meta::Baseline::Lang::Pyth(3), Meta::Baseline::Lang::Rcxx(3), Meta::Baseline::Lang::Rtfx(3), Meta::Baseline::Lang::Rule(3), Meta::Baseline::Lang::Sgml(3), Meta::Baseline::Lang::Swig(3), Meta::Baseline::Lang::Targ(3), Meta::Baseline::Lang::Temp(3), Meta::Baseline::Lang::Texx(3), Meta::Baseline::Lang::Txtx(3), Meta::Baseline::Lang::Xmlx(3), Meta::Baseline::Lang::Xslt(3), Meta::Ds::Array(3), Meta::Info::Enum(3), Meta::Pdmt::BuildInfo(3), Meta::Tool::Gzip(3), Meta::Tool::Ps2Pdf(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
