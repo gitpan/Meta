@@ -7,12 +7,13 @@ use Meta::Ds::Ohash qw();
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.04";
 @ISA=qw(Meta::Ds::Ohash Meta::Ds::Connected);
 
 #sub BEGIN();
 #sub getsql_create($$$);
 #sub getsql_comma($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -59,6 +60,11 @@ sub getsql_comma($$) {
 	return("(".join(",",@arra).")");
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -92,7 +98,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Constraint.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -111,6 +117,7 @@ This could be a UNIQUE or FULLTEXT constraint currently.
 	BEGIN()
 	getsql_create($$$)
 	getsql_comma($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -133,7 +140,15 @@ support all constraint types.
 This method will return an SQL snipplet which has all the fields
 involved with commas in between.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Ohash(3), Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -142,18 +157,21 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
 
 	0.00 MV dbman package creation
 	0.01 MV more thumbnail issues
+	0.02 MV website construction
+	0.03 MV web site automation
+	0.04 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Connected(3), Meta::Ds::Ohash(3), strict(3)
 
 =head1 TODO
 

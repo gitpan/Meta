@@ -18,13 +18,17 @@ use Meta::Baseline::Lang::Rule qw();
 use Meta::Baseline::Lang::Txtx qw();
 use Meta::Baseline::Lang::Data qw();
 use Meta::Baseline::Lang::Rcxx qw();
+use Meta::Baseline::Lang::Patc qw();
+use Meta::Baseline::Lang::Ascx qw();
 use Meta::Baseline::Lang::Html qw();
 use Meta::Baseline::Lang::Cssx qw();
 use Meta::Baseline::Lang::Dirx qw();
 use Meta::Baseline::Lang::Cook qw();
 use Meta::Baseline::Lang::Aegi qw();
 use Meta::Baseline::Lang::Xmlx qw();
+use Meta::Baseline::Lang::Xslt qw();
 use Meta::Baseline::Lang::Pngx qw();
+use Meta::Baseline::Lang::Pgnx qw();
 use Meta::Baseline::Lang::Jpgx qw();
 use Meta::Baseline::Lang::Epsx qw();
 use Meta::Baseline::Lang::Awkx qw();
@@ -55,14 +59,16 @@ use Meta::Baseline::Lang::Pdfx qw();
 use Meta::Baseline::Lang::Dbxx qw();
 use Meta::Baseline::Lang::Manx qw();
 use Meta::Baseline::Lang::Nrfx qw();
+use Meta::Baseline::Lang::Bdbx qw();
 use Meta::Baseline::Lang::Late qw();
 use Meta::Baseline::Lang::Lyxx qw();
 use Meta::Ds::Enum qw();
 use Meta::Utils::Output qw();
 use Meta::Pdmt::BuildInfo qw();
+use Meta::Tool::Gzip qw();
 
 our($VERSION,@ISA);
-$VERSION="0.48";
+$VERSION="0.54";
 @ISA=qw();
 
 #sub get_count($);
@@ -71,6 +77,7 @@ $VERSION="0.48";
 #sub get_type_enum();
 #sub get_lang_enum();
 #sub run_module($$$$$$);
+#sub TEST($);
 
 my($arra);
 
@@ -89,13 +96,17 @@ BEGIN {
 	$arra->push("Meta::Baseline::Lang::Txtx");
 	$arra->push("Meta::Baseline::Lang::Data");
 	$arra->push("Meta::Baseline::Lang::Rcxx");
+	$arra->push("Meta::Baseline::Lang::Patc");
+	$arra->push("Meta::Baseline::Lang::Ascx");
 	$arra->push("Meta::Baseline::Lang::Html");
 	$arra->push("Meta::Baseline::Lang::Cssx");
 	$arra->push("Meta::Baseline::Lang::Dirx");
 	$arra->push("Meta::Baseline::Lang::Cook");
 	$arra->push("Meta::Baseline::Lang::Aegi");
 	$arra->push("Meta::Baseline::Lang::Xmlx");
+	$arra->push("Meta::Baseline::Lang::Xslt");
 	$arra->push("Meta::Baseline::Lang::Pngx");
+	$arra->push("Meta::Baseline::Lang::Pgnx");
 	$arra->push("Meta::Baseline::Lang::Jpgx");
 	$arra->push("Meta::Baseline::Lang::Epsx");
 	$arra->push("Meta::Baseline::Lang::Awkx");
@@ -126,6 +137,7 @@ BEGIN {
 	$arra->push("Meta::Baseline::Lang::Dbxx");
 	$arra->push("Meta::Baseline::Lang::Manx");
 	$arra->push("Meta::Baseline::Lang::Nrfx");
+	$arra->push("Meta::Baseline::Lang::Bdbx");
 	$arra->push("Meta::Baseline::Lang::Late");
 	$arra->push("Meta::Baseline::Lang::Lyxx");
 }
@@ -187,12 +199,15 @@ sub get_type_enum() {
 	$type_enum->insert("txtx");
 	$type_enum->insert("data");
 	$type_enum->insert("rcxx");
+	$type_enum->insert("patc");
+	$type_enum->insert("ascx");
 	$type_enum->insert("html");
 	$type_enum->insert("cssx");
 	$type_enum->insert("dirx");
 	$type_enum->insert("cook");
 	$type_enum->insert("aegi");
 	$type_enum->insert("xmlx");
+	$type_enum->insert("xslt");
 	$type_enum->insert("pngx");
 	$type_enum->insert("jpgx");
 	$type_enum->insert("epsx");
@@ -224,6 +239,7 @@ sub get_type_enum() {
 	$type_enum->insert("dbxx");
 	$type_enum->insert("manx");
 	$type_enum->insert("nrfx");
+	$type_enum->insert("bdbx");
 	$type_enum->insert("late");
 	$type_enum->insert("lyxx");
 	return($type_enum);
@@ -245,12 +261,15 @@ sub get_lang_enum() {
 	$lang_enum->insert("txtx");
 	$lang_enum->insert("data");
 	$lang_enum->insert("rcxx");
+	$lang_enum->insert("patc");
+	$lang_enum->insert("ascx");
 	$lang_enum->insert("html");
 	$lang_enum->insert("cssx");
 	$lang_enum->insert("dirx");
 	$lang_enum->insert("cook");
 	$lang_enum->insert("aegi");
 	$lang_enum->insert("xmlx");
+	$lang_enum->insert("xslt");
 	$lang_enum->insert("pngx");
 	$lang_enum->insert("jpgx");
 	$lang_enum->insert("epsx");
@@ -282,6 +301,7 @@ sub get_lang_enum() {
 	$lang_enum->insert("dbxx");
 	$lang_enum->insert("manx");
 	$lang_enum->insert("nrfx");
+	$lang_enum->insert("bdbx");
 	$lang_enum->insert("late");
 	$lang_enum->insert("lyxx");
 	return($lang_enum);
@@ -320,6 +340,10 @@ sub run_module($$$$$$) {
 			$foun=1;
 		}
 		if($type eq "html") {
+			$scod=Meta::Baseline::Lang::Temp::c2some($buil);
+			$foun=1;
+		}
+		if($type eq "xmlx") {
 			$scod=Meta::Baseline::Lang::Temp::c2some($buil);
 			$foun=1;
 		}
@@ -410,7 +434,7 @@ sub run_module($$$$$$) {
 			$foun=1;
 		}
 		if($type eq "gzxx") {
-			$scod=Meta::Baseline::Lang::Sgml::c2gzxx($buil);
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
 	}
@@ -524,13 +548,17 @@ sub run_module($$$$$$) {
 			$foun=1;
 		}
 		if($type eq "gzxx") {
-			$scod=Meta::Baseline::Lang::Txtx::c2gzxx($buil);
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
 	}
 	if($lang eq "data") {
 	}
 	if($lang eq "rcxx") {
+	}
+	if($lang eq "patc") {
+	}
+	if($lang eq "ascx") {
 	}
 	if($lang eq "html") {
 		if($type eq "deps") {
@@ -584,9 +612,11 @@ sub run_module($$$$$$) {
 			$foun=1;
 		}
 		if($type eq "gzxx") {
-			$scod=Meta::Baseline::Lang::Xmlx::c2gzxx($buil);
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
+	}
+	if($lang eq "xslt") {
 	}
 	if($lang eq "pngx") {
 	}
@@ -601,6 +631,18 @@ sub run_module($$$$$$) {
 	if($lang eq "targ") {
 	}
 	if($lang eq "texx") {
+		if($type eq "chec") {
+			$scod=Meta::Baseline::Lang::Texx::c2chec($buil);
+			$foun=1;
+		}
+		if($type eq "psxx") {
+			$scod=Meta::Baseline::Lang::Texx::c2psxx($buil);
+			$foun=1;
+		}
+		if($type eq "gzxx") {
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
+			$foun=1;
+		}
 	}
 	if($lang eq "deps") {
 	}
@@ -618,7 +660,7 @@ sub run_module($$$$$$) {
 			$foun=1;
 		}
 		if($type eq "gzxx") {
-			$scod=Meta::Baseline::Lang::Dvix::c2gzxx($buil);
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
 	}
@@ -628,7 +670,7 @@ sub run_module($$$$$$) {
 	}
 	if($lang eq "psxx") {
 		if($type eq "gzxx") {
-			$scod=Meta::Baseline::Lang::Psxx::c2gzxx($buil);
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
 	}
@@ -636,13 +678,17 @@ sub run_module($$$$$$) {
 	}
 	if($lang eq "rtfx") {
 		if($type eq "gzxx") {
-			$scod=Meta::Baseline::Lang::Rtfx::c2gzxx($buil);
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
 	}
 	if($lang eq "mifx") {
 	}
 	if($lang eq "midi") {
+		if($type eq "gzxx") {
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
+			$foun=1;
+		}
 	}
 	if($lang eq "bins") {
 	}
@@ -692,7 +738,7 @@ sub run_module($$$$$$) {
 	}
 	if($lang eq "pdfx") {
 		if($type eq "gzxx") {
-			$scod=Meta::Baseline::Lang::Pdfx::c2gzxx($buil);
+			$scod=Meta::Tool::Gzip::c2gzxx($buil);
 			$foun=1;
 		}
 	}
@@ -702,6 +748,8 @@ sub run_module($$$$$$) {
 	}
 	if($lang eq "nrfx") {
 	}
+	if($lang eq "bdbx") {
+	}
 	if($lang eq "late") {
 	}
 	if($lang eq "lyxx") {
@@ -710,6 +758,11 @@ sub run_module($$$$$$) {
 		Meta::Utils::System::die("havent found module [".$lang."][".$type."]");
 	}
 	return($scod);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -745,7 +798,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Switch.pm
 	PROJECT: meta
-	VERSION: 0.48
+	VERSION: 0.54
 
 =head1 SYNOPSIS
 
@@ -765,6 +818,7 @@ This is the "switch" library between all language modules.
 	get_type_enum()
 	get_lang_enum()
 	run_module($$$$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -797,7 +851,15 @@ This method will return an enum type which has all the possible languages.
 
 This will run a module for you.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -806,8 +868,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -861,10 +923,16 @@ None.
 	0.46 MV graph visualization
 	0.47 MV thumbnail user interface
 	0.48 MV more thumbnail issues
+	0.49 MV paper writing
+	0.50 MV website construction
+	0.51 MV improve the movie db xml
+	0.52 MV web site automation
+	0.53 MV SEE ALSO section fix
+	0.54 MV move tests to modules
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang::Aegi(3), Meta::Baseline::Lang::Ascx(3), Meta::Baseline::Lang::Aspe(3), Meta::Baseline::Lang::Awkx(3), Meta::Baseline::Lang::Bdbx(3), Meta::Baseline::Lang::Bins(3), Meta::Baseline::Lang::Ccxx(3), Meta::Baseline::Lang::Chec(3), Meta::Baseline::Lang::Chun(3), Meta::Baseline::Lang::Clas(3), Meta::Baseline::Lang::Conf(3), Meta::Baseline::Lang::Cook(3), Meta::Baseline::Lang::Cssx(3), Meta::Baseline::Lang::Cxxx(3), Meta::Baseline::Lang::Data(3), Meta::Baseline::Lang::Dbxx(3), Meta::Baseline::Lang::Deps(3), Meta::Baseline::Lang::Dirx(3), Meta::Baseline::Lang::Dlls(3), Meta::Baseline::Lang::Dslx(3), Meta::Baseline::Lang::Dtdx(3), Meta::Baseline::Lang::Dvix(3), Meta::Baseline::Lang::Epsx(3), Meta::Baseline::Lang::Gzxx(3), Meta::Baseline::Lang::Html(3), Meta::Baseline::Lang::Info(3), Meta::Baseline::Lang::Java(3), Meta::Baseline::Lang::Jpgx(3), Meta::Baseline::Lang::Late(3), Meta::Baseline::Lang::Libs(3), Meta::Baseline::Lang::Lily(3), Meta::Baseline::Lang::Lyxx(3), Meta::Baseline::Lang::Manx(3), Meta::Baseline::Lang::Midi(3), Meta::Baseline::Lang::Mifx(3), Meta::Baseline::Lang::Nrfx(3), Meta::Baseline::Lang::Objs(3), Meta::Baseline::Lang::Pack(3), Meta::Baseline::Lang::Patc(3), Meta::Baseline::Lang::Pdfx(3), Meta::Baseline::Lang::Perl(3), Meta::Baseline::Lang::Pgnx(3), Meta::Baseline::Lang::Pngx(3), Meta::Baseline::Lang::Psxx(3), Meta::Baseline::Lang::Pyob(3), Meta::Baseline::Lang::Pyth(3), Meta::Baseline::Lang::Rcxx(3), Meta::Baseline::Lang::Rtfx(3), Meta::Baseline::Lang::Rule(3), Meta::Baseline::Lang::Sgml(3), Meta::Baseline::Lang::Swig(3), Meta::Baseline::Lang::Targ(3), Meta::Baseline::Lang::Temp(3), Meta::Baseline::Lang::Texx(3), Meta::Baseline::Lang::Txtx(3), Meta::Baseline::Lang::Xmlx(3), Meta::Baseline::Lang::Xslt(3), Meta::Ds::Array(3), Meta::Ds::Enum(3), Meta::Pdmt::BuildInfo(3), Meta::Tool::Gzip(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

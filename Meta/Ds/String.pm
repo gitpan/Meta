@@ -5,7 +5,7 @@ package Meta::Ds::String;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.23";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub new($);
@@ -14,6 +14,7 @@ $VERSION="0.23";
 #sub set_text($$);
 #sub print($$);
 #sub cmp($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -53,6 +54,11 @@ sub cmp($$) {
 	return($self->get_text() cmp $obje->get_text());
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -86,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: String.pm
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -107,6 +113,7 @@ This is a library to let you create a set like data structure.
 	set_text($$)
 	print($$)
 	cmp($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -137,7 +144,15 @@ This will print the current string to the specified file.
 
 This method compares the string received to another string.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -146,8 +161,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -176,10 +191,13 @@ None.
 	0.21 MV movies and small fixes
 	0.22 MV thumbnail user interface
 	0.23 MV more thumbnail issues
+	0.24 MV website construction
+	0.25 MV web site automation
+	0.26 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

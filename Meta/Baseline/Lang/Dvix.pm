@@ -5,16 +5,15 @@ package Meta::Baseline::Lang::Dvix;
 use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
 use Meta::Tool::Dvi qw();
-use Meta::Tool::Gzip qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.14";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
 #sub c2psxx($);
-#sub c2gzxx($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -32,17 +31,17 @@ sub c2psxx($) {
 	return(Meta::Tool::Dvi::c2psxx($buil));
 }
 
-sub c2gzxx($) {
-	my($buil)=@_;
-	return(Meta::Tool::Gzip::c2gzxx($buil));
-}
-
 sub my_file($$) {
 	my($self,$file)=@_;
 	if($file=~/^dvix\/.*\.dvi$/) {
 		return(1);
 	}
 	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -78,7 +77,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dvix.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -96,8 +95,8 @@ Maybe someday I'll do syntax checks on those also...:)
 
 	c2chec($)
 	c2psxx($)
-	c2gzxx($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -111,16 +110,20 @@ This routine verifies dvi sources using the dvitype utility.
 
 This routine will convert DVI files to Postscript.
 
-=item B<c2gzxx($)>
-
-This routine will convert DVI files to Gzip format.
-
 =item B<my_file($$)>
 
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -129,8 +132,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -147,10 +150,13 @@ None.
 	0.09 MV movies and small fixes
 	0.10 MV thumbnail user interface
 	0.11 MV more thumbnail issues
+	0.12 MV website construction
+	0.13 MV web site automation
+	0.14 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), Meta::Tool::Dvi(3), strict(3)
 
 =head1 TODO
 

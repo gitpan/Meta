@@ -6,13 +6,13 @@ use strict qw(vars refs subs);
 use File::Basename qw();
 
 our($VERSION,@ISA);
-$VERSION="0.21";
+$VERSION="0.24";
 @ISA=qw();
 
 #sub basename();
 #sub progname();
 #sub fullname();
-#sub TEST();
+#sub TEST($);
 
 #__DATA__
 
@@ -33,13 +33,15 @@ sub fullname() {
 	return($0);
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	my($base)=basename();
 	my($prog)=progname();
 	my($full)=fullname();
 	Meta::Utils::Output::print("basename is [".$base."]\n");
 	Meta::Utils::Output::print("progname is [".$prog."]\n");
 	Meta::Utils::Output::print("fullname is [".$full."]\n");
+	return(1);
 }
 
 1;
@@ -75,7 +77,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Progname.pm
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -98,7 +100,7 @@ be gone one day and they you'll be sorry.
 	basename()
 	progname()
 	fullname()
-	TEST()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -124,12 +126,16 @@ function.
 This routine returns the full path to the current script. This could be
 useful for various purposes.
 
-=item B<TEST()>
+=item B<TEST($)>
 
 A small test suite for this module. Call it to test the functionality
 of the module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -138,8 +144,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -166,10 +172,13 @@ None.
 	0.19 MV thumbnail user interface
 	0.20 MV dbman package creation
 	0.21 MV more thumbnail issues
+	0.22 MV website construction
+	0.23 MV web site automation
+	0.24 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Basename(3), strict(3)
 
 =head1 TODO
 

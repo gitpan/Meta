@@ -12,7 +12,7 @@ use Meta::Utils::Net::Md qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.27";
 @ISA=qw();
 
 #sub act($$$$$$$$$);
@@ -20,6 +20,7 @@ $VERSION="0.24";
 #sub files_machine($$);
 #sub file_machines($$);
 #sub files_machines($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -107,6 +108,11 @@ sub file_machine($$) {
 	my($file,$machine)=@_;
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -140,7 +146,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Distrib.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -159,6 +165,7 @@ This is a library to help you put a set of files on a machine.
 	files_machine($$)
 	file_machines($$)
 	files_machines($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -172,7 +179,15 @@ This will do the actual distribution.
 
 This will files on a machine for you using a
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -181,8 +196,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -212,10 +227,13 @@ None.
 	0.22 MV movies and small fixes
 	0.23 MV thumbnail user interface
 	0.24 MV more thumbnail issues
+	0.25 MV website construction
+	0.26 MV web site automation
+	0.27 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Distrib::Files(3), Meta::Distrib::Machines(3), Meta::Utils::Net::Cp(3), Meta::Utils::Net::Md(3), Meta::Utils::Net::Rm(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.34";
+$VERSION="0.37";
 @ISA=qw();
 
 #sub new($);
@@ -20,6 +20,7 @@ $VERSION="0.34";
 #sub print($$);
 #sub read($$);
 #sub write($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -133,6 +134,11 @@ sub write($$) {
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -166,7 +172,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Hash.pm
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.37
 
 =head1 SYNOPSIS
 
@@ -203,6 +209,7 @@ so it effectivly acts as a set.
 	print($$)
 	read($$)
 	write($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -272,7 +279,15 @@ file.
 This will write a hash table as in the read method. See that methods
 documentation for details.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -281,8 +296,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -322,10 +337,13 @@ None.
 	0.32 MV more thumbnail stuff
 	0.33 MV thumbnail user interface
 	0.34 MV more thumbnail issues
+	0.35 MV website construction
+	0.36 MV web site automation
+	0.37 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

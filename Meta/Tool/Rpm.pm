@@ -5,16 +5,16 @@ package Meta::Tool::Rpm;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
-#sub your_proc($);
+#sub TEST($);
 
 #__DATA__
 
-sub your_proc($) {
-	my($proc)=@_;
-	return(0);
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -50,7 +50,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Rpm.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -66,18 +66,21 @@ find out information for there (which packages are installed etc...).
 
 =head1 FUNCTIONS
 
-	your_proc($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<your_proc($)>
+=item B<TEST($)>
 
-This routine will return "yes" if the procedure which is given to it is one
-which is handled by this module.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -86,8 +89,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -100,10 +103,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

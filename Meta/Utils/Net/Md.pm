@@ -5,15 +5,21 @@ package Meta::Utils::Net::Md;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.25";
 @ISA=qw();
 
 #sub doit($$$$$$);
+#sub TEST($);
 
 #__DATA__
 
 sub doit($$$$$$) {
 	my($verb,$demo,$name,$user,$pass,$cdir)=@_;
+	return(1);
+}
+
+sub TEST($) {
+	my($context)=@_;
 	return(1);
 }
 
@@ -50,7 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Md.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -69,6 +75,7 @@ This currently uses ftp (yes, I know its funny) to do its thing.
 =head1 FUNCTIONS
 
 	doit($$$$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -78,7 +85,15 @@ This currently uses ftp (yes, I know its funny) to do its thing.
 
 This function will actualy do the distribution.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -87,8 +102,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -116,10 +131,13 @@ None.
 	0.20 MV movies and small fixes
 	0.21 MV thumbnail user interface
 	0.22 MV more thumbnail issues
+	0.23 MV website construction
+	0.24 MV web site automation
+	0.25 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

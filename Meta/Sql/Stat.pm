@@ -7,11 +7,15 @@ use Meta::Ds::String qw();
 use SQL::Statement qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.19";
 @ISA=qw(Meta::Ds::String);
 
 #sub execute($$);
 #sub check($);
+#sub is_reconnect($);
+#sub is_sql($);
+#sub get_reconnect_name($);
+#sub TEST($);
 
 #__DATA__
 
@@ -55,6 +59,11 @@ sub get_reconnect_name($) {
 	return($fields[1]);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -88,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stat.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -106,6 +115,10 @@ execution on a specified DBI connection and writing it down to a file.
 
 	execute($$)
 	check($)
+	is_reconnect($)
+	is_sql($)
+	get_reconnect_name($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -133,7 +146,15 @@ This is the inverse meaning of "is_reconnect".
 
 This method retrieves the name of the database to reconnect to.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::String(3)
 
 =head1 BUGS
 
@@ -142,8 +163,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -165,10 +186,13 @@ None.
 	0.14 MV movies and small fixes
 	0.15 MV thumbnail user interface
 	0.16 MV more thumbnail issues
+	0.17 MV website construction
+	0.18 MV web site automation
+	0.19 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::String(3), SQL::Statement(3), strict(3)
 
 =head1 TODO
 

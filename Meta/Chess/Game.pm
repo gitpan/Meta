@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.27";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -34,6 +34,7 @@ $VERSION="0.24";
 #sub get_blackelo($);
 #sub pgn_write($$);
 #sub pgn_read($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -270,6 +271,11 @@ sub pgn_read($$) {
 	$parser->fini();
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -303,7 +309,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Game.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -350,6 +356,7 @@ itself from a pgn file.
 	get_blackelo($)
 	pgn_write($$)
 	pgn_read($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -455,7 +462,15 @@ This will write the file game to a pgn file for you.
 
 This will read a pgn file into the current object.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Array(3)
 
 =head1 BUGS
 
@@ -464,8 +479,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -495,10 +510,13 @@ None.
 	0.22 MV movies and small fixes
 	0.23 MV thumbnail user interface
 	0.24 MV more thumbnail issues
+	0.25 MV website construction
+	0.26 MV web site automation
+	0.27 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Array(3), strict(3)
 
 =head1 TODO
 

@@ -12,7 +12,7 @@ use Meta::Utils::File::Move qw();
 use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.17";
+$VERSION="0.20";
 @ISA=qw();
 
 #sub check($$);
@@ -28,6 +28,7 @@ $VERSION="0.17";
 #sub c2late($);
 #sub c2lyxx($);
 #sub tool($$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -169,6 +170,11 @@ sub tool($$$$) {
 	return($scod);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -202,7 +208,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgmltools.pm
 	PROJECT: meta
-	VERSION: 0.17
+	VERSION: 0.20
 
 =head1 SYNOPSIS
 
@@ -236,6 +242,7 @@ Sgmltools is quite problematic:
 	c2late($)
 	c2lyxx($)
 	tool($$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -306,7 +313,15 @@ The problem is that sgmltools does not allow the option to specify the
 output file and so we do all the work using a temporary file and then
 move the result.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -315,8 +330,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -339,10 +354,13 @@ None.
 	0.15 MV movies and small fixes
 	0.16 MV thumbnail user interface
 	0.17 MV more thumbnail issues
+	0.18 MV website construction
+	0.19 MV web site automation
+	0.20 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

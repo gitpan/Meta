@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.17";
 @ISA=qw();
 
 #sub new($);
@@ -22,6 +22,7 @@ $VERSION="0.14";
 #sub set_large_castle($$);
 #sub get_large_castle($);
 #sub print($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -116,6 +117,11 @@ sub print($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -149,7 +155,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Move.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -178,6 +184,7 @@ of the move.
 	set_large_castle($$)
 	get_large_castle($)
 	print($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -235,7 +242,15 @@ This will give you the large castle parameter.
 
 This will print the move.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -244,8 +259,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -265,10 +280,13 @@ None.
 	0.12 MV movies and small fixes
 	0.13 MV thumbnail user interface
 	0.14 MV more thumbnail issues
+	0.15 MV website construction
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

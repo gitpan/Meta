@@ -7,7 +7,7 @@ use Pod::Parser qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.16";
 @ISA=qw(Pod::Parser);
 
 #sub begin_pod($);
@@ -15,6 +15,7 @@ $VERSION="0.13";
 #sub verbatim($$$$);
 #sub textblock($$$$);
 #sub interior_sequence($$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -95,6 +96,11 @@ sub interior_sequence($$$$) {
 	return(undef);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -128,7 +134,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Docbook.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -149,6 +155,7 @@ mind you).
 	verbatim($$$$)
 	textblock($$$$)
 	interior_sequence($$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -176,7 +183,15 @@ This method overrides the base classes textblock method to handle textblocks.
 This method overrides the base classes interior_sequence method ot handle
 interior sequences.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Pod::Parser(3)
 
 =head1 BUGS
 
@@ -185,8 +200,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -205,10 +220,13 @@ None.
 	0.11 MV movies and small fixes
 	0.12 MV thumbnail user interface
 	0.13 MV more thumbnail issues
+	0.14 MV website construction
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), Pod::Parser(3), strict(3)
 
 =head1 TODO
 

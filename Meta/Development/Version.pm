@@ -3,10 +3,10 @@
 package Meta::Development::Version;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub BEGIN();
@@ -23,13 +23,14 @@ $VERSION="0.07";
 #sub is_incompatible($$);
 #sub next_major($$);
 #sub next_minor($$);
-#sub next_path($$);
+#sub next_patch($$);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_major",
 		-java=>"_minor",
 		-java=>"_patch",
@@ -82,6 +83,11 @@ sub next_patch($) {
 	$self->set_patch($self->get_patch()+1);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -115,7 +121,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Version.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -177,7 +183,8 @@ Keeping that in mind I hope you like the module...:)
 	is_incompatible($$)
 	next_major($$)
 	next_minor($$)
-	next_path($$)
+	next_patch($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -225,7 +232,15 @@ This method will increase the minor number of the version.
 This method will advance the version to a version which is just a patch
 level above the current.
 
+=item B<TEST($)>
+
+Test suite for this model.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -234,8 +249,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -248,10 +263,14 @@ None.
 	0.05 MV thumbnail project basics
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site development
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

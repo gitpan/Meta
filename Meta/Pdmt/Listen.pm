@@ -6,12 +6,13 @@ use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub new($);
 #sub listen($);
 #sub cb($);
+#sub TEST($);
 
 #__DATA__
 
@@ -35,6 +36,11 @@ sub listen($) {
 sub cb($) {
 	my($self)=@_;
 	$self->quit();
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -70,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Listen.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -88,6 +94,7 @@ on any request.
 	new($)
 	listen($)
 	cb($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -109,7 +116,15 @@ these lines were removed from the code:
 my($temp)=*STDIN;
 Meta::Utils::Output::print("got [".$temp."]\n");
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -118,8 +133,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -133,10 +148,13 @@ None.
 	0.06 MV movies and small fixes
 	0.07 MV thumbnail user interface
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

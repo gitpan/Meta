@@ -7,7 +7,7 @@ use IO qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub new($);
@@ -18,6 +18,7 @@ $VERSION="0.26";
 #sub write_rec($);
 #sub read_head($);
 #sub index_fields($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -162,6 +163,11 @@ sub index_fields($$$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -195,7 +201,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: TextTable.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -216,6 +222,7 @@ implementation from its users.
 	write_rec($)
 	read_head($);
 	index_fields($$$);
+	TEST($);
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -225,17 +232,25 @@ implementation from its users.
 
 This constructor creates a new Meta::Utils::TextTable object.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
-Million.
+None.
 
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -267,10 +282,13 @@ Million.
 	0.24 MV graph visualization
 	0.25 MV thumbnail user interface
 	0.26 MV more thumbnail issues
+	0.27 MV website construction
+	0.28 MV web site automation
+	0.29 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+IO(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

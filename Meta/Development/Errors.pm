@@ -6,11 +6,12 @@ use strict qw(vars refs subs);
 use Meta::Tool::Editor qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub print($);
 #sub edit($);
+#sub TEST($);
 
 #__DATA__
 
@@ -33,6 +34,11 @@ sub edit($) {
 		my($text)=$el_text->getFirstChild()->getData();
 		Meta::Tool::Editor::edit_line_char($file,$line,$char);
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -68,7 +74,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Errors.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -87,6 +93,7 @@ It will run editors on the errors with positions set to the correct places.
 
 	print($)
 	edit($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -100,7 +107,15 @@ This method will print out the errors object.
 
 This method will run the editor on all the errors in the object received.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -109,8 +124,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -123,10 +138,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Tool::Editor(3), strict(3)
 
 =head1 TODO
 

@@ -3,12 +3,15 @@
 package Meta::Utils::File::Time;
 
 use strict qw(vars refs subs);
+use File::stat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub time($);
+#sub new_time($);
+#sub TEST($);
 
 #__DATA__
 
@@ -16,6 +19,21 @@ sub time($) {
 	my($file)=@_;
 	my($mtime)=(stat($file))[9];
 	return($mtime);
+}
+
+sub new_time($) {
+	my($file)=@_;
+	my($st)=File::stat::stat($file);
+	if(!defined($st)) {
+		return(0);
+	} else {
+		return($st->mtime());
+	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -51,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Time.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -66,6 +84,8 @@ This module eases the case for getting and setting file modification times.
 =head1 FUNCTIONS
 
 	time($)
+	new_time($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -78,7 +98,24 @@ This routine receives:
 The routine then proceeds to use the stat function to find
 the files modification time and returns it.
 
+=item B<new_time($)>
+
+This function receives:
+0. file - file for which the modification time is required.
+This method proceeds to use the File::stat module to get
+the info for this file and get the modification time for
+the file. If the file does not exist the method returns 0
+(very old file 1/1/1970).
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -87,8 +124,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -101,10 +138,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::stat(3), strict(3)
 
 =head1 TODO
 

@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub get_gidx($);
@@ -14,6 +14,7 @@ $VERSION="0.07";
 #sub check_hash_gidx($$$);
 #sub grou2gidx($);
 #sub check_hash_grou($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -67,6 +68,11 @@ sub check_hash_grou($$$) {
 	return(check_hash_gidx($hash,$gidx,$verb));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -100,7 +106,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Group.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -119,6 +125,7 @@ This package can check and fix the group settings on files within your change.
 	check_hash_gidx($$$)
 	grou2gidx($)
 	check_hash_grou($$$)
+	TEST($);
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -153,7 +160,15 @@ This does exactly as the above function check_hash_gidx except it receives
 a group name and not an absolute id, and then translates it to an absolute
 id in order to make the check and simple calls: check_hash_gidx.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -162,8 +177,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -176,10 +191,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

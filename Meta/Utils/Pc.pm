@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub clean($);
@@ -17,6 +17,7 @@ $VERSION="0.25";
 #sub writ_perl_inte($$$$);
 #sub get_temp_dir();
 #sub pc_path($);
+#sub TEST($);
 
 #__DATA__
 
@@ -131,6 +132,11 @@ sub pc_path($) {
 	return($stri);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -164,7 +170,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pc.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -188,6 +194,7 @@ This is really a drag because PC's have so little capabilities...
 	writ_perl_inte($$$$)
 	get_temp_dir()
 	pc_path($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -239,7 +246,15 @@ This gives you the temporary directory (unix style) of work on a pc.
 This converts a unix string into a pc string.
 (converting the god damn slashes...
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -248,8 +263,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -280,10 +295,13 @@ None.
 	0.23 MV thumbnail user interface
 	0.24 MV more thumbnail issues
 	0.25 MV md5 project
+	0.26 MV website construction
+	0.27 MV web site automation
+	0.28 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

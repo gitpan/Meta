@@ -5,7 +5,7 @@ package Meta::Ds::Enumerated;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.03";
+$VERSION="0.06";
 @ISA=qw();
 
 #sub new($);
@@ -52,7 +52,8 @@ sub get($) {
 	return($self->{VAL});
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	#my($object)=Meta::Ds::Enumerated->new();
 	return(1);
 }
@@ -90,7 +91,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Enumerated.pm
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
@@ -111,7 +112,7 @@ share a set of values from which they can be assigned.
 	get_enum($)
 	set($$)
 	get($)
-	TEST()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -139,11 +140,15 @@ This method will set the value of the variable.
 
 This method will retrieve the value of the variable.
 
-=item B<TEST()>
+=item B<TEST($)>
 
-This is a test suite for this object.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -152,8 +157,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -162,10 +167,13 @@ None.
 	0.01 MV thumbnail user interface
 	0.02 MV import tests
 	0.03 MV more thumbnail issues
+	0.04 MV website construction
+	0.05 MV web site automation
+	0.06 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

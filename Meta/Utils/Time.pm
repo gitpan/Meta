@@ -8,7 +8,7 @@ use Time::Local qw();
 use Date::Manip qw();
 
 our($VERSION,@ISA);
-$VERSION="0.23";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub tm_to_string($);
@@ -17,6 +17,8 @@ $VERSION="0.23";
 #sub now_string();
 #sub now_epoch();
 #sub unixdate2mysql($);
+#sub stat2mysql($);
+#sub TEST($);
 
 #__DATA__
 
@@ -67,6 +69,11 @@ sub stat2mysql($) {
 	return(unixdate2mysql($date));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -100,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Time.pm
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -129,6 +136,7 @@ by yourself...(sad but true...).
 	now_epoch()
 	unixdate2mysql($)
 	stat2mysql($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -167,7 +175,15 @@ database. This method uses the Date::Manip module (a very good module).
 This method converts the dates returned from stat (epoch 1970 seconds) to
 a format suitable for Mysql. Uses Date::Manip.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -176,8 +192,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -206,10 +222,13 @@ None.
 	0.21 MV movie stuff
 	0.22 MV thumbnail user interface
 	0.23 MV more thumbnail issues
+	0.24 MV website construction
+	0.25 MV web site automation
+	0.26 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Date::Manip(3), Time::Local(3), Time::localtime(3), strict(3)
 
 =head1 TODO
 

@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Frontier::Client qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw(Frontier::Client);
 
 #sub new($);
+#sub TEST($);
 
 #__DATA__
 
@@ -25,6 +26,11 @@ sub new($) {
 	);
 	bless($self,$clas);
 	return($self);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -60,7 +66,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Client.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -77,6 +83,7 @@ Frontier::Client (from the Frontier::RPC package).
 =head1 FUNCTIONS
 
 	new($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -86,7 +93,15 @@ Frontier::Client (from the Frontier::RPC package).
 
 This method instantiates a new object.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Frontier::Client(3)
 
 =head1 BUGS
 
@@ -95,8 +110,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -109,10 +124,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Frontier::Client(3), strict(3)
 
 =head1 TODO
 

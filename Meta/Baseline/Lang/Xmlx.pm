@@ -20,13 +20,12 @@ use Meta::Utils::File::File qw();
 use Meta::Archive::Tar qw();
 #use Meta::Archive::MyTar qw();
 use Meta::Tool::Onsgmls qw();
-use Meta::Tool::Gzip qw();
 use Meta::Lang::Perl::Perl qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::String qw();
 
 our($VERSION,@ISA);
-$VERSION="0.37";
+$VERSION="0.40";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -38,6 +37,7 @@ $VERSION="0.37";
 #sub c2perl($);
 #sub c2chun($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -379,17 +379,17 @@ sub c2chun($) {
 	return(Meta::Lang::Xml::Xml::c2chun($buil));
 }
 
-sub c2gzxx($) {
-	my($buil)=@_;
-	return(Meta::Tool::Gzip::c2gzxx($buil));
-}
-
 sub my_file($$) {
 	my($self,$file)=@_;
 	if($file=~/^xmlx\/.*\.xml$/) {
 		return(1);
 	}
 	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -425,7 +425,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xmlx.pm
 	PROJECT: meta
-	VERSION: 0.37
+	VERSION: 0.40
 
 =head1 SYNOPSIS
 
@@ -449,6 +449,7 @@ This package knows how to validate xml files and find xml dependencies.
 	c2perl($)
 	c2chun($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -491,16 +492,20 @@ This method will create perl packages.
 
 This method will xml chunks (no DTD information) from xml files.
 
-=item B<c2gzxx($)>
-
-This routine will convert DVI files to Gzip format.
-
 =item B<my_file($$)>
 
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -509,8 +514,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -553,10 +558,13 @@ None.
 	0.35 MV more Class method generation
 	0.36 MV thumbnail user interface
 	0.37 MV more thumbnail issues
+	0.38 MV website construction
+	0.39 MV web site automation
+	0.40 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Archive::Tar(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Db::Connections(3), Meta::Db::Def(3), Meta::Db::Ops(3), Meta::Lang::Docb::Params(3), Meta::Lang::Perl::Perl(3), Meta::Lang::Perl::Perlpkgs(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aegis(3), Meta::Tool::Onsgmls(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::String(3), Meta::Utils::Utils(3), Meta::Xml::Parsers::Links(3), Meta::Xml::Writer(3), strict(3)
 
 =head1 TODO
 

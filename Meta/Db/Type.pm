@@ -4,10 +4,11 @@ package Meta::Db::Type;
 
 use strict qw(vars refs subs);
 use Meta::Ds::Connected qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
+use DBI qw();
 
 our($VERSION,@ISA);
-$VERSION="0.42";
+$VERSION="0.47";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -18,18 +19,19 @@ $VERSION="0.42";
 #sub print($$);
 #sub printd($$);
 #sub printx($$);
-#syb getsql_create($$$);
-#syb getsql_drop($$$);
-#syb getsql_names($$);
-#syb getsql_bind($$);
+#sub getsql_create($$$);
+#sub getsql_drop($$$);
+#sub getsql_names($$);
+#sub getsql_bind($$);
+#sub TEST($);
 
 #__DATA__
 
 our(%tran,%tran_pg,%tran_mysql);
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_set_ref",
 		-java=>"_enum_ref",
@@ -89,6 +91,8 @@ sub BEGIN() {
 		"geopolyline",defined,
 		"geopolygon",defined,
 		"geogrid",defined,
+		"sgml",defined,
+		"postscript",defined,
 	);
 	%tran_pg=(
 		"index","INTEGER",
@@ -140,6 +144,8 @@ sub BEGIN() {
 		"geopolyline","PATH",
 		"geopolygon","POLYGON",
 		"geogrid","BYTEA",
+		"sgml","BYTEA",
+		"postscript","BYTEA",
 	);
 	%tran_mysql=(
 		"index","INTEGER",
@@ -191,6 +197,8 @@ sub BEGIN() {
 		"geopolyline","BLOB",
 		"geopolygon","BLOB",
 		"geogrid","BLOB",
+		"sgml","BLOB",
+		"postscript","BLOB",
 	);
 }
 
@@ -383,43 +391,54 @@ sub getsql_bind($$) {
 	if($info->is_postgres()) {
 		my($type)=$self->get_name();
 		if($type eq "tinybinary") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "smallbinary") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "mediumbinary") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "largebinary") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "unlimitedbinary") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "smallpng") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "largepng") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "smalljpg") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "largejpg") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "smalljpg") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "mp3") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
 		}
 		if($type eq "wav") {
-			return("SQL_BINARY");
+			return(DBI::SQL_BINARY);
+		}
+		if($type eq "sgml") {
+			return(DBI::SQL_BINARY);
+		}
+		if($type eq "postscript") {
+			return(DBI::SQL_BINARY);
 		}
 	}
 	return(undef);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -455,7 +474,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Type.pm
 	PROJECT: meta
-	VERSION: 0.42
+	VERSION: 0.47
 
 =head1 SYNOPSIS
 
@@ -483,6 +502,7 @@ All types of information are in here.
 	getsql_drop($$$)
 	getsql_names($$)
 	getsql_bind($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -545,7 +565,15 @@ fit for inclusion in an SQL CREATE TABLE type statement.
 
 This method returns the DBI parameter suitable for inclusion in "bind_param" type DBI statements.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -554,8 +582,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -603,10 +631,15 @@ None.
 	0.40 MV thumbnail user interface
 	0.41 MV import tests
 	0.42 MV more thumbnail issues
+	0.43 MV paper writing
+	0.44 MV website construction
+	0.45 MV web site development
+	0.46 MV web site automation
+	0.47 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+DBI(3), Meta::Class::MethodMaker(3), Meta::Ds::Connected(3), strict(3)
 
 =head1 TODO
 

@@ -10,7 +10,7 @@ use Meta::Ds::Ohash qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.33";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub new_file($);
@@ -18,6 +18,7 @@ $VERSION="0.30";
 #sub read($$);
 #sub getd($$$);
 #sub getenv($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -70,6 +71,11 @@ sub getenv($$) {
 	return($resu);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -103,7 +109,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Options.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.33
 
 =head1 SYNOPSIS
 
@@ -124,6 +130,7 @@ This library lets you read and write configuration files.
 	read($$)
 	getd($$$)
 	getenv($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -150,7 +157,15 @@ This will get a value but will return a default value if no value exists.
 This is a new get routine which is overridable by the envrionment.
 Mind you, that a default value must be available in the options file.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Ohash(3)
 
 =head1 BUGS
 
@@ -159,8 +174,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -196,10 +211,13 @@ None.
 	0.28 MV more thumbnail stuff
 	0.29 MV thumbnail user interface
 	0.30 MV more thumbnail issues
+	0.31 MV website construction
+	0.32 MV web site automation
+	0.33 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Ds::Ohash(3), Meta::Utils::Env(3), Meta::Utils::File::File(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

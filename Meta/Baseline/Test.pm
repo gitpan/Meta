@@ -6,23 +6,41 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Aegis qw();
 use Meta::Utils::System qw();
 use Meta::Utils::Utils qw();
+use XML::Simple qw();
+#use Data::Dumper qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.29";
 @ISA=qw();
+
+#sub BEGIN();
 
 #sub redirect_on();
 #sub redirect_off();
 
 #sub code_to_string($);
+#sub string_to_code($);
 
 #sub set_vars_for($$);
 
 #sub get_user();
 #sub get_password();
 #sub get_host();
+#sub get_domain();
+#sub get_mysqldsn();
+#sub get_mysqluser();
+#sub get_mysqlpass();
+#sub TEST($);
 
 #__DATA__
+
+our($config);
+
+sub BEGIN() {
+	my($file)=Meta::Baseline::Aegis::which("xmlx/configs/test.xml");
+	$config=XML::Simple::XMLin($file);
+#	print Data::Dumper::Dumper($config);
+}
 
 sub redirect_on() {
 	my($temp_stde)="/dev/null";
@@ -51,6 +69,21 @@ sub code_to_string($) {
 	return($stri);
 }
 
+sub string_to_code($) {
+	my($string)=@_;
+	my($code);
+	if($string eq "ok") {
+		$code=1;
+	} else {
+		if($string eq "failed") {
+			$code=0;
+		} else {
+			Meta::Utils::System::die("what type of string is [".$string."]");
+		}
+	}
+	return($code);
+}
+
 sub set_vars_for($$) {
 	my($plat,$arch)=@_;
 	my($list)=Meta::Baseline::Aegis::search_path_list();
@@ -62,15 +95,36 @@ sub set_vars_for($$) {
 }
 
 sub get_user() {
-	return("abuser");
+	return($config->{"config"}->{"user"}->{"value"});
 }
 
 sub get_password() {
-	return("abuser");
+	return($config->{"config"}->{"password"}->{"value"});
 }
 
 sub get_host() {
-	return("abuse");
+	return($config->{"config"}->{"host"}->{"value"});
+}
+
+sub get_domain() {
+	return($config->{"config"}->{"domain"}->{"value"});
+}
+
+sub get_mysqldsn() {
+	return($config->{"config"}->{"mysqldsn"}->{"value"});
+}
+
+sub get_mysqluser() {
+	return($config->{"config"}->{"mysqluser"}->{"value"});
+}
+
+sub get_mysqlpass() {
+	return($config->{"config"}->{"mysqlpass"}->{"value"});
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -106,7 +160,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Test.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -123,17 +177,28 @@ scripts for the system. Have fun.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	redirect_on()
 	redirect_off()
 	code_to_string($)
+	string_to_code($)
 	set_vars_for($$)
 	get_user()
 	get_password()
 	get_host()
+	get_domain()
+	get_mysqldsn()
+	get_mysqluser()
+	get_mysqlpass()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+This method inits the testing module by reading its XML configuration file.
 
 =item B<redirect_on()>
 
@@ -147,6 +212,11 @@ This will release the stdout and stderr blocks.
 
 This function will translate a return code from a test to a string that
 expresses whether the test failed or not ie "ok" or "failed".
+
+=item B<string_to_code($)>
+
+This function will translate a string which represents success or failure
+in tests ("ok" or "failed") to a valid return code (1 or 0).
 
 =item B<set_vars_for($$)>
 
@@ -165,7 +235,31 @@ This method will return the password of the user which can be abused in tests.
 
 This method will return the hostname of a machine that can be abused in tests.
 
+=item B<get_domain($)>
+
+This method will return a valid domain name which can be used in tests.
+
+=item B<get_mysqldsn($)>
+
+This method will return a valid dsn for connecting to a mysql database.
+
+=item B<get_mysqluser($)>
+
+This method will return a valid mysql user for connecting to a mysql database.
+
+=item B<get_mysqlpass($)>
+
+This method will return a valid mysql password for connecting to a mysql database.
+
+=item B<TEST($)>
+
+Test suire for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -174,8 +268,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -206,10 +300,14 @@ None.
 	0.23 MV movies and small fixes
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV website construction
+	0.27 MV improve the movie db xml
+	0.28 MV web site automation
+	0.29 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Utils::System(3), Meta::Utils::Utils(3), XML::Simple(3), strict(3)
 
 =head1 TODO
 

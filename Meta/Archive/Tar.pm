@@ -7,13 +7,14 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::File::File qw();
 use Archive::Tar qw();
 use Meta::Utils::File::Remove qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::Utils qw();
 use Meta::Utils::System qw();
+use Meta::Ds::Set qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.14";
 @ISA=qw(Archive::Tar);
 
 #sub BEGIN();
@@ -22,12 +23,12 @@ $VERSION="0.10";
 #sub add_file($$$);
 #sub add_deve($$$);
 #sub write($$);
-#sub TEST();
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_type",
 		-java=>"_uname",
 		-java=>"_gname",
@@ -38,38 +39,47 @@ sub new($) {
 	my($clas)=@_;
 	my($self)=Archive::Tar->new();
 	bless($self,$clas);
+	$self->{SET}=Meta::Ds::Set->new();
 	return($self);
 }
 
 sub add_data($$$) {
 	my($self,$name,$data)=@_;
-	# the next paragraph is a bug work around
-	if($data eq "") {#make the data have something so It will go into the archive
-		$data=" ";
-		#add data with specified length
-		#$self->SUPER::add_data($name,$data,{ "size"=>0 });
-		#$self->SUPER::add_data($name,$data);
+	my($set)=$self->{SET};
+	if($set->hasnt($name)) {
+		# the next paragraph is a bug work around
+		if($data eq "") {#make the data have something so It will go into the archive
+			$data=" ";
+			#add data with specified length
+			#$self->SUPER::add_data($name,$data,{ "size"=>0 });
+			#$self->SUPER::add_data($name,$data);
+		}
+		my($hash)={};
+		if($self->get_uname() ne defined) {
+			$hash->{"uname"}=$self->get_uname();
+		}
+		if($self->get_gname() ne defined) {
+			$hash->{"gname"}=$self->get_gname();
+		}
+		$self->SUPER::add_data($name,$data,$hash);
+		$set->insert($name);
 	}
-	my($hash)={};
-	if($self->get_uname() ne defined) {
-		$hash->{"uname"}=$self->get_uname();
-	}
-	if($self->get_gname() ne defined) {
-		$hash->{"gname"}=$self->get_gname();
-	}
-	$self->SUPER::add_data($name,$data,$hash);
 }
 
 sub add_file($$$) {
 	my($self,$name,$file)=@_;
-	my($data)=Meta::Utils::File::File::load($file);
-	return($self->add_data($name,$data));
+	my($set)=$self->{SET};
+#	if($set->hasnt($name)) {
+#		$set->insert($name);
+		my($data)=Meta::Utils::File::File::load($file);
+		return($self->add_data($name,$data));
+#	}
 }
 
 sub add_deve($$$) {
 	my($self,$name,$file)=@_;
-	my($file)=Meta::Baseline::Aegis::which($file);
-	return($self->add_file($name,$file));
+	my($abso)=Meta::Baseline::Aegis::which($file);
+	return($self->add_file($name,$abso));
 }
 
 sub write($$) {
@@ -77,7 +87,8 @@ sub write($$) {
 	$self->SUPER::write($targ,9);
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	my($tar)=Meta::Archive::Tar->new();
 	$tar->add_data("foo.c","");
 	$tar->add_deve("movies.xml","xmlx/movie/movie.xml");
@@ -123,7 +134,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Tar.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -138,6 +149,8 @@ This class extends the Archive::Tar class.
 It adds services like adding a file under a different name,
 and adding a baseline relative file.
 
+It also guards the user from adding the same file several times.
+
 Currently, because of the underlying Archive::Tar
 implementation, only the gzip mode is supported.
 
@@ -149,7 +162,7 @@ implementation, only the gzip mode is supported.
 	add_file($$$)
 	add_deve($$$)
 	write($$)
-	TEST()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -191,12 +204,16 @@ This method will write the archive. This method overrides the Archive::Tar
 method by the same name because that method passes the gzip compression factor
 in the activation too (which I think is bad practice).
 
-=item B<TEST()>
+=item B<TEST($)>
 
 This is a test suite for the Meta::Archive::Tar package.
 Currently it just creates an archive with some data.
 
 =back
+
+=head1 SUPER CLASSES
+
+Archive::Tar(3)
 
 =head1 BUGS
 
@@ -205,8 +222,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -222,11 +239,17 @@ None.
 	0.08 MV thumbnail user interface
 	0.09 MV import tests
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site development
+	0.13 MV web site automation
+	0.14 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Archive::Tar(3), Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Set(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 
 -once the author of Archive::Tar gets ridd of the bug where empty data files could not be created then fix the code here.
+
+-add method to add a files under the same name as the addition (bypass the load mechanism).

@@ -5,9 +5,10 @@ package Meta::Utils::File::File;
 use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 use Meta::Baseline::Aegis qw();
+#require 'sys/ioctl.ph';
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub check_mult_regexp($$$);
@@ -15,6 +16,7 @@ $VERSION="0.25";
 #sub save_nodie($$);
 #sub save($$);
 #sub load_nodie($$);
+#sub old_load($);
 #sub load($);
 #sub load_deve($);
 #sub load_line($$);
@@ -25,6 +27,7 @@ $VERSION="0.25";
 #sub check_notexist($);
 #sub create_new($);
 #sub subst($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -92,18 +95,28 @@ sub load_nodie($$) {
 		return(0);
 	}
 	binmode(FILE);
-	$$text="";
-	my($line);
-	while($line=<FILE> || 0) {
-		$$text.=$line;
+	#find out how many bytes to read
+	my($size);
+	$size=pack("L",0);
+	ioctl(FILE,0x541b,$size);
+	$size=unpack("L",$size);
+	my($ret)=read(FILE,$$text,$size);
+	if($ret!=$size) {
+		Meta::Utils::System::die("very strange error");
 	}
+# this is old code which reads line by line
+#	$$text="";
+#	my($line);
+#	while($line=<FILE> || 0) {
+#		$$text.=$line;
+#	}
 	if(!close(FILE)) {
 		return(0);
 	}
 	return(1);
 }
 
-sub load($) {
+sub old_load($) {
 	my($file)=@_;
 	open(FILE,$file) || Meta::Utils::System::die("unable to open file [".$file."]");
 	binmode(FILE);
@@ -114,6 +127,15 @@ sub load($) {
 	}
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
 	return($resu);
+}
+
+sub load($) {
+	my($file)=@_;
+	my($text);
+	if(!load_nodie($file,\$text)) {
+		Meta::Utils::System::die("unable to read file [".$file."]");
+	}
+	return($text);
 }
 
 sub load_deve($) {
@@ -214,6 +236,11 @@ sub subst($$$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -247,7 +274,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: File.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -272,6 +299,7 @@ For instance: check if a file exists, compare two files etc...
 	save_nodie($$)
 	save($$)
 	load_nodie($$)
+	old_load($)
 	load($)
 	load_deve($)
 	load_line($$)
@@ -282,6 +310,7 @@ For instance: check if a file exists, compare two files etc...
 	check_notexist($)
 	create_new($)
 	subst($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -319,11 +348,14 @@ This routine receives a file name and a reference to a string.
 The routine loads the file into the string. If the routine fails
 somewhere then it return a valid error bit.
 
+=item B<old_load($)>
+
+This is the old implementation of the load routine which gulps the file
+down one line at a time.
+
 =item B<load($)>
 
 This routine loads up a files into a single string and gives it to you.
-Currently it just loads up the file line by line and catenates them into
-a variable.
 
 =item B<load_deve($)>
 
@@ -373,7 +405,15 @@ This function receives the following arguments:
 3. Pattern to be replaced with.
 And modifies the file by replacing the required pattern with the target pattern.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -382,8 +422,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -414,17 +454,20 @@ None.
 	0.23 MV movies and small fixes
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV website construction
+	0.27 MV web site automation
+	0.28 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
-
--Can we do the file load function in a more efficient way ? (like first getting the size of the file and the gulping it down?).
 
 -Cant the load() fundtion return a reference to the data instead of the actual data ? (the return value may be long...). (The same goes for load_line...).
 
 -Do the create_new function more effiently (isnt there a perl function for it?).
 
 -make the load routine prototype be the same as the load_nodie prototype. (its cleaner that way...).
+
+-stop using the hardcoded hexa value in ioctl (I only did it because of error in requiring the required ph files).

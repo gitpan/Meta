@@ -6,10 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Info::Affiliation qw();
 use Meta::Xml::Parsers::Author qw();
 use Meta::Baseline::Aegis qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub BEGIN();
@@ -22,24 +22,49 @@ $VERSION="0.10";
 #sub get_email_signature($);
 #sub get_vcard($);
 #sub get_html_copyright($);
+#sub get_html_info($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_honorific",
 		-java=>"_firstname",
 		-java=>"_surname",
 		-java=>"_cpanid",
 		-java=>"_cpanpassword",
+		-java=>"_cpanemail",
 		-java=>"_sourceforgeid",
 		-java=>"_sourceforgepassword",
+		-java=>"_sourceforgeemail",
+		-java=>"_advogatoid",
+		-java=>"_advogatopassword",
+		-java=>"_advogatoemail",
 		-java=>"_initials",
 		-java=>"_handle",
 		-java=>"_homepage",
 		-java=>"_affiliation",
 	);
+	Meta::Class::MethodMaker->print([
+		"honorific",
+		"firstname",
+		"surname",
+		"cpanid",
+		"cpanpassword",
+		"cpanemail",
+		"sourceforgeid",
+		"sourceforgepassword",
+		"sourceforgeemail",
+		"advogatoid",
+		"advogatopassword",
+		"advogatoemail",
+		"initials",
+		"handle",
+		"homepage",
+		"affiliation",
+	]);
 }
 
 sub init($) {
@@ -62,12 +87,17 @@ sub new_deve($) {
 
 sub get_perl_makefile($) {
 	my($self)=@_;
-	return($self->get_firstname()." ".$self->get_surname()." <".$self->get_affiliation()->get_address()->get_email().">");
+	return($self->get_firstname()." ".$self->get_surname()." <".$self->get_cpanemail().">");
 }
 
 sub get_perl_source($) {
 	my($self)=@_;
-	return("\tName: ".$self->get_firstname()." ".$self->get_surname()."\n\tEmail: ".$self->get_affiliation()->get_address()->get_email()."\n\tWWW: ".$self->get_homepage()."\n\tCPAN id: ".$self->get_cpanid()."\n");
+	return(
+		"\tName: ".$self->get_firstname()." ".$self->get_surname()."\n".
+		"\tEmail: mailto:".$self->get_cpanemail()."\n".
+		"\tWWW: ".$self->get_homepage()."\n".
+		"\tCPAN id: ".$self->get_cpanid()."\n"
+	);
 }
 
 sub get_perl_copyright($) {
@@ -79,9 +109,11 @@ sub get_email_signature($) {
 	my($self)=@_;
 	return(
 		"Name: ".$self->get_firstname()." ".$self->get_surname()."\n".
-		"WWW: ".$self->get_homepage()."\n".
-		"CPAN id: ".$self->get_cpanid()." (http://cpan.org)\n".
-		"sourceforge id: ".$self->get_sourceforgeid()." (http://www.sourceforge.net)\n"
+#		"Title: ".$self->get_title()."\n".
+		"Homepage: ".$self->get_homepage()."\n".
+		"CPAN id: ".$self->get_cpanid()." (http://cpan.org,\ mailto:".$self->get_cpanemail().")\n".
+		"sourceforge id: ".$self->get_sourceforgeid()." (http://www.sourceforge.net,\ mailto:".$self->get_sourceforgeemail().")\n".
+		"advogator id:".$self->get_advogatoid()." (http://www.advogato.org,\ mailto:".$self->get_advogatoemail().")\n"
 	);
 }
 
@@ -92,7 +124,26 @@ sub get_vcard($) {
 
 sub get_html_copyright($) {
 	my($self)=@_;
-	return("Copyright (C) ".Meta::Baseline::Aegis::copyright_years()." ".$self->get_firstname()." ".$self->get_surname()."\;\ All rights reserved.");
+	return("Copyright (C) ".Meta::Baseline::Aegis::copyright_years()." ".
+		"<a href=\"mailto:".$self->get_affiliation()->get_address()->get_email()."\">".
+		$self->get_firstname()." ".$self->get_surname()."</a>".
+		"\;\ All rights reserved."
+	);
+}
+
+sub get_html_info($) {
+	my($self)=@_;
+	return(
+		"<li><a href=\"".$self->get_homepage()."\">\n".
+		"Home page: ".$self->get_homepage()."</a></li>\n".
+		"<li><a href=\"mailto: ".$self->get_affiliation()->get_address()->get_email()."\">\n".
+		"Email: ".$self->get_affiliation()->get_address()->get_email()."</a></li>"
+	);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -128,7 +179,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Author.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -153,6 +204,8 @@ This class provides author information according to the DocBook DTD.
 	get_email_signature($)
 	get_vcard($)
 	get_html_copyright($)
+	get_html_info($)
+	TEST($);
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -161,10 +214,24 @@ This class provides author information according to the DocBook DTD.
 =item B<BEGIN()>
 
 This method builds the attribute access method for this class.
-The attributes are: "honorific" "firstname" "surname" "cpanid"
-"cpanpasswd" "sourceforgeid" "sourceforgepasswd" "initials"
-"handle" "homepage" "affiliation". For their meaning please
-consult the Docbook DTD.
+The attributes are:
+0. "honorific"
+1. "firstname"
+2. "surname"
+3. "cpanid"
+4. "cpanpasswd"
+5. "cpanemail"
+6. "sourceforgeid"
+7. "sourceforgepasswd"
+8. "sourceforgeemail"
+9. "advogatoid"
+10. "advogatopasswd"
+11." advogatoemail"
+12. "initials"
+13. "handle"
+14. "homepage"
+15. "affiliation".
+For their meaning please consult the Docbook DTD.
 
 =item B<new_file($)>
 
@@ -223,7 +290,19 @@ END:VCARD
 
 Get a copyright suitable for inserting into an HTML page.
 
+=item B<get_html_info($)>
+
+Get info suitable for inclusing in an HTML page.
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -232,8 +311,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -249,15 +328,20 @@ None.
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
 	0.10 MV md5 project
+	0.11 MV website construction
+	0.12 MV improve the movie db xml
+	0.13 MV web site development
+	0.14 MV web site automation
+	0.15 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Info::Affiliation(3), Meta::Xml::Parsers::Author(3), strict(3)
 
 =head1 TODO
 
 -make the signature routine produce a better signature.
 
--make the VCARD method do it thing.
+-make the VCARD method do its thing.
 
 -add more info and track the Docbook DTD more strictly.

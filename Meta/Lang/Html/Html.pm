@@ -12,11 +12,12 @@ use XML::Handler::BuildDOM qw();
 use XML::Driver::HTML qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.05";
 @ISA=qw();
 
 #sub c2deps($);
 #sub c2dom($);
+#sub TEST($);
 
 #__DATA__
 
@@ -86,6 +87,11 @@ sub c2dom($) {
 	return($dom);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -119,7 +125,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Html.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -140,6 +146,7 @@ It knows how to:
 
 	c2deps($)
 	c2dom($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -154,7 +161,15 @@ a dependency object for that file.
 
 This method converts an HTML string to a DOM object using the SAX modules.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -163,8 +178,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -172,10 +187,13 @@ None.
 	0.00 MV more Class method generation
 	0.01 MV thumbnail user interface
 	0.02 MV more thumbnail issues
+	0.03 MV website construction
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Basename(3), File::Spec::Functions(3), HTML::LinkExtor(3), Meta::Utils::File::Dir(3), Meta::Utils::Output(3), XML::Driver::HTML(3), XML::Handler::BuildDOM(3), strict(3)
 
 =head1 TODO
 

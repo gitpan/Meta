@@ -7,12 +7,13 @@ use File::Copy qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub mv_nodie($$);
 #sub mv($$);
 #sub mv_noov($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -39,6 +40,11 @@ sub mv_noov($$) {
 		Meta::Utils::System::die("file [".$fil2."] exists");
 	}
 	return(&mv($fil1,$fil2));
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -74,7 +80,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Move.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -94,6 +100,7 @@ case the move fails ? What if you don't want to do that in your code ?
 	mv_nodie($$)
 	mv($$)
 	mv_noov($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -112,7 +119,15 @@ This function moves a file to another and dies if it fails.
 This function moves a file to another and dies if it fails or the target
 file already exists.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -121,8 +136,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -156,10 +171,13 @@ None.
 	0.26 MV dbman package creation
 	0.27 MV more thumbnail issues
 	0.28 MV md5 project
+	0.29 MV website construction
+	0.30 MV web site automation
+	0.31 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Copy(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

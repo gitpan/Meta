@@ -10,7 +10,7 @@ use POSIX qw();
 use Cwd qw();
 
 our($VERSION,@ISA);
-$VERSION="0.37";
+$VERSION="0.41";
 @ISA=qw();
 
 #sub bnot($);
@@ -20,6 +20,7 @@ $VERSION="0.37";
 #sub get_temp_file();
 #sub replace_suffix($$);
 #sub remove_suffix($);
+#sub basename($);
 #sub is_prefix($$);
 #sub is_suffix($$);
 #sub cuid();
@@ -29,6 +30,7 @@ $VERSION="0.37";
 #sub pwd();
 #sub remove_comments($);
 #sub chdir($);
+#sub TEST($);
 
 #__DATA__
 
@@ -86,6 +88,21 @@ sub replace_suffix($$) {
 sub remove_suffix($) {
 	my($file)=@_;
 	return(replace_suffix($file,""));
+}
+
+sub basename($) {
+	my($file)=@_;
+	my(@arra)=split('/',$file);
+	my($last)=$arra[$#arra];
+	return(remove_suffix($last));
+#	my($basename)=($file=~/\/([.-\/]*)\.[.-\/]*$/);
+#	return($basename);
+}
+
+sub get_suffix($) {
+	my($file)=@_;
+	my($suff)=($file=~/^.*\.(.*)$/);
+	return($suff);
 }
 
 sub is_prefix($$) {
@@ -149,6 +166,11 @@ sub chdir($) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -182,7 +204,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Utils.pm
 	PROJECT: meta
-	VERSION: 0.37
+	VERSION: 0.41
 
 =head1 SYNOPSIS
 
@@ -212,6 +234,7 @@ This is a general utility module for either miscelleneous commands which are har
 	pwd()
 	remove_comments($)
 	chdir($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -307,7 +330,15 @@ The idea here is C/C++ style comments : /* sdfdaf */
 This routine will change the current working directory by calling the builtin
 function "chdir". It will die if it cannot change the directory.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -316,8 +347,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -360,10 +391,14 @@ None.
 	0.35 MV movies and small fixes
 	0.36 MV thumbnail user interface
 	0.37 MV more thumbnail issues
+	0.38 MV website construction
+	0.39 MV more web page stuff
+	0.40 MV web site automation
+	0.41 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Cwd(3), IO::File(3), Meta::Utils::Env(3), Meta::Utils::System(3), POSIX(3), strict(3)
 
 =head1 TODO
 
@@ -376,3 +411,7 @@ Nothing.
 -The is suffix routine and is prefix routines should be fixed for cases where the string they match has special (regexp type) characters in it. Watch the example in cook_touch.
 
 -more routines should be moved to their own modules...
+
+-the remove_suffix function is a little slow (uses replace suffix). Make it just do it's thing.
+
+-do the basename more efficiently using regexps. (experimental code is there but doesnt work)

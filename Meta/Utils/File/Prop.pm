@@ -8,7 +8,7 @@ use Meta::Utils::Utils qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub chown($$$);
@@ -21,6 +21,7 @@ $VERSION="0.26";
 #sub is_r($);
 #sub size($);
 #sub stat($);
+#sub TEST($);
 
 #__DATA__
 
@@ -98,6 +99,11 @@ sub stat($) {
 	return($sb);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -131,7 +137,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Prop.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -155,6 +161,7 @@ This module eases setting permissions on files.
 	is_r($)
 	size($)
 	stat($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -204,7 +211,15 @@ This method returns the size of the file given.
 
 This method will stat the file and return the stat structure.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -213,8 +228,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -246,10 +261,13 @@ None.
 	0.24 MV thumbnail user interface
 	0.25 MV import tests
 	0.26 MV more thumbnail issues
+	0.27 MV website construction
+	0.28 MV web site automation
+	0.29 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::stat(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

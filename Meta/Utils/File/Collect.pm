@@ -9,12 +9,13 @@ use File::Find qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.23";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub doit();
 #sub hash($$);
 #sub list($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -53,6 +54,11 @@ sub list($$) {
 	return($list);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -86,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Collect.pm
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -105,6 +111,7 @@ all the files under a certain dir.
 	doit()
 	hash($$)
 	list($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -130,7 +137,15 @@ with full path or not.
 
 This does the same as hash but returns a list as a result.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -139,8 +154,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -169,10 +184,13 @@ None.
 	0.21 MV movies and small fixes
 	0.22 MV thumbnail user interface
 	0.23 MV more thumbnail issues
+	0.24 MV website construction
+	0.25 MV web site automation
+	0.26 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Find(3), Meta::Utils::Hash(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

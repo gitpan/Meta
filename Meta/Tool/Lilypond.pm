@@ -12,7 +12,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.14";
 @ISA=qw();
 
 #sub c2chec($);
@@ -22,6 +22,8 @@ $VERSION="0.10";
 #sub c2dvix($);
 #sub c2deps($);
 #sub myfile($$);
+#sub get_att($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -39,10 +41,25 @@ sub c2midi($) {
 	my(@args);
 	push(@args,"--no-paper");
 	push(@args,"--output=".$targ);
+	my($sear)=Meta::Baseline::Aegis::search_path_list();
+	for(my($i)=0;$i<=$#$sear;$i++) {
+		my($curr)=$sear->[$i];
+		push(@args,"--include=".$curr."/lily");
+	}
 	push(@args,$srcx);
+	#FIXME: do I really need to set this path ?!?
 	Meta::Utils::Env::set("LD_LIBRARY_PATH","/local/tools/lib");
 	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
-	return(Meta::Utils::System::system_err_silent_nodie($prog,\@args));
+	my($ret)=Meta::Utils::System::system_err_silent_nodie($prog,\@args);
+	#now check that the output file exists since if the input file
+	#had no midi directives it could be that it is non existant
+	if($ret) {
+		if(Meta::Utils::File::File::notexist($targ)) {
+			$ret=0;
+			Meta::Utils::Output::print("no midi directives found in lilypond source\n");
+		}
+	}
+	return($ret);
 }
 
 sub c2texx($) {
@@ -53,7 +70,13 @@ sub c2texx($) {
 	my(@args);
 	push(@args,"--format=tex");
 	push(@args,"--output=".$targ);
+	my($sear)=Meta::Baseline::Aegis::search_path_list();
+	for(my($i)=0;$i<=$#$sear;$i++) {
+		my($curr)=$sear->[$i];
+		push(@args,"--include=".$curr);
+	}
 	push(@args,$srcx);
+	#FIXME: do I really need to set this path ?!?
 	Meta::Utils::Env::set("LD_LIBRARY_PATH","/local/tools/lib");
 	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
 	my($res)=Meta::Utils::System::system_err_silent_nodie($prog,\@args);
@@ -70,7 +93,13 @@ sub c2psxx($) {
 	my(@args);
 	push(@args,"--format=ps");
 	push(@args,"--output=".$targ);
+	my($sear)=Meta::Baseline::Aegis::search_path_list();
+	for(my($i)=0;$i<=$#$sear;$i++) {
+		my($curr)=$sear->[$i];
+		push(@args,"--include=".$curr);
+	}
 	push(@args,$srcx);
+	#FIXME: do I really need to set this path ?!?
 	Meta::Utils::Env::set("LD_LIBRARY_PATH","/local/tools/lib");
 	#Meta::Utils::Output::print("args are [".CORE::join(",",@args)."]\n");
 	my($res)=Meta::Utils::System::system_err_silent_nodie($prog,\@args);
@@ -83,6 +112,7 @@ sub c2dvix($) {
 	my($buil)=@_;
 	my($srcx)=$buil->get_srcx();
 	my($targ)=$buil->get_targ();
+	#FIXME: do we really need to set the ld library path here ?!?
 	Meta::Utils::Env::set("LD_LIBRARY_PATH","/local/tools/lib");
 	#return(Meta::Utils::System::system_err_silent_nodie("ly2dvi",["--output=",$targ,$srcx]));
 	#return(Meta::Utils::System::system_err_silent_nodie("lilypond",["--format=dvi","--output=".$targ,$srcx]));
@@ -116,13 +146,24 @@ sub my_file($$) {
 	return(0);
 }
 
+sub get_att($$) {
+	my($file,$att)=@_;
+	# get attribute att from file
+	return("mark");
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
 
 =head1 NAME
 
-Meta::Tool::Lilypond - what does your module/class do.
+Meta::Tool::Lilypond - take care of running Lilypond for you.
 
 =head1 COPYRIGHT
 
@@ -149,7 +190,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Lilypond.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -208,6 +249,8 @@ file you want it to create.
 	c2dvix($)
 	c2deps($)
 	myfile($$)
+	get_att($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -257,7 +300,20 @@ This method returns an error code.
 This method will return true if the file received should be handled by this
 module.
 
+=item B<get_att($$)>
+
+This method will return the attribute sepecifed from the header of the lilypond
+file provided in the first argument.
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -266,8 +322,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -283,15 +339,19 @@ None.
 	0.08 MV movies and small fixes
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site development
+	0.13 MV web site automation
+	0.14 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Utils(3), Meta::Utils::Env(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::File::Symlink(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
-
--add includes using the --include lilypond directive.
 
 -do actual dependency calculations for lilypond source files (either with my own parser or use the lilypond parser - or both...)
 
 -do actual checking of lilypond sources (my own parser since lilypond doesnt provide things like that...).
+
+-stop doing all those setenvs to LD_LIBRARY_PATH - now it's NECCESSARY but I haven't figured out why...

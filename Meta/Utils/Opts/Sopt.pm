@@ -6,113 +6,54 @@ use strict qw(vars refs subs);
 use Meta::Utils::File::File qw();
 use Meta::Utils::File::Dir qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.29";
 @ISA=qw();
 
-#sub new($);
-#sub get_name($);
-#sub set_name($$);
-#sub get_description($);
-#sub set_description($$);
-#sub get_type($);
-#sub set_type($$);
-#sub get_defs($);
-#sub set_defs($$);
-#sub get_poin($);
-#sub set_poin($$);
-#sub get_valu($);
-#sub set_valu($$);
-#sub get_enum($);
-#sub set_enum($$);
+#sub BEGIN();
+#sub setup_value($$);
 #sub verify($$);
-#sub print($$);
+#sub TEST($);
 
 #__DATA__
 
-sub new($) {
-	my($clas)=@_;
-	my($self)={};
-	bless($self,$clas);
-	$self->{NAME}=defined;
-	$self->{DESC}=defined;
-	$self->{TYPE}=defined;
-	$self->{DEFA}=defined;
-	$self->{POIN}=defined;
-	$self->{VALU}=defined;
-	$self->{ENUM}=defined;
-	return($self);
+sub BEGIN() {
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_name",
+		-java=>"_description",
+		-java=>"_type",
+		-java=>"_defa",
+		-java=>"_poin",
+		-java=>"_valu",
+		-java=>"_enum",
+	);
+	Meta::Class::MethodMaker->print([
+		"name",
+		"description",
+		"type",
+		"defa",
+		"poin",
+		"valu",
+		"enum",
+	]);
 }
 
-sub get_name($) {
-	my($self)=@_;
-	return($self->{NAME});
-}
-
-sub set_name($$) {
-	my($self,$name)=@_;
-	$self->{NAME}=$name;
-}
-
-sub get_description($) {
-	my($self)=@_;
-	return($self->{DESC});
-}
-
-sub set_description($$) {
-	my($self,$desc)=@_;
-	$self->{DESC}=$desc;
-}
-
-sub get_type($) {
-	my($self)=@_;
-	return($self->{TYPE});
-}
-
-sub set_type($$) {
-	my($self,$type)=@_;
-	$self->{TYPE}=$type;
-}
-
-sub get_defa($) {
-	my($self)=@_;
-	return($self->{DEFA});
-}
-
-sub set_defa($$) {
-	my($self,$defa)=@_;
-	$self->{DEFA}=$defa;
-}
-
-sub get_poin($) {
-	my($self)=@_;
-	return($self->{POIN});
-}
-
-sub set_poin($$) {
-	my($self,$poin)=@_;
-	$self->{POIN}=$poin;
-}
-
-sub get_valu($) {
-	my($self)=@_;
-	return($self->{VALU});
-}
-
-sub set_valu($$) {
-	my($self,$valx)=@_;
-	$self->{VALU}=$valx;
-}
-
-sub get_enum($) {
-	my($self)=@_;
-	return($self->{ENUM});
-}
-
-sub set_enum($$) {
-	my($self,$valx)=@_;
-	$self->{ENUM}=$valx;
+sub setup_value($$) {
+	my($self,$valu)=@_;
+	if($self->get_type() eq "setx") {
+		my($poin)=$self->get_poin();
+		$$poin->clear();
+		my(@list)=split(',',$valu);
+		for(my($i)=0;$i<=$#list;$i++) {
+	#		Meta::Utils::Output::print("poin is [".$poin."]\n");
+			$$poin->insert($list[$i]);
+		}
+	} else {
+		$self->set_valu($valu);
+	}
 }
 
 sub verify($$) {
@@ -135,7 +76,12 @@ sub verify($$) {
 		return(!$scod);
 	}
 	if($type eq "devd") {
-		return(1);
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Baseline::Aegis::direxists($valu);
+		if(!$scod) {
+			$$erro="directory [".$valu."] does not exist as a development directory";
+		}
+		return($scod);
 	}
 	if($type eq "file") {
 		my($valu)=$self->get_valu();
@@ -173,15 +119,9 @@ sub verify($$) {
 	return(1);
 }
 
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "sopt info name=[".$self->get_name()."]\n";
-	print $file "sopt info desc=[".$self->get_description()."]\n";
-	print $file "sopt info type=[".$self->get_type()."]\n";
-	print $file "sopt info defa=[".$self->get_defa()."]\n";
-	print $file "sopt info poin=[".$self->get_poin()."]\n";
-	print $file "sopt info valu=[".$self->get_valu()."]\n";
-	print $file "sopt info enum=[".$self->get_enum()."]\n";
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -217,7 +157,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sopt.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -233,96 +173,46 @@ This object is used by the Opts object to store information about a single comma
 =head1 FUNCTIONS
 
 	new($)
-	get_name($)
-	set_name($$)
-	get_description($)
-	set_description($$)
-	get_type($)
-	set_type($$)
-	get_defs($)
-	set_defs($$)
-	get_poin($)
-	set_poin($$)
-	get_valu($)
-	set_valu($$)
-	get_enum($)
-	set_enum($$)
+	setup_value($$)
 	verify($$)
-	print($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<new($)>
+=item B<BEGIN()>
 
-This gives you a new Sopt object.
+Setup routine which creates constructor, print method and accessor methods for the following
+attributes:
+1. name  - name of the parameter.
+2. description - short description of the parameter.
+3. type - type of the parameter.
+4. defa - default value of the parameter.
+5. poin - pointer for the parameter storage area.
+6. valu - value of the parameter.
+7. enum - enumerated set from which to select an enumerated parameter.
+8. set - set from which to select a set parameter.
 
-=item B<get_name($)>
+=item B<setup_value($$)>
 
-This will retrieve the name of the current object.
-
-=item B<set_name($$)>
-
-This will set the name for the current object.
-
-=item B<get_description($)>
-
-This returns the description for the current object.
-
-=item B<set_description($$)>
-
-This will set the description for the current object.
-
-=item B<get_type($)>
-
-This method returns the type of the current object.
-
-=item B<set_type($$)>
-
-This method will set the type of the current object.
-
-=item B<get_defa($)>
-
-This method will returns the default value of the current object.
-
-=item B<set_defa($$)>
-
-This method will set the default value of the current object.
-
-=item B<get_poin($)>
-
-This method will return the pointer of the current object.
-
-=item B<set_opti($$)>
-
-This method will set the pointer of the current object.
-
-=item B<get_valu($)>
-
-This method will retrieve the current value of the current object.
-
-=item B<set_valu($$)>
-
-This method will set the current value of the current object.
-
-=item B<get_enum($)>
-
-This method will retrieve the current enum of the current object.
-
-=item B<set_enum($$)>
-
-This method will set the current enum of the current object.
+This method sets the current value for the current parameter. The reason that you can just use
+the set_valu accessor is that some values (like sets) are not really strings and need some
+processing.
 
 =item B<verify($$)>
 
 This will run sanity checks on the value inside.
 
-=item B<print($$)>
+=item B<TEST($)>
 
-This prints out the current Sopt object.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -331,8 +221,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -363,10 +253,14 @@ None.
 	0.23 MV movies and small fixes
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV paper writing
+	0.27 MV website construction
+	0.28 MV web site automation
+	0.29 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Utils::File::Dir(3), Meta::Utils::File::File(3), strict(3)
 
 =head1 TODO
 
@@ -380,3 +274,9 @@ Nothing.
 	a file which doesnt exist in new_file).
 
 -add clean character strings types (only nice characters...).
+
+-add checks for integers, floating points etc...
+
+-add dictorionary word type and check.
+
+-add enumerated our() variable which stores all the types that we support and check it.

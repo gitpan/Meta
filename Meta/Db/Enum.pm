@@ -7,7 +7,7 @@ use Meta::Ds::Ochash qw();
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.35";
 @ISA=qw(Meta::Ds::Ochash Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -18,6 +18,7 @@ $VERSION="0.32";
 #sub getsql_create($$$);
 #sub getsql_drop($$$);
 #sub get_string($);
+#sub TEST($);
 
 #__DATA__
 
@@ -108,6 +109,11 @@ sub get_string($) {
 	return($resu);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -141,7 +147,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Enum.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -169,6 +175,7 @@ This is an object to store a the definition for an enumeration type.
 	getsql_create($$$)
 	getsql_drop($$$)
 	get_string($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -216,7 +223,15 @@ over an SQL connection.
 
 This will give you a string which catenates all the members with ",".
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Ochash(3), Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -225,8 +240,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -264,10 +279,13 @@ None.
 	0.30 MV movies and small fixes
 	0.31 MV thumbnail user interface
 	0.32 MV more thumbnail issues
+	0.33 MV website construction
+	0.34 MV web site automation
+	0.35 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Connected(3), Meta::Ds::Ochash(3), strict(3)
 
 =head1 TODO
 

@@ -11,24 +11,26 @@ use Meta::Development::PackModule qw();
 use Meta::Info::Credit qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.17";
 @ISA=qw(Meta::Xml::Parsers::Author);
 
 #sub new($);
 #sub get_result($);
 #sub handle_start($$);
 #sub handle_end($$);
-#sub handle_char($$);
+#sub handle_endchar($$);
+#sub TEST($);
 
 #__DATA__
 
 sub new($) {
 	my($clas)=@_;
+#	Meta::Utils::Output::print("before creating author\n");
 	my($self)=Meta::Xml::Parsers::Author->new();
+#	Meta::Utils::Output::print("before setting handlers\n");
 	$self->setHandlers(
 		'Start'=>\&handle_start,
 		'End'=>\&handle_end,
-		'Char'=>\&handle_char,
 	);
 	$self->{TEMP_PERLPKG}=defined;
 	$self->{TEMP_MODULE}=defined;
@@ -47,156 +49,123 @@ sub get_result($) {
 
 sub handle_start($$) {
 	my($self,$elem)=@_;
-	my($context)=join(".",$self->context(),$elem);
-	if($elem eq "perlpkgs") {
+	$self->SUPER::handle_start($elem);
+	if($self->in_context("perlpkgs",$elem)) {
 		$self->{TEMP_PERLPKGS}=Meta::Lang::Perl::Perlpkgs->new();
 	}
-	if($self->within_element("perlpkgs")) {
-		if($elem eq "perlpkg") {
-			$self->{TEMP_PERLPKG}=Meta::Lang::Perl::Perlpkg->new();
-		}
-		if($self->within_element("author") || $elem eq "author") {
-			$self->SUPER::handle_start($elem);
-		}
+	if($self->in_context("perlpkgs.perlpkg",$elem)) {
+		$self->{TEMP_PERLPKG}=Meta::Lang::Perl::Perlpkg->new();
 	}
-	if($context eq "perlpkgs.perlpkg.modules.module") {
+	if($self->in_context("perlpkgs.perlpkg.modules.module",$elem)) {
 		$self->{TEMP_MODULE}=Meta::Development::PackModule->new();
 	}
-	if($context eq "perlpkgs.perlpkg.scripts.script") {
+	if($self->in_context("perlpkgs.perlpkg.scripts.script",$elem)) {
 		$self->{TEMP_SCRIPT}=Meta::Development::PackModule->new();
 	}
-	if($context eq "perlpkgs.perlpkg.tests.test") {
+	if($self->in_context("perlpkgs.perlpkg.tests.test",$elem)) {
 		$self->{TEMP_TEST}=Meta::Development::PackModule->new();
 	}
-	if($context eq "perlpkgs.perlpkg.files.file") {
+	if($self->in_context("perlpkgs.perlpkg.files.file",$elem)) {
 		$self->{TEMP_FILE}=Meta::Development::PackModule->new();
 	}
-	if($context eq "perlpkgs.perlpkg.credits.credit") {
+	if($self->in_context("perlpkgs.perlpkg.credits.credit",$elem)) {
 		$self->{TEMP_CREDIT}=Meta::Info::Credit->new();
 	}
 }
 
 sub handle_end($$) {
 	my($self,$elem)=@_;
-	if($elem eq "perlpkgs") {
+	$self->SUPER::handle_end($elem);
+	if($self->in_context("perlpkgs",$elem)) {
 		$self->{RESULT}=$self->{TEMP_PERLPKGS};
 	}
-	if($self->within_element("perlpkgs")) {
-		if($elem eq "perlpkg") {
-			$self->{TEMP_PERLPKGS}->push($self->{TEMP_PERLPKG});
-		}
-		if($self->within_element("perlpkg")) {
-			if($elem eq "author") {
-				$self->SUPER::handle_end($elem);
-				$self->{TEMP_PERLPKG}->set_author($self->SUPER::get_result());
-			}
-			if($self->within_element("modules")) {
-				if($elem eq "module") {
-					$self->{TEMP_PERLPKG}->get_modules()->push($self->{TEMP_MODULE});
-				}
-			}
-			if($self->within_element("scripts")) {
-				if($elem eq "script") {
-					$self->{TEMP_PERLPKG}->get_scripts()->push($self->{TEMP_SCRIPT});
-				}
-			}
-			if($self->within_element("tests")) {
-				if($elem eq "test") {
-					$self->{TEMP_PERLPKG}->get_tests()->push($self->{TEMP_TEST});
-				}
-			}
-			if($self->within_element("files")) {
-				if($elem eq "file") {
-					$self->{TEMP_PERLPKG}->get_files()->push($self->{TEMP_FILE});
-				}
-			}
-			if($self->within_element("credits")) {
-				if($elem eq "credit") {
-					$self->{TEMP_PERLPKG}->get_credits()->push($self->{TEMP_CREDIT});
-				}
-			}
-		}
+	if($self->in_context("perlpkgs.perlpkg",$elem)) {
+		$self->{TEMP_PERLPKGS}->push($self->{TEMP_PERLPKG});
+	}
+#	if($self->in_context("perlpkgs.perlpkg.author",$elem)) {
+#		$self->SUPER::handle_end($elem);
+#	}
+	if($self->in_context("perlpkgs.perlpkg.author",$elem)) {
+		$self->{TEMP_PERLPKG}->set_author($self->SUPER::get_result());
+	}
+	if($self->in_context("perlpkgs.perlpkg.modules.module",$elem)) {
+		$self->{TEMP_PERLPKG}->get_modules()->push($self->{TEMP_MODULE});
+	}
+	if($self->in_context("perlpkgs.perlpkg.scripts.script",$elem)) {
+		$self->{TEMP_PERLPKG}->get_scripts()->push($self->{TEMP_SCRIPT});
+	}
+	if($self->in_context("perlpkgs.perlpkg.tests.test",$elem)) {
+		$self->{TEMP_PERLPKG}->get_tests()->push($self->{TEMP_TEST});
+	}
+	if($self->in_context("perlpkgs.perlpkg.files.file",$elem)) {
+		$self->{TEMP_PERLPKG}->get_files()->push($self->{TEMP_FILE});
+	}
+	if($self->in_context("perlpkgs.perlpkg.credits.credit",$elem)) {
+		$self->{TEMP_CREDIT}->set_author($self->SUPER::get_result());
+		$self->{TEMP_PERLPKG}->get_credits()->push($self->{TEMP_CREDIT});
 	}
 }
 
-sub handle_char($$) {
-	my($self,$elem)=@_;
-	if($self->within_element("perlpkgs")) {
-		if($self->within_element("perlpkg")) {
-			if($self->in_element("name")) {
-				$self->{TEMP_PERLPKG}->set_name($elem);
-			}
-			if($self->in_element("description")) {
-				$self->{TEMP_PERLPKG}->set_description($elem);
-			}
-			if($self->in_element("longdescription")) {
-				$self->{TEMP_PERLPKG}->set_longdescription($elem);
-			}
-			if($self->in_element("license")) {
-				$self->{TEMP_PERLPKG}->set_license($elem);
-			}
-			if($self->in_element("version")) {
-				$self->{TEMP_PERLPKG}->set_version($elem);
-			}
-			if($self->in_element("uname")) {
-				$self->{TEMP_PERLPKG}->set_uname($elem);
-			}
-			if($self->in_element("gname")) {
-				$self->{TEMP_PERLPKG}->set_gname($elem);
-			}
-			if($self->within_element("author")) {
-				#Meta::Utils::Output::print("in here\n");
-				$self->SUPER::handle_char($elem);
-			}
-			if($self->within_element("modules")) {
-				if($self->within_element("module")) {
-					if($self->in_element("source")) {
-						$self->{TEMP_MODULE}->set_source($elem);
-					}
-					if($self->in_element("target")) {
-						$self->{TEMP_MODULE}->set_target($elem);
-					}
-				}
-			}
-			if($self->within_element("scripts")) {
-				if($self->within_element("script")) {
-					if($self->in_element("source")) {
-						$self->{TEMP_SCRIPT}->set_source($elem);
-					}
-					if($self->in_element("target")) {
-						$self->{TEMP_SCRIPT}->set_target($elem);
-					}
-				}
-			}
-			if($self->within_element("tests")) {
-				if($self->within_element("test")) {
-					if($self->in_element("source")) {
-						$self->{TEMP_TEST}->set_source($elem);
-					}
-					if($self->in_element("target")) {
-						$self->{TEMP_TEST}->set_target($elem);
-					}
-				}
-			}
-			if($self->within_element("files")) {
-				if($self->within_element("file")) {
-					if($self->in_element("source")) {
-						$self->{TEMP_FILE}->set_source($elem);
-					}
-					if($self->in_element("target")) {
-						$self->{TEMP_FILE}->set_target($elem);
-					}
-				}
-			}
-			if($self->within_element("credits")) {
-				if($self->within_element("credit")) {
-					if($self->in_element("item")) {
-						$self->{TEMP_ITEM}=$elem;
-					}
-				}
-			}
-		}
+sub handle_endchar($$$) {
+	my($self,$elem,$name)=@_;
+	$self->SUPER::handle_endchar($elem,$name);
+	if($self->in_context("perlpkgs.perlpkg.name",$name)) {
+		$self->{TEMP_PERLPKG}->set_name($elem);
 	}
+	if($self->in_context("perlpkgs.perlpkg.description",$name)) {
+		$self->{TEMP_PERLPKG}->set_description($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.longdescription",$name)) {
+		$self->{TEMP_PERLPKG}->set_longdescription($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.license",$name)) {
+		$self->{TEMP_PERLPKG}->set_license($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.version",$name)) {
+		$self->{TEMP_PERLPKG}->set_version($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.uname",$name)) {
+		$self->{TEMP_PERLPKG}->set_uname($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.gname",$name)) {
+		$self->{TEMP_PERLPKG}->set_gname($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.author",$name)) {
+		#Meta::Utils::Output::print("in here\n");
+		$self->SUPER::handle_endchar($elem,$name);
+	}
+	if($self->in_context("perlpkgs.perlpkg.modules.module.source",$name)) {
+		$self->{TEMP_MODULE}->set_source($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.modules.module.target",$name)) {
+		$self->{TEMP_MODULE}->set_target($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.scripts.script.source",$name)) {
+		$self->{TEMP_SCRIPT}->set_source($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.scripts.script.target",$name)) {
+		$self->{TEMP_SCRIPT}->set_target($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.tests.test.source",$name)) {
+		$self->{TEMP_TEST}->set_source($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.tests.test.target",$name)) {
+		$self->{TEMP_TEST}->set_target($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.files.file.source",$name)) {
+		$self->{TEMP_FILE}->set_source($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.files.file.target",$name)) {
+		$self->{TEMP_FILE}->set_target($elem);
+	}
+	if($self->in_context("perlpkgs.perlpkg.credits.credit.item",$name)) {
+		$self->{TEMP_CREDIT}->get_items()->push($elem);
+	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -232,7 +201,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perlpkgs.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -253,7 +222,8 @@ file.
 	get_result($)
 	handle_start($$)
 	handle_end($$)
-	handle_char($$)
+	handle_endchar($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -276,11 +246,19 @@ This will handle start tags.
 This will handle end tags.
 This currently does nothing.
 
-=item B<handle_char($$)>
+=item B<handle_endchar($$)>
 
 This will handle actual text.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Xml::Parsers::Author(3)
 
 =head1 BUGS
 
@@ -289,8 +267,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -309,10 +287,14 @@ None.
 	0.11 MV thumbnail user interface
 	0.12 MV import tests
 	0.13 MV more thumbnail issues
+	0.14 MV website construction
+	0.15 MV improve the movie db xml
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Development::PackModule(3), Meta::Info::Credit(3), Meta::Lang::Perl::Perlpkg(3), Meta::Lang::Perl::Perlpkgs(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Author(3), strict(3)
 
 =head1 TODO
 

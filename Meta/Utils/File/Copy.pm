@@ -10,12 +10,13 @@ use File::Path qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub copy($$);
 #sub copy_unlink($$);
 #sub copy_mkdir($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -58,6 +59,11 @@ sub copy_mkdir($$) {
 	return(&copy($fil1,$fil2));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -91,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Copy.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -108,6 +114,7 @@ This module eases the case for copying files.
 	copy($$)
 	copy_unlink($$)
 	copy_mkdir($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -127,7 +134,15 @@ copies the source to the target
 This function copies one file to another and creates the directory
 if neccessary. More than one hierarchy of directories can be created...
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -136,8 +151,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -170,10 +185,13 @@ None.
 	0.25 MV movies and small fixes
 	0.26 MV thumbnail user interface
 	0.27 MV more thumbnail issues
+	0.28 MV website construction
+	0.29 MV web site automation
+	0.30 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Basename(3), File::Copy(3), File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

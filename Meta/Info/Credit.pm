@@ -3,21 +3,22 @@
 package Meta::Info::Credit;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.05";
 @ISA=qw();
 
 #sub BEGIN();
 #sub init($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_author",
 		-java=>"_items",
 	);
@@ -27,6 +28,11 @@ sub init($) {
 	my($self)=@_;
 	$self->set_author(Meta::Info::Author->new());
 	$self->set_items(Meta::Ds::Array->new());
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -62,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Credit.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -93,6 +99,7 @@ more robust than maintaining it in a text file) and then:
 
 	BEGIN()
 	init($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -109,7 +116,15 @@ items - the items this author is responsible for.
 
 This is an internal post-constructor method.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -118,18 +133,22 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
 
 	0.00 MV import tests
 	0.01 MV more thumbnail issues
+	0.02 MV website construction
+	0.03 MV web site development
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), Meta::Ds::Array(3), strict(3)
 
 =head1 TODO
 

@@ -3,10 +3,10 @@
 package Meta::Utils::Progress;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.05";
 @ISA=qw();
 
 #sub BEGIN();
@@ -14,12 +14,13 @@ $VERSION="0.01";
 #sub start($);
 #sub report($);
 #sub finish($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_index",
 	);
 }
@@ -42,6 +43,11 @@ sub report($) {
 sub finish($) {
 	my($self)=@_;
 	$self->set_index(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -77,7 +83,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Progress.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -99,6 +105,7 @@ console running numbers or what ever.
 	start($)
 	report($)
 	finish($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -125,7 +132,15 @@ Reports progress.
 
 Closes the object down.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -134,18 +149,22 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
 
 	0.00 MV dbman package creation
 	0.01 MV more thumbnail issues
+	0.02 MV website construction
+	0.03 MV web site development
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

@@ -10,17 +10,17 @@ use Meta::Db::Connections qw();
 use Meta::Db::Info qw();
 use Meta::Sql::Stats qw();
 use Meta::Utils::File::File qw();
-use Meta::Baseline::Aegis qw();
 use Meta::Xml::Parsers::Base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.16";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
 #sub handle_start($$);
 #sub handle_end($$);
 #sub handle_char($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -111,10 +111,7 @@ sub handle_end($$) {
 		my($stat)=$self->{STAT};
 		for(my($i)=0;$i<$stat->size();$i++) {
 			my($curr_stat)=$stat->getx($i);
-			my($rv)=$curr_stat->execute();
-			if(!$rv) {
-				Meta::Utils::System::die("unable to execute statement");
-			}
+			$curr_stat->execute();
 		}
 	}
 	if($context eq "dbdata.tables.table.records.record.field") {
@@ -133,15 +130,10 @@ sub handle_end($$) {
 			my($curr_info)=$info->getx($i);
 			my($curr_dbi)=$dbi->getx($i);
 			my($bind)=$type->getsql_bind($curr_info);
-			my($rv);
 			if(defined($bind)) {
-				#FIXME the DBI::SQL_BINARY in the next line is hardcoded
-				$rv=$curr_stat->bind_param($number,$curr_dbi->quote($field_data,DBI::SQL_BINARY),{ TYPE=>$bind });
+				$curr_stat->bind_param($number,$field_data,{ TYPE=>$bind });
 			} else {
-				$rv=$curr_stat->bind_param($number,$field_data);
-			}
-			if(!$rv) {
-				Meta::Utils::System::die("unable to bind param");
+				$curr_stat->bind_param($number,$field_data);
 			}
 		}
 	}
@@ -170,8 +162,13 @@ sub handle_char($$) {
 		$self->{FIELD_DATA}=Meta::Utils::File::File::load($elem);
 	}
 	if($context eq "dbdata.tables.table.records.record.field.devedata") {
-		$self->{FIELD_DATA}=Meta::Utils::File::File::load(Meta::Baseline::Aegis::which($elem));
+		$self->{FIELD_DATA}=Meta::Utils::File::File::load_deve($elem);
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -207,7 +204,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbdata.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -245,6 +242,7 @@ handled by a connection object.
 	handle_start($$)
 	handle_end($$)
 	handle_char($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -269,7 +267,15 @@ This currently does nothing.
 This will handle actual text.
 This currently, according to context, sets attributes for the various objects.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Xml::Parsers::Base(3)
 
 =head1 BUGS
 
@@ -278,8 +284,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -298,10 +304,13 @@ None.
 	0.11 MV more thumbnail stuff
 	0.12 MV thumbnail user interface
 	0.13 MV more thumbnail issues
+	0.14 MV website construction
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Db::Connections(3), Meta::Db::Info(3), Meta::Ds::Array(3), Meta::Sql::Stats(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 
@@ -311,3 +320,5 @@ Nothing.
 supposed to be streamlined (inherit from a parser that does ?!?).
 
 -start actually using the DEF object I got to do sanity testing (toggleble ofcourse).
+
+-use bind with param type on all parameters (remove the version with no binding type and make sure all types are mapped right)

@@ -8,13 +8,14 @@ use XML::DOM qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub new($);
 #sub new_vali($$);
 #sub parsefile($$);
 #sub parsedeve($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -46,6 +47,11 @@ sub parsefile($$) {
 sub parsedeve($$) {
 	my($self,$file)=@_;
 	$self->parsefile(Meta::Baseline::Aegis::which($file));
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -81,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dom.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -104,6 +110,7 @@ source file is coming from.
 	new_vali($$)
 	parsefile($$)
 	parsedeve($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -128,7 +135,15 @@ This method parses a file using the parser.
 This method will ultimately perform a "parsefile" but will retrieve the file from the
 project hierarchy.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -137,8 +152,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -151,10 +166,13 @@ None.
 	0.05 MV thumbnail user interface
 	0.06 MV more thumbnail issues
 	0.07 MV md5 project
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), XML::DOM(3), XML::DOM::ValParser(3), strict(3)
 
 =head1 TODO
 

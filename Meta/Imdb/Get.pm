@@ -14,7 +14,7 @@ use XML::XQL::DOM qw();
 use Meta::Lang::Html::Html qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.13";
 @ISA=qw(LWP::UserAgent);
 
 #sub new($);
@@ -25,6 +25,7 @@ $VERSION="0.10";
 #sub get_director_id_form($$$);
 #sub get_search_page($);
 #sub get_birth_name($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -148,6 +149,11 @@ sub get_birth_name($$$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -181,7 +187,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Get.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -205,6 +211,7 @@ Just use its method and get the film info.
 	get_director_id_form($$$)
 	get_search_page($)
 	get_birth_name($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -249,7 +256,15 @@ This will get the search page of imdb.
 
 This method gets a birth name for a person.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+LWP::UserAgent(3)
 
 =head1 BUGS
 
@@ -258,8 +273,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -275,10 +290,13 @@ None.
 	0.08 MV more Class method generation
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site automation
+	0.13 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+HTML::Form(3), HTTP::Request(3), HTTP::Request::Common(3), LWP::UserAgent(3), Meta::Baseline::Aegis(3), Meta::Lang::Html::Html(3), Meta::Utils::File::File(3), XML::XQL(3), XML::XQL::DOM(3), strict(3)
 
 =head1 TODO
 

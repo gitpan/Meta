@@ -5,7 +5,7 @@ package Meta::Utils::Dos;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.25";
 @ISA=qw();
 
 #sub to_unix_text($$);
@@ -16,6 +16,7 @@ $VERSION="0.22";
 #sub to_dosx($$);
 #sub visual_file($$);
 #sub visual($);
+#sub TEST($);
 
 #__DATA__
 
@@ -102,6 +103,11 @@ sub visual($) {
 	return(visual_file($file,$file));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -135,7 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dos.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -163,6 +169,7 @@ not too long...) etc...
 	to_dosx_list($$)
 	visual_file($$)
 	visual($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -231,7 +238,15 @@ that is beyond me...).
 
 Same as the visual_file routine but doing the operation on the same file.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -240,8 +255,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -269,10 +284,13 @@ None.
 	0.20 MV movies and small fixes
 	0.21 MV thumbnail user interface
 	0.22 MV more thumbnail issues
+	0.23 MV website construction
+	0.24 MV web site automation
+	0.25 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

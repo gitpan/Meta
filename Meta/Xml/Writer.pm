@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use XML::Writer qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.12";
 @ISA=qw(XML::Writer);
 
 #sub my_doctype($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -17,6 +18,11 @@ sub my_doctype($$$) {
 	my($self,$name,$public)=@_;
 	my($output)=$self->getOutput();
 	$output->print("<!DOCTYPE ".$name." PUBLIC \"".$public."\" []>\n");
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -52,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Writer.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -72,6 +78,7 @@ fix bugs in the original XML::Writer).
 =head1 FUNCTIONS
 
 	my_doctype($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -84,7 +91,15 @@ ability not to put a system id.
 I understand that writing this way may not be XML but rather SGML but I still
 need the method.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+XML::Writer(3)
 
 =head1 BUGS
 
@@ -93,8 +108,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -109,10 +124,13 @@ None.
 	0.07 MV movies and small fixes
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
+	0.10 MV website construction
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+XML::Writer(3), strict(3)
 
 =head1 TODO
 

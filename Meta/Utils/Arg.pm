@@ -6,11 +6,12 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub check_arg_num($$);
 #sub check_arg($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -82,6 +83,11 @@ sub check_arg($$) {
 #	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -115,7 +121,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Arg.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -129,24 +135,9 @@ This is a general utility module for either miscelleneous commands which are har
 
 =head1 FUNCTIONS
 
-	bnot($)
-	minus($$)
-	get_temp_dir()
-	get_temp_dire()
-	get_temp_file()
 	check_arg_num($$)
 	check_arg($$)
-	replace_suffix($$)
-	remove_suffix($)
-	is_prefix($$)
-	is_suffix($$)
-	cuid()
-	cgid()
-	get_home_dir()
-	get_user_home_dir($)
-	pwd()
-	remove_comments($)
-	chdir($)
+	TEST($);
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -161,7 +152,15 @@ This method will check that the number of arguments is the correct one.
 This checks that the type of argument given to it has the type give to it
 using the ref routine (very useful for when receiving lists,hashes etc..).
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -170,8 +169,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -184,10 +183,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

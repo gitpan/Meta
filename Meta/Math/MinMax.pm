@@ -3,22 +3,22 @@
 package Meta::Math::MinMax;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.03";
+$VERSION="0.07";
 @ISA=qw();
 
 #sub BEGIN();
 #sub add($$);
 #sub reset($);
-#sub TEST();
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_min",
 		-java=>"_max",
 	);
@@ -50,7 +50,8 @@ sub reset($) {
 	$self->set_max(undef);
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	my($object)=Meta::Math::MinMax->new();
 	$object->add(5);
 	$object->add(2);
@@ -70,7 +71,7 @@ __END__
 
 =head1 NAME
 
-Meta::Math::MinMax - what does your module/class do.
+Meta::Math::MinMax - save minimum and maximum values for sets of numbers.
 
 =head1 COPYRIGHT
 
@@ -97,7 +98,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MinMax.pm
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -134,7 +135,7 @@ return "undef".
 	BEGIN()
 	add($$)
 	reset($)
-	TEST()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -155,11 +156,15 @@ values get updated accordingly.
 This method will reset the MinMax object so that it could be used
 for a new set of numbers.
 
-=item B<TEST()>
+=item B<TEST($)>
 
-This is a test suite for this object. Returns test result.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -168,8 +173,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -178,11 +183,15 @@ None.
 	0.01 MV thumbnail project basics
 	0.02 MV thumbnail user interface
 	0.03 MV more thumbnail issues
+	0.04 MV website construction
+	0.05 MV web site development
+	0.06 MV web site automation
+	0.07 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-add more things to be save: mean value, variance, sum etc...

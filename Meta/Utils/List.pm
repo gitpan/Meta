@@ -8,7 +8,7 @@ use Meta::Utils::Hash qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.35";
+$VERSION="0.38";
 @ISA=qw();
 
 #sub size($);
@@ -38,6 +38,8 @@ $VERSION="0.35";
 
 #sub equa($$);
 #sub is_prefix($$);
+
+#sub TEST($);
 
 #__DATA__
 
@@ -310,6 +312,11 @@ sub is_prefix($$) {
 	return(1);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -343,7 +350,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: List.pm
 	PROJECT: meta
-	VERSION: 0.35
+	VERSION: 0.38
 
 =head1 SYNOPSIS
 
@@ -384,6 +391,7 @@ themselves to avoid extra work when copying them.
 	read_exe($)
 	equa($$)
 	is_prefix($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -513,7 +521,15 @@ lists are the same.
 
 This method will get two lists by references and will return true iff the first is a prefix of the second.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -522,8 +538,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -564,10 +580,13 @@ None.
 	0.33 MV more thumbnail code
 	0.34 MV thumbnail user interface
 	0.35 MV more thumbnail issues
+	0.36 MV website construction
+	0.37 MV web site automation
+	0.38 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Arg(3), Meta::Utils::Hash(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

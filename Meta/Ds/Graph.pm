@@ -8,7 +8,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::Arg qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.35";
 @ISA=qw();
 
 #sub new($);
@@ -29,6 +29,8 @@ $VERSION="0.32";
 #sub print($$);
 #sub numb_cycl($$$);
 #sub all_ou($$$$);
+#sub all_ou_new($$$);
+#sub TEST($):
 
 #__DATA__
 
@@ -271,6 +273,23 @@ sub all_ou($$$$) {
 	}
 }
 
+sub all_ou_new($$$) {
+	my($self,$node_set,$out_set)=@_;
+	for(my($j)=0;$j<$node_set->size();$j++) {
+		my($node)=$node_set->elem($j);
+		if(!($out_set->has($node))) {
+			$out_set->insert($node);
+			my($edge_ou)=$self->edge_ou($node);
+			$self->all_ou_new($edge_ou,$out_set);
+		}
+	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -304,7 +323,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -341,6 +360,8 @@ The graphs are directional.
 	print($$)
 	numb_cycl($$$)
 	all_ou($$$$)
+	all_ou_new($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -423,7 +444,20 @@ This is also receives the name of the file to be verbose into...
 This method will add the nodes which are outwardly connected (recursivly)
 to the hash given to it.
 
+=item B<all_ou_new($$$)>
+
+New and better algorithm which does the same as all_ou but with a cleaner
+set approach.
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -432,8 +466,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -471,10 +505,13 @@ None.
 	0.30 MV more thumbnail code
 	0.31 MV thumbnail user interface
 	0.32 MV more thumbnail issues
+	0.33 MV website construction
+	0.34 MV web site automation
+	0.35 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Oset(3), Meta::Utils::Arg(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

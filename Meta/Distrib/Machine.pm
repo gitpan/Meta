@@ -3,20 +3,21 @@
 package Meta::Distrib::Machine;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub BEGIN();
 #sub print($$);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_user",
 		-java=>"_password",
@@ -28,6 +29,11 @@ sub print($$) {
 	print $file "name=[".$self->get_name()."]\n";
 	print $file "user=[".$self->get_user()."]\n";
 	print $file "pass=[".$self->get_password()."]\n";
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -63,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Machine.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -83,6 +89,7 @@ distribution should work.
 
 	BEGIN()
 	print($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -97,7 +104,15 @@ This method will set accessors for the following methods:
 
 This will print the current machine stats for you.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -106,8 +121,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -139,10 +154,14 @@ None.
 	0.24 MV more thumbnail stuff
 	0.25 MV thumbnail user interface
 	0.26 MV more thumbnail issues
+	0.27 MV website construction
+	0.28 MV web site development
+	0.29 MV web site automation
+	0.30 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

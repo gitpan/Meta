@@ -7,7 +7,7 @@ use Meta::Ds::Connected qw();
 use Meta::Db::Type qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.35";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -24,6 +24,7 @@ $VERSION="0.32";
 #sub getsql_add_multiple($$$);
 #sub getsql_names($$);
 #sub getsql_add($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -115,6 +116,11 @@ sub getsql_add($$) {
 	return("ADD ".$self->get_name()." ".$self->get_type()->getsql_names($info));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -148,7 +154,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Field.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -180,6 +186,7 @@ in. It will store the name of the field and its type as a 2-tuple.
 	getsql_add_multiple($$$)
 	getsql_names($$)
 	getsql_add($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -250,7 +257,15 @@ CREATE TABLE.
 This methdd will return an SQL string which is suitable for things like
 ALTER TABLE ADD d int; statements.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -259,8 +274,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -298,10 +313,13 @@ None.
 	0.30 MV movie stuff
 	0.31 MV thumbnail user interface
 	0.32 MV more thumbnail issues
+	0.33 MV website construction
+	0.34 MV web site automation
+	0.35 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Db::Type(3), Meta::Ds::Connected(3), strict(3)
 
 =head1 TODO
 

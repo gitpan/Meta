@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Image::Magick qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.05";
 @ISA=qw(Image::Magick);
 
 #sub Thumb($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -27,6 +28,11 @@ sub Thumb($$$) {
 	my($new_x)=int($x);
 	my($new_y)=int($y);
 	$self->Scale(height=>$new_y,width=>$new_x);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -62,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Magick.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -80,6 +86,7 @@ The original motivation was the creation of well scaled thumbnails.
 =head1 FUNCTIONS
 
 	Thumb($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -92,7 +99,15 @@ y size. It will make the image the largest possible within that frame
 without distorting it. The image that will be returned may be smaller
 than x and y dimensions but only in a single dimension.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Image::Magick(3)
 
 =head1 BUGS
 
@@ -101,8 +116,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -110,10 +125,13 @@ None.
 	0.00 MV thumbnail project basics
 	0.01 MV thumbnail user interface
 	0.02 MV more thumbnail issues
+	0.03 MV website construction
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Image::Magick(3), strict(3)
 
 =head1 TODO
 

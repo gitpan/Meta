@@ -6,12 +6,30 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.13";
 @ISA=qw(Meta::Baseline::Lang);
 
+#sub c2chec($);
+#sub c2psxx($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
+
+sub c2chec($) {
+	my($buil)=@_;
+	my($resu)=1;
+	if($resu) {
+		Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	}
+	return($resu);
+}
+
+sub c2psxx($) {
+	my($buil)=@_;
+	Meta::Baseline::Utils::file_emblem($buil->get_targ());
+#	return(Meta::Tool::Tex::c2psxx($buil));
+}
 
 sub my_file($$) {
 	my($self,$file)=@_;
@@ -19,6 +37,11 @@ sub my_file($$) {
 		return(1);
 	}
 	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -54,7 +77,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Texx.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -71,18 +94,37 @@ into something...:)
 
 =head1 FUNCTIONS
 
+	c2chec($)
+	c2psxx($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<c2chec($)>
+
+This method will check a tex source.
+
+=item B<c2psxx($)>
+
+This method will convert tex source to postscript.
 
 =item B<my_file($$)>
 
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -91,8 +133,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -107,10 +149,14 @@ None.
 	0.07 MV movies and small fixes
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
+	0.10 MV website construction
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
+	0.13 MV move tests to modules
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), strict(3)
 
 =head1 TODO
 

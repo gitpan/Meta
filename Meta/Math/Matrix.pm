@@ -3,9 +3,11 @@
 package Meta::Math::Matrix;
 
 use strict qw(vars refs subs);
+use Meta::Geo::Pos2d qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.18";
 @ISA=qw();
 
 #sub new($);
@@ -14,6 +16,7 @@ $VERSION="0.15";
 #sub get_elem($$);
 #sub check_pos($$);
 #sub print($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -46,16 +49,16 @@ sub get_elem($$) {
 sub check_pos($$) {
 	my($self,$posx)=@_;
 	if($posx->get_x()<0) {
-		Meta::Utils::System::die("negative value for x position");
+		Meta::Utils::System::die("negative value [".$posx->get_x()."] for x position");
 	}
 	if($posx->get_x()>=$self->{SIZE}->get_x()) {
-		Meta::Utils::System::die("excessive value for x position");
+		Meta::Utils::System::die("excessive value [".$posx->get_x()."] for x position");
 	}
 	if($posx->get_y()<0) {
-		Meta::Utils::System::die("negative value for y position");
+		Meta::Utils::System::die("negative value [".$posx->get_y()."] for y position");
 	}
 	if($posx->get_y()>=$self->{SIZE}->get_y()) {
-		Meta::Utils::System::die("excessive value for y position");
+		Meta::Utils::System::die("excessive value [".$posx->get_y()."] for y position");
 	}
 }
 
@@ -70,6 +73,28 @@ sub print($$) {
 		}
 		print $file "\n";
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	my($matrix)=Meta::Math::Matrix->new();
+	my($size)=Meta::Geo::Pos2d->new();
+	$size->set_x(8);
+	$size->set_y(8);
+	$matrix->set_size($size);
+	my($summ)=0;
+	for(my($x)=0;$x<8;$x++) {
+		for(my($y)=0;$y<8;$y++) {
+			my($posx)=Meta::Geo::Pos2d->new();
+			$posx->set_x($x);
+			$posx->set_y($y);
+			$matrix->set_elem($posx,$summ);
+			$summ+=$y;
+		}
+		$summ+=$x;
+	}
+	$matrix->print(Meta::Utils::Output::get_file());
+	return(1);
 }
 
 1;
@@ -105,20 +130,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Matrix.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.18
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Math::Matrix qw();
 	my($matrix)=Meta::Math::Matrix->new();
-	$matrix->set_size(6,7);
-	$matrix->set_elem(5,5,"mark");
+	my($matrix_size)=Meta::Geo::Pod2d->new();
+	$matrix_size->set_x(8);
+	$matrix_size->set_y(8);
+	$matrix->set_size($matrix_size);
+	my($pos)=Meta::Geo::Pos2d->new();
+	$pos->set_x(5);
+	$pos->set_y(5);
+	$matrix->set_elem($pos,"mark");
 
 =head1 DESCRIPTION
 
 This is a classic matrix. It has a size and makes sure all elements
-conform to it.
+conform to it. Currently it doesn't do very much except help you forget about
+how to actually store the values. You can store values of whatever type you
+want in this matrix.
 
 =head1 FUNCTIONS
 
@@ -128,6 +161,7 @@ conform to it.
 	get_elem($$)
 	check_pos($$)
 	print($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -157,7 +191,15 @@ This will check that a position is legal.
 
 This will print out the matrix to a file.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -166,8 +208,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -188,10 +230,13 @@ None.
 	0.13 MV thumbnail project basics
 	0.14 MV thumbnail user interface
 	0.15 MV more thumbnail issues
+	0.16 MV website construction
+	0.17 MV web site automation
+	0.18 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Geo::Pos2d(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
@@ -200,3 +245,5 @@ Nothing.
 	of it, why not make a 2d object that inherits from the Geo::Pos2d which
 	keeps the values in it integral. Here all you have to do is check
 	that the object received is of that class.
+
+-add various methods (multiplication, addition, substraction etc...).

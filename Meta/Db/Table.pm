@@ -6,10 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Ds::Connected qw();
 use Meta::Db::Fields qw();
 use Meta::Db::Constraints qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.36";
+$VERSION="0.40";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -28,11 +28,12 @@ $VERSION="0.36";
 #sub getsql_name($$);
 #sub getsql_select($$);
 #sub getsql_insert($$);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_description",
 	);
@@ -198,6 +199,11 @@ sub getsql_insert($$) {
 	return($self->get_fields()->getsql_insert($info));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -231,7 +237,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Table.pm
 	PROJECT: meta
-	VERSION: 0.36
+	VERSION: 0.40
 
 =head1 SYNOPSIS
 
@@ -263,6 +269,7 @@ This object inherits from the Ohash object.
 	getsql_name($$)
 	getsql_select($$)
 	getsql_insert($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -334,7 +341,15 @@ This method will return an SQL sniplet which can be used in SELECT type statemen
 
 This method will return an SQL sniplet which can be used in INSERT type statements.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -343,8 +358,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -386,10 +401,14 @@ None.
 	0.34 MV thumbnail user interface
 	0.35 MV dbman package creation
 	0.36 MV more thumbnail issues
+	0.37 MV website construction
+	0.38 MV web site development
+	0.39 MV web site automation
+	0.40 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), Meta::Db::Constraints(3), Meta::Db::Fields(3), Meta::Ds::Connected(3), strict(3)
 
 =head1 TODO
 

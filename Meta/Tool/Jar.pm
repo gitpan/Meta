@@ -5,16 +5,22 @@ package Meta::Tool::Jar;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub your_proc($);
+#sub TEST($);
 
 #__DATA__
 
 sub your_proc($) {
 	my($proc)=@_;
 	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -50,7 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Jar.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -66,6 +72,7 @@ a Java Jar file.
 =head1 FUNCTIONS
 
 	your_proc($)
+	TEST($);
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -76,7 +83,15 @@ a Java Jar file.
 This routine will return "yes" if the procedure which is given to it is one
 which is handled by this module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -85,8 +100,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -100,10 +115,13 @@ None.
 	0.06 MV movies and small fixes
 	0.07 MV thumbnail user interface
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

@@ -6,13 +6,14 @@ use strict qw(vars refs subs);
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.12";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
 #sub new($);
 #sub printd($$);
 #sub printx($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -44,6 +45,11 @@ sub printx($$) {
 	$writ->dataElement("name",$self->get_name());
 	$writ->dataElement("description",$self->get_description());
 	$writ->endTag("member");
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -79,7 +85,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Member.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -99,6 +105,7 @@ definition. It has a name and a description.
 	new($)
 	printd($$)
 	printx($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -121,7 +128,15 @@ This method will print the current member in SGML format.
 
 This method will print the current member in XML format.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -130,8 +145,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -146,10 +161,13 @@ None.
 	0.07 MV movies and small fixes
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
+	0.10 MV website construction
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Connected(3), strict(3)
 
 =head1 TODO
 

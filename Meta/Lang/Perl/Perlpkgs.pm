@@ -6,21 +6,26 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 use Meta::Xml::Parsers::Perlpkgs qw();
 use Meta::Baseline::Aegis qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.12";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new_file($);
 #sub new_deve($);
 #sub add_deps($$$);
+#sub TEST($);
 
 #__DATA__
 
 sub new_file($) {
 	my($file)=@_;
+#	Meta::Utils::Output::print("before creating object\n");
 	my($parser)=Meta::Xml::Parsers::Perlpkgs->new();
-	$parser->parsefile($file);
+#	Meta::Utils::Output::print("before parsing\n");
+	my($res)=$parser->parsefile($file);
+#	Meta::Utils::Output::print("res is [".$res."]\n");
 	return($parser->get_result());
 }
 
@@ -34,6 +39,11 @@ sub add_deps($$$) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		$self->getx($i)->add_deps($modu,$deps);
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -69,7 +79,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perlpkgs.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -87,6 +97,7 @@ This module stores multiple perl package information.
 	new_file($)
 	new_deve($)
 	add_deps($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -107,7 +118,15 @@ requested file in the development path.
 This method will add dependency information for the set of perl
 packages.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Array(3)
 
 =head1 BUGS
 
@@ -116,8 +135,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -132,10 +151,13 @@ None.
 	0.07 MV thumbnail project basics
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
+	0.10 MV website construction
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Ds::Array(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Perlpkgs(3), strict(3)
 
 =head1 TODO
 

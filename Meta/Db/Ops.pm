@@ -13,7 +13,7 @@ use Meta::Xml::Parsers::Dbdata qw();
 use Meta::Db::Info qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.11";
 @ISA=qw();
 
 #sub act($$);
@@ -23,6 +23,7 @@ $VERSION="0.07";
 #sub import($);
 #sub san($$$$$$$$);
 #sub sindex($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -124,7 +125,7 @@ sub san($$$$$$$$) {
 	my($verb,$demo,$type,$host,$user,$password,$database,$schema)=@_;
 	my($dsnx)="dbi:$type";
 	if(defined($host)) {
-		$dsnx.=":host=".$host;
+		#$dsnx.=":host=".$host;
 	}
 	if(defined($database)) {
 		$dsnx.=":database=".$database;
@@ -212,6 +213,11 @@ sub sindex($$$) {
 	return(1);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -245,7 +251,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ops.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -266,6 +272,7 @@ Give this module a few parameters and it will create a database for you.
 	import($)
 	san($$$$$$$$)
 	sindex($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -309,7 +316,15 @@ This will actually do the sanity tests.
 
 This will check that all indices are ok in the database.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -318,8 +333,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -332,10 +347,14 @@ None.
 	0.05 MV movie stuff
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV improve the movie db xml
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Db::Dbi(3), Meta::Db::Info(3), Meta::Sql::Stat(3), Meta::Sql::Stats(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Xml::Parsers::Dbdata(3), Meta::Xml::Writer(3), strict(3)
 
 =head1 TODO
 

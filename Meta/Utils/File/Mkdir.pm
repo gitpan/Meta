@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.19";
 @ISA=qw();
 
 #sub mkdir_check($);
+#sub TEST($);
 
 #__DATA__
 
@@ -20,6 +21,11 @@ sub mkdir_check($) {
 			Meta::Utils::System::die("unable to create directory [".$dire."]");
 		}
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -55,7 +61,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Mkdir.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -70,6 +76,7 @@ This module takes care of making directories for you.
 =head1 FUNCTIONS
 
 	mkdir_check($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -81,7 +88,15 @@ This method checks that the directory given to it doesnt exist and then
 creates it using the mkdir system call. The routine will throw an exception
 if it fails to create the directory.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -90,8 +105,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -113,10 +128,13 @@ None.
 	0.14 MV movies and small fixes
 	0.15 MV thumbnail user interface
 	0.16 MV more thumbnail issues
+	0.17 MV website construction
+	0.18 MV web site automation
+	0.19 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

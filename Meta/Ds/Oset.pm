@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub new($);
@@ -20,6 +20,7 @@ $VERSION="0.26";
 #sub size($);
 #sub elem($$);
 #sub sort($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -124,6 +125,11 @@ sub sort($$) {
 	$self->{LIST}->sort($ref);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -157,7 +163,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Oset.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -186,6 +192,7 @@ the Meta::Ds::Set class.
 	size($)
 	elem($$)
 	sort($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -251,7 +258,15 @@ This method receives:
 1. A comparison function.
 And sorts the set according to the comparison function.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -260,8 +275,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -293,10 +308,13 @@ None.
 	0.24 MV more thumbnail code
 	0.25 MV thumbnail user interface
 	0.26 MV more thumbnail issues
+	0.27 MV website construction
+	0.28 MV web site automation
+	0.29 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Array(3), strict(3)
 
 =head1 TODO
 

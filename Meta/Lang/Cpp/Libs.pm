@@ -7,10 +7,11 @@ use Meta::Ds::Graph qw();
 use Meta::Xml::Parsers::Graph qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.11";
 @ISA=qw(Meta::Ds::Graph);
 
 #sub new($);
+#sub TEST($);
 
 #__DATA__
 
@@ -22,6 +23,11 @@ sub new($) {
 	my($self)=$parser->get_result();
 	bless($self,$clas);
 	return($self);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -57,7 +63,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Libs.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -74,6 +80,7 @@ you really need and this system will resolve the rest.
 =head1 FUNCTIONS
 
 	new($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -83,7 +90,15 @@ you really need and this system will resolve the rest.
 
 This is a constructor for the Meta::Lang::Cpp::Libs object.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Graph(3)
 
 =head1 BUGS
 
@@ -92,8 +107,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -107,10 +122,13 @@ None.
 	0.06 MV movies and small fixes
 	0.07 MV thumbnail user interface
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Graph(3), Meta::Xml::Parsers::Graph(3), strict(3)
 
 =head1 TODO
 

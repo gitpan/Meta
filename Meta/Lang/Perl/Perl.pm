@@ -8,9 +8,15 @@ use Meta::Utils::System qw();
 use ExtUtils::MakeMaker qw();
 use ExtUtils::MM_Unix qw();
 use Meta::Utils::File::Remove qw();
+use Meta::Utils::Progname qw();
+use Meta::Utils::File::File qw();
+use Pod::POM qw();
+use Symbol qw();
+use Meta::Module::Info qw();
+#use Pod::POM::View::Pod qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.16";
 @ISA=qw();
 
 #sub is_perl($);
@@ -26,7 +32,16 @@ $VERSION="0.12";
 #sub get_version_mm_unix($);
 #sub get_version($);
 #sub load_module($);
-#sub get_isa($);
+#sub unload_module($);
+#sub call_method($$$);
+#sub get_module_isa($);
+#sub get_module_see($);
+#sub get_file_isa($);
+#sub get_file_see($);
+#sub get_module_pod_isa($);
+#sub get_module_pod_see($);
+#sub get_file_pod_isa($);
+#sub get_file_pod_see($);
 #sub run($);
 #sub profile($);
 #sub man($);
@@ -37,7 +52,11 @@ $VERSION="0.12";
 #sub file_to_module($);
 #sub module_to_link($);
 #sub get_pods($);
+#sub get_pods_new($);
 #sub get_name($);
+#sub get_my_pod($);
+#sub get_my_name($);
+#sub TEST($);
 
 #__DATA__
 
@@ -121,10 +140,15 @@ sub get_version_mm_unix($) {
 
 sub get_version($) {
 	my($file)=@_;
-	my($modu)=file_to_module($file);
+	my($module)=file_to_module($file);
+	return(get_version_module($module));
+}
+
+sub get_version_module($) {
+	my($module)=@_;
 	no strict 'refs';
-	load_module($modu);
-	my($versionref)=*{$modu."::VERSION"}{SCALAR};
+	load_module($module);
+	my($versionref)=*{$module."::VERSION"}{SCALAR};
 	my($version)=$$versionref;
 	#use strict 'refs';
 	return($version);
@@ -134,19 +158,113 @@ sub load_module($) {
 	my($module)=@_;
 	eval "require $module";
 	if($@) {
-		Meta::Utils::System::die("unable to load module [".$module."]");
+		Meta::Utils::System::die("unable to load module [".$module."] with error [".$@."]");
 	}
 }
 
-sub get_isa($) {
-	my($file)=@_;
-	my($modu)=file_to_module($file);
-	load_module($modu);
+sub unload_module($) {
+	my($module)=@_;
+	my($res)=Symbol::delete_package($module);
+	return($res);
+}
+
+sub call_method($$$) {
+	my($module,$method,$args)=@_;
+	my($method)=$module."::".$method;
+	my($ref)=\&{$method};
+	#Meta::Utils::Output::print("ref is [".$ref."]\n");
+	my($res)=&$ref($args);
+	return($res);
+}
+
+sub get_module_isa($) {
+	my($module)=@_;
+	load_module($module);
 	no strict 'refs';
 	#my($isa)=*{$modu."::ISA"}{ARRAY};
-	my($isa)=*{$modu."::ISA"};
+	my($isa)=*{$module."::ISA"};
 	#use strict 'refs';
 	return($isa);
+}
+
+sub get_module_see($) {
+	my($module)=@_;
+	my($mod)=Meta::Module::Info->new_from_module($module);
+	if(!$mod) {
+		Meta::Utils::System::die("unable to load module [".$module."]");
+	}
+	my(@used)=$mod->modules_used();
+	return(\@used);
+}
+
+sub get_file_isa($) {
+	my($file)=@_;
+	my($module)=file_to_module($file);
+	return(get_module_isa($module));
+}
+
+sub get_file_see($) {
+	my($file)=@_;
+	my($mod)=Meta::Module::Info->new_from_file($file);
+	if(!$mod) {
+		Meta::Utils::System::die("unable to load file [".$file."]");
+	}
+	my(@used)=$mod->modules_used();
+	return(\@used);
+}
+
+sub get_module_pod_isa($) {
+	my($module)=@_;
+	my($isa)=get_module_isa($module);
+	my(@pods);
+	for(my($i)=0;$i<=$#$isa;$i++) {
+		my($curr)=$isa->[$i];
+		push(@pods,module_to_link($curr));
+	}
+	my($res)=join(",\ ",@pods);
+	if($res eq "") {
+		return("None.");
+	} else {
+		return($res);
+	}
+}
+
+sub get_module_pod_see($) {
+	my($module)=@_;
+	my($see)=get_module_see($module);
+	my(@pods);
+	for(my($i)=0;$i<=$#$see;$i++) {
+		my($curr)=$see->[$i];
+		push(@pods,module_to_link($curr));
+	}
+	my($res)=join(",\ ",@pods);
+	if($res eq "") {
+		return("None.");
+	} else {
+		return($res);
+	}
+}
+
+sub get_file_pod_isa($) {
+	my($file)=@_;
+	my($module)=file_to_module($file);
+	return(get_module_pod_isa($module));
+}
+
+sub get_file_pod_see($) {
+	my($file)=@_;
+	my($see)=get_file_see($file);
+	my(@pods);
+	for(my($i)=0;$i<=$#$see;$i++) {
+		my($curr)=$see->[$i];
+		push(@pods,module_to_link($curr));
+	}
+	my($res)=join(",\ ",@pods);
+	if($res eq "") {
+		return("None.");
+	} else {
+		return($res);
+	}
 }
 
 sub run($) {
@@ -211,12 +329,8 @@ sub get_pods($) {
 	my(%hash);
 	for(my($i)=0;$i<$size;$i++) {
 		my($curr)=$lines[$i];
-		if($curr=~/^=/) {
-			if($curr=~/^=head1 /) {
-				($inde)=($curr=~/^=head1 (.*)$/);
-			} else {
-				$inde=undef;#init the variable
-			}
+		if($curr=~/^=head1 /) {
+			($inde)=($curr=~/^=head1 (.*)$/);
 		} else {
 			if(defined($inde)) {
 #				Meta::Utils::Output::print("adding [".$curr."] to [".$inde."]\n");
@@ -231,6 +345,39 @@ sub get_pods($) {
 	return(\%hash);
 }
 
+sub get_pods_new($) {
+	my($text)=@_;
+	my($parser)=Pod::POM->new();
+	my($pom)=$parser->parse_text($text);
+	if(!$pom) {
+		die $parser->error();
+	}
+#	Meta::Utils::Output::print("pom is [".$pom->head1()."]\n");
+	my($head1);
+	my(%hash);
+	foreach $head1 ($pom->head1()) {
+		my($title)=$head1->title();
+		#my($content);
+		#$content=$head1->text();
+		# The reason we use this Pod::POM::View::Pod module is that if
+		# we use the regular ->content method as described in the Pod::POM
+		# documentation the result is not a string but rather an object and
+		# I see no way in the documentation to turn the object to a string.
+		# The content turns itself into a string (automagically) when printed
+		# and I HATE THIS!!! I HATE MAGICAL FEATURES WHICH REMOVE MY ABILITY TO
+		# CONTROL THINGS!!! I want the content in a string and I can't get it...
+		# that's why I use this view thingy.
+		my($content)=$head1->content()->present();
+		#my($content)=Pod::POM::View::Pod->print($head1);
+#		Meta::Utils::Output::print("title is [".\$title."]\n");
+#		Meta::Utils::Output::print("content is [".\$content."]\n");
+		$hash{$title}=$content;
+#		print $head1->title(),"\n";
+#		print $head1->content();
+	}
+	return(\%hash);
+}
+
 sub get_name($) {
 	my($text)=@_;
 	if($text!~/^\n.* - .*\.\n$/) {
@@ -238,6 +385,26 @@ sub get_name($) {
 	}
 	my($out)=($text=~/^\n.* - (.*)\.\n$/);
 	return($out);
+}
+
+sub get_my_pod($) {
+	my($pod_name)=@_;
+	my($prog)=Meta::Utils::Progname::fullname();
+	my($text)=Meta::Utils::File::File::load($prog);
+	my($pods)=Meta::Lang::Perl::Perl::get_pods($text);
+	my($pod)=$pods->{$pod_name};
+	return($pod);
+}
+
+sub get_my_name() {
+	my($name_pod)=Meta::Lang::Perl::Perl::get_my_pod("NAME");
+	my($name)=Meta::Lang::Perl::Perl::get_name($name_pod);
+	return($name);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -273,7 +440,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perl.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -301,7 +468,16 @@ This module eases interaction with the Perl language interpreter.
 	get_version_mm_unix($)
 	get_version($)
 	load_module($)
-	get_isa($)
+	unload_module($)
+	call_method($$$)
+	get_module_isa($)
+	get_module_see($)
+	get_file_isa($);
+	get_file_see($);
+	get_module_pod_isa($);
+	get_module_pod_see($);
+	get_file_pod_isa($);
+	get_file_pod_see($);
 	run($)
 	profile($)
 	man($)
@@ -312,7 +488,10 @@ This module eases interaction with the Perl language interpreter.
 	file_to_module($)
 	module_to_link($)
 	get_pods($)
+	get_pods_new($)
 	get_name($)
+	get_my_name($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -386,10 +565,55 @@ perl reference techniques.
 
 This method will load a module.
 
-=item B<get_isa($)>
+=item B<unload_module($)>
 
-This will get the ISA part of the module.
+This method will unload a module. It uses the Symbol package to do it's thing.
+
+=item B<call_method($$$)>
+
+This method will call the method for the package received with the arguments
+received.
+
+=item B<get_module_isa($)>
+
+This will get the ISA part of the module which is supplied by module name.
 The code loads the modules and uses references to achieve this.
+The code is pretty unefficient as it loads the module and the just looks
+up the ISA variable.
+
+=item B<get_module_see($)>
+
+This will get the use part of the module which is supplied by module name.
+
+=item B<get_file_isa($)>
+
+Pass this method a file name and it will return the ISA part of the module.
+It just uses the get_module_isa method.
+
+=item B<get_file_see($)>
+
+Pass this method a file name and it will return the use part of the module.
+It just uses the get_module_see method.
+
+=item B<get_module_pod_isa($)>
+
+This method will return the isa part of a module in a manner fitting
+to be included in a POD document. You can use various automated tools
+to put this automatically in your "SUPER CLASSES" section.
+
+=item B<get_module_pod_see($)>
+
+This method will return the usage part of a module in a mannger fitting
+to be included in a POD document. You can use various automated tools
+to put this automatically in your "SEE ALSO" section.
+
+=item B<get_file_pod_isa($)>
+
+This does exactly as get_pod_isa but for a file name only.
+
+=item B<get_file_pod_see($)>
+
+This does exactly as get_pod_see but for a file name only.
 
 =item B<run($)>
 
@@ -437,11 +661,36 @@ things change too much.
 
 This method will extract pods from a perl source and will return them as a hash.
 
+=item B<get_pods_new($)>
+
+This method will extract pods from a perl text and will return them as a hash.
+Intead of doing the parsing myself (which I don't like doing since I want to
+make someone else do the work) I use Pod::POM.
+
 =item B<get_name($)>
 
 This will return the name of the executable.
+Input is the NAME pod paragraph.
+
+=item B<get_my_pod($)>
+
+This method will retrieve the text of the pod section which has the name passed
+from the current scripts source code.
+
+=item B<get_my_name()>
+
+This method is suitable for use by scripts who want to extract their name from their
+own source. No input is reqiured since current script is assumed.
+
+=item B<TEST($)>
+
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -450,8 +699,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -469,11 +718,19 @@ None.
 	0.10 MV import tests
 	0.11 MV dbman package creation
 	0.12 MV more thumbnail issues
+	0.13 MV website construction
+	0.14 MV improve the movie db xml
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+ExtUtils::MM_Unix(3), ExtUtils::MakeMaker(3), Meta::Module::Info(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::Progname(3), Meta::Utils::System(3), Meta::Utils::Utils(3), Pod::POM(3), Symbol(3), strict(3)
 
 =head1 TODO
 
 -write my own get_version code (simple parsing with no eval suitable for internal modules).
+
+-the unload module function does not work well (you cannot reload the model after that). find better solutions.
+
+-chage the _see methods to _use.

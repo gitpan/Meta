@@ -9,7 +9,7 @@ use Meta::Utils::Output qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw(Frontier::Daemon);
 
 #sub new($);
@@ -17,6 +17,7 @@ $VERSION="0.07";
 #sub run($);
 #sub quit($);
 #sub test($);
+#sub TEST($);
 
 #__DATA__
 
@@ -77,13 +78,18 @@ sub test($) {
 	return(1972);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
 
 =head1 NAME
 
-Meta::Comm::Frontier::Server - what does your module/class do.
+Meta::Comm::Frontier::Server - a Frontier::Daemon server extension.
 
 =head1 COPYRIGHT
 
@@ -110,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Server.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -131,6 +137,7 @@ a server communication class.
 	run($)
 	quit($)
 	test($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -156,7 +163,15 @@ This method quits the server.
 
 This method tests the server.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Frontier::Daemon(3)
 
 =head1 BUGS
 
@@ -165,8 +180,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -179,10 +194,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Frontier::Daemon(3), Meta::Lang::Perl::Interface(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

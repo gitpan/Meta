@@ -15,7 +15,7 @@ use Meta::Ds::Connected qw();
 use XML::DOM qw();
 
 our($VERSION,@ISA);
-$VERSION="0.40";
+$VERSION="0.44";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
@@ -49,6 +49,7 @@ $VERSION="0.40";
 #sub get_field($$$);
 #sub get_field_number($$$);
 #sub add_deps($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -186,6 +187,29 @@ sub printx($$) {
 	$self->get_tables()->printx($writ);
 	$self->get_users()->printx($writ);
 	$writ->endTag("def");
+}
+
+sub printc($$) {
+	my($self,$c)=@_;
+	print $c->start_table();
+	print $c->caption("This is the [".$self->get_name()."] database");
+	print $c->Tr($c->th(['name','description']));
+#	my($ret)=
+#		$c->start_html().
+#		$c->caption("This is the [".$self->get_name()."] database").
+#		$c->Tr($c->th(['name','description']));
+	my($tables)=$self->get_tables();
+	for(my($i)=0;$i<$tables->size();$i++) {
+		my($table)=$tables->elem($i);
+		my($name)=$table->get_name();
+		my($description)=$table->get_description();
+		print $c->Tr($c->td([$name,$description]));
+#		$ret.=$c->Tr($c->td([$name,$description]));
+	}
+	print $c->end_table();
+#	$ret.=$c->end_html();
+	my($ret)="";
+	return($ret);
 }
 
 sub getsql_create($$$) {
@@ -373,6 +397,11 @@ sub add_deps($$$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -406,7 +435,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.40
+	VERSION: 0.44
 
 =head1 SYNOPSIS
 
@@ -453,6 +482,7 @@ This is an object to let you read,write and manipulate a database definition.
 	get_field($$$)
 	get_field_number($$$)
 	add_deps($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -613,7 +643,15 @@ This method will return the index number of a field in a table.
 This method will add dependency info specific to the XML/DEF format to
 a dependency storing object.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -622,8 +660,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -669,10 +707,14 @@ None.
 	0.38 MV graph visualization
 	0.39 MV thumbnail user interface
 	0.40 MV more thumbnail issues
+	0.41 MV website construction
+	0.42 MV web site development
+	0.43 MV web site automation
+	0.44 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Db::Enums(3), Meta::Db::Parents(3), Meta::Db::Sets(3), Meta::Db::Tables(3), Meta::Db::Users(3), Meta::Ds::Connected(3), Meta::Sql::Stat(3), Meta::Xml::Parsers::Def(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 

@@ -8,7 +8,7 @@ use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.12";
 @ISA=qw();
 
 #sub new($);
@@ -19,6 +19,7 @@ $VERSION="0.09";
 #sub remove_first($$);
 #sub size($);
 #sub print($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -102,6 +103,11 @@ sub print($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -135,7 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Carray.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -166,6 +172,7 @@ This will give you a clean object.
 	remove_first($$)
 	size($)
 	print($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -221,7 +228,15 @@ This receives:
 
 This will print an array of printable objects.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -230,8 +245,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -246,10 +261,13 @@ None.
 	0.07 MV more thumbnail stuff
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
+	0.10 MV website construction
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Arg(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

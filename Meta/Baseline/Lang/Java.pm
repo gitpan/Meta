@@ -10,9 +10,10 @@ use Meta::Utils::File::Mkdir qw();
 use Meta::Utils::File::Move qw();
 use Meta::Baseline::Lang qw();
 use Meta::Utils::Output qw();
+use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.34";
+$VERSION="0.39";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub get_jars();
@@ -23,6 +24,7 @@ $VERSION="0.34";
 #sub c2chec($);
 #sub class2file($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -162,6 +164,13 @@ sub my_file($$) {
 	return(0);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	my($hash)=Meta::Baseline::Lang::Java::env();
+	Meta::Utils::Env::bash_cat($hash);
+	return(1);
+}
+
 1;
 
 __END__
@@ -195,7 +204,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Java.pm
 	PROJECT: meta
-	VERSION: 0.34
+	VERSION: 0.39
 
 =head1 SYNOPSIS
 
@@ -226,6 +235,7 @@ This package contains stuff specific to Java in the baseline:
 	c2chec($)
 	class2file($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -272,6 +282,11 @@ This method will convert a java class name to a file.
 
 This method will return true if the file received should be handled by this
 module.
+
+=item B<TEST($)>
+
+Test suite for this module.
+This currently just runs the Env stuff and checks whats the output bash script.
 
 =back
 
@@ -325,8 +340,11 @@ my($pthc)=join
 my($code)=Meta::Utils::System::system_nodie("kjc",["--dest",$dest,"--classpath",$pthc,"--deprecation","-O2",$srcx]);
 >
 
-
 =cut
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -335,8 +353,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -376,10 +394,15 @@ None.
 	0.32 MV movies and small fixes
 	0.33 MV thumbnail user interface
 	0.34 MV more thumbnail issues
+	0.35 MV website construction
+	0.36 MV web site development
+	0.37 MV web site automation
+	0.38 MV SEE ALSO section fix
+	0.39 MV put all tests in modules
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Utils::Env(3), Meta::Utils::File::Mkdir(3), Meta::Utils::File::Move(3), Meta::Utils::File::Path(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
@@ -389,3 +412,5 @@ Nothing.
 
 -methods to do the dependency calculation could be: use jikes that knows how to
 produce them, use the SUN compiler, use a perl parser, use the java builtin parser.
+
+-stop hardcoding the java jars here !!!

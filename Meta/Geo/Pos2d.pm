@@ -7,14 +7,14 @@ use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.16";
+$VERSION="0.19";
 @ISA=qw();
 
 #sub BEGIN($);
 #sub add($$);
 #sub sub($$);
 #sub mul($$);
-#sub TEST();
+#sub TEST($);
 
 #__DATA__
 
@@ -45,7 +45,8 @@ sub mul($$) {
 	$self->set_y($self->get_y()*$valx);
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	my($point1)=Meta::Geo::Pos2d->new();
 	$point1->set_x(3);
 	$point1->set_y(4);
@@ -90,7 +91,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pos2d.pm
 	PROJECT: meta
-	VERSION: 0.16
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -114,7 +115,7 @@ A lot more is needed here but it's a start.
 	add($$)
 	sub($$)
 	mul($$)
-	TEST()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -136,11 +137,15 @@ This will subtract a position from the current positions.
 
 This will multiple the vector by a scalar.
 
-=item B<TEST()>
+=item B<TEST($)>
 
-Module tests.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -149,8 +154,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -172,10 +177,13 @@ None.
 	0.14 MV thumbnail user interface
 	0.15 MV import tests
 	0.16 MV more thumbnail issues
+	0.17 MV website construction
+	0.18 MV web site automation
+	0.19 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Class::MethodMaker(3),Meta::Utils::Output(3)
+Meta::Class::MethodMaker(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

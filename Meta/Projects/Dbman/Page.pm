@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.05";
 @ISA=qw(Class::DBI);
 
 #sub BEGIN();
+#sub TEST($);
 
 #__DATA__
 
@@ -19,6 +20,11 @@ sub BEGIN() {
 	__PACKAGE__->table('page');
 	__PACKAGE__->columns('Primary'=>'id');
 	__PACKAGE__->columns(All=>qw/id section name description content_troff content_ascii content_ps content_dvi content_html/);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -54,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Page.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -70,6 +76,7 @@ This is a single manual page information object.
 =head1 FUNCTIONS
 
 	BEGIN()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -79,7 +86,15 @@ This is a single manual page information object.
 
 This method sets up all the needed stuff to access the object.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Class::DBI(3)
 
 =head1 BUGS
 
@@ -88,8 +103,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -97,10 +112,13 @@ None.
 	0.00 MV import tests
 	0.01 MV dbman package creation
 	0.02 MV more thumbnail issues
+	0.03 MV website construction
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+base(3), strict(3)
 
 =head1 TODO
 

@@ -9,7 +9,7 @@ use Meta::Baseline::Utils qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.16";
 @ISA=qw();
 
 #sub c2psxx($);
@@ -25,6 +25,7 @@ $VERSION="0.13";
 #sub c2late($);
 #sub c2lyxx($);
 #sub c2some($);
+#sub TEST($);
 
 #__DATA__
 
@@ -66,38 +67,38 @@ sub c2pdfx($) {
 
 sub c2xmlx($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	Meta::Baseline::Utils::xml_emblem($buil->get_targ());
 	return(1);
 }
 
 sub c2texx($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	Meta::Baseline::Utils::xml_emblem($buil->get_targ());
 	return(1);
 	#return(c2some($buil));
 }
 
 sub c2dvix($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	Meta::Baseline::Utils::xml_emblem($buil->get_targ());
 	return(1);
 }
 
 sub c2info($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	Meta::Baseline::Utils::xml_emblem($buil->get_targ());
 	return(1);
 }
 
 sub c2late($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	Meta::Baseline::Utils::xml_emblem($buil->get_targ());
 	return(1);
 }
 
 sub c2lyxx($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	Meta::Baseline::Utils::xml_emblem($buil->get_targ());
 	return(1);
 }
 
@@ -154,6 +155,11 @@ sub c2some($) {
 	return($scod);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -187,7 +193,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Openjade.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -218,6 +224,7 @@ Openjade also supplies an sgml2xml converter and we use it.
 	c2late($)
 	c2lyxx($)
 	c2some($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -276,7 +283,15 @@ This method will convert SGML input to Lyx output.
 
 This will run open jade and will convert sgml to several formats.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -285,8 +300,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -305,10 +320,13 @@ None.
 	0.11 MV thumbnail user interface
 	0.12 MV dbman package creation
 	0.13 MV more thumbnail issues
+	0.14 MV website construction
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Baseline::Utils(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -6,11 +6,12 @@ use strict qw(vars refs subs);
 use Sys::Hostname qw();
 
 our($VERSION,@ISA);
-$VERSION="0.19";
+$VERSION="0.22";
 @ISA=qw();
 
 #sub full();
 #sub part();
+#sub TEST($);
 
 #__DATA__
 
@@ -24,6 +25,11 @@ sub part() {
 	my(@fiel)=split('\.',$hostname);
 	my($resu)=$fiel[0];
 	return($resu);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -59,7 +65,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Hostname.pm
 	PROJECT: meta
-	VERSION: 0.19
+	VERSION: 0.22
 
 =head1 SYNOPSIS
 
@@ -78,6 +84,7 @@ firewall is in the middle.
 
 	full()
 	part()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -93,7 +100,15 @@ This function receives nothing.
 This function return the short name of the current host (just the machine name).
 This function receives nothing.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -102,8 +117,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -128,10 +143,13 @@ None.
 	0.17 MV movies and small fixes
 	0.18 MV thumbnail user interface
 	0.19 MV more thumbnail issues
+	0.20 MV website construction
+	0.21 MV web site automation
+	0.22 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Sys::Hostname(3), strict(3)
 
 =head1 TODO
 

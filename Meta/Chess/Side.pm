@@ -5,10 +5,11 @@ package Meta::Chess::Side;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.17";
 @ISA=qw();
 
 #sub new($);
+#sub TEST($);
 
 #__DATA__
 
@@ -17,6 +18,11 @@ sub new($) {
 	my($self)={};
 	bless($self,$clas);
 	return($self);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -52,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Side.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -70,6 +76,7 @@ validity and knows about show cuts to the names of the sides.
 =head1 FUNCTIONS
 
 	new($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -79,7 +86,15 @@ validity and knows about show cuts to the names of the sides.
 
 This is the construction for the Side.pm object.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -88,8 +103,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -109,10 +124,13 @@ None.
 	0.12 MV movies and small fixes
 	0.13 MV thumbnail user interface
 	0.14 MV more thumbnail issues
+	0.15 MV website construction
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

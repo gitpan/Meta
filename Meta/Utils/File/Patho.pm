@@ -8,7 +8,7 @@ use Meta::Utils::Env qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.05";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
@@ -20,6 +20,7 @@ $VERSION="0.02";
 #sub append_data($$$);
 #sub check($);
 #sub compose($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -93,6 +94,11 @@ sub compose($$) {
 	return($self->join($sepa));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -126,7 +132,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Patho.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -158,6 +164,7 @@ operations.
 	append_data($$$)
 	check($)
 	compose($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -205,7 +212,15 @@ This method will check that each component in the path is indeed a directory.
 
 This method will return a string describing the path using the separator specified.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Array(3)
 
 =head1 BUGS
 
@@ -214,8 +229,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -223,10 +238,13 @@ None.
 	0.00 MV md5 progress
 	0.01 MV thumbnail user interface
 	0.02 MV more thumbnail issues
+	0.03 MV website construction
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Array(3), Meta::Utils::Env(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

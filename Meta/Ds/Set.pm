@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.35";
 @ISA=qw();
 
 #sub new($);
+#sub clear($);
 #sub insert($$);
 #sub remove($$);
 #sub has($$);
@@ -18,6 +19,7 @@ $VERSION="0.32";
 #sub check_not_elem($$);
 #sub print($$);
 #sub size($);
+#sub TEST($);
 
 #__DATA__
 
@@ -28,6 +30,14 @@ sub new($) {
 	$self->{HASH}={};
 	$self->{SIZE}=0;
 	return($self);
+}
+
+sub clear($) {
+	my($self)=@_;
+	my($hash)=$self->{HASH};
+	while(my($key,$val)=each(%$hash)) {
+		$self->remove($key);
+	}
 }
 
 sub insert($$) {
@@ -110,6 +120,11 @@ sub size($) {
 	return($self->{SIZE});
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -143,7 +158,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Set.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -175,6 +190,7 @@ keys in the table.
 =head1 FUNCTIONS
 
 	new($)
+	clear($)
 	insert($$)
 	remove($$)
 	has($$)
@@ -183,6 +199,7 @@ keys in the table.
 	check_not_elem($$)
 	print($$)
 	size($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -191,6 +208,10 @@ keys in the table.
 =item B<new($)>
 
 Gives you a new Set object.
+
+=item B<clear($)>
+
+This will clear the set (make it the empty set).
 
 =item B<insert($$)>
 
@@ -239,7 +260,15 @@ This method receives:
 0. The object handle.
 This method returns the size of the set object in question.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -248,8 +277,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -287,10 +316,13 @@ None.
 	0.30 MV more thumbnail code
 	0.31 MV thumbnail user interface
 	0.32 MV more thumbnail issues
+	0.33 MV website construction
+	0.34 MV web site automation
+	0.35 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

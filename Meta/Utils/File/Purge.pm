@@ -7,12 +7,13 @@ use Meta::Utils::File::Remove qw();
 use File::Find qw();
 
 our($VERSION,@ISA);
-$VERSION="0.21";
+$VERSION="0.24";
 @ISA=qw();
 
 #sub init($$$);
 #sub doit();
 #sub purge($$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -40,6 +41,11 @@ sub purge($$$$) {
 	init($demo,$verb,$done);
 	File::Find::finddepth(\&doit,$dire);
 	return(!$erro);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -75,7 +81,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Purge.pm
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -97,6 +103,7 @@ after all children were removed it removes the father and so on...
 	init($$$)
 	doit()
 	purge($$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -132,7 +139,15 @@ of directories actually removed.
 
 This routine returns a success value.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -141,8 +156,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -169,10 +184,13 @@ None.
 	0.19 MV movies and small fixes
 	0.20 MV thumbnail user interface
 	0.21 MV more thumbnail issues
+	0.22 MV website construction
+	0.23 MV web site automation
+	0.24 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Find(3), Meta::Utils::File::Remove(3), strict(3)
 
 =head1 TODO
 

@@ -13,7 +13,7 @@ use Meta::Utils::File::Path qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.43";
+$VERSION="0.47";
 @ISA=qw();
 
 #sub aesub($);
@@ -46,6 +46,7 @@ $VERSION="0.43";
 #sub which_nodie($);
 #sub which($);
 #sub which_f($);
+#sub which_dir($);
 
 #sub search_path_object();
 
@@ -79,6 +80,8 @@ $VERSION="0.43";
 #sub no_missing_files($);
 
 #sub checkout_hash($);
+
+#sub TEST($);
 
 #__DATA__
 
@@ -195,6 +198,11 @@ sub exists($) {
 	return(Meta::Utils::File::Path::exists(&search_path(),$file,":"));
 }
 
+sub direxists($) {
+	my($dire)=@_;
+	return(Meta::Utils::File::Path::exists_dir(&search_path(),$dire,":"));
+}
+
 sub which_nodie($) {
 	my($file)=@_;
 	return(Meta::Utils::File::Path::resolve_nodie(&search_path(),$file,":"));
@@ -202,7 +210,7 @@ sub which_nodie($) {
 
 sub which($) {
 	my($file)=@_;
-	return(Meta::Utils::File::Path::resolve(search_path(),$file,":"));
+	return(Meta::Utils::File::Path::resolve(&search_path(),$file,":"));
 }
 
 sub which_f($) {
@@ -212,6 +220,11 @@ sub which_f($) {
 	} else {
 		return(which($file));
 	}
+}
+
+sub which_dir($) {
+	my($dire)=@_;
+	return(Meta::Utils::File::Path::resolve_dir(&search_path(),$dire,":"));
 }
 
 sub search_path_object() {
@@ -500,6 +513,11 @@ sub checkout_hash($) {
 #	return($resu);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -533,7 +551,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aegis.pm
 	PROJECT: meta
-	VERSION: 0.43
+	VERSION: 0.47
 
 =head1 SYNOPSIS
 
@@ -584,6 +602,7 @@ The services here are divided into several categories:
 	which_nodie($)
 	which($)
 	which_f($)
+	which_dir($)
 	search_path_object()
 	search_path_list()
 	search_path_hash()
@@ -611,6 +630,7 @@ The services here are divided into several categories:
 	total_files_list($$)
 	no_missing_files($)
 	checkout_hash($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -733,6 +753,10 @@ is being integrated.
 
 This method returns true iff the file given exists in development.
 
+=item B<direxists($)>
+
+This method returns true iff the directory given to it exists in development.
+
 =item B<which_nodie($)>
 
 This routine does the same as the which routine and does not die if the file
@@ -751,6 +775,10 @@ It uses the "which_nodie" routine to do it's thing.
 This routine tells you the absolute name of a file in the project but allows
 for the file to begin with a "/" (meaning allows it to be absolute already).
 In that case, it just returns the file name.
+
+=item B<which_dir($)>
+
+This routine will give you the absolute path to a development directory.
 
 =item B<search_path_object()>
 
@@ -900,7 +928,15 @@ missing files.
 This will receive a hash reference and will check out all the files in
 the hash.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -909,8 +945,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -959,10 +995,14 @@ None.
 	0.41 MV md5 progress
 	0.42 MV thumbnail user interface
 	0.43 MV more thumbnail issues
+	0.44 MV paper writing
+	0.45 MV website construction
+	0.46 MV web site automation
+	0.47 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::File::Collect(3), Meta::Utils::File::File(3), Meta::Utils::File::Path(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

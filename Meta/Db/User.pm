@@ -4,23 +4,23 @@ package Meta::Db::User;
 
 use strict qw(vars refs subs);
 use Meta::Ds::Connected qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.36";
 @ISA=qw(Meta::Ds::Connected);
 
 #sub BEGIN();
-#sub print($$);
 #sub printd($$);
 #sub printx($$);
 #sub getsql_create($$$);
 #sub getsql_drop($$$);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_description",
 		-java=>"_password",
@@ -28,16 +28,16 @@ sub BEGIN() {
 		-java=>"_tabs",
 		-java=>"_host",
 	);
-}
-
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "user name is [".$self->get_name()."]\n";
-	print $file "user description is [".$self->get_description()."]\n";
-	print $file "user password is [".$self->get_password()."]\n";
-	print $file "user func is [".$self->get_func()."]\n";
-	print $file "user tabs is [".$self->get_tabs()."]\n";
-	print $file "user host is [".$self->get_host()."]\n";
+	Meta::Class::MethodMaker->print(
+		[
+			"name",
+			"description",
+			"password",
+			"func",
+			"tabs",
+			"host",
+		]
+	);
 }
 
 sub printd($$) {
@@ -70,6 +70,11 @@ sub getsql_create($$$) {
 
 sub getsql_drop($$$) {
 	my($self,$stats,$info)=@_;
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -105,7 +110,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: User.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.36
 
 =head1 SYNOPSIS
 
@@ -123,11 +128,11 @@ permisitons.
 =head1 FUNCTIONS
 
 	BEGIN()
-	print($$)
 	printd($$)
 	printx($$)
 	getsql_create($$$)
 	getsql_drop($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -144,9 +149,8 @@ func - which types of functions is the user allowed to perform.
 tabs - what tables does the user control.
 host - from which hosts is the connection allowed.
 
-=item B<print($$)>
-
-This will print the current users details to the file.
+This also sets up the following methods:
+1. print - prints out the object.
 
 =item B<printd($$)>
 
@@ -170,7 +174,15 @@ This method receives a User object and a statement collection and add to
 that statement collection a list of statements needed to drop this object
 over an SQL connection.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -179,8 +191,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -218,10 +230,14 @@ None.
 	0.30 MV more thumbnail stuff
 	0.31 MV thumbnail user interface
 	0.32 MV more thumbnail issues
+	0.33 MV website construction
+	0.34 MV web site development
+	0.35 MV web site automation
+	0.36 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), Meta::Ds::Connected(3), strict(3)
 
 =head1 TODO
 

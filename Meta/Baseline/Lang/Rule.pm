@@ -8,11 +8,12 @@ use Meta::Utils::Options qw();
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.21";
+$VERSION="0.24";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -128,6 +129,11 @@ sub my_file($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -161,7 +167,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Rule.pm
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -177,6 +183,7 @@ This package excutes rule specific stuff in the baseline.
 
 	c2deps($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -192,7 +199,15 @@ This method returns an error code.
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -201,8 +216,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -229,10 +244,13 @@ None.
 	0.19 MV movies and small fixes
 	0.20 MV thumbnail user interface
 	0.21 MV more thumbnail issues
+	0.22 MV website construction
+	0.23 MV web site automation
+	0.24 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Utils::Options(3), strict(3)
 
 =head1 TODO
 

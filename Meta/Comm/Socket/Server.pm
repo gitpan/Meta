@@ -8,12 +8,13 @@ use Meta::Utils::Output qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.06";
+$VERSION="0.09";
 @ISA=qw(IO::Socket::INET);
 
 #sub new($);
 #sub run($);
 #sub handle($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -85,6 +86,11 @@ sub handle($$$) {
 	Meta::Utils::Output::print("data sent\n");
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -118,7 +124,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Server.pm
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -137,7 +143,7 @@ Inherit from this class and you are on your way.
 	new($)
 	run($)
 	handle($$$)
-	close($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -156,7 +162,15 @@ using the handle method.
 
 This is the handle method. In this virtual server it does nothing.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+IO::Socket::INET(3)
 
 =head1 BUGS
 
@@ -165,8 +179,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -178,10 +192,13 @@ None.
 	0.04 MV movies and small fixes
 	0.05 MV thumbnail user interface
 	0.06 MV more thumbnail issues
+	0.07 MV website construction
+	0.08 MV web site automation
+	0.09 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+IO::Socket::INET(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

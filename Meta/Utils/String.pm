@@ -5,7 +5,7 @@ package Meta::Utils::String;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.06";
+$VERSION="0.09";
 @ISA=qw();
 
 #sub compare($$);
@@ -14,6 +14,8 @@ $VERSION="0.06";
 #sub is_alnum_u($);
 #sub check_isalnum_u($);
 #sub separate($);
+#sub blow_to_size($$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -49,6 +51,19 @@ sub separate($) {
 	return($string);
 }
 
+sub blow_to_size($$$) {
+	my($string,$length,$add)=@_;
+	while(length($string)<$length) {
+		$string.=$add;
+	}
+	return($string);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -82,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: String.pm
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -114,6 +129,8 @@ Methods in this library include:
 	is_alnum_u($)
 	check_alnum_u($)
 	separate($)
+	blow_to_size($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -150,7 +167,20 @@ received is not an alpha numeric string with possible underscores.
 This method receives a string in ThisForm and returns it in
 this_form.
 
+=item B<blow_to_size($$$)>
+
+This method will add a specfied string to another many times until it
+exceeds a certain length.
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -159,8 +189,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -172,10 +202,13 @@ None.
 	0.04 MV thumbnail user interface
 	0.05 MV more thumbnail issues
 	0.06 MV md5 project
+	0.07 MV website construction
+	0.08 MV web site automation
+	0.09 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

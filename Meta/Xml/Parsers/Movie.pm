@@ -8,13 +8,14 @@ use Meta::Ds::Array qw();
 use Meta::Utils::Time qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.12";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
 #sub handle_start($$);
 #sub handle_end($$);
 #sub handle_char($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -208,6 +209,11 @@ sub handle_char($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -241,7 +247,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Movie.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -262,6 +268,7 @@ that the entire data will be at RAM in any single time (more streamlined).
 	handle_start($$)
 	handle_end($$)
 	handle_char($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -290,7 +297,15 @@ This currently does nothing.
 This will handle actual text.
 This currently, according to context, sets attributes for the various objects.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Xml::Parsers::Base(3)
 
 =head1 BUGS
 
@@ -299,8 +314,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -315,10 +330,13 @@ None.
 	0.07 MV movies and small fixes
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
+	0.10 MV website construction
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Array(3), Meta::Utils::Time(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

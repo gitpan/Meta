@@ -3,21 +3,27 @@
 package Meta::Info::Address;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.12";
 @ISA=qw();
 
 #sub BEGIN();
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_email",
 	);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -53,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Address.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -71,6 +77,7 @@ You can also write it in other formats.
 =head1 FUNCTIONS
 
 	BEGIN()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -81,7 +88,15 @@ You can also write it in other formats.
 This method sets up attribute accessors to this object which
 are currently only email.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -90,8 +105,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -105,10 +120,14 @@ None.
 	0.06 MV more Class method generation
 	0.07 MV thumbnail user interface
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site development
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

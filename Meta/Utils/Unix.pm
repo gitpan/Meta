@@ -6,11 +6,12 @@ use strict qw(vars refs subs);
 use File::Basename qw();
 
 our($VERSION,@ISA);
-$VERSION="0.23";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub file_to_libname($);
 #sub file_to_libname_dir($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -28,6 +29,11 @@ sub file_to_libname($) {
 
 sub file_to_libname_dir($$) {
 	my($file,$dire)=@_;
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -63,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Unix.pm
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -81,6 +87,7 @@ library "library" the actual file is not library but rather: liblibrary.so.versi
 
 	file_to_libname($)
 	file_to_libname_dir($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -98,7 +105,15 @@ component.
 This routine does the same as file_to_libname except it is given the directory
 that is supposed to prefix the library name.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -107,8 +122,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -137,10 +152,13 @@ None.
 	0.21 MV movies and small fixes
 	0.22 MV thumbnail user interface
 	0.23 MV more thumbnail issues
+	0.24 MV website construction
+	0.25 MV web site automation
+	0.26 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Basename(3), strict(3)
 
 =head1 TODO
 

@@ -8,7 +8,7 @@ use Meta::Xml::Parsers::Connections qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.33";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub new($);
@@ -17,6 +17,7 @@ $VERSION="0.30";
 #sub get_def_con($);
 #sub new_file($$);
 #sub new_deve($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -55,6 +56,11 @@ sub new_deve($$) {
 	return(&new_file($clas,Meta::Baseline::Aegis::which($deve)));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -88,7 +94,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connections.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.33
 
 =head1 SYNOPSIS
 
@@ -109,6 +115,7 @@ This is an array of many connections to the database.
 	get_def_con($)
 	new_file($$)
 	new_deve($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -155,7 +162,15 @@ This method uses the new_file method of the same package.
 Remarks:
 This method is static.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Ohash(3)
 
 =head1 BUGS
 
@@ -164,8 +179,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -201,10 +216,13 @@ None.
 	0.28 MV movies and small fixes
 	0.29 MV thumbnail user interface
 	0.30 MV more thumbnail issues
+	0.31 MV website construction
+	0.32 MV web site automation
+	0.33 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Ds::Ohash(3), Meta::Xml::Parsers::Connections(3), strict(3)
 
 =head1 TODO
 

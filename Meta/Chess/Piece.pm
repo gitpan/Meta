@@ -6,17 +6,28 @@ use strict qw(vars refs subs);
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.17";
 @ISA=qw();
 
+#sub BEGIN();
 #sub new($);
 #sub set_name($$);
 #sub get_name($);
 #sub get_shortcut($);
+#sub TEST($);
 
 #__DATA__
 
-my($piece_hash);
+our($piece_hash);
+
+sub BEGIN() {
+	$piece_hash->{"Pawn"}="";
+	$piece_hash->{"Rook"}="R";
+	$piece_hash->{"Knight"}="N";
+	$piece_hash->{"Bishop"}="B";
+	$piece_hash->{"King"}="K";
+	$piece_hash->{"Queen"}="Q";
+}
 
 sub new($) {
 	my($clas)=@_;
@@ -44,13 +55,9 @@ sub get_shortcut($) {
 	return($piece_hash->{$self->get_name()});
 }
 
-BEGIN {
-	$piece_hash->{"Pawn"}="";
-	$piece_hash->{"Rook"}="R";
-	$piece_hash->{"Knight"}="N";
-	$piece_hash->{"Bishop"}="B";
-	$piece_hash->{"King"}="K";
-	$piece_hash->{"Queen"}="Q";
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -86,7 +93,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Piece.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -104,10 +111,12 @@ It sanity checks the names that are received.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	new($)
 	set_name($$)
 	get_name($)
 	get_shortcut($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -116,6 +125,10 @@ It sanity checks the names that are received.
 =item B<$piece_hash>
 
 This hash holds the valid piece names and their shortcuts.
+
+=item B<BEGIN()>
+
+Initialization code for this class.
 
 =item B<new($)>
 
@@ -133,11 +146,15 @@ This will give you the name of the current piece.
 
 This will give you the shortcut for the current piece.
 
-=item B<BEGIN>
+=item B<TEST($)>
 
-This is the BEGIN block where we initialize the sanity/shortcut hash.
+Test suite for this object.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -146,8 +163,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -167,10 +184,13 @@ None.
 	0.12 MV movies and small fixes
 	0.13 MV thumbnail user interface
 	0.14 MV more thumbnail issues
+	0.15 MV website construction
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -12,12 +12,13 @@ use Meta::Baseline::Cook qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.23";
+$VERSION="0.26";
 @ISA=qw();
 
 #sub cleanup($$$$$$);
 #sub extra_files_hash($$$$);
 #sub no_extra_files($$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -58,6 +59,11 @@ sub no_extra_files($$$$) {
 	return(Meta::Utils::Hash::empty($hash));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -91,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cleanup.pm
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -113,6 +119,7 @@ flag and so we want to have our own implementation.
 	cleanup($$$$$$)
 	extra_files_hash($$$$)
 	no_extra_files($$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -158,7 +165,15 @@ input:
 3. verb - whether to be verbose or not.
 The routine simply calls extra_files_hash and checks if the hash is empty.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -167,8 +182,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -197,10 +212,13 @@ None.
 	0.21 MV movies and small fixes
 	0.22 MV thumbnail user interface
 	0.23 MV more thumbnail issues
+	0.24 MV website construction
+	0.25 MV web site automation
+	0.26 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Utils::File::Collect(3), Meta::Utils::File::Purge(3), Meta::Utils::File::Remove(3), Meta::Utils::Hash(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -5,33 +5,33 @@ package Meta::Utils::Parse::Text;
 use strict qw(vars refs subs);
 use IO::File qw();
 use IO::Pipe qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.30";
 @ISA=qw();
 
-#sub new($);
+#sub BEGIN();
 #sub init_file($$);
 #sub init_proc($$);
-#sub get_over($);
-#sub get_line($);
 #sub next($);
 #sub fini($);
+#sub TEST($);
 
 #__DATA__
 
-sub new($) {
-	my($clas)=@_;
-	my($self)={};
-	bless($self,$clas);
-	$self->{TYPE}=defined;
-	$self->{FILE}=defined;
-	$self->{OVER}=defined;
-	$self->{LINE}=defined;
-	$self->{NUMB}=defined;
-	$self->{FNAM}=defined;
-	$self->{PROC}=defined;
-	return($self);
+sub BEGIN() {
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_type",
+		-java=>"_file",
+		-java=>"_over",
+		-java=>"_line",
+		-java=>"_numb",
+		-java=>"_fnam",
+		-java=>"_proc",
+	);
+	Meta::Class::MethodMaker->print(["type","file","over","line","numb","fnam","proc"]);
 }
 
 sub init_file($$) {
@@ -40,18 +40,18 @@ sub init_file($$) {
 	if(!defined($file)) {
 		Meta::Utils::System::die("unable to open file [".$fnam."]");
 	}
-	$self->{TYPE}="file";
-	$self->{FNAM}=$fnam;
-	$self->{FILE}=$file;
+	$self->set_type("file");
+	$self->set_fnam($fnam);
+	$self->set_file($file);
 	my($line);
 	if($line=<$file> || 0) {
-		$self->{OVER}=0;
+		$self->set_over(0);
 	} else {
-		$self->{OVER}=1;
+		$self->set_over(1);
 	}
 	chop($line);
-	$self->{LINE}=$line;
-	$self->{NUMB}=0;
+	$self->set_line($line);
+	$self->set_numb(0);
 }
 
 sub init_proc($$) {
@@ -61,57 +61,50 @@ sub init_proc($$) {
 		Meta::Utils::System::die("unable to create object");
 	}
 	$file->reader(@$proc);
-	$self->{TYPE}="proc";
-	$self->{PROC}=$proc;
-	$self->{FILE}=$file;
+	$self->set_type("proc");
+	$self->set_proc($proc);
+	$self->set_file($file);
 	my($line);
 	if($line=<$file> || 0) {
-		$self->{OVER}=0;
+		$self->set_over(0);
 	} else {
-		$self->{OVER}=1;
+		$self->set_over(1);
 	}
 	chop($line);
-	$self->{LINE}=$line;
-	$self->{NUMB}=0;
-}
-
-sub get_over($) {
-	my($self)=@_;
-	return($self->{OVER});
-}
-
-sub get_line($) {
-	my($self)=@_;
-	return($self->{LINE});
-}
-
-sub get_numb($) {
-	my($self)=@_;
-	return($self->{NUMB});
+	$self->set_line($line);
+	$self->set_numb(0);
 }
 
 sub next($) {
 	my($self)=@_;
-	my($file)=$self->{FILE};
+	my($file)=$self->get_file();
 	my($line);
 	if($line=<$file> || 0) {
-		$self->{OVER}=0;
+		$self->set_over(0);
 	} else {
-		$self->{OVER}=1;
+		$self->set_over(1);
 	}
 	chop($line);
-	$self->{LINE}=$line;
-	$self->{NUMB}++;
+	$self->set_line($line);
+	$self->set_numb($self->get_numb()+1);
 }
 
 sub fini($) {
 	my($self)=@_;
-	my($type)=$self->{TYPE};
+	my($type)=$self->get_type();
 	if($type eq "file") {
-		if(!$self->{FILE}->close()) {
-			Meta::Utils::System::die("unable to close file [".$self->{FNAM}."]");
+		my($file)=$self->get_file();
+		if(!$file->close()) {
+			Meta::Utils::System::die("unable to close file [".$self->get_fnam()."]");
 		}
 	}
+	if($type eq "proc") {
+	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -147,13 +140,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Text.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Utils::Parse::Text qw();
-	my($prase)=Meta::Utils::Parse::Text->new();
+	my($parser)=Meta::Utils::Parse::Text->new();
+	$parser->init_file("/etc/passwd");
+	while(!$parser->get_over()) {
+		my($current_line)=$parser->get_line();
+		# do something with $current_line
+		$parser->next();
+	}
+	$parser->fini();
 
 =head1 DESCRIPTION
 
@@ -162,25 +162,45 @@ You construct a parser, give it a text file and loop until its over each
 time getting the current line from it...
 You can also init the parser from a process and so get the process output
 in a pipe without having to temporarily store it. This enables you to get the
-output of a process much cleaner.
+output of a process much cleaner and to avoid a need to store the output in
+an intermediate file.
+
+Why would you want such a parser ? Well - if all you want is to interate
+through a text file that's ok but if you are looking to grow then you need
+to reprogram the same code again and again in a non object oriented way.
+For instance - you have written a perl standard parser using:
+C<	while($line=E<lt>FILEE<gt>) {
+	}
+>
+and now you want to do some error message from within the loop and indicate
+the line number. Uh uh. Now you need to count the lines. Or, for instance,
+you now need to get the input from a process and not a file. Or you need
+a different delimiter. If you use this parser these types of changes are
+easily done without breaking your code.
 
 =head1 FUNCTIONS
 
-	new($)
+	BEGIN()
 	init_file($$)
 	init_proc($$)
-	get_over($)
-	get_line($)
 	next($)
 	fini($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<new($)>
+=item B<BEGIN()>
 
-This function constrcuts a new parser object.
+This function initializes the object with accessor methods to these attributes:
+0. fnam: name of file to read from.
+1. type: type of parser (file or proc).
+2. over: is the parser over ?
+3. line: current line parsed. 
+4. file: file handle of the parser.
+5. numb: line number the parser is at.
+6. proc: procedure to get output from.
 
 =item B<init_file($$)>
 
@@ -192,24 +212,6 @@ This function receives:
 =item B<init_proc($$)>
 
 This function initializes the parser from a process instead of a file.
-
-=item B<get_over($)>
-
-This function returns whether the current parser is over or not.
-This function receives:
-0. A parser object to work with.
-
-=item B<get_line($)>
-
-This function returns the current line from the parser.
-This function receives:
-0. A parser object to work with.
-
-=item B<get_numb($)>
-
-This function return the current line number from the parser.
-This function receives:
-0. A parser object to work with.
 
 =item B<next($)>
 
@@ -223,7 +225,15 @@ This methos wraps up the object closing any opened files, processes etc..
 This function receives:
 0. A parser object to work with.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -232,8 +242,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -266,11 +276,14 @@ None.
 	0.25 MV movies and small fixes
 	0.26 MV thumbnail user interface
 	0.27 MV more thumbnail issues
+	0.28 MV website construction
+	0.29 MV web site automation
+	0.30 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+IO::File(3), IO::Pipe(3), Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-move this module to Utils/Text.

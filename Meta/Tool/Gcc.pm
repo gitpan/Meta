@@ -14,7 +14,7 @@ use Meta::Lang::Cpp::Libs qw();
 use Meta::Utils::File::Patho qw();
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.25";
 @ISA=qw();
 
 #sub get_path();
@@ -23,7 +23,7 @@ $VERSION="0.22";
 #sub link($$$$$$$$$$$$$$$$);
 #sub your_proc($);
 #sub compile($);
-#sub TEST();
+#sub TEST($);
 
 #__DATA__
 
@@ -432,9 +432,11 @@ sub compile($) {
 	return($scod);
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	Meta::Utils::Output::print("path is [".&get_path()."]\n");
 	Meta::Utils::Output::print("version is [".&get_version()."]\n");
+	return(1);
 }
 
 1;
@@ -470,7 +472,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Gcc.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -504,6 +506,7 @@ Other uses may be colorizing the output on the console screen.
 	link($$$$$$$$$$$$$$$$)
 	your_proc($)
 	compile($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -553,7 +556,15 @@ make these flags apply only for our code and not for the external code.
 As far as I know gcc does not have this option yet so these are removed
 for now.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -562,8 +573,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -591,10 +602,13 @@ None.
 	0.20 MV import tests
 	0.21 MV dbman package creation
 	0.22 MV more thumbnail issues
+	0.23 MV website construction
+	0.24 MV web site automation
+	0.25 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Arch(3), Meta::Lang::Cpp::Libs(3), Meta::Tool::Gcc(3), Meta::Utils::File::Patho(3), Meta::Utils::Options(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Unix(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 

@@ -7,12 +7,13 @@ use Meta::Ds::Enum qw();
 use GraphViz qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.05";
 @ISA=qw(GraphViz);
 
 #sub BEGIN();
 #sub as_type($$$);
 #sub get_enum();
+#sub TEST($);
 
 #__DATA__
 
@@ -116,6 +117,11 @@ sub as_type($$$) {
 	Meta::Utils::System::die("you shouldnt be here");
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -149,7 +155,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -167,6 +173,7 @@ This module adds some capabilities to the GraphViz package.
 	BEGIN()
 	get_enum($)
 	as_type($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -190,7 +197,15 @@ that visualization currently supports.
 This method receives a Visualization object and a type to emit and
 emits that type.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+GraphViz(3)
 
 =head1 BUGS
 
@@ -199,8 +214,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -208,10 +223,13 @@ None.
 	0.00 MV graph visualization
 	0.01 MV thumbnail user interface
 	0.02 MV more thumbnail issues
+	0.03 MV website construction
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+GraphViz(3), Meta::Ds::Enum(3), strict(3)
 
 =head1 TODO
 

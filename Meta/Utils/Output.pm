@@ -6,12 +6,14 @@ use strict qw(vars refs subs);
 use IO::Handle qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.13";
 @ISA=qw();
 
+#sub BEGIN();
 #sub print($);
 #sub get_file();
 #sub get_handle();
+#sub TEST($);
 
 #__DATA__
 
@@ -31,6 +33,11 @@ sub get_file() {
 
 sub get_handle() {
 	return(\*STDOUT);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -66,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Output.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -85,9 +92,11 @@ this is a SPECIAL STDERR FILE
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	print($)
 	get_file()
 	get_handle()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -115,7 +124,15 @@ to get output on the console.
 This method will return the code handle that other code can write to in order
 to get output to the console.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -124,8 +141,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -141,10 +158,13 @@ None.
 	0.08 MV thumbnail user interface
 	0.09 MV import tests
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site automation
+	0.13 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+IO::Handle(3), strict(3)
 
 =head1 TODO
 

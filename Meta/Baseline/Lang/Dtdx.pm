@@ -9,13 +9,14 @@ use XML::Doctype qw();
 use File::Basename qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.17";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
 #sub c2chec($);
 #sub c2html($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -68,6 +69,11 @@ sub my_file($$) {
 	return(0);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -101,7 +107,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dtdx.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -121,6 +127,7 @@ Maybe someday I'll do syntax checks on those also...:)
 	c2chec($)
 	c2html($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -143,7 +150,15 @@ This will convert a dtd file to html format (documenting it).
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -152,8 +167,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -173,10 +188,13 @@ None.
 	0.12 MV md5 progress
 	0.13 MV thumbnail user interface
 	0.14 MV more thumbnail issues
+	0.15 MV website construction
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Basename(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), XML::Doctype(3), strict(3)
 
 =head1 TODO
 

@@ -5,16 +5,22 @@ package Meta::Lang::Python::Python;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.04";
+$VERSION="0.07";
 @ISA=qw();
 
 #sub is_bin($);
+#sub TEST($);
 
 #__DATA__
 
 sub is_bin($) {
 	my($file)=@_;
 	return($file=~/^.*\.py$/);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -50,7 +56,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Python.pm
 	PROJECT: meta
-	VERSION: 0.04
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -68,6 +74,7 @@ in the development environment which will be encapsulated in this module.
 =head1 FUNCTIONS
 
 	is_bin($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -78,7 +85,15 @@ in the development environment which will be encapsulated in this module.
 This method gets a single file arguments and returns true iff
 the file is a python script (not library mind you).
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -87,8 +102,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -98,10 +113,13 @@ None.
 	0.02 MV movies and small fixes
 	0.03 MV thumbnail user interface
 	0.04 MV more thumbnail issues
+	0.05 MV website construction
+	0.06 MV web site automation
+	0.07 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

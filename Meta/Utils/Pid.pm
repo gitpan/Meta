@@ -5,15 +5,21 @@ package Meta::Utils::Pid;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.20";
+$VERSION="0.23";
 @ISA=qw();
 
 #sub mypid();
+#sub TEST($);
 
 #__DATA__
 
 sub mypid() {
 	return($$);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -49,7 +55,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pid.pm
 	PROJECT: meta
-	VERSION: 0.20
+	VERSION: 0.23
 
 =head1 SYNOPSIS
 
@@ -65,6 +71,7 @@ and the like...
 =head1 FUNCTIONS
 
 	mypid()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -76,7 +83,15 @@ Gives you the pid of the current running process.
 Perl has such a builtin variable named $$ and this currently just returns
 this...
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -85,8 +100,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -112,10 +127,13 @@ None.
 	0.18 MV movies and small fixes
 	0.19 MV thumbnail user interface
 	0.20 MV more thumbnail issues
+	0.21 MV website construction
+	0.22 MV web site automation
+	0.23 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

@@ -7,10 +7,10 @@ use Net::FTP qw();
 use Meta::Utils::System qw();
 use Meta::Utils::File::Fs qw();
 use Meta::Utils::Output qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.15";
 @ISA=qw();
 
 #sub BEGIN();
@@ -24,12 +24,13 @@ $VERSION="0.11";
 #sub do_delete($$);
 #sub do_rmdir($$);
 #sub do_cwd($$);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_ftp",
 		-java=>"_site",
 		-java=>"_debug",
@@ -229,6 +230,11 @@ sub do_cwd($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -262,7 +268,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ftp.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -280,7 +286,7 @@ Note: it would have been convenient to just inherit from Net::FTP but
 Net::FTP is not a hash. Therefore we just store Net::FTP internally.
 
 Another solution would be to route methods to that class using
-Class::MethodMaker which I plan to do in the future.
+Meta::Class::MethodMaker which I plan to do in the future.
 
 =head1 FUNCTIONS
 
@@ -295,6 +301,7 @@ Class::MethodMaker which I plan to do in the future.
 	do_delete($$)
 	do_rmdir($$)
 	do_cwd($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -379,7 +386,15 @@ on my end with version of perl compiler or something ?)
 
 This method does a cwd command.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -388,8 +403,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -406,10 +421,14 @@ None.
 	0.09 MV movies and small fixes
 	0.10 MV thumbnail user interface
 	0.11 MV more thumbnail issues
+	0.12 MV website construction
+	0.13 MV web site development
+	0.14 MV web site automation
+	0.15 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), Meta::Utils::File::Fs(3), Meta::Utils::Output(3), Meta::Utils::System(3), Net::FTP(3), strict(3)
 
 =head1 TODO
 
@@ -418,3 +437,5 @@ Nothing.
 -make the get_fs_3 more robust (the regular expressions there for paring the output of dir("-R") are a little too much...
 
 -return the error checking code into the do_rmdir method. It's just that some FTP servers return a "fail" value when they haven't failed in removing the remote directory.
+
+-route methods to Net::FTP using MethodMaker or something.

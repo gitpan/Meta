@@ -11,10 +11,11 @@ use Meta::Utils::Options qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.14";
 @ISA=qw();
 
 #sub run($);
+#sub TEST($);
 
 #__DATA__
 
@@ -102,13 +103,18 @@ sub run($) {
 	return($scod);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
 
 =head1 NAME
 
-Meta::Tool::Cincl - what does your module/class do.
+Meta::Tool::Cincl - handle running Peter Millers c_incl tool.
 
 =head1 COPYRIGHT
 
@@ -135,7 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cincl.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -152,7 +158,8 @@ you could use.
 
 =head1 FUNCTIONS
 
-	run($$$$)
+	run($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -296,7 +303,15 @@ explicitly write it in their sources. Also note that we removing these leading
 paths because we want the dependency information to be independant of whether
 the files involved are in the development, branch or baseline directories.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -305,8 +320,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -323,10 +338,13 @@ None.
 	0.09 MV movies and small fixes
 	0.10 MV thumbnail user interface
 	0.11 MV more thumbnail issues
+	0.12 MV website construction
+	0.13 MV web site automation
+	0.14 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Baseline::Utils(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Options(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

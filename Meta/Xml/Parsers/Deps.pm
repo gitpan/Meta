@@ -8,7 +8,7 @@ use Meta::Development::Deps qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.16";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -19,6 +19,7 @@ $VERSION="0.13";
 #sub set_search_path($$);
 #sub handle_doctype($$$$$);
 #sub handle_externent($$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -88,6 +89,11 @@ sub handle_externent($$$$) {
 	return("");
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -121,7 +127,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Deps.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -144,6 +150,7 @@ for xml files.
 	set_root($$)
 	handle_doctype($$$$$)
 	handle_externent($$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -187,7 +194,15 @@ entity (if we had access to the graph we would have made sure that
 the file existed in the graph but since we dont we just omit it as
 dependency).
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Xml::Parsers::Base(3)
 
 =head1 BUGS
 
@@ -196,8 +211,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -216,10 +231,13 @@ None.
 	0.11 MV movies and small fixes
 	0.12 MV thumbnail user interface
 	0.13 MV more thumbnail issues
+	0.14 MV website construction
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Development::Deps(3), Meta::Utils::Output(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

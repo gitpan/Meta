@@ -7,7 +7,7 @@ use File::Find qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.26";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub rm_nodie($);
@@ -21,6 +21,7 @@ $VERSION="0.26";
 #sub rmhash_demo_verb($$$);
 #sub rmlist_demo_verb($$$);
 #sub rmmult_demo_verb($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -120,6 +121,11 @@ sub rmmult_demo_verb($$) {
 	return($resu);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -153,7 +159,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Remove.pm
 	PROJECT: meta
-	VERSION: 0.26
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -182,6 +188,7 @@ it dies on you but hey - thats the price you got to pay...
 	rmhash_demo_verb($$$)
 	rmlist_demo_verb($$$)
 	rmmult_demo_verb($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -250,7 +257,15 @@ standard input as a source for lines, each representing a file to be removed.
 The function removes all the files refered as such.
 The function returns whether all the removals were successful or not.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -259,8 +274,8 @@ None
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -292,10 +307,13 @@ None
 	0.24 MV movies and small fixes
 	0.25 MV thumbnail user interface
 	0.26 MV more thumbnail issues
+	0.27 MV website construction
+	0.28 MV web site automation
+	0.29 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Find(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -8,16 +8,22 @@ use IO qw();
 use Meta::Utils::File::File qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub get_emblem();
+#sub get_file_emblem();
 #sub get_cook_emblem();
+#sub get_script_emblem();
+#sub get_xml_emblem();
+#sub get_html_emblem();
 #sub file_emblem($);
-#sub script_emblem($);
-#sub xmlfile_emblem($);
 #sub cook_emblem($);
+#sub script_emblem($);
+#sub xml_emblem($);
+#sub html_emblem($);
 #sub cook_emblem_print($);
+#sub TEST($);
 
 #__DATA__
 
@@ -25,42 +31,72 @@ sub get_emblem() {
 	return("Base auto generated file - DO NOT EDIT!");
 }
 
+sub get_file_emblem() {
+	return("/* ".&get_emblem()." */\n");
+}
+
 sub get_cook_emblem() {
 	return("/* ".&get_emblem()." */\n");
 }
 
-sub file_emblem($) {
-	my($file)=@_;
-	my($string)="/* ".&get_emblem()." */\n";
-	Meta::Utils::File::File::save($file,$string);
+sub get_script_emblem() {
+	return("# ".&get_emblem()."\n");
 }
 
-sub script_emblem($) {
-	my($file)=@_;
-	my($string)="# ".&get_emblem()."\n";
-	Meta::Utils::File::File::save($file,$string);
-}
-
-sub xmlfile_emblem($) {
-	my($file)=@_;
-	my($output)=IO::File->new("> ".$file);
+sub get_xml_emblem() {
+	my($output)=IO::String->new();
 	my($writer)=XML::Writer->new(OUTPUT=>$output);
 	$writer->xmlDecl();
 	$writer->comment(&get_emblem());
 	$writer->dataElement("empty");
 	$writer->end();
 	$output->close();
+	return($output);
+}
+
+sub get_html_emblem() {
+	return("/* ".&get_emblem()." */\n");
+}
+
+sub file_emblem($) {
+	my($file)=@_;
+	my($string)=&get_file_emblem();
+	Meta::Utils::File::File::save($file,$string);
 }
 
 sub cook_emblem($) {
 	my($file)=@_;
-	&file_emblem($file);
+	my($string)=&get_cook_emblem();
+	Meta::Utils::File::File::save($file,$string);
+}
+
+sub script_emblem($) {
+	my($file)=@_;
+	my($string)=&get_script_emblem();
+	Meta::Utils::File::File::save($file,$string);
+}
+
+sub xml_emblem($) {
+	my($file)=@_;
+	my($string)=&get_xml_emblem();
+	Meta::Utils::File::File::save($file,$string);
+}
+
+sub html_emblem($) {
+	my($file)=@_;
+	my($string)=&get_html_emblem();
+	Meta::Utils::File::File::save($file,$string);
 }
 
 sub cook_emblem_print($) {
 	my($file)=@_;
-	my($string)="/* ".&get_emblem()." */\n";
+	my($string)=&get_cook_emblem();
 	print $file $string;
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -96,7 +132,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Utils.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -112,12 +148,18 @@ baseline need.
 =head1 FUNCTIONS
 
 	get_emblem()
+	get_file_emblem()
 	get_cook_emblem()
+	get_script_emblem()
+	get_xml_emblem()
+	get_html_emblem()
 	file_emblem($)
-	script_emblem($)
-	xmlfile_emblem($)
 	cook_emblem($)
+	script_emblem($)
+	xml_emblem($)
+	html_emblem($)
 	cook_emblem_print($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -127,34 +169,62 @@ baseline need.
 
 This will return the emblem that should be put on auto generated files.
 
+=item B<get_file_emblem()>
+
+This method returns the emblem in a general stile (C multi line comment).
+
 =item B<get_cook_emblem()>
 
 This method returns the emblem in a cook style (C multi line comment).
+
+=item B<get_script_emblem()>
+
+This method returns the emblem in a script style (shebang style).
+
+=item B<get_xml_emblem()>
+
+This method returns the emblem in an XML style (small xml doc).
+
+=item B<get_html_emblem()>
+
+This method returns the emblem in an HTML style (small html doc).
 
 =item B<file_emblem($)>
 
 This will create a stub file with the emblem.
 This is meant for files in which the /* */ is the form for comments.
 
-=item B<script_emblem($)>
-
-This method will create a stub file fit for scripts (where the hash (#)
-sign is the correct form for comments.
-
-=item B<xmlfile_emblem($)>
-
-This will create a stub XML file.
-
 =item B<cook_emblem($)>
 
 Cook knows how to handle C++ style comments so we just
 call the method for that.
 
+=item B<script_emblem($)>
+
+This method will create a stub file fit for scripts (where the hash (#)
+sign is the correct form for comments.
+
+=item B<xml_emblem($)>
+
+This will create a stub XML file.
+
+=item B<html_emblem($)>
+
+This will create a stub HTML file.
+
 =item B<cook_emblem_print($)>
 
 This method gets a file handle and prints a cook emblem into it.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -163,8 +233,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -195,10 +265,13 @@ None.
 	0.23 MV movies and small fixes
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV website construction
+	0.27 MV web site automation
+	0.28 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+IO(3), Meta::Utils::File::File(3), XML::Writer(3), strict(3)
 
 =head1 TODO
 

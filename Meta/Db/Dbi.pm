@@ -7,7 +7,7 @@ use DBI qw();
 use Meta::Utils::System qw();
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.27";
 @ISA=qw();
 
 #sub new($);
@@ -24,6 +24,7 @@ $VERSION="0.22";
 #sub commit($);
 #sub quote($$$);
 #sub disconnect($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -41,6 +42,7 @@ sub connect_dsn($$$) {
 	if(!$dbxx) {
 		Meta::Utils::System::die("error in connect");
 	}
+	$dbxx->{RaiseError}=1;
 	$self->{HANDLE}=$dbxx;
 }
 
@@ -139,6 +141,11 @@ sub disconnect($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -172,7 +179,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dbi.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -206,6 +213,7 @@ This is the reason that this object just stores a handle and not IS a handle.
 	commit($)
 	quote($$$)
 	disconnect($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -275,7 +283,15 @@ This is the two argument Dbi quote function.
 This method will disconnect the Dbi object according to the specified
 connection data.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -284,8 +300,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -313,11 +329,16 @@ None.
 	0.20 MV more thumbnail stuff
 	0.21 MV thumbnail user interface
 	0.22 MV more thumbnail issues
+	0.23 MV website construction
+	0.24 MV improve the movie db xml
+	0.25 MV web site development
+	0.26 MV web site automation
+	0.27 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+DBI(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
--use Class::MethodMaker here.
+-use Meta::Class::MethodMaker so that inheritance and code will be cleaner.

@@ -8,7 +8,7 @@ use Meta::Utils::Utils qw();
 use Meta::Baseline::Aegis qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub is_internal($);
@@ -22,6 +22,7 @@ $VERSION="0.10";
 #sub deps_to_module($);
 #sub add_deps($$$$$);
 #sub add_deps_rec($$$$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -182,6 +183,11 @@ sub add_deps_rec($$$$$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -215,7 +221,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Deps.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -242,6 +248,7 @@ from actual perl source files.
 	deps_to_module($)
 	add_deps($$$$$)
 	add_deps_rec($$$$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -297,11 +304,15 @@ This method reads a dep file and adds it's information to a graph.
 This module will create a dep graph to describe the module
 and all the modules that it depends on.
 
+=item B<TEST($)>
 
-This module will create a dep graph to describe the module
-and all the modules that it depends on.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -310,8 +321,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -327,10 +338,13 @@ None.
 	0.08 MV movies and small fixes
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site automation
+	0.13 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

@@ -5,7 +5,7 @@ package Meta::Math::Ranges;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub new($);
@@ -13,6 +13,7 @@ $VERSION="0.25";
 #sub num_ranges($);
 #sub min_value($$);
 #sub max_value($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -52,6 +53,11 @@ sub max_value($$) {
 	return($self->{MAXX}->[$inde]);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -85,7 +91,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ranges.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -106,6 +112,7 @@ which are disjoint.
 	num_ranges($)
 	min_value($$)
 	max_value($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -131,7 +138,15 @@ This returns the minimum value of each range.
 
 This returns the maximum value of each range.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -140,8 +155,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -172,10 +187,13 @@ None.
 	0.23 MV more thumbnail stuff
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV website construction
+	0.27 MV web site automation
+	0.28 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

@@ -11,11 +11,12 @@ use Meta::Utils::Pc qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub rsh($$$$$);
 #sub cook_rsh($$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -115,6 +116,11 @@ sub cook_rsh($$$$) {
 	return($code);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -148,7 +154,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Rsh.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -171,6 +177,7 @@ This is supposed to handle the following cases:
 
 	rsh($$$$$)
 	cook_rsh($$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -196,7 +203,15 @@ them as if we were just a regular dumb rsh. We ofcourse call our own version
 of rsh which is implemented in this modules to handle current, linux and
 pc hosts correctly.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -205,8 +220,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -239,10 +254,13 @@ None.
 	0.25 MV movies and small fixes
 	0.26 MV thumbnail user interface
 	0.27 MV more thumbnail issues
+	0.28 MV website construction
+	0.29 MV web site automation
+	0.30 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::File::Prop(3), Meta::Utils::File::Remove(3), Meta::Utils::Net::Hostname(3), Meta::Utils::Output(3), Meta::Utils::Pc(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

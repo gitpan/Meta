@@ -8,18 +8,22 @@ use Meta::Utils::Output qw();
 use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.29";
 @ISA=qw();
 
 #sub add_path($$$);
 #sub add_path_min($$$);
 #sub min_path($$);
 #sub exists($$$);
+#sub exists_dir($$$);
 #sub resolve_nodie($$$);
 #sub resolve($$$);
+#sub resolve_dir_nodie($$$);
+#sub resolve_dir($$$);
 #sub append($$$);
 #sub remove_path($$$);
 #sub remove_nonexist($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -73,6 +77,19 @@ sub exists($$$) {
 	return(0);
 }
 
+sub exists_dir($$$) {
+	my($path,$file,$sepa)=@_;
+	my(@part)=split($sepa,$path);
+	for(my($i)=0;$i<=$#part;$i++) {
+		my($cpth)=$part[$i];
+		my($curr)=$cpth."/".$file;
+		if(-d $curr) {
+			return(1);
+		}
+	}
+	return(0);
+}
+
 sub resolve_nodie($$$) {
 	my($path,$file,$sepa)=@_;
 #	Meta::Utils::Output::print("got path [".$path."] and file [".$file."]\n");
@@ -93,6 +110,30 @@ sub resolve($$$) {
 	my($resu)=resolve_nodie($path,$file,$sepa);
 	if(!defined($resu)) {
 		Meta::Utils::System::die("unable to find file [".$file."] in path [".$path."]");
+	}
+	return($resu);
+}
+
+sub resolve_dir_nodie($$$) {
+	my($path,$dire,$sepa)=@_;
+#	Meta::Utils::Output::print("got path [".$path."] and file [".$file."]\n");
+	my(@part)=split($sepa,$path);
+	for(my($i)=0;$i<=$#part;$i++) {
+		my($cpth)=$part[$i];
+		my($curr)=$cpth."/".$dire;
+#		Meta::Utils::Output::print("curr is [".$curr."]\n");
+		if(-d $curr) {
+			return($curr);
+		}
+	}
+	return(undef);
+}
+
+sub resolve_dir($$$) {
+	my($path,$dire,$sepa)=@_;
+	my($resu)=resolve_dir_nodie($path,$dire,$sepa);
+	if(!defined($resu)) {
+		Meta::Utils::System::die("unable to find directory [".$dire."] in path [".$path."]");
 	}
 	return($resu);
 }
@@ -134,6 +175,11 @@ sub remove_nonexist($$) {
 	return(join($sepa,@retu));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -167,7 +213,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Path.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.29
 
 =head1 SYNOPSIS
 
@@ -187,11 +233,15 @@ get paths with as few ".." as possible, reduce paths to a minimum etc...
 	add_path_min($$$)
 	min_path($$)
 	exists($$$)
+	exists_dir($$$)
 	resolve_nodie($$$)
 	resolve($$$)
+	resolve_dir_nodie($$$)
+	resolve_dir($$$)
 	append($$$)
 	remove_path($$$)
 	remove_nonexist($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -227,7 +277,11 @@ to repeat them.
 
 =item B<exists($$$)>
 
-This method return true iff the file exists in the path.
+This method returns true iff the file exists in the path.
+
+=item B<exists_dir($$$)>
+
+This method returns true iff the directory exists in the path.
 
 =item B<resolve_nodie($$$)>
 
@@ -256,7 +310,15 @@ This method return a path which is like the original given to
 it except it removes the parts of the path which are not
 real directories.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -265,8 +327,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -297,10 +359,14 @@ None.
 	0.23 MV movies and small fixes
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV paper writing
+	0.27 MV website construction
+	0.28 MV web site automation
+	0.29 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

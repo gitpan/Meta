@@ -6,19 +6,59 @@ use strict qw(vars refs subs);
 use Meta::Geo::Pos2d qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.17";
 @ISA=qw(Meta::Geo::Pos2d);
 
+#sub BEGIN();
 #sub new($);
 #sub cget_x($);
 #sub cset_x($$);
 #sub cget_y($);
 #sub cset_y($$);
 #sub cprint($$);
+#sub TEST($);
 
 #__DATA__
 
 my($hash_horz,$hash_vert,$horz_hash,$vert_hash)=({},{},{},{});
+
+sub BEGIN() {
+	$hash_horz->{"a"}=0;
+	$hash_horz->{"b"}=1;
+	$hash_horz->{"c"}=2;
+	$hash_horz->{"d"}=3;
+	$hash_horz->{"e"}=4;
+	$hash_horz->{"f"}=5;
+	$hash_horz->{"g"}=6;
+	$hash_horz->{"h"}=7;
+
+	$horz_hash->{"0"}="a";
+	$horz_hash->{"1"}="b";
+	$horz_hash->{"2"}="c";
+	$horz_hash->{"3"}="d";
+	$horz_hash->{"4"}="e";
+	$horz_hash->{"5"}="f";
+	$horz_hash->{"6"}="g";
+	$horz_hash->{"7"}="h";
+
+	$hash_vert->{"1"}=0;
+	$hash_vert->{"2"}=1;
+	$hash_vert->{"3"}=2;
+	$hash_vert->{"4"}=3;
+	$hash_vert->{"5"}=4;
+	$hash_vert->{"6"}=5;
+	$hash_vert->{"7"}=6;
+	$hash_vert->{"8"}=7;
+
+	$vert_hash->{"0"}=1;
+	$vert_hash->{"1"}=2;
+	$vert_hash->{"2"}=3;
+	$vert_hash->{"3"}=4;
+	$vert_hash->{"4"}=5;
+	$vert_hash->{"5"}=6;
+	$vert_hash->{"6"}=7;
+	$vert_hash->{"7"}=8;
+}
 
 sub new($) {
 	my($clas)=@_;
@@ -58,42 +98,9 @@ sub cprint($$) {
 	print $file $self->cget_x().$self->cget_y();
 }
 
-BEGIN {
-	$hash_horz->{"a"}=0;
-	$hash_horz->{"b"}=1;
-	$hash_horz->{"c"}=2;
-	$hash_horz->{"d"}=3;
-	$hash_horz->{"e"}=4;
-	$hash_horz->{"f"}=5;
-	$hash_horz->{"g"}=6;
-	$hash_horz->{"h"}=7;
-
-	$horz_hash->{"0"}="a";
-	$horz_hash->{"1"}="b";
-	$horz_hash->{"2"}="c";
-	$horz_hash->{"3"}="d";
-	$horz_hash->{"4"}="e";
-	$horz_hash->{"5"}="f";
-	$horz_hash->{"6"}="g";
-	$horz_hash->{"7"}="h";
-
-	$hash_vert->{"1"}=0;
-	$hash_vert->{"2"}=1;
-	$hash_vert->{"3"}=2;
-	$hash_vert->{"4"}=3;
-	$hash_vert->{"5"}=4;
-	$hash_vert->{"6"}=5;
-	$hash_vert->{"7"}=6;
-	$hash_vert->{"8"}=7;
-
-	$vert_hash->{"0"}=1;
-	$vert_hash->{"1"}=2;
-	$vert_hash->{"2"}=3;
-	$vert_hash->{"3"}=4;
-	$vert_hash->{"4"}=5;
-	$vert_hash->{"5"}=6;
-	$vert_hash->{"6"}=7;
-	$vert_hash->{"7"}=8;
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -129,7 +136,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Position.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -150,12 +157,14 @@ It offers new set routine with checks.
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	new($)
 	cget_x($)
 	cset_x($$)
 	cget_y($)
 	cset_y($$)
 	cprint($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -164,6 +173,10 @@ It offers new set routine with checks.
 =item B<$hash_horz,$hash_vert,$horz_hash,$vert_hash>
 
 These hashs store mappings to horizontal and vertical positions.
+
+=item B<BEGIN()>
+
+This is the begin block which initialized the static hashes.
 
 =item B<new($)>
 
@@ -189,11 +202,15 @@ This will set the y value of a position.
 
 This will print the current position in chess style.
 
-=item B<BEGIN>
+=item B<TEST($)>
 
-This is the begin block which initialized the static hashes.
+Test suite for this object.
 
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Geo::Pos2d(3)
 
 =head1 BUGS
 
@@ -202,8 +219,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -223,10 +240,13 @@ None.
 	0.12 MV movies and small fixes
 	0.13 MV thumbnail user interface
 	0.14 MV more thumbnail issues
+	0.15 MV website construction
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Geo::Pos2d(3), strict(3)
 
 =head1 TODO
 

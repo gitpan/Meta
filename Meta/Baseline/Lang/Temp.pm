@@ -7,21 +7,46 @@ use Meta::Baseline::Utils qw();
 use Template qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Tool::Aegis qw();
+use Meta::Utils::Hash qw();
+use Meta::Utils::List qw();
+use Meta::Development::Module qw();
+use Meta::Info::Author qw();
+use Meta::Lang::Tt::Tt qw();
+use Meta::Baseline::Cook qw();
+use Meta::Utils::Text::Checker qw();
+use Meta::Utils::File::File qw();
+use Meta::Lang::Xml::Xml qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.16";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
 #sub c2deps($);
+#sub get_vars($);
 #sub c2some($);
+#sub mac_devfile($);
+#sub mac_devfile_rel($);
+#sub mac_devfile_abs($);
+#sub mac_devlist_reg($);
+#sub mac_include_sgml($);
+#sub mac_include_xml($);
 #sub my_file($$);
+#sub ram_process($$);
+#sub TEST($);
 
 #__DATA__
 
+our($curr_modu);
+
 sub c2chec($) {
 	my($buil)=@_;
-	my($resu)=1;
+	my($resu);
+	if($buil->get_modu()=~/^temp\/sgml\//) {
+		$resu=Meta::Utils::Text::Checker::length_check($buil->get_srcx(),80);
+	} else {
+		$resu=1;
+	}
 	if($resu) {
 		Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	}
@@ -30,8 +55,34 @@ sub c2chec($) {
 
 sub c2deps($) {
 	my($buil)=@_;
-	Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	#Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	my($deps)=Meta::Lang::Tt::Tt::c2deps($buil);
+	Meta::Baseline::Cook::print_deps($deps,$buil->get_targ());
 	return(1);
+}
+
+sub get_vars($) {
+	my($modu)=@_;
+	my($author_obje)=Meta::Info::Author::new_deve("xmlx/author/author.xml");
+	my($copy)=$author_obje->get_html_copyright();
+	my($info)=$author_obje->get_html_info();
+	my($vars)={
+		"docbook_revhistory"=>Meta::Tool::Aegis::history($modu)->docbook_revhistory(),
+		"docbook_edition"=>Meta::Tool::Aegis::history($modu)->docbook_edition(),
+		"docbook_date"=>Meta::Tool::Aegis::history($modu)->docbook_date(),
+		"html_last"=>Meta::Tool::Aegis::history($modu)->html_last(),
+		"html_copyright"=>"<p><small>".$copy."</small></p>",
+		"html_info"=>$info,
+		"devfile"=>\&mac_devfile,
+		"devfile_rel"=>\&mac_devfile_rel,
+		"devfile_abs"=>\&mac_devfile_abs,
+		"devlist_reg"=>\&mac_devlist_reg,
+		"include_sgml"=>\&mac_include_sgml,
+		"include_xml"=>\&mac_include_xml,
+		"module"=>$modu,
+	};
+	$curr_modu=$modu;
+	return($vars);
 }
 
 sub c2some($) {
@@ -42,17 +93,77 @@ sub c2some($) {
 		ABSOLUTE=>1,
 	);
 	my($modu)=$buil->get_modu();
-	my($author_obje)=Meta::Info::Author::new_deve("xmlx/author/author.xml");
-	my($copy)=$author_obje->get_html_copyright();
-	my($vars)={
-		"docbook_revhistory"=>Meta::Tool::Aegis::history($modu)->docbook_revhistory(),
-		"docbook_edition"=>Meta::Tool::Aegis::history($modu)->docbook_edition(),
-		"docbook_date"=>Meta::Tool::Aegis::history($modu)->docbook_date(),
-		"html_last"=>Meta::Tool::Aegis::history($modu)->html_last(),
-		"html_copyright"=>"<p><small>".$copy."</small></p>",
-	};
+	my($vars)=get_vars($modu);
+	# add target of the build for substitution
+	$vars->{"target"}=$buil->get_targ();
 	my($scod)=$template->process($buil->get_srcx(),$vars,$buil->get_targ());
+	if(!$scod) {
+		Meta::Utils::Output::print("error in Template processing [".$template->error()."]\n");
+	}
 	return($scod);
+}
+
+sub mac_devfile($) {
+	my($name)=@_;
+	my($module)=Meta::Development::Module->new();
+	$module->set_name($name);
+	return($module);
+}
+
+sub mac_devfile_rel($) {
+	my($input)=@_;
+	#return($input);
+	#return(Meta::Baseline::Aegis::which($input));
+	my(@list)=split('/',$curr_modu);
+	my($ret)="";
+	for(my($i)=0;$i<=$#list;$i++) {
+		$ret.="../";
+	}
+	return($ret.$input);
+}
+
+sub mac_devfile_abs($) {
+	my($input)=@_;
+	return(Meta::Baseline::Aegis::which($input));
+}
+
+sub mac_devlist_reg($) {
+	my($rege)=@_;
+	#my($list)=Meta::Baseline::Aegis::project_files_list(1,1,0);
+	#$list=Meta::Utils::List::filter_regexp($list,$rege,1);
+	#return($list);
+	#Meta::Utils::Output::print("rege is [".$rege."]\n");
+	my($hash)=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,0);
+	$hash=Meta::Utils::Hash::filter_regexp($hash,$rege,1);
+	#first version - just return the hash
+	#return(%$hash);
+	#second version - turn hash into a list
+	#my($list)=Meta::Utils::Hash::to_list($hash);
+	#return($list);
+	#third version - return a list of modules
+	my(@list);
+	while(my($key,$val)=each(%$hash)) {
+		my($curr)=Meta::Development::Module->new();
+		$curr->set_name($key);
+		push(@list,$curr);
+	}
+	return(\@list);
+}
+
+sub mac_include_sgml($) {
+	my($file)=@_;
+	my($real)=Meta::Baseline::Aegis::which($file);
+	#return(Meta::Utils::File::File::load_deve($file));
+	my($res)=Meta::Lang::Xml::Xml::chunk($real);
+	return($res);
+}
+
+sub mac_include_xml($) {
+	my($file)=@_;
+	my($real)=Meta::Baseline::Aegis::which($file);
+	#return(Meta::Utils::File::File::load_deve($file));
+	my($res)=Meta::Lang::Xml::Xml::chunk($real);
+	return($res);
 }
 
 sub my_file($$) {
@@ -61,6 +172,27 @@ sub my_file($$) {
 		return(1);
 	}
 	return(0);
+}
+
+sub ram_process($$) {
+	my($modu,$file)=@_;
+	my($template)=Template->new(
+		INCLUDE_PATH=>Meta::Baseline::Aegis::search_path(),
+		RELATIVE=>1,
+		ABSOLUTE=>1,
+	);
+	my($vars)=get_vars($modu);
+	my($ret);
+	my($scod)=$template->process($file,$vars,\$ret);
+	if(!$scod) {
+		Meta::Utils::System::die("error in Template processing [".$template->error()."]");
+	}
+	return($ret);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -96,7 +228,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Temp.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -115,8 +247,17 @@ This package contains stuff specific to Templates in the baseline:
 
 	c2chec($)
 	c2deps($)
+	get_vars()
 	c2some($)
+	mac_devfile($)
+	mac_devfile_rel($)
+	mac_devfile_abs($)
+	mac_devlist_reg($)
+	mac_include_sgml($)
+	mac_include_xml($)
 	my_file($$)
+	ram_process($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -132,17 +273,59 @@ Currently it does nothing.
 This routine will print out dependencies in cook fashion for template sources.
 Currently it does nothing.
 
+=item B<get_vars()>
+
+This will get all the variables for Template processing.
+
 =item B<c2some($)>
 
 This routine will convert Template files to DocBook files.
 Currently it does nothing.
+
+=item B<mac_devfile($)>
+
+This method will return a development module object according to module name.
+
+=item B<mac_devfile_rel($)>
+
+This method will translate a module name to a relative name (for html relative links).
+
+=item B<mac_devfile_abs($)>
+
+This method will translate a module name to an absolute file name.
+
+=item B<mac_devlist_reg($)>
+
+This method will return all development files who's names match a certain regexp.
+
+=item B<mac_include_sgml($)>
+
+This method will load a development file and will include only it's markup section (no
+declaration).
+
+=item B<mac_include_xml($)>
+
+This method will load a development file and will include only it's markup section (no
+declaration).
 
 =item B<my_file($$)>
 
 This method will return true if the file received should be handled by this
 module.
 
+=item B<ram_process($$)>
+
+This will process a file on disk and will return the result in RAM.
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -151,8 +334,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -169,11 +352,18 @@ None.
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
 	0.11 MV md5 project
+	0.12 MV website construction
+	0.13 MV web site development
+	0.14 MV more web page stuff
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Utils(3), Meta::Development::Module(3), Meta::Info::Author(3), Meta::Lang::Tt::Tt(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aegis(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::List(3), Meta::Utils::Text::Checker(3), Template(3), strict(3)
 
 =head1 TODO
 
-Nothing.
+-because of the use og global vars here then the moudle is not multi-thread safe.
+
+-add a root variable to the substitutin and a root_rel (relative path to the root).

@@ -5,21 +5,22 @@ package Meta::Info::MailMessage;
 use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 use Mail::Sendmail qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.09";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub BEGIN();
 #sub init($);
 #sub send($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_subject",
 		-java=>"_text",
 		-java=>"_from",
@@ -49,11 +50,16 @@ sub send($) {
 	);
 	my($scod)=Mail::Sendmail::sendmail(%mail);
 	if($scod) {
-		$self->{ERROR}=$Mail::Sendmail::log;
+		$self->set_error($Mail::Sendmail::log);
 	} else {
-		$self->{ERROR}=$Mail::Sendmail::error;
+		$self->set_error($Mail::Sendmail::error);
 	}
 	return($scod);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -89,7 +95,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MailMessage.pm
 	PROJECT: meta
-	VERSION: 0.09
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -99,7 +105,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 	$message->set_subject("Microsoft paradigm shift into the hamburger business");
 	$message->set_recipients(["billg@microsoft.com"]);
 	$message->set_text("Dear Sir! I wish to complain about the bad quality of chips with your hamburger");
-	$message->set_from("mark2776@yahoo.com");
+	$message->set_from("john@doe.org");
 	my($result)=$message->send();
 	if($result) {
 		print "Message sent\n";
@@ -118,6 +124,7 @@ module.
 	BEGIN()
 	init($)
 	send($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -137,7 +144,15 @@ Internal method which does instance initialization.
 This method will send the message.
 The method returns the result of the send.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -146,8 +161,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -162,10 +177,14 @@ None.
 	0.07 MV more Class method generation
 	0.08 MV thumbnail user interface
 	0.09 MV more thumbnail issues
+	0.10 MV website construction
+	0.11 MV web site development
+	0.12 MV web site automation
+	0.13 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Mail::Sendmail(3), Meta::Class::MethodMaker(3), Meta::Ds::Array(3), strict(3)
 
 =head1 TODO
 

@@ -6,9 +6,10 @@ use strict qw(vars refs subs);
 use Meta::Utils::File::Path qw();
 use Meta::Baseline::Aegis qw();
 use Meta::Baseline::Lang qw();
+use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.32";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub env();
@@ -17,6 +18,7 @@ $VERSION="0.28";
 #sub c2html($);
 #sub c2objs($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -70,6 +72,13 @@ sub my_file($$) {
 	return(0);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	my($hash)=Meta::Baseline::Lang::Pyth::env();
+	Meta::Utils::Env::bash_cat($hash);
+	return(1);
+}
+
 1;
 
 __END__
@@ -103,7 +112,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pyth.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -141,6 +150,7 @@ For Python specific purposes this does:
 	c2html($)
 	c2objs($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -180,7 +190,16 @@ This method returns an error code.
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+This currently just runs the Env stuff and checks whats the output bash script.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -189,8 +208,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -224,10 +243,14 @@ None.
 	0.26 MV movies and small fixes
 	0.27 MV thumbnail user interface
 	0.28 MV more thumbnail issues
+	0.29 MV website construction
+	0.30 MV web site automation
+	0.31 MV SEE ALSO section fix
+	0.32 MV put all tests in modules
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Baseline::Lang(3), Meta::Utils::Env(3), Meta::Utils::File::Path(3), strict(3)
 
 =head1 TODO
 

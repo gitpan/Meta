@@ -9,28 +9,15 @@ use Meta::Lang::Html::Html qw();
 use Meta::Tool::Aspell qw();
 
 our($VERSION,@ISA);
-$VERSION="0.21";
+$VERSION="0.24";
 @ISA=qw(Meta::Baseline::Lang);
 
-#sub my_file($$);
 #sub c2deps($);
 #sub c2chec($);
+#sub my_file($$);
+#sub TEST($);
 
 #__DATA__
-
-sub my_file($$) {
-	my($self,$file)=@_;
-	if($file=~/^html\/.*\.html$/) {
-		return(1);
-	}
-	if($file eq "html/java/lib/stylesheet.css") {
-		return(1);
-	}
-	if($file eq "html/java/lib/package-list") {
-		return(1);
-	}
-	return(0);
-}
 
 sub c2deps($) {
 	my($buil)=@_;
@@ -56,6 +43,25 @@ sub c2chec($) {
 		Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	}
 	return($resu);
+}
+
+sub my_file($$) {
+	my($self,$file)=@_;
+	if($file=~/^html\/.*\.html$/) {
+		return(1);
+	}
+	if($file eq "html/java/lib/stylesheet.css") {
+		return(1);
+	}
+	if($file eq "html/java/lib/package-list") {
+		return(1);
+	}
+	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -91,7 +97,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Html.pm
 	PROJECT: meta
-	VERSION: 0.21
+	VERSION: 0.24
 
 =head1 SYNOPSIS
 
@@ -107,18 +113,14 @@ It currently does nothing and authorises all files to be placed in data.
 
 =head1 FUNCTIONS
 
-	my_file($$)
 	c2deps($)
 	c2chec($)
+	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
-
-=item B<my_file($$)>
-
-This method will return true if the file received should be handled by this
-module.
 
 =item B<c2deps($)>
 
@@ -129,7 +131,20 @@ which other baseline documents it refers too.
 
 This method will check an HTML file for various stuff.
 
+=item B<my_file($$)>
+
+This method will return true if the file received should be handled by this
+module.
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -138,8 +153,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -166,10 +181,13 @@ None.
 	0.19 MV more Class method generation
 	0.20 MV thumbnail user interface
 	0.21 MV more thumbnail issues
+	0.22 MV website construction
+	0.23 MV web site automation
+	0.24 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), Meta::Lang::Html::Html(3), Meta::Tool::Aspell(3), Meta::Tool::Onsgmls(3), strict(3)
 
 =head1 TODO
 

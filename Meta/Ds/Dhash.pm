@@ -5,7 +5,7 @@ package Meta::Ds::Dhash;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.31";
 @ISA=qw();
 
 #sub new($);
@@ -20,6 +20,7 @@ $VERSION="0.28";
 #sub print($$);
 #sub read($$);
 #sub write($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -123,6 +124,11 @@ sub write($$) {
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$file."]");
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -156,7 +162,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dhash.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -187,6 +193,7 @@ This is a 1-1 mapping which is held by two hash tables.
 	print($$)
 	read($$)
 	write($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -259,7 +266,15 @@ file.
 This will write a hash table as in the read method. See that methods
 documentation for details.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -268,8 +283,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -303,10 +318,13 @@ None.
 	0.26 MV more thumbnail stuff
 	0.27 MV thumbnail user interface
 	0.28 MV more thumbnail issues
+	0.29 MV website construction
+	0.30 MV web site automation
+	0.31 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

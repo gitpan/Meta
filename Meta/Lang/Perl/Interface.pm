@@ -5,11 +5,12 @@ package Meta::Lang::Perl::Interface;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub get_data_hash($);
 #sub get_method_hash($);
+#sub TEST($);
 
 #__DATA__
 
@@ -34,6 +35,11 @@ sub get_method_hash($) {
 	my($ret)=\%$glob_hash;
 	use strict qw(vars refs subs);
 	return($ret);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -69,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Interface.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -86,6 +92,7 @@ interface.
 
 	get_data_hash($)
 	get_method_hash($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -106,7 +113,15 @@ to the hash with all the methods in it. This is forbidden
 by use strict and so I have to relax stuff and put restrictions
 back in after I do the ugly deed.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -115,8 +130,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -129,10 +144,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

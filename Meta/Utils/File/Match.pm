@@ -6,12 +6,13 @@ use strict qw(vars refs subs);
 use File::Find qw();
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.25";
 @ISA=qw();
 
 #sub match($$$);
 #sub init($$$);
 #sub doit($);
+#sub TEST($);
 
 #__DATA__
 
@@ -22,7 +23,8 @@ sub match($$$) {
 	File::Find::find(\&doit,$dire);
 }
 
-my($list,$rege,$freg);
+our ($list,$rege,$freg);
+
 sub init($$$) {
 	($list,$rege,$freg)=@_;
 }
@@ -31,6 +33,11 @@ sub doit($) {
 	my($curr)=@_;
 	my($full)=$File::Find::name;
 	my($dirx)=$File::Find::dir;
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -66,7 +73,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Match.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -84,6 +91,7 @@ a directory which match a pattern.
 	match($$$)
 	init($$$)
 	doit($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -105,7 +113,15 @@ routines kick into action.
 
 This routine actually does the match.
 
+=item B<TEST($)>
+
+A test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -114,8 +130,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -143,10 +159,13 @@ None.
 	0.20 MV movies and small fixes
 	0.21 MV thumbnail user interface
 	0.22 MV more thumbnail issues
+	0.23 MV website construction
+	0.24 MV web site automation
+	0.25 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+File::Find(3), strict(3)
 
 =head1 TODO
 

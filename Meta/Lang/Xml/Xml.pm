@@ -16,7 +16,7 @@ use Meta::Xml::Parsers::Checker qw();
 use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.05";
 @ISA=qw();
 
 #sub catalog_setup();
@@ -28,10 +28,12 @@ $VERSION="0.02";
 #sub check($);
 #sub c2deps($);
 #sub c2chun($);
+#sub chunk($);
 #sub odeps($$$$);
 #sub resolve_dtd($);
 #sub resolve_xml($);
 #sub get_type($);
+#sub TEST($);
 
 #__DATA__
 
@@ -124,22 +126,61 @@ sub c2chun($) {
 	my($path)=$buil->get_path();
 	my($parser)=Meta::Utils::Parse::Text->new();
 	$parser->init_file($srcx);
-	my($found)=0;
+	my($found_doctype)=0;
+	my($found_xml)=0;
 	open(FILE,"> ".$targ) || Meta::Utils::System::die("unable to open file [".$targ."]");
 	while(!$parser->get_over()) {
 		my($line)=$parser->get_line();
 		if($line=~/^\<\!DOCTYPE/) {
-			$found=1;
+			$found_doctype=1;
 		} else {
-			print FILE $line."\n";
+			if($line=~/^\<\?xml version/) {
+				$found_xml=1;
+			} else {
+				print FILE $line."\n";
+			}
 		}
 		$parser->next();
 	}
+	$parser->fini();
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$targ."]");
-	if(!$found) {
+	if(!$found_doctype) {
 		Meta::Utils::Output::print("unable to find DOCTYPE in document\n");
 	}
-	return($found);
+	if(!$found_xml) {
+		Meta::Utils::Output::print("unable to find xml version in document\n");
+	}
+	return($found_doctype && $found_xml);
+}
+
+sub chunk($) {
+	my($srcx)=@_;
+	my($parser)=Meta::Utils::Parse::Text->new();
+	$parser->init_file($srcx);
+	my($found_doctype)=0;
+	my($found_xml)=0;
+	my($res)="";
+	while(!$parser->get_over()) {
+		my($line)=$parser->get_line();
+		if($line=~/^\<\!DOCTYPE/) {
+			$found_doctype=1;
+		} else {
+			if($line=~/^\<\?xml version/) {
+				$found_xml=1;
+			} else {
+				$res.=$line."\n";
+			}
+		}
+		$parser->next();
+	}
+	$parser->fini();
+	if(!$found_doctype) {
+		Meta::Utils::Output::print("unable to find DOCTYPE in document\n");
+	}
+	if(!$found_xml) {
+		Meta::Utils::Output::print("unable to find xml version in document\n");
+	}
+	return($res);
 }
 
 sub odeps($$$$) {
@@ -198,6 +239,11 @@ sub get_type($) {
 	return($parser->get_result());
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -231,7 +277,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Xml.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -256,10 +302,12 @@ This class will help you with xml related tasks.
 	check($$$)
 	c2deps($)
 	c2chun($)
+	chunk($)
 	odeps($$$$)
 	resolve_dtd($)
 	resolve_xml($)
 	get_type($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -317,6 +365,13 @@ This method uses an Expat parser to do it which is quite cheap.
 
 This method receives an XML file and removes the DOCTYPE declarations from it so
 it could be included in another SGML file.
+This also removes the xml version declaration. This method need to be improved
+since it does not really do correct XML parsing but just uses non accurate perl
+regexps.
+
+=item B<chunk($)>
+
+Remove the xml declarations from a file and return the result string.
 
 =item B<odeps($$$$)>
 
@@ -342,7 +397,15 @@ of the project.
 This method receives a file name of an XML document and returns the type
 of the document (the highest element in it).
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -351,8 +414,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -360,13 +423,20 @@ None.
 	0.00 MV more Class method generation
 	0.01 MV thumbnail user interface
 	0.02 MV more thumbnail issues
+	0.03 MV website construction
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Development::Deps(3), Meta::Utils::Env(3), Meta::Utils::Output(3), Meta::Utils::Parse::Text(3), Meta::Utils::System(3), Meta::Xml::Parsers::Checker(3), Meta::Xml::Parsers::Deps(3), Meta::Xml::Parsers::Type(3), XML::Checker::Parser(3), XML::DOM(3), strict(3)
 
 =head1 TODO
 
 -the way im counting errros here is not nice since I'm using a global variable. This could be pretty bad for multi-threading etc... Try to make that nicer and dump the global var. You could see the errors global variable in the vars section. 
 
 -make the setup path (which everybody calls before starting to use this module) part of a BEGIN block (if it is at all needed). Think about it.
+
+-the way I'm cutting full xmls into chunks using perl regexps is not right. Use a real XML parser and emit everything except the stuff I'm removing now.
+
+-c2chun and chunk have same code. Unify it using IO:: objects.

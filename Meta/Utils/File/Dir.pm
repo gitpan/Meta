@@ -3,16 +3,19 @@
 package Meta::Utils::File::Dir;
 
 use strict qw(vars refs subs);
-use Carp qw();
+use Meta::Utils::System qw();
+#use Carp qw();
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub empty($);
 #sub exist($);
 #sub check_exist($);
 #sub fixdir($);
+#sub get_relative_path($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -31,15 +34,51 @@ sub exist($) {
 
 sub check_exist($) {
 	my($dire)=@_;
-	if(!(-d $dire)) {
-		Carp::confess("directory [".$dire."] does not exist");
+	if(!exist($dire)) {
+		Meta::Utils::System::die("directory [".$dire."] does not exist");
 	}
+#	if(!(-d $dire)) {
+#		Carp::confess("directory [".$dire."] does not exist");
+#	}
 }
 
 sub fixdir($) {
 	my($name)=@_;
 	while($name=~s/[^\/]*\/\.\.\///) {};
 	return($name);
+}
+
+sub get_relative_path($$) {
+	my($file1,$file2)=@_;
+	my(@file1_dirs)=split('/',$file1);
+	my(@file2_dirs)=split('/',$file2);
+	my($i);
+	# find the common element
+	my($stop)=0;
+	for($i=0;$i<=$#file1_dirs && !$stop;$i++) {
+		my($c1)=$file1_dirs[$i];
+		my($c2)=$file2_dirs[$i];
+		if($c1 ne $c2) {
+			$stop=1;
+		}
+	}
+	my($res);
+	for(my($j)=0;$j<=$#file1_dirs-$i;$j++) {
+		$res.="../";
+	}
+	for(my($k)=$i-1;$k<=$#file2_dirs;$k++) {
+		my($c2)=$file2_dirs[$k];
+		$res.=$c2;
+		if($k<$#file2_dirs) {
+			$res.="/";
+		}
+	}
+	return($res);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -75,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Dir.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -100,6 +139,8 @@ goes wrong, checking if a directory is empty etc...
 	exist($)
 	check_exist($)
 	fixdir($)
+	get_relative_path($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -128,7 +169,20 @@ This routine gets a name of a file or directory and eliminated bad stuff
 from it:
 0. [pref] slash [a] slash [..] slash [suff] is turned to [pref] slash [suff]
 
+=item B<get_relative_path($$)>
+
+This method will return a relative path which leads from the first file or
+directory to the second assuming that they both start from the same root.
+
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -137,8 +191,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -168,10 +222,14 @@ None.
 	0.22 MV movies and small fixes
 	0.23 MV thumbnail user interface
 	0.24 MV more thumbnail issues
+	0.25 MV website construction
+	0.26 MV more web page stuff
+	0.27 MV web site automation
+	0.28 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 

@@ -3,15 +3,17 @@
 package Meta::Comm::Xmlrpc::Server;
 
 use strict qw(vars refs subs);
-use XMLRPC::Transport::HTTP qw();
+#use XMLRPC::Transport::HTTP qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.06";
-@ISA=qw(XMLRPC::Transport::HTTP::Daemon);
+$VERSION="0.09";
+#@ISA=qw(XMLRPC::Transport::HTTP::Daemon);
+@ISA=qw();
 
 #sub new($);
 #sub handle($);
+#sub TEST($);
 
 #__DATA__
 
@@ -26,6 +28,11 @@ sub new($) {
 sub handle($) {
 	Meta::Utils::Output::print("in handle\n");
 	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -61,7 +68,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Server.pm
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -78,6 +85,7 @@ Put a lot of documentation here to show what your class does.
 
 	new($)
 	handle($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -91,7 +99,15 @@ This is a constructor for the Meta::Comm::Xmlrpc::Server object.
 
 This method handles stuff.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -100,8 +116,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -113,10 +129,13 @@ None.
 	0.04 MV movies and small fixes
 	0.05 MV thumbnail user interface
 	0.06 MV more thumbnail issues
+	0.07 MV website construction
+	0.08 MV web site automation
+	0.09 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

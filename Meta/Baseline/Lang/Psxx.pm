@@ -4,21 +4,15 @@ package Meta::Baseline::Lang::Psxx;
 
 use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
-use Meta::Tool::Gzip qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.13";
 @ISA=qw(Meta::Baseline::Lang);
 
-#sub c2gzxx($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
-
-sub c2gzxx($) {
-	my($buil)=@_;
-	return(Meta::Tool::Gzip::c2gzxx($buil));
-}
 
 sub my_file($$) {
 	my($self,$file)=@_;
@@ -26,6 +20,11 @@ sub my_file($$) {
 		return(1);
 	}
 	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -61,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Psxx.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -77,24 +76,27 @@ Maybe someday I'll do syntax checks on those also...:)
 
 =head1 FUNCTIONS
 
-	c2gzxx($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
-
-=item B<c2gzxx($)>
-
-This method will convert Postscript files to compressed Postscript files.
-It uses the Tool::Gzip class.
 
 =item B<my_file($$)>
 
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -103,8 +105,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -120,10 +122,13 @@ None.
 	0.08 MV movies and small fixes
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site automation
+	0.13 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), strict(3)
 
 =head1 TODO
 

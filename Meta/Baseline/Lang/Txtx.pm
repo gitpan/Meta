@@ -6,15 +6,14 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Utils qw();
 use Meta::Baseline::Lang qw();
 use Meta::Tool::Aspell qw();
-use Meta::Tool::Gzip qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.31";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
-#sub c2gzxx($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -30,11 +29,6 @@ sub c2chec($) {
 	return($resu);
 }
 
-sub c2gzxx($) {
-	my($buil)=@_;
-	return(Meta::Tool::Gzip::c2gzxx($buil));
-}
-
 sub my_file($$) {
 	my($self,$file)=@_;
 	if($file=~/^txtx\/.*\.txt$/) {
@@ -42,6 +36,11 @@ sub my_file($$) {
 	} else {
 		return(0);
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -77,7 +76,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Txtx.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.31
 
 =head1 SYNOPSIS
 
@@ -97,8 +96,8 @@ Things that it does:
 =head1 FUNCTIONS
 
 	c2chec($)
-	c2gzxx($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -109,17 +108,20 @@ Things that it does:
 This will check the following:
 Spelling, forbidden seqeunces.
 
-=item B<c2gzxx($)>
-
-This method will convert source files to compressed source files.
-It uses the Tool::Gzip class.
-
 =item B<my_file($$)>
 
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -128,8 +130,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -163,10 +165,13 @@ None.
 	0.26 MV movies and small fixes
 	0.27 MV thumbnail user interface
 	0.28 MV more thumbnail issues
+	0.29 MV website construction
+	0.30 MV web site automation
+	0.31 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Tool::Aspell(3), strict(3)
 
 =head1 TODO
 

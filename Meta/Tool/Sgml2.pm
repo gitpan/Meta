@@ -13,7 +13,7 @@ use Meta::Utils::File::Move qw();
 use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub c2html($$$$);
@@ -22,6 +22,7 @@ $VERSION="0.10";
 #sub c2info($$$$);
 #sub c2rtfx($$$$);
 #sub c2txtx($$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -123,6 +124,11 @@ sub c2txtx($$$$) {
 	Meta::Baseline::Utils::file_emblem($targ);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -156,7 +162,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml2.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -179,6 +185,7 @@ which runs jade or openjade directly).
 	c2info($$$$)
 	c2rtfx($$$$)
 	c2txtx($$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -208,7 +215,15 @@ This routine will convert sgml DocBook files to RTF (Rich Text Format).
 
 This routine will convert sgml DocBook files to plain ASCII text. 
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -217,8 +232,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -234,10 +249,13 @@ None.
 	0.08 MV movies and small fixes
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site automation
+	0.13 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Utils(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Move(3), Meta::Utils::File::Remove(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Lines(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

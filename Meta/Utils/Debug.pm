@@ -7,22 +7,19 @@ use Meta::Ds::Set qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.28";
 @ISA=qw();
 
+#sub BEGIN();
 #sub debug();
 #sub msg($);
+#sub TEST($);
 
 #__DATA__
 
-my($set);
+our($set);
 
-sub debug() {
-	# this should check whether the routine is on the list.
-	return(0);
-}
-
-BEGIN {
+sub BEGIN() {
 #	my($file)="data/baseline/debug.txt";
 #	$file=Meta::Baseline::Aegis::which($file);
 #	$set=Meta::Ds::Set->new();
@@ -30,9 +27,19 @@ BEGIN {
 #	Meta::Utils::Output::print("size of set is [".$set->size()."]\n");
 }
 
+sub debug() {
+	# this should check whether the routine is on the list.
+	return(0);
+}
+
 sub msg($) {
 	my($mess)=@_;
 	Meta::Utils::Output::print($mess."\n");
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -68,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Debug.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -87,12 +94,20 @@ that gets used in every package in base - keep it lean and mean...
 
 =head1 FUNCTIONS
 
+	BEGIN()
 	debug()
 	msg($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
+
+=item B<BEGIN()>
+
+This begin block makes sure that the code in it gets run in compile
+time which will load up the debugging libs if indeed the variable
+BASE_PERL_DEBU is set.
 
 =item B<set>
 
@@ -103,18 +118,20 @@ This is the set which has all the functions that need debug.
 This functions returns a boolean telling you whether your'e in debug mode
 or not.
 
-=item B<BEGIN BLOCK>
-
-This begin block makes sure that the code in it gets run in compile
-time which will load up the debugging libs if indeed the variable
-BASE_PERL_DEBU is set.
-
 =item B<msg($)>
 
 This method will output debug message.
 currently it just prints to stderr.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -123,8 +140,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -155,10 +172,13 @@ None.
 	0.23 MV movies and small fixes
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV website construction
+	0.27 MV web site automation
+	0.28 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Set(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

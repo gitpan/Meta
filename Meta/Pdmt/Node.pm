@@ -3,27 +3,48 @@
 package Meta::Pdmt::Node;
 
 use strict qw(vars refs subs);
+use Meta::Class::MethodMaker qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
-#sub new($);
-#sub set_type($$);
-#sub get_type($);
+#sub BEGIN();
+#sub build($$);
+#sub uptodate($$);
+#sub TEST($);
 
 #__DATA__
 
-sub new($) {
-	my($clas)=@_;
-	my($self)={};
-	bless($self,$clas);
-	$self->{TYPE}="UNKNOWN";
-	return($self);
+sub BEGIN() {
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
+		-java=>"_name",
+		-java=>"_rule",
+	);
+	Meta::Class::MethodMaker->print(["name","rule"]);
 }
 
-sub set_type($$) {
-	my($self)=@_;
+sub build($$) {
+	my($self,$pdmt)=@_;
+	my($rule)=$self->get_rule();
+	#Meta::Utils::Output::print("rule is [".$rule."]\n");
+	if(!defined($rule)) {
+		Meta::Utils::Output::print("no rule to make target [".$self->get_name()."]\n");
+	} else {
+		$rule->($self,$pdmt);
+	}
+}
+
+sub uptodate($$) {
+	my($self,$pdmt)=@_;
+	return(1);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -59,7 +80,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Node.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -70,27 +91,46 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-This is a PDMT graph node.
+This is a PDMT graph node. The node implements all the basic methods
+that child nodes need to override.
 
 =head1 FUNCTIONS
 
-	new($)
-	set_type($$)
-	get_type($)
+	BEGIN()
+	build($$)
+	uptodate($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
 =over 4
 
-=item B<new($)>
+=item B<BEGIN()>
 
-This is a constructor for the Meta::Pdmt::Node object.
+This is an initializer for the class. It takes care for a:
+1. default constructor for the class.
+2. accessor get_ set_ methods for the attributes name,rule.
+3. print method for the class.
 
-=item B<set_type($$)>
+=item B<build($$)>
 
-This will set the type for the current node.
+This method actually builds a node. In this generic node it does nothing.
+
+=item B<uptodate($$)>
+
+This method should be overriden by child nodes.
+This method should return whether the file is uptodate.
+This basic implementation returns true always.
+
+=item B<TEST($)>
+
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -99,8 +139,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -113,10 +153,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

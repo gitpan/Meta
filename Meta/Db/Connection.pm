@@ -3,10 +3,10 @@
 package Meta::Db::Connection;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.29";
+$VERSION="0.34";
 @ISA=qw();
 
 #sub BEGIN();
@@ -15,12 +15,13 @@ $VERSION="0.29";
 #sub is_mysql($);
 #sub get_dsn($$);
 #sub get_dsn_nodb($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_type",
 		-java=>"_host",
@@ -54,7 +55,8 @@ sub get_dsn($$) {
 	my($self,$name)=@_;
 	my($dsnx);
 	if($self->is_postgres()) {
-		$dsnx="dbi:".$self->get_type().":dbname=".$name.";host=".$self->get_host();
+		#$dsnx="dbi:".$self->get_type().":dbname=".$name.";host=".$self->get_host();
+		$dsnx="dbi:".$self->get_type().":dbname=".$name;
 	}
 	if($self->is_mysql()) {
 		$dsnx="dbi:".$self->get_type().":host=".$self->get_host().":database=".$name;
@@ -64,8 +66,19 @@ sub get_dsn($$) {
 
 sub get_dsn_nodb($) {
 	my($self)=@_;
-	my($dsnx)="dbi:".$self->get_type().":host=".$self->get_host();
+	my($dsnx);
+	if($self->is_postgres()) {
+		$dsnx="dbi:".$self->get_type().":";
+	}
+	if($self->is_mysql()) {
+		$dsnx="dbi:".$self->get_type().":host=".$self->get_host();
+	}
 	return($dsnx);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -101,7 +114,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connection.pm
 	PROJECT: meta
-	VERSION: 0.29
+	VERSION: 0.34
 
 =head1 SYNOPSIS
 
@@ -123,6 +136,7 @@ connection to the database.
 	is_mysql($)
 	get_dsn($$)
 	get_dsn_nodb($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -155,7 +169,15 @@ Unfortunately - connections to different Dbs have different DSNs.
 
 This method will return a DSN according to perl DBI/DBD with no db (just host connection).
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -164,8 +186,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -200,10 +222,15 @@ None.
 	0.27 MV thumbnail project basics
 	0.28 MV thumbnail user interface
 	0.29 MV more thumbnail issues
+	0.30 MV website construction
+	0.31 MV improve the movie db xml
+	0.32 MV web site development
+	0.33 MV web site automation
+	0.34 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

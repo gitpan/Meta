@@ -8,11 +8,12 @@ use Meta::Baseline::Aegis qw();
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.24";
+$VERSION="0.27";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub env();
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -48,6 +49,11 @@ sub my_file($$) {
 	return(0);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -81,7 +87,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cxxx.pm
 	PROJECT: meta
-	VERSION: 0.24
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
@@ -104,6 +110,7 @@ This package contains stuff specific to Cxxx in the baseline:
 
 	env()
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -119,7 +126,15 @@ running Cxxx binaries.
 This method will return true if the file receives should be handelded by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -128,8 +143,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -159,10 +174,13 @@ None.
 	0.22 MV movies and small fixes
 	0.23 MV thumbnail user interface
 	0.24 MV more thumbnail issues
+	0.25 MV website construction
+	0.26 MV web site automation
+	0.27 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Baseline::Lang(3), Meta::Utils::File::Path(3), strict(3)
 
 =head1 TODO
 

@@ -7,10 +7,11 @@ use Meta::Utils::Utils qw();
 use Meta::Utils::File::Remove qw();
 
 our($VERSION,@ISA);
-$VERSION="0.25";
+$VERSION="0.28";
 @ISA=qw();
 
 #sub send($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -28,6 +29,11 @@ sub send($$) {
 	);
 	my($remo)=Meta::Utils::File::Remove::rm_nodie($file);
 	return($resu);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -63,7 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Mail.pm
 	PROJECT: meta
-	VERSION: 0.25
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
@@ -87,6 +93,7 @@ Meta::Info::MailMessage.
 =head1 FUNCTIONS
 
 	send($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -100,7 +107,15 @@ The two arguments are:
 1. The text of the email message.
 The function return whether it was able to send the message or not.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -109,8 +124,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -141,10 +156,13 @@ None.
 	0.23 MV movies and small fixes
 	0.24 MV thumbnail user interface
 	0.25 MV more thumbnail issues
+	0.26 MV website construction
+	0.27 MV web site automation
+	0.28 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::File::Remove(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

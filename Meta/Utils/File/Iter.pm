@@ -3,14 +3,14 @@
 package Meta::Utils::File::Iter;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 use Meta::Ds::Stack qw();
 use Meta::Ds::Hash qw();
 use DirHandle qw();
 use File::stat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.05";
+$VERSION="0.09";
 @ISA=qw();
 
 #sub BEGIN();
@@ -21,12 +21,13 @@ $VERSION="0.05";
 #sub next($);
 #sub nnext($);
 #sub fini($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_want_files",
 		-java=>"_want_dirs",
 		-java=>"_over",
@@ -131,6 +132,11 @@ sub fini($) {
 	#emtpy the stacks here
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -164,7 +170,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Iter.pm
 	PROJECT: meta
-	VERSION: 0.05
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -217,6 +223,7 @@ The default behaviour is to iterate just the files.
 	next($)
 	nnext($)
 	fini($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -265,7 +272,15 @@ This method wraps the iterator up (does various cleanup).
 You're not obliged to call this one but for future purposes
 you better...:)
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -274,8 +289,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -286,10 +301,14 @@ None.
 	0.03 MV thumbnail user interface
 	0.04 MV import tests
 	0.05 MV more thumbnail issues
+	0.06 MV website construction
+	0.07 MV web site development
+	0.08 MV web site automation
+	0.09 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+DirHandle(3), File::stat(3), Meta::Class::MethodMaker(3), Meta::Ds::Hash(3), Meta::Ds::Stack(3), strict(3)
 
 =head1 TODO
 

@@ -7,7 +7,7 @@ use Meta::Ds::Ochash qw();
 use Meta::Ds::Connected qw();
 
 our($VERSION,@ISA);
-$VERSION="0.30";
+$VERSION="0.33";
 @ISA=qw(Meta::Ds::Ochash Meta::Ds::Connected);
 
 #sub printd($$);
@@ -19,6 +19,7 @@ $VERSION="0.30";
 #sub getsql_add($$);
 #sub getsql_select($$);
 #sub getsql_insert($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -106,6 +107,11 @@ sub getsql_insert($$) {
 	return(join(",",@arra));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -139,7 +145,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Fields.pm
 	PROJECT: meta
-	VERSION: 0.30
+	VERSION: 0.33
 
 =head1 SYNOPSIS
 
@@ -163,6 +169,7 @@ This is an object to store a list of Field objects for a database.
 	getsql_add($$)
 	getsql_select($$)
 	getsql_insert($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -205,7 +212,15 @@ inclusion in a "SELECT x0,x1,x2,...,xn from table;" statements.
 This method will retreive an SQL statement snipplet which is suitable for
 inclusion in a "VALUES(?,?,?)" statement.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Ochash(3), Meta::Ds::Connected(3)
 
 =head1 BUGS
 
@@ -214,8 +229,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -251,10 +266,13 @@ None.
 	0.28 MV movie stuff
 	0.29 MV thumbnail user interface
 	0.30 MV more thumbnail issues
+	0.31 MV website construction
+	0.32 MV web site automation
+	0.33 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Connected(3), Meta::Ds::Ochash(3), strict(3)
 
 =head1 TODO
 

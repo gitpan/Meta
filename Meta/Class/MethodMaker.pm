@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.05";
 @ISA=qw(Class::MethodMaker);
 
 #sub print($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -29,6 +30,11 @@ sub print($$) {
 #			print $file $self->get_$arra[0]()."\n";
 #		};
 	$class->install_methods(%methods);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -64,7 +70,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MethodMaker.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -81,6 +87,7 @@ and adds some capabilities to it.
 =head1 FUNCTIONS
 
 	print($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -90,7 +97,15 @@ and adds some capabilities to it.
 
 This method will auto-generate a print method.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Class::MethodMaker(3)
 
 =head1 BUGS
 
@@ -99,18 +114,22 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
 
 	0.00 MV import tests
 	0.01 MV more thumbnail issues
+	0.02 MV website construction
+	0.03 MV web site development
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Class::MethodMaker(3), strict(3)
 
 =head1 TODO
 

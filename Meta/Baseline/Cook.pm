@@ -15,7 +15,7 @@ use Meta::Baseline::Utils qw();
 use Meta::Development::Deps qw();
 
 our($VERSION,@ISA);
-$VERSION="0.44";
+$VERSION="0.47";
 @ISA=qw();
 
 #sub new($);
@@ -37,6 +37,7 @@ $VERSION="0.44";
 
 #sub read_deps($$$);
 #sub read_deps_full($);
+#sub TEST($);
 
 #__DATA__
 
@@ -293,6 +294,11 @@ sub read_deps_full($) {
 	return($graph);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -326,7 +332,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Cook.pm
 	PROJECT: meta
-	VERSION: 0.44
+	VERSION: 0.47
 
 =head1 SYNOPSIS
 
@@ -357,6 +363,7 @@ related stuff (write and read dependencies in cook format...).
 	print_deps($$)
 	read_deps($$$)
 	read_deps_full($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -442,7 +449,15 @@ This method is just convenience wrapper around the read_deps method. It generate
 the graph that will be used to hold the dependency information. It also returns
 that graph at the end.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -451,8 +466,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -502,10 +517,13 @@ None.
 	0.42 MV movies and small fixes
 	0.43 MV thumbnail user interface
 	0.44 MV more thumbnail issues
+	0.45 MV website construction
+	0.46 MV web site automation
+	0.47 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+DB_File(3), File::Basename(3), Meta::Baseline::Aegis(3), Meta::Baseline::Utils(3), Meta::Development::Deps(3), Meta::Utils::File::Purge(3), Meta::Utils::File::Touch(3), Meta::Utils::Options(3), Meta::Utils::Output(3), Meta::Utils::Time(3), strict(3)
 
 =head1 TODO
 

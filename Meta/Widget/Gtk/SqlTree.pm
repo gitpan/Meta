@@ -5,11 +5,11 @@ package Meta::Widget::Gtk::SqlTree;
 use strict qw(vars refs subs);
 
 our($VERSION,@ISA);
-$VERSION="0.06";
+$VERSION="0.09";
 @ISA=qw();
 
 #sub new($);
-#sub method($);
+#sub TEST($);
 
 #__DATA__
 
@@ -20,8 +20,9 @@ sub new($) {
 	return($self);
 }
 
-sub method($) {
-	my($self)=@_;
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -30,7 +31,7 @@ __END__
 
 =head1 NAME
 
-Meta::Widget::Gtk::SqlTree - what does your module/class do.
+Meta::Widget::Gtk::SqlTree - extend Gtk tree to show results of a set of SQL tables.
 
 =head1 COPYRIGHT
 
@@ -57,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: SqlTree.pm
 	PROJECT: meta
-	VERSION: 0.06
+	VERSION: 0.09
 
 =head1 SYNOPSIS
 
@@ -68,12 +69,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put a lot of documentation here to show what your class does.
+A tree widget showing results from a set of SQL statements representing
+a tree.
 
 =head1 FUNCTIONS
 
 	new($)
-	method($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -83,11 +85,15 @@ Put a lot of documentation here to show what your class does.
 
 This is a constructor for the Meta::Widget::Gtk::SqlTree object.
 
-=item B<method($)>
+=item B<TEST($)>
 
-This is an object method.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -96,8 +102,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -109,10 +115,13 @@ None.
 	0.04 MV movies and small fixes
 	0.05 MV thumbnail user interface
 	0.06 MV more thumbnail issues
+	0.07 MV website construction
+	0.08 MV web site automation
+	0.09 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+strict(3)
 
 =head1 TODO
 

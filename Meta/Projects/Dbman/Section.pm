@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.01";
+$VERSION="0.04";
 @ISA=qw(Class::DBI);
 
 #sub BEGIN();
+#sub TEST($);
 
 #__DATA__
 
@@ -19,6 +20,11 @@ sub BEGIN() {
 	__PACKAGE__->table('section');
 	__PACKAGE__->columns('Primary'=>'id');
 	__PACKAGE__->columns(All=>qw/id name description tag/);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -54,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Section.pm
 	PROJECT: meta
-	VERSION: 0.01
+	VERSION: 0.04
 
 =head1 SYNOPSIS
 
@@ -70,6 +76,7 @@ This object is a single section in the dbman database.
 =head1 FUNCTIONS
 
 	BEGIN()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -80,7 +87,15 @@ This object is a single section in the dbman database.
 This method sets up all the information needed to access the section
 information in the dbman.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Class::DBI(3)
 
 =head1 BUGS
 
@@ -89,18 +104,21 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
 
 	0.00 MV import tests
 	0.01 MV more thumbnail issues
+	0.02 MV website construction
+	0.03 MV web site automation
+	0.04 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+base(3), strict(3)
 
 =head1 TODO
 

@@ -13,11 +13,10 @@ use Meta::Utils::Opts::Sopt qw();
 use Meta::Ds::Ohash qw();
 use Gtk qw();
 use Meta::Utils::Output qw();
-use Class::MethodMaker qw();
-use Meta::Utils::File::File qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.38";
+$VERSION="0.44";
 @ISA=qw(Meta::Ds::Ohash);
 
 #sub BEGIN();
@@ -35,22 +34,24 @@ $VERSION="0.38";
 #sub def_newf($$$$$);
 #sub def_devf($$$$$);
 #sub def_enum($$$$$$);
+#sub def_setx($$$$$$);
 
 #sub use_color($$$);
 #sub use_color_rese($$);
 
 #sub set_standard($);
-#sub anal($);
+#sub analyze($);
 #sub usag($$);
 #sub man($$);
 #sub get_valu($$);
 
 #sub get_gui($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_description",
 		-java=>"_author",
@@ -73,7 +74,7 @@ sub new($) {
 	$self->set_free_allo(0);
 	$self->set_free_stri("unknown");
 	$self->set_free_mini(1);
-	$self->set_free_maxi(65000);
+	$self->set_free_maxi(1);
 	$self->set_free_noli(1);
 	return($self);
 }
@@ -86,7 +87,7 @@ sub inse($$$$$$$) {
 	$obje->set_type($type);
 	$obje->set_defa($defa);
 	$obje->set_poin($poin);
-	$obje->set_valu($defa);
+	$obje->setup_value($defa);
 	$obje->set_enum($enum);
 	$self->insert($name,$obje);
 }
@@ -146,6 +147,11 @@ sub def_enum($$$$$$) {
 	$self->inse($name,$desc,"enum",$defa,$poin,$enum);
 }
 
+sub def_setx($$$$$$) {
+	my($self,$name,$desc,$defa,$poin,$enum)=@_;
+	$self->inse($name,$desc,"setx",$defa,$poin,$enum);
+}
+
 sub use_color($$$) {
 	my($self,$file,$colo)=@_;
 	if($self->get_color()) {
@@ -160,7 +166,7 @@ sub use_color_rese($$) {
 	}
 }
 
-sub anal($) {
+sub analyze($) {
 	my($self)=@_;
 	my($file)=Meta::Utils::Output::get_file();
 	# fill an array with all the different parameters and types.
@@ -194,6 +200,9 @@ sub anal($) {
 		if($type eq "enum") {
 			$ostr.=":s";
 		}
+		if($type eq "setx") {
+			$ostr.=":s";
+		}
 		push(@list,$ostr);
 		$hash{$name}=$defa;
 	}
@@ -222,12 +231,15 @@ sub anal($) {
 		my($sobj)=$self->elem($i);
 		my($curr_name)=$sobj->get_name();
 		my($valu)=$hash{$curr_name};
-		$sobj->set_valu($valu);
+		$sobj->setup_value($valu);
 	}
 	if($self->get_valu("help")==1) {
 		$self->use_color($file,"red");
 		print $file $prog.": help requested\n";
 		$self->usag($file);
+	}
+	if($self->get_valu("pod")==1) {
+		$self->pod($file);
 	}
 	if($self->get_valu("man")==1) {
 		$self->man($file);
@@ -241,19 +253,19 @@ sub anal($) {
 		Gtk->main();
 	}
 	if($self->get_valu("license")==1) {
-		my($prog)=Meta::Utils::Progname::fullname();
-		my($text)=Meta::Utils::File::File::load($prog);
-		my($pods)=Meta::Lang::Perl::Perl::get_pods($text);
-		my($pod)=$pods->{"LICENSE"};
+		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("LICENSE");
 		$pod=CORE::substr($pod,1);
 		Meta::Utils::Output::print($pod);
 		Meta::Utils::System::exit(1);
 	}
 	if($self->get_valu("copyright")==1) {
-		my($prog)=Meta::Utils::Progname::fullname();
-		my($text)=Meta::Utils::File::File::load($prog);
-		my($pods)=Meta::Lang::Perl::Perl::get_pods($text);
-		my($pod)=$pods->{"COPYRIGHT"};
+		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("COPYRIGHT");
+		$pod=CORE::substr($pod,1);
+		Meta::Utils::Output::print($pod);
+		Meta::Utils::System::exit(1);
+	}
+	if($self->get_valu("history")==1) {
+		my($pod)=Meta::Lang::Perl::Perl::get_my_pod("HISTORY");
 		$pod=CORE::substr($pod,1);
 		Meta::Utils::Output::print($pod);
 		Meta::Utils::System::exit(1);
@@ -271,9 +283,12 @@ sub anal($) {
 	# pass values to the pointers requested
 	for(my($i)=0;$i<$self->size();$i++) {
 		my($sobj)=$self->elem($i);
+		my($curr_type)=$sobj->get_type();
 		my($curr_valu)=$sobj->get_valu();
 		my($curr_poin)=$sobj->get_poin();
-		$$curr_poin=$curr_valu;
+		if($curr_type ne "setx") {
+			$$curr_poin=$curr_valu;
+		}
 	}
 	if(!$self->get_free_allo()) {
 		if($#ARGV>=0) {
@@ -291,13 +306,15 @@ sub anal($) {
 			print $file $prog.": arguments were [".join(",",@ARGV)."]\n";
 			$self->usag($file);
 		}
-		if($#ARGV>=$self->get_free_maxi()) {
-			my($numb)=$#ARGV+1;
-			$self->use_color($file,"red");
-			print $file $prog.": too many free arguments [".$numb."]\n";
-			print $file $prog.": maximum required is [".$self->get_free_maxi()."]\n";
-			print $file $prog.": arguments were [".join(",",@ARGV)."]\n";
-			$self->usag($file);
+		if(!$self->get_free_noli()) {
+			if($#ARGV>=$self->get_free_maxi()) {
+				my($numb)=$#ARGV+1;
+				$self->use_color($file,"red");
+				print $file $prog.": too many free arguments [".$numb."]\n";
+				print $file $prog.": maximum required is [".$self->get_free_maxi()."]\n";
+				print $file $prog.": arguments were [".join(",",@ARGV)."]\n";
+				$self->usag($file);
+			}
 		}
 	}
 }
@@ -332,7 +349,7 @@ sub usag($$) {
 		$self->use_color($file,"clear blue");
 		print $file $prog.":\t\ttype [".$curr_type."],\ default [".$curr_defa."]\n";
 		print $file $prog.":\t\tdescription [".$curr_desc."]\n";
-		if($curr_type eq "enum") {
+		if($curr_type eq "enum" || $curr_type eq "setx") {
 			my(@arra);
 			for(my($j)=0;$j<$curr_enum->size();$j++) {
 				push(@arra,$curr_enum->elem($j));
@@ -351,14 +368,51 @@ sub usag($$) {
 		print $file $prog.": no free arguments are allowed\n";
 	}
 	$self->use_color_rese($file);
-	Meta::Utils::System::exit(0);
+	Meta::Utils::System::exit(1);
+}
+
+sub pod($$) {
+	my($self,$file)=@_;
+	my($size)=$self->size();
+	print $file "=over 4\n\n";
+	for(my($i)=0;$i<$size;$i++) {
+		my($sobj)=$self->valx($i);
+		my($curr_name)=$sobj->get_name();
+		my($curr_desc)=$sobj->get_description();
+		my($curr_type)=$sobj->get_type();
+		my($curr_defa)=$sobj->get_defa();
+		my($curr_poin)=$sobj->get_poin();
+		my($curr_valu)=$sobj->get_valu();
+		my($curr_enum)=$sobj->get_enum();
+		print $file "=item B<".$curr_name."> (type: ".$curr_type.",\ default: ".$curr_defa.")\n\n".$curr_desc."\n\n";
+		if($curr_type eq "enum" || $curr_type eq "setx") {
+			my(@arra);
+			for(my($j)=0;$j<$curr_enum->size();$j++) {
+				push(@arra,$curr_enum->elem($j));
+			}
+			print $file "options [".join(",",@arra)."]\n\n";
+		}
+	}
+	print $file "=back\n\n";
+	if($self->get_free_allo()) {
+		print $file "minimum of [".$self->get_free_mini()."] free arguments required\n";
+		if($self->get_free_noli()) {
+			print $file "no maximum limit on number of free arguments placed\n";
+		} else {
+			print $file "maximum of [".$self->get_free_maxi()."] free arguments required\n";
+		}
+	} else {
+		print $file "no free arguments are allowed\n";
+	}
+	#print $file "\n";
+	Meta::Utils::System::exit(1);
 }
 
 sub man($$) {
 	my($self,$file)=@_;
 	my($prog)=Meta::Utils::Progname::fullname();
 	Meta::Lang::Perl::Perl::man_file($prog);
-	Meta::Utils::System::exit(0);
+	Meta::Utils::System::exit(1);
 }
 
 sub get_valu($$) {
@@ -370,17 +424,24 @@ sub get_valu($$) {
 sub set_standard($) {
 	my($self)=@_;
 	$self->{STANDARD_HELP}=defined;
+	$self->{STANDARD_PODX}=defined;
 	$self->{STANDARD_MANX}=defined;
 	$self->{STANDARD_QUIT}=defined;
 	$self->{STANDARD_GTKX}=defined;
 	$self->{STANDARD_LICE}=defined;
 	$self->{STANDARD_COPY}=defined;
+	$self->{STANDARD_HIST}=defined;
 	$self->def_bool("help","display help message",0,\$self->{STANDARD_HELP});
+	$self->def_bool("pod","display pod options snipplet",0,\$self->{STANDARD_PODX});
 	$self->def_bool("man","display manual page",0,\$self->{STANDARD_MANX});
 	$self->def_bool("quit","quit without doing anything",0,\$self->{STANDARD_QUIT});
 	$self->def_bool("gtk","run a gtk ui to get the parameters",0,\$self->{STANDARD_GTKX});
 	$self->def_bool("license","show license and exit",0,\$self->{STANDARD_LICE});
 	$self->def_bool("copyright","show copyright and exit",0,\$self->{STANDARD_COPY});
+	$self->def_bool("history","show history and exit",0,\$self->{STANDARD_HIST});
+	$self->set_author("mark");
+	$self->set_license("GPL");
+	$self->set_description(Meta::Lang::Perl::Perl::get_my_name());
 }
 
 sub get_gui($) {
@@ -466,7 +527,7 @@ sub get_gui($) {
 			$pack->pack_start_defaults($entry);
 			$tip->set_tip($entry,$desc,"");
 		}
-		if($type eq "enum") {
+		if($type eq "enum" || $type eq "setx") {
 			$pack=Gtk::HBox->new(1,$spac);
 			my($label)=Gtk::Label->new();
 			$label->set_text($name);
@@ -512,6 +573,11 @@ sub get_gui($) {
 	return($window);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -545,7 +611,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Opts.pm
 	PROJECT: meta
-	VERSION: 0.38
+	VERSION: 0.44
 
 =head1 SYNOPSIS
 
@@ -554,7 +620,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 	my($obj)=Meta::Utils::Opts::Opts->new();
 	$obj->set_standard();
 	$obj->set_free_allo(0);
-	$obj->anal(\@ARGV);
+	$obj->analyze(\@ARGV);
 
 =head1 DESCRIPTION
 
@@ -573,15 +639,15 @@ the user if neccessary...).
 	to your software (these will include default values).
 5. call free/free_mini/free_maxi if you want to allow free arguments to
 	your program or set_free_allo(0) to disallow free arguments to your program.
-6. call anal.
+6. call analyze.
 	If this routine succeds it means that all options given on the
 	command line were valid and all files and directory options
 	were indeed valid files and directories.
 7. the values of the different arguements are in the variables you specified
 	as linkage.
 8. If you allowed free arguments they are the only thing left in ARGV
-	after the anal call was made and you can access them from there.
-9. If any error was made in the argument passing by the user then the anal
+	after the analyze call was made and you can access them from there.
+9. If any error was made in the argument passing by the user then the analyze
 	routine will abort with appropriate error and correct usage messages.
 
 * You can call the usage routine of this module whenever you like to print
@@ -616,14 +682,17 @@ Currently supported types for parameters are:
 	def_newf($$$$$)
 	def_devf($$$$$)
 	def_enum($$$$$$)
+	def_setx($$$$$$)
 	use_color($$$)
 	use_color_rese($$)
 	set_standard($)
-	anal($)
+	analyze($)
 	usag($$)
+	pod($$)
 	man($$)
 	get_valu($$)
 	get_gui($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -696,6 +765,10 @@ Add a new development file aegument (checks that the file is non-existant).
 
 Add an enumerated argument (checks that the value is out of a set of values).
 
+=item B<def_setx($$$$$$)>
+
+Add a set argument (checks that the value is a sub set of a set of values).
+
 =item B<use_color($$$)>
 
 This method will print color sequences to the file given if color is used.
@@ -704,7 +777,7 @@ This method will print color sequences to the file given if color is used.
 
 This method will reset color usage on the specified file.
 
-=item B<anal($)>
+=item B<analyze($)>
 
 This analyzes the arguments, stores the results and is ready to answer
 questions about what is going down.
@@ -715,6 +788,12 @@ This routine prints the programs usage statement to standard error with
 the program name and all the parameters along with their types and default
 values.
 The file on which to print the usage is a parameter.
+
+=item B<pod($$)>
+
+This method prints the programs parameters in a way suitable for inclusing in
+a POD OPTION section (with bold parameter names, types etc...). This is for
+scripts which check that the OPTIONS section in each script is indeed correct.
 
 =item B<man($$)>
 
@@ -741,7 +820,15 @@ Currently this sets up the help variable correctly.
 
 This method will show a gui for the options.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Ohash(3)
 
 =head1 BUGS
 
@@ -750,8 +837,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -795,16 +882,24 @@ None.
 	0.36 MV thumbnail user interface
 	0.37 MV dbman package creation
 	0.38 MV more thumbnail issues
+	0.39 MV website construction
+	0.40 MV improve the movie db xml
+	0.41 MV web site development
+	0.42 MV web site automation
+	0.43 MV SEE ALSO section fix
+	0.44 MV put all tests in modules
 
 =head1 SEE ALSO
 
-Nothing.
+Getopt::Long(3), Gtk(3), Meta::Class::MethodMaker(3), Meta::Ds::Ohash(3), Meta::Lang::Perl::Perl(3), Meta::Utils::Color(3), Meta::Utils::List(3), Meta::Utils::Opts::Sopt(3), Meta::Utils::Output(3), Meta::Utils::Progname(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
--add nicer type description for each option type.
+-add long type description for each option type.
 
 -Add some more features: 0. must parameters - paramters which must be there. 1. integer parameters which are limited in range. 3. a parameter which is a regular expression (and test the regular expression) 4. parameters which are allowed a selection out of a set.
+
+-add list parameters and hash parameters
 
 -The help is not handled well if there is a limit on the minimal number of free arguments (if the user just asks --help that check fails and the usage is printed with an error but actually this is not an error...)
 
@@ -812,12 +907,4 @@ Nothing.
 
 -in the usage print that option passing is in the GNU stype. Maybe even offer an option to show help on passing GNU args... add a document and help on how to set user defined defaults (if you implement that mechanism).
 
--add an option for a parameter type for a file to be written which is not yet on the disk (or is on the disk, or doesnt care...). The options module will check that the file can be created if need be.
-
 -fix the man command which does not use the file argument given to it.
-
--make the --license command actually print the GPL.
-
--make the --copyright command actually print the copyright message.
-
--if the name is not set by the script then extract it from the script itself.

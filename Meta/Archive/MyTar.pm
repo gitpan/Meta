@@ -9,21 +9,22 @@ use Meta::Utils::Utils qw();
 use Meta::Utils::System qw();
 use Meta::Utils::File::Remove qw();
 use Meta::Ds::Array qw();
-use Class::MethodMaker qw();
+use Meta::Ds::Set qw();
+use Meta::Class::MethodMaker qw();
 use Meta::Ds::Enum qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.12";
 @ISA=qw();
 
 #sub BEGIN();
 #sub init($);
-#sub get_temp($);
 #sub add_file($$$);
 #sub add_deve($$$);
 #sub add_data($$$);
+#sub list_files($);
 #sub write($$);
-#sub TEST();
+#sub TEST($);
 
 #__DATA__
 
@@ -34,33 +35,34 @@ sub BEGIN() {
 	$compress_type_enum->insert("bzip2");
 	$compress_type_enum->insert("gzip");
 	$compress_type_enum->insert("compress");
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_type",
 		-java=>"_uname",
 		-java=>"_gname",
 		-java=>"_uid",
 		-java=>"_gid",
+		-java=>"_temp",
 	)
 }
 
 sub init($) {
 	my($self)=@_;
 	#create a temp directory and record it's name
-	$self->{TEMP}=Meta::Utils::Utils::get_temp_dire();
+	$self->set_temp(Meta::Utils::Utils::get_temp_dire());
 	#list of files to be stored
 	$self->{LIST}=Meta::Ds::Array->new();
-}
-
-sub get_temp($) {
-	my($self)=@_;
-	return($self->{TEMP});
+	$self->{SET}=Meta::Ds::Set->new();
 }
 
 sub add_file($$$) {
 	my($self,$name,$file)=@_;
-	Meta::Utils::File::Copy::copy_mkdir($file,$self->get_temp()."/".$name);
-	$self->{LIST}->push($name);
+	my($set)=$self->{SET};
+	if($set->hasnt($name)) {
+		Meta::Utils::File::Copy::copy_mkdir($file,$self->get_temp()."/".$name);
+		$self->{LIST}->push($name);
+		$self->{SET}->insert($name);
+	}
 }
 
 sub add_deve($$$) {
@@ -71,8 +73,23 @@ sub add_deve($$$) {
 
 sub add_data($$$) {
 	my($self,$name,$data)=@_;
-	Meta::Utils::File::File::save($self->get_temp()."/".$name,$data);
-	$self->{LIST}->push($name);
+	my($set)=$self->{SET};
+	if($set->hasnt($name)) {
+		Meta::Utils::File::File::save($self->get_temp()."/".$name,$data);
+		$self->{LIST}->push($name);
+		$self->{SET}->insert($name);
+	}
+}
+
+sub list_files($) {
+	my($self)=@_;
+	my(@out_list);
+	my($list)=$self->{LIST};
+	for(my($i)=0;$i<$list->size();$i++) {
+		my($curr)=$list->getx($i);
+		push(@out_list,$curr);
+	}
+	return(@out_list);
 }
 
 sub write($$) {
@@ -82,8 +99,8 @@ sub write($$) {
 	my(@args);
 	push(@args,"--create");
 	push(@args,"--file=".$temp);
-	push(@args,"--remove-files");
-	push(@args,"--directory=".$self->get_temp());
+	#push(@args,"--remove-files");
+	push(@args,"--directory=".$self->get_temp());#change directory before activating
 	my($list)=$self->{LIST};
 	for(my($i)=0;$i<$list->size();$i++) {
 		my($curr)=$list->getx($i);
@@ -137,7 +154,8 @@ sub write($$) {
 	Meta::Utils::File::Remove::rm($temp_tardy);
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	my($mytar)=Meta::Archive::MyTar->new();
 	$mytar->set_type("gzip");
 	$mytar->set_uname("me");
@@ -183,7 +201,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MyTar.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.12
 
 =head1 SYNOPSIS
 
@@ -223,16 +241,19 @@ implementations will vary.
 This module also uses the tardy program by Peter Miller to
 set uname and gname after the fact.
 
+This module also maintains a set with all files that currently went
+into the archive so that files won't be added more than once.
+
 =head1 FUNCTIONS
 
 	BEGIN()
 	init($)
-	get_temp($)
 	add_file($$$)
 	add_deve($$$)
 	add_data($$$)
+	list_files($)
 	write($$)
-	TEST()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -247,11 +268,6 @@ type,uname,gname,uid,gid.
 =item B<init($)>
 
 This method does further initialization of the class.
-
-=item B<get_temp($)>
-
-This method will return the temp directory name the current Tar
-archive is working with.
 
 =item B<add_file($$$)>
 
@@ -271,19 +287,27 @@ module name to a file name and uses the add_file method.
 This method will add some explicit data to the archive under a certain
 file name.
 
+=item B<list_files($)>
+
+Get a list of all files in the archive.
+
 =item B<write($$)>
 
 This method will write the archive to the specified file.
 The format is tar.gz. This method calls the tar executable
 to perform the work.
 
-=item B<TEST()>
+=item B<TEST($)>
 
 This is a test suite for the Meta::Archive::MyTar package.
 Currently it just creates an archive with some data and then lists
 it's content.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -292,8 +316,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -307,11 +331,19 @@ None.
 	0.06 MV thumbnail user interface
 	0.07 MV import tests
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site development
+	0.11 MV web site automation
+	0.12 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Array(3), Meta::Ds::Enum(3), Meta::Ds::Set(3), Meta::Utils::File::Copy(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 
 -support compression parameters for each compression algorithm (for instance 1..9, best compression level for gzip etc...).
+
+-use links (hard ?, soft?) instead of copying the files.
+
+-why am I using tardy and not just using the owner and group parameters to tar ? (the code is already here and remarked). Is it because tar will leave them numeric and not symbolic ? If so then document this.

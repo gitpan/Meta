@@ -8,7 +8,7 @@ use Meta::Db::Connection qw();
 use XML::Parser::Expat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.32";
+$VERSION="0.35";
 @ISA=qw(XML::Parser::Expat);
 
 #sub new($);
@@ -16,6 +16,7 @@ $VERSION="0.32";
 #sub handle_start($$);
 #sub handle_end($$);
 #sub handle_char($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -105,6 +106,11 @@ sub handle_char($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -138,7 +144,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Connections.pm
 	PROJECT: meta
-	VERSION: 0.32
+	VERSION: 0.35
 
 =head1 SYNOPSIS
 
@@ -167,6 +173,7 @@ that.
 	handle_start($$)
 	handle_end($$)
 	handle_char($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -195,7 +202,15 @@ This currently does nothing.
 This will handle actual text.
 This currently, according to context, sets attributes for the various objects.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+XML::Parser::Expat(3)
 
 =head1 BUGS
 
@@ -204,8 +219,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -243,10 +258,13 @@ None.
 	0.30 MV movies and small fixes
 	0.31 MV thumbnail user interface
 	0.32 MV more thumbnail issues
+	0.33 MV website construction
+	0.34 MV web site automation
+	0.35 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Db::Connection(3), Meta::Db::Connections(3), XML::Parser::Expat(3), strict(3)
 
 =head1 TODO
 

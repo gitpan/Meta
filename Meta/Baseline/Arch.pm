@@ -5,10 +5,10 @@ package Meta::Baseline::Arch;
 use strict qw(vars refs subs);
 use Meta::Ds::Dhash qw();
 use Meta::Baseline::Aegis qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.28";
+$VERSION="0.32";
 @ISA=qw();
 
 #sub BEGIN();
@@ -21,12 +21,13 @@ $VERSION="0.28";
 #sub get_lib_directory($);
 #sub get_dll_directory($);
 #sub get_bin_directory($);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_cpu",
 		-java=>"_os",
 		-java=>"_os_version",
@@ -132,6 +133,11 @@ sub get_bin_directory($) {
 	return($retu);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -165,7 +171,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Arch.pm
 	PROJECT: meta
-	VERSION: 0.28
+	VERSION: 0.32
 
 =head1 SYNOPSIS
 
@@ -192,6 +198,7 @@ from them.
 	get_lib_directory($)
 	get_dll_directory($)
 	get_bin_directory($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -252,7 +259,15 @@ This will return the dynamic library directory for this architecture.
 
 This will return the binary directory for this architecture.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -261,8 +276,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -296,10 +311,14 @@ None.
 	0.26 MV thumbnail project basics
 	0.27 MV thumbnail user interface
 	0.28 MV more thumbnail issues
+	0.29 MV website construction
+	0.30 MV web site development
+	0.31 MV web site automation
+	0.32 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Class::MethodMaker(3), Meta::Ds::Dhash(3), strict(3)
 
 =head1 TODO
 

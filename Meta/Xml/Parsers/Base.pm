@@ -10,7 +10,7 @@ use Meta::Utils::File::File qw();
 use Meta::Utils::Utils qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.11";
 @ISA=qw(XML::Parser::Expat);
 
 #sub new($);
@@ -20,6 +20,7 @@ $VERSION="0.08";
 #sub in_abs_ccontext($$);
 #sub handle_externent($$$$);
 #sub parsefile_deve($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -82,6 +83,11 @@ sub parsefile_deve($$) {
 	$self->parsefile(Meta::Baseline::Aegis::which($file));
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -115,7 +121,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Base.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -138,6 +144,7 @@ Derive all your XML/Expat parsers from this one.
 	in_abs_ccontext($$)
 	handle_externent($$$$)
 	parsefile_deve($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -174,7 +181,15 @@ This method will handle resolving external references.
 This method will do the same as the parents parsefile except it will
 search for the file in the development context.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+XML::Parser::Expat(3)
 
 =head1 BUGS
 
@@ -183,8 +198,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -198,10 +213,13 @@ None.
 	0.06 MV movie stuff
 	0.07 MV thumbnail user interface
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Utils::File::File(3), Meta::Utils::Output(3), Meta::Utils::Utils(3), XML::Parser::Expat(3), strict(3)
 
 =head1 TODO
 

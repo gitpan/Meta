@@ -9,11 +9,12 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.16";
 @ISA=qw();
 
 #sub history($);
 #sub history_add($);
+#sub TEST($);
 
 #__DATA__
 
@@ -61,6 +62,11 @@ sub history_add($) {
 	return($revision);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -94,7 +100,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aegis.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -112,6 +118,7 @@ the complexity of doing so from you.
 
 	history($)
 	history_add($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -127,7 +134,15 @@ revisions of the module supplied to it.
 This method is the same as the history method above except it also
 adds the current change into the list.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -136,8 +151,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -156,10 +171,13 @@ None.
 	0.11 MV movies and small fixes
 	0.12 MV thumbnail user interface
 	0.13 MV more thumbnail issues
+	0.14 MV website construction
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Revision::Entry(3), Meta::Revision::Revision(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 
@@ -171,3 +189,5 @@ Nothing.
 -use my text parser here (will be more stream lined).
 
 -the add method is not exactly correct (has hardcodings).
+
+-remove the MV which is hardcoded here.

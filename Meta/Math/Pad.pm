@@ -3,12 +3,15 @@
 package Meta::Math::Pad;
 
 use strict qw(vars refs subs);
+use Meta::Utils::System qw();
+use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub pad($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -22,6 +25,20 @@ sub pad($$) {
 		$retu="0".$retu;
 	}
 	return($retu);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	my($number)="19";
+	my($padded)=pad($number,4);
+	my($res);
+	if($padded eq "0019") {
+		$res=1;
+	} else {
+		$res=0;
+	}
+	Meta::Utils::Output::print("padded number is [".$padded."]\n");
+	return(1);
 }
 
 1;
@@ -57,22 +74,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pad.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
 	package foo;
 	use Meta::Math::Pad qw();
-	my($object)=Meta::Math::Pad->new();
-	my($result)=$object->method();
+	my($number)="19";
+	my($padded)=Meta::Math::Pad::pad($number,4);
+	# $padded should now be "0019"
 
 =head1 DESCRIPTION
 
-This module handles padding number to achieve a certain presentation.
+This module handles padding numbers to achieve a certain presentation. This module currently
+provides just a single function but may provide decimal point padding and other functions
+in the future.
 
 =head1 FUNCTIONS
 
 	pad($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -82,7 +103,15 @@ This module handles padding number to achieve a certain presentation.
 
 This will pad a number to the required number of digits.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -91,8 +120,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -105,11 +134,18 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
 
 =head1 TODO
 
--any faster way to do this ?
+-any faster way to do this ? (faster way to generate a string in perl with n occurances of the character 'c')
+
+-provide decimal point padding.
+
+-provide padding with spaces instead of 0's.

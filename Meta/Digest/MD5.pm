@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Digest::MD5 qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw(Digest::MD5);
 
 #sub get_filename_digest($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -20,6 +21,11 @@ sub get_filename_digest($) {
 	$md->addfile(*FILE);
 	close(FILE) || Meta::Utils::System::die("unable to close file [".$name."]");
 	return($md->digest());
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -55,7 +61,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: MD5.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -74,6 +80,7 @@ I try very hard not to override existing MD5 methods.
 =head1 FUNCTIONS
 
 	get_filename_digest($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -88,7 +95,15 @@ could be that this method is much more memory effective since we don't
 have to load the entire blob to memory at one time as we would do if
 we had uploaded everything and then used the "md5" method of the package.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Digest::MD5(3)
 
 =head1 BUGS
 
@@ -97,8 +112,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -111,10 +126,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Digest::MD5(3), strict(3)
 
 =head1 TODO
 

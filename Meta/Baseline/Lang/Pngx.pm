@@ -6,10 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Baseline::Lang qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.14";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -21,13 +22,18 @@ sub my_file($$) {
 	return(0);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
 
 =head1 NAME
 
-Meta::Baseline::Lang::Pngx - language for XML files.
+Meta::Baseline::Lang::Pngx - language for PNG files.
 
 =head1 COPYRIGHT
 
@@ -54,7 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pngx.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -65,12 +71,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 =head1 DESCRIPTION
 
 This package contains stuff specific to Pngx in the baseline:
-Its mainly here to authorize entries of XML files to the baseline.
+Its mainly here to authorize entries of PNG files to the baseline.
 Maybe someday I'll do syntax checks on those also...:)
 
 =head1 FUNCTIONS
 
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -81,7 +88,15 @@ Maybe someday I'll do syntax checks on those also...:)
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -90,8 +105,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -107,10 +122,14 @@ None.
 	0.08 MV movies and small fixes
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
+	0.11 MV paper writing
+	0.12 MV website construction
+	0.13 MV web site automation
+	0.14 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), strict(3)
 
 =head1 TODO
 

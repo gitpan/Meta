@@ -7,12 +7,13 @@ use Meta::Xml::Parsers::Base qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
 #sub get_result($);
 #sub handle_doctype($$$$$);
+#sub TEST($);
 
 #__DATA__
 
@@ -39,6 +40,11 @@ sub handle_doctype($$$$$) {
 	my($self,$name,$sysid,$pubid,$internal)=@_;
 #	Meta::Utils::Output::print("in handle_doctype\n");
 	$self->{TYPE}=$name;
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -74,7 +80,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Type.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -94,6 +100,7 @@ type of certain XML file.
 	new($)
 	get_result($)
 	handle_doctype($$$$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -112,7 +119,15 @@ This will return the dependency object which is the result of the parse.
 This method will handle the document type declarations and will add the
 dependency on the dtd to the deps object.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Xml::Parsers::Base(3)
 
 =head1 BUGS
 
@@ -121,8 +136,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -135,10 +150,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

@@ -6,11 +6,12 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.17";
 @ISA=qw(Meta::Ds::Array);
 
 #sub execute($$);
 #sub check($);
+#sub TEST($);
 
 #__DATA__
 
@@ -26,6 +27,11 @@ sub check($) {
 	for(my($i)=0;$i<$self->size();$i++) {
 		$self->elem($i)->check();
 	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -61,7 +67,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Stats.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -80,6 +86,7 @@ The container lets you do things like exeucte all the statements etc...
 
 	execute($$)
 	check($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -95,7 +102,15 @@ The method receives a Dbi reference as a second argument.
 This method will check all statements in this collection.
 The method receives only the statements object.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Array(3)
 
 =head1 BUGS
 
@@ -104,8 +119,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -125,10 +140,13 @@ None.
 	0.12 MV movies and small fixes
 	0.13 MV thumbnail user interface
 	0.14 MV more thumbnail issues
+	0.15 MV website construction
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Array(3), strict(3)
 
 =head1 TODO
 

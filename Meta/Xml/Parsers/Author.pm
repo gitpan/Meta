@@ -4,27 +4,28 @@ package Meta::Xml::Parsers::Author;
 
 use strict qw(vars refs subs);
 use Meta::Info::Author qw();
-use Meta::Xml::Parsers::Base qw();
+use Meta::Xml::Parsers::Collector qw();
+#use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
-@ISA=qw(Meta::Xml::Parsers::Base);
+$VERSION="0.11";
+@ISA=qw(Meta::Xml::Parsers::Collector);
 
 #sub new($);
 #sub get_result($);
 #sub handle_start($$);
 #sub handle_end($$);
-#sub handle_char($$);
+#sub handle_endchar($$$);
+#sub TEST($);
 
 #__DATA__
 
 sub new($) {
 	my($clas)=@_;
-	my($self)=Meta::Xml::Parsers::Base->new();
+	my($self)=Meta::Xml::Parsers::Collector->new();
 	$self->setHandlers(
 		'Start'=>\&handle_start,
 		'End'=>\&handle_end,
-		'Char'=>\&handle_char,
 	);
 	bless($self,$clas);
 	$self->{TEMP_AUTHOR}=defined;
@@ -38,6 +39,7 @@ sub get_result($) {
 
 sub handle_start($$) {
 	my($self,$elem)=@_;
+	$self->SUPER::handle_start($elem);
 	#Meta::Utils::Output::print("in handle_start with elem [".$elem."]\n");
 	if($elem eq "author") {
 		$self->{TEMP_AUTHOR}=Meta::Info::Author->new();
@@ -46,52 +48,69 @@ sub handle_start($$) {
 
 sub handle_end($$) {
 	my($self,$elem)=@_;
+	$self->SUPER::handle_end($elem);
 }
 
-sub handle_char($$) {
-	my($self,$elem)=@_;
-	if($self->within_element("author")) {
-		if($self->in_element("honorific")) {
-			$self->{TEMP_AUTHOR}->set_honorific($elem);
-		}
-		if($self->in_element("firstname")) {
-			$self->{TEMP_AUTHOR}->set_firstname($elem);
-		}
-		if($self->in_element("surname")) {
-			$self->{TEMP_AUTHOR}->set_surname($elem);
-		}
-		if($self->in_element("cpanid")) {
-			$self->{TEMP_AUTHOR}->set_cpanid($elem);
-		}
-		if($self->in_element("cpanpassword")) {
-			$self->{TEMP_AUTHOR}->set_cpanpassword($elem);
-		}
-		if($self->in_element("sourceforgeid")) {
-			$self->{TEMP_AUTHOR}->set_sourceforgeid($elem);
-		}
-		if($self->in_element("sourceforgepassword")) {
-			$self->{TEMP_AUTHOR}->set_sourceforgepassword($elem);
-		}
-		if($self->in_element("initials")) {
-			$self->{TEMP_AUTHOR}->set_initials($elem);
-		}
-		if($self->in_element("handle")) {
-			$self->{TEMP_AUTHOR}->set_handle($elem);
-		}
-		if($self->in_element("homepage")) {
-			$self->{TEMP_AUTHOR}->set_homepage($elem);
-		}
-		if($self->within_element("affiliation")) {
-			if($self->in_element("orgname")) {
-				$self->{TEMP_AUTHOR}->get_affiliation()->set_orgname($elem);
-			}
-			if($self->within_element("address")) {
-				if($self->in_element("email")) {
-					$self->{TEMP_AUTHOR}->get_affiliation()->get_address()->set_email($elem);
-				}
-			}
-		}
+sub handle_endchar($$$) {
+	my($self,$elem,$name)=@_;
+#	Meta::Utils::Output::print("in here with elem [".$elem."],[".join(',',$self->context())."]\n");
+	$self->SUPER::handle_endchar($elem);
+	if($self->in_context("author.honorific",$name)) {
+		$self->{TEMP_AUTHOR}->set_honorific($elem);
 	}
+	if($self->in_context("author.firstname",$name)) {
+		$self->{TEMP_AUTHOR}->set_firstname($elem);
+	}
+	if($self->in_context("author.surname",$name)) {
+		$self->{TEMP_AUTHOR}->set_surname($elem);
+	}
+	if($self->in_context("author.cpanid",$name)) {
+		$self->{TEMP_AUTHOR}->set_cpanid($elem);
+	}
+	if($self->in_context("author.cpanpassword",$name)) {
+		$self->{TEMP_AUTHOR}->set_cpanpassword($elem);
+	}
+	if($self->in_context("author.cpanemail",$name)) {
+		$self->{TEMP_AUTHOR}->set_cpanemail($elem);
+	}
+	if($self->in_context("author.sourceforgeid",$name)) {
+		$self->{TEMP_AUTHOR}->set_sourceforgeid($elem);
+	}
+	if($self->in_context("author.sourceforgepassword",$name)) {
+		$self->{TEMP_AUTHOR}->set_sourceforgepassword($elem);
+	}
+	if($self->in_context("author.sourceforgeemail",$name)) {
+		$self->{TEMP_AUTHOR}->set_sourceforgeemail($elem);
+	}
+	if($self->in_context("author.advogatoid",$name)) {
+		$self->{TEMP_AUTHOR}->set_advogatoid($elem);
+	}
+	if($self->in_context("author.advogatopassword",$name)) {
+		$self->{TEMP_AUTHOR}->set_advogatopassword($elem);
+	}
+	if($self->in_context("author.advogatoemail",$name)) {
+		$self->{TEMP_AUTHOR}->set_advogatoemail($elem);
+	}
+	if($self->in_context("author.initials",$name)) {
+		$self->{TEMP_AUTHOR}->set_initials($elem);
+	}
+	if($self->in_context("author.handle",$name)) {
+		$self->{TEMP_AUTHOR}->set_handle($elem);
+	}
+	if($self->in_context("author.homepage",$name)) {
+		$self->{TEMP_AUTHOR}->set_homepage($elem);
+	}
+	if($self->in_context("author.affiliation.orgname",$name)) {
+		$self->{TEMP_AUTHOR}->get_affiliation()->set_orgname($elem);
+	}
+	if($self->in_context("author.affiliation.address.email",$name)) {
+		$self->{TEMP_AUTHOR}->get_affiliation()->get_address()->set_email($elem);
+	}
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -127,7 +146,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Author.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -147,7 +166,8 @@ This object will create a Meta::Info::Author for you from an XML/author file.
 	get_result($)
 	handle_start($$)
 	handle_end($$)
-	handle_char($$)
+	handle_endchar($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -170,11 +190,19 @@ This will handle start tags.
 This will handle end tags.
 This currently does nothing.
 
-=item B<handle_char($$)>
+=item B<handle_endchar($$$)>
 
 This will handle actual text.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Xml::Parsers::Collector(3)
 
 =head1 BUGS
 
@@ -183,8 +211,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -198,10 +226,13 @@ None.
 	0.06 MV movies and small fixes
 	0.07 MV thumbnail user interface
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Info::Author(3), Meta::Xml::Parsers::Collector(3), strict(3)
 
 =head1 TODO
 

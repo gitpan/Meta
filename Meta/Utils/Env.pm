@@ -7,7 +7,7 @@ use Meta::Utils::Hash qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.30";
 @ISA=qw();
 
 #sub get_nodie($);
@@ -26,6 +26,7 @@ $VERSION="0.27";
 #sub load($);
 #sub bash($);
 #sub bash_cat($);
+#sub TEST($);
 
 #__DATA__
 
@@ -159,6 +160,11 @@ sub bash_cat($) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -192,7 +198,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Env.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -236,6 +242,7 @@ need to basis.
 	load($)
 	bash($)
 	bash_cat($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -328,7 +335,15 @@ This assumes the values of the keys are values to be added at the head of
 the paths.
 This produces a bash script to do it.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -337,8 +352,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -371,10 +386,13 @@ None.
 	0.25 MV movies and small fixes
 	0.26 MV thumbnail user interface
 	0.27 MV more thumbnail issues
+	0.28 MV website construction
+	0.29 MV web site automation
+	0.30 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Hash(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

@@ -6,11 +6,11 @@ use strict qw(vars refs subs);
 use Meta::Ds::Array qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw(Meta::Ds::Array);
 
 #sub new($);
-#sub method($);
+#sub TEST($);
 
 #__DATA__
 
@@ -21,8 +21,9 @@ sub new($) {
 	return($self);
 }
 
-sub method($) {
-	my($self)=@_;
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -58,7 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Time.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -75,7 +76,7 @@ and can be printed in many formats.
 =head1 FUNCTIONS
 
 	new($)
-	set_day($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -85,11 +86,15 @@ and can be printed in many formats.
 
 This is a constructor for the Meta::Ds::Time object.
 
-=item B<method($)>
+=item B<TEST($)>
 
-This is an object method.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Array(3)
 
 =head1 BUGS
 
@@ -98,8 +103,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -112,10 +117,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Array(3), strict(3)
 
 =head1 TODO
 

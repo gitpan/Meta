@@ -3,11 +3,11 @@
 package Meta::Geo::Pos3d;
 
 use strict qw(vars refs subs);
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.03";
+$VERSION="0.07";
 @ISA=qw();
 
 #sub BEGIN($);
@@ -15,13 +15,13 @@ $VERSION="0.03";
 #sub sub($$);
 #sub mul($$);
 #sub print($$);
-#sub TEST();
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_x",
 		-java=>"_y",
 		-java=>"_z",
@@ -54,7 +54,8 @@ sub print($$) {
 	print $file "[".$self->get_x()."][".$self->get_y()."][".$self->get_z()."]\n";
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	my($point1)=Meta::Geo::Pos3d->new();
 	$point1->set_x(3);
 	$point1->set_y(4);
@@ -101,7 +102,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pos3d.pm
 	PROJECT: meta
-	VERSION: 0.03
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
@@ -127,7 +128,7 @@ A lot more is needed here but it's a start.
 	sub($$)
 	mul($$)
 	print($$)
-	TEST()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -153,11 +154,15 @@ This will multiple the vector by a scalar.
 
 This will print the current position.
 
-=item B<TEST()>
+=item B<TEST($)>
 
-Performs unit testing for this module.
+Test suite for this module.
 
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -166,8 +171,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -176,10 +181,14 @@ None.
 	0.01 MV thumbnail user interface
 	0.02 MV import tests
 	0.03 MV more thumbnail issues
+	0.04 MV website construction
+	0.05 MV web site development
+	0.06 MV web site automation
+	0.07 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-L<Class::MethodMaker>,L<Meta::Utils::Output>
+Meta::Class::MethodMaker(3), Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

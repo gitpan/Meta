@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Ds::Hash qw();
 
 our($VERSION,@ISA);
-$VERSION="0.11";
+$VERSION="0.14";
 @ISA=qw(Meta::Ds::Hash);
 
 #sub new($);
@@ -17,6 +17,7 @@ $VERSION="0.11";
 #sub valx($$);
 #sub print($$);
 #sub get_elem_number($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -91,6 +92,11 @@ sub get_elem_number($$) {
 	return($self->{OHASH}->{$elem});
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -124,7 +130,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ochash.pm
 	PROJECT: meta
-	VERSION: 0.11
+	VERSION: 0.14
 
 =head1 SYNOPSIS
 
@@ -147,6 +153,7 @@ to retrieve its parent.
 	valx($$)
 	print($$)
 	get_elem_number($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -188,7 +195,15 @@ This will print the Ochash object to the specified file for you.
 
 This method will retrieve the sequential number of an element.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Hash(3)
 
 =head1 BUGS
 
@@ -197,8 +212,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -215,10 +230,13 @@ None.
 	0.09 MV more thumbnail stuff
 	0.10 MV thumbnail user interface
 	0.11 MV more thumbnail issues
+	0.12 MV website construction
+	0.13 MV web site automation
+	0.14 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Hash(3), strict(3)
 
 =head1 TODO
 

@@ -26,9 +26,10 @@ use Meta::Utils::Output qw();
 use Meta::Lang::Perl::Deps qw();
 use Meta::Info::Author qw();
 use Meta::Lang::Perl::Perl qw();
+use Meta::Utils::Env qw();
 
 our($VERSION,@ISA);
-$VERSION="0.53";
+$VERSION="0.58";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub env();
@@ -57,17 +58,21 @@ $VERSION="0.53";
 #sub c2late($);
 #sub c2txtx($);
 #sub my_file($$);
+#sub TEST($);
 #sub source_file($$);
 #sub create_file($$);
 #sub pod2code($);
 #sub fix_pod($$$$$);
 #sub fix_history($$$);
 #sub fix_history_add($$$);
+#sub fix_options($$$);
 #sub fix_details($$$);
 #sub fix_license($$$);
 #sub fix_author($$$);
 #sub fix_copyright($$$);
 #sub fix_version($$$);
+#sub fix_super($$$);
+#sub fix_see($$$);
 #sub fix_version_add($$$);
 
 #__DATA__
@@ -299,6 +304,7 @@ sub check_misc($$$$$$) {
 		"=head1 DESCRIPTION",
 		"=head1 FUNCTIONS",
 		"=head1 FUNCTION DOCUMENTATION",
+		"=head1 SUPER CLASSES",
 		"=head1 BUGS",
 		"=head1 AUTHOR",
 		"=head1 HISTORY",
@@ -421,7 +427,7 @@ sub check_fl($$$$$$) {
 
 sub check_pods($$$$$$) {
 	my($perl,$path,$text,$test,$modu,$module)=@_;
-	my($hash)=Meta::Lang::Perl::Perl::get_pods($text);
+	my($hash)=Meta::Lang::Perl::Perl::get_pods_new($text);
 	my($resu)=1;
 	# check NAME
 	my($pod_name)=$hash->{"NAME"};
@@ -431,14 +437,14 @@ sub check_pods($$$$$$) {
 	} else {
 		$matc=File::Basename::basename($perl);
 	}
-	if($pod_name!~/^\n$matc - .*\.\n$/) {
+	if($pod_name!~/^$matc - .*\.\n$/) {
 		Meta::Utils::Output::print("bad NAME pod found [".$pod_name."]\n");
 		$resu=0;
 	}
 	# check LICENSE
 	my($pod_lice)=$hash->{"LICENSE"};
 	my($lice)=Meta::Utils::File::File::load_deve("data/baseline/lice/lice.txt");
-	my($need_lice)="\n".$lice;
+	my($need_lice)=$lice."\n";
 	if($pod_lice ne $need_lice) {
 		Meta::Utils::Output::print("LICENSE pod found is [".$pod_lice."]\n");
 		Meta::Utils::Output::print("and should be [".$need_lice."]\n");
@@ -448,7 +454,7 @@ sub check_pods($$$$$$) {
 	my($author_obje)=Meta::Info::Author::new_deve("xmlx/author/author.xml");
 	my($pod_copy)=$hash->{"COPYRIGHT"};
 	my($copy)=$author_obje->get_perl_copyright();
-	my($need_copy)="\n".$copy;
+	my($need_copy)=$copy."\n";
 	if($pod_copy ne $need_copy) {
 		Meta::Utils::Output::print("COPYRIGHT pod found is [".$pod_copy."]\n");
 		Meta::Utils::Output::print("and should be [".$need_copy."]\n");
@@ -456,14 +462,14 @@ sub check_pods($$$$$$) {
 	}
 	# check AUTHOR
 	my($pod_auth)=$hash->{"AUTHOR"};
-	my($need_auth)="\n".$author_obje->get_perl_source();
+	my($need_auth)=$author_obje->get_perl_source()."\n";
 	if($pod_auth ne $need_auth) {
 		Meta::Utils::Output::print("AUTHOR pod found is [".$pod_auth."]\n");
 		Meta::Utils::Output::print("and should be [".$need_auth."]\n");
 		$resu=0;
 	}
 	# build hash of SYNOPSIS
-	my($syno)=$hash->{"SYNOPSIS"};
+	my($syno)="\t".$hash->{"SYNOPSIS"};
 	my($shor)=substr($syno,1,-1);
 	my(@lines)=split("\n",$shor);
 	for(my($i)=0;$i<=$#lines;$i++) {
@@ -474,13 +480,13 @@ sub check_pods($$$$$$) {
 		}
 	}
 	# check FUNCTIONS
-	my($expo)=$hash->{"FUNCTIONS"};
+	my($expo)="\t".$hash->{"FUNCTIONS"};
 	$expo=substr($expo,1,-1);
 	my(@expo_line)=split("\n",$expo);
 	for(my($i)=0;$i<=$#expo_line;$i++) {
 		my($curr)=$expo_line[$i];
 		if($curr!~/\t.*$/) {
-			Meta::Utils::Output::print("bad EXPORT line [".$curr."]\n");
+			Meta::Utils::Output::print("bad FUNCTIONS line [".$curr."]\n");
 			$resu=0;
 		}
 	}
@@ -488,7 +494,7 @@ sub check_pods($$$$$$) {
 	my($hist_obje)=Meta::Tool::Aegis::history($module);
 	# check DETAILS
 	my($pod_deta)=$hash->{"DETAILS"};
-	my($need_deta)="\n\tMANIFEST: ".File::Basename::basename($perl)."\n\tPROJECT: ".Meta::Baseline::Aegis::project()."\n\tVERSION: ".$hist_obje->perl_current()."\n";
+	my($need_deta)="\tMANIFEST: ".File::Basename::basename($perl)."\n\tPROJECT: ".Meta::Baseline::Aegis::project()."\n\tVERSION: ".$hist_obje->perl_current()."\n\n";
 	if($pod_deta ne $need_deta) {
 		Meta::Utils::Output::print("DETAILS pod found is [".$pod_deta."]\n");
 		Meta::Utils::Output::print("and should be [".$need_deta."]\n");
@@ -496,17 +502,42 @@ sub check_pods($$$$$$) {
 	}
 	# check HISTORY
 	my($pod_hist)=$hash->{"HISTORY"};
-	my($need_hist)="\n".$hist_obje->perl_pod();
+	my($need_hist)=$hist_obje->perl_pod()."\n";
 	if($pod_hist ne $need_hist) {
 		Meta::Utils::Output::print("HISTORY pod found is [".$pod_hist."]\n");
 		Meta::Utils::Output::print("and should be [".$need_hist."]\n");
+		$resu=0;
+	}
+	# check SEE ALSO
+	my($pod_see)=$hash->{"SEE ALSO"};
+	my($need_see)=Meta::Lang::Perl::Perl::get_file_pod_see($perl)."\n\n";
+	if($pod_see ne $need_see) {
+		Meta::Utils::Output::print("SEE ALSO pod found is [".$pod_see."]\n");
+		Meta::Utils::Output::print("and should be [".$need_see."]\n");
 		$resu=0;
 	}
 	if($modu) {
 		# check the VERSION tag
 		my($version)=$hist_obje->perl_current();
 		if($text!~/\n\$VERSION=\"$version\";\n/) {
-			Meta::Utils::Output::print("VERSION variable is wrong\n");
+			Meta::Utils::Output::print("VERSION variable is wrong and should be [".$version."]\n");
+			$resu=0;
+		}
+		# check the SUPER CLASSES tag
+		my($pod_inherits)=$hash->{"SUPER CLASSES"};
+		my($need_inherits)=Meta::Lang::Perl::Perl::get_file_pod_isa($perl)."\n\n";
+		if($pod_inherits ne $need_inherits) {
+			Meta::Utils::Output::print("SUPER CLASSES pod found is [".$pod_inherits."]\n");
+			Meta::Utils::Output::print("and should be [".$need_inherits."]\n");
+			$resu=0;
+		}
+	} else {
+		# check the OPTIONS section
+		my($pod_options)=$hash->{"OPTIONS"};
+		my($need_options)=Meta::Utils::System::system_out_val($perl,["--pod"])."\n";
+		if($pod_options ne $need_options) {
+			Meta::Utils::Output::print("OPTIONS pod found is [".$pod_options."]\n");
+			Meta::Utils::Output::print("and should be [".$need_options."]\n");
 			$resu=0;
 		}
 	}
@@ -729,6 +760,13 @@ sub my_file($$) {
 	return(0);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	my($hash)=Meta::Baseline::Lang::Perl::env();
+	Meta::Utils::Env::bash_cat($hash);
+	return(1);
+}
+
 sub source_file($$) {
 	my($self,$file)=@_;
 	if($file=~/^perl\/.*\.pl$/) {
@@ -855,6 +893,14 @@ sub fix_history_add($$$) {
 	fix_pod($self,$curr,$need,$before_pod,$after_pod);
 }
 
+sub fix_options($$$) {
+	my($self,$modu,$curr)=@_;
+	my($need)=Meta::Utils::System::system_out_val($curr,["--pod"]);
+	my($before_pod)="OPTIONS";
+	my($after_pod)="BUGS";
+	fix_pod($self,$curr,$need,$before_pod,$after_pod);
+}
+
 sub fix_details($$$) {
 	my($self,$modu,$curr)=@_;
 	my($hist_obje)=Meta::Tool::Aegis::history($modu);
@@ -911,6 +957,24 @@ sub fix_version($$$) {
 	}
 }
 
+sub fix_super($$$) {
+	my($self,$modu,$curr)=@_;
+	my($need)=Meta::Lang::Perl::Perl::get_file_pod_isa($curr)."\n";
+#	Meta::Utils::Output::print("need is [".$need."]\n");
+	my($before_pod)="SUPER CLASSES";
+	my($after_pod)="BUGS";
+	fix_pod($self,$curr,$need,$before_pod,$after_pod);
+}
+
+sub fix_see($$$) {
+	my($self,$modu,$curr)=@_;
+	my($need)=Meta::Lang::Perl::Perl::get_file_pod_see($curr)."\n";
+#	Meta::Utils::Output::print("need is [".$need."]\n");
+	my($before_pod)="SEE ALSO";
+	my($after_pod)="TODO";
+	fix_pod($self,$curr,$need,$before_pod,$after_pod);
+}
+
 sub fix_version_add($$$) {
 	my($self,$modu,$curr)=@_;
 	my($hist_obje)=Meta::Tool::Aegis::history_add($modu);
@@ -957,7 +1021,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perl.pm
 	PROJECT: meta
-	VERSION: 0.53
+	VERSION: 0.58
 
 =head1 SYNOPSIS
 
@@ -1000,18 +1064,21 @@ etc...
 	c2late($)
 	c2txtx($)
 	my_file($$)
+	TEST($)
 	source_file($$)
 	create_file($$)
 	pod2code($)
 	fix_pod($$$$$)
 	fix_history($$$)
 	fix_history_add($$$)
+	fix_options($$$)
 	fix_details($$$)
 	fix_details_add($$$)
 	fix_license($$$)
 	fix_author($$$)
 	fix_copyright($$$)
 	fix_version($$$)
+	fix_super($$$)
 	fix_version_add($$$)
 
 =head1 FUNCTION DOCUMENTATION
@@ -1156,6 +1223,11 @@ This method returns an error code.
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+This currently just runs the Env stuff and checks whats the output bash script.
+
 =item B<source_file($$)>
 
 This method will return true if the file received is a source of this module.
@@ -1181,6 +1253,11 @@ This will fix the =head1 HISTORY pod tag to reflect aegis history.
 
 This will fix the =head1 HISTORY pod tag to reflect aegis history plus the current change.
 
+=item B<fix_options($$$)>
+
+This will fix the =head1 OPTIONS pod tag to reflect the actual command line usage of the
+script.
+
 =item B<fix_details($$$)>
 
 This will fix the =head1 DETAILS pod tag to reflect current project details.
@@ -1205,11 +1282,19 @@ This method fixes the COPYRIGHT tag.
 
 This method fixes the $VERSION variable.
 
+=item B<fix_super($$$)>
+
+This method fixes the SUPPER tag.
+
 =item B<fix_version_add($$$)>
 
 This method fixes the $VERSION variable taking the current change into consideration.
 
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -1218,8 +1303,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -1278,10 +1363,15 @@ None.
 	0.51 MV thumbnail user interface
 	0.52 MV dbman package creation
 	0.53 MV more thumbnail issues
+	0.54 MV website construction
+	0.55 MV web site automation
+	0.56 MV SEE ALSO section fix
+	0.57 MV put all tests in modules
+	0.58 MV move tests to modules
 
 =head1 SEE ALSO
 
-Nothing.
+DB_File(3), Meta::Baseline::Aegis(3), Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Info::Author(3), Meta::Lang::Perl::Deps(3), Meta::Lang::Perl::Perl(3), Meta::Tool::Aegis(3), Meta::Utils::Env(3), Meta::Utils::File::Copy(3), Meta::Utils::File::File(3), Meta::Utils::File::Move(3), Meta::Utils::File::Path(3), Meta::Utils::File::Remove(3), Meta::Utils::List(3), Meta::Utils::Output(3), Meta::Utils::Text::Lines(3), Pod::Checker(3), Pod::Html(3), Pod::LaTeX(3), Pod::Man(3), Pod::Text(3), Template(3), strict(3)
 
 =head1 TODO
 

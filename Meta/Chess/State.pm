@@ -8,13 +8,14 @@ use Meta::Chess::Side qw();
 use Meta::Chess::Tuple qw();
 
 our($VERSION,@ISA);
-$VERSION="0.14";
+$VERSION="0.17";
 @ISA=qw(Meta::Chess::Board);
 
 #sub new($);
 #sub add_piece_insane($$$$$);
 #sub set_to_move($$);
 #sub start_game($);
+#sub TEST($);
 
 #__DATA__
 
@@ -77,6 +78,11 @@ sub start_game($) {
 	$self->set_to_move("White");
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -110,7 +116,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: State.pm
 	PROJECT: meta
-	VERSION: 0.14
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
@@ -131,6 +137,7 @@ sanity chess the state, and apply a move.
 	add_piece_insane($$$$$)
 	set_to_move($$)
 	start_game($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -152,7 +159,15 @@ This will set the side which is supposed to move.
 
 This will setup the initial board position and will mark whites turn to move.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Chess::Board(3)
 
 =head1 BUGS
 
@@ -161,8 +176,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -182,10 +197,13 @@ None.
 	0.12 MV movies and small fixes
 	0.13 MV thumbnail user interface
 	0.14 MV more thumbnail issues
+	0.15 MV website construction
+	0.16 MV web site automation
+	0.17 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Chess::Board(3), Meta::Chess::Side(3), Meta::Chess::Tuple(3), strict(3)
 
 =head1 TODO
 

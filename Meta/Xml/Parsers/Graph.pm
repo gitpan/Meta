@@ -7,7 +7,7 @@ use Meta::Ds::Graph qw();
 use XML::Parser::Expat qw();
 
 our($VERSION,@ISA);
-$VERSION="0.08";
+$VERSION="0.11";
 @ISA=qw(XML::Parser::Expat);
 
 #sub new($);
@@ -15,6 +15,7 @@ $VERSION="0.08";
 #sub handle_start($$);
 #sub handle_end($$);
 #sub handle_char($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -71,6 +72,11 @@ sub handle_char($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -104,7 +110,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Graph.pm
 	PROJECT: meta
-	VERSION: 0.08
+	VERSION: 0.11
 
 =head1 SYNOPSIS
 
@@ -133,6 +139,7 @@ object) and we inherit from that to get more object orientedness.
 	handle_start($$)
 	handle_end($$)
 	handle_char($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -160,7 +167,15 @@ This will handle end tags.
 This will handle actual text.
 This currently, according to context, sets attributes for the various objects.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+XML::Parser::Expat(3)
 
 =head1 BUGS
 
@@ -169,8 +184,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -184,10 +199,13 @@ None.
 	0.06 MV movies and small fixes
 	0.07 MV thumbnail user interface
 	0.08 MV more thumbnail issues
+	0.09 MV website construction
+	0.10 MV web site automation
+	0.11 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Graph(3), XML::Parser::Expat(3), strict(3)
 
 =head1 TODO
 

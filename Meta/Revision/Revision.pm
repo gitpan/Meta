@@ -9,7 +9,7 @@ use XML::Writer qw();
 use Meta::Math::Pad qw();
 
 our($VERSION,@ISA);
-$VERSION="0.13";
+$VERSION="0.16";
 @ISA=qw(Meta::Ds::Array);
 
 #sub print($$);
@@ -23,6 +23,7 @@ $VERSION="0.13";
 #sub docbook_date($);
 #sub html_last_print($$);
 #sub html_last($);
+#sub TEST($);
 
 #__DATA__
 
@@ -125,6 +126,11 @@ sub html_last($) {
 	return($string);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -158,7 +164,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Revision.pm
 	PROJECT: meta
-	VERSION: 0.13
+	VERSION: 0.16
 
 =head1 SYNOPSIS
 
@@ -186,6 +192,7 @@ The object is able to print itself in DocBook xml format.
 	docbook_date($)
 	html_last_print($$)
 	html_last($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -238,7 +245,15 @@ This will print a "page last modified at" html notice.
 
 This method will create an XML string representing the last modified information.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Array(3)
 
 =head1 BUGS
 
@@ -247,8 +262,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -267,10 +282,13 @@ None.
 	0.11 MV md5 progress
 	0.12 MV thumbnail user interface
 	0.13 MV more thumbnail issues
+	0.14 MV website construction
+	0.15 MV web site automation
+	0.16 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+IO::String(3), Meta::Ds::Array(3), Meta::Math::Pad(3), XML::Writer(3), strict(3)
 
 =head1 TODO
 

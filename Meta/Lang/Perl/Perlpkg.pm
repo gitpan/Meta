@@ -8,10 +8,10 @@ use Meta::Info::Author qw();
 use Meta::Development::Deps qw();
 use Meta::Lang::Perl::Deps qw();
 use Meta::Ds::Oset qw();
-use Class::MethodMaker qw();
+use Meta::Class::MethodMaker qw();
 
 our($VERSION,@ISA);
-$VERSION="0.15";
+$VERSION="0.19";
 @ISA=qw();
 
 #sub BEGIN();
@@ -23,12 +23,13 @@ $VERSION="0.15";
 #sub get_modules_dep_list($$$);
 #sub get_scripts_dep_list($$$);
 #sub get_tests_dep_list($$$);
+#sub TEST($);
 
 #__DATA__
 
 sub BEGIN() {
-	Class::MethodMaker->new_with_init("new");
-	Class::MethodMaker->get_set(
+	Meta::Class::MethodMaker->new_with_init("new");
+	Meta::Class::MethodMaker->get_set(
 		-java=>"_name",
 		-java=>"_description",
 		-java=>"_longdescription",
@@ -179,6 +180,11 @@ sub get_tests_dep_list($$$) {
 	return($oset);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -212,7 +218,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Perlpkg.pm
 	PROJECT: meta
-	VERSION: 0.15
+	VERSION: 0.19
 
 =head1 SYNOPSIS
 
@@ -238,6 +244,7 @@ and other services.
 	get_modules_dep_list($$$)
 	get_scripts_dep_list($$$)
 	get_tests_dep_list($$$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -311,7 +318,15 @@ in the package.
 This method returns the list of tests which are dependant on the tests 
 in the package.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -320,8 +335,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -342,10 +357,14 @@ None.
 	0.13 MV thumbnail user interface
 	0.14 MV import tests
 	0.15 MV more thumbnail issues
+	0.16 MV website construction
+	0.17 MV web site development
+	0.18 MV web site automation
+	0.19 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Class::MethodMaker(3), Meta::Development::Deps(3), Meta::Ds::Array(3), Meta::Ds::Oset(3), Meta::Info::Author(3), Meta::Lang::Perl::Deps(3), strict(3)
 
 =head1 TODO
 

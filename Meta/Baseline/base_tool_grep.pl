@@ -1,0 +1,322 @@
+#!/usr/bin/env perl
+
+use strict qw(vars refs subs);
+use Meta::Utils::System qw();
+use Meta::Utils::Opts::Opts qw();
+use Meta::Utils::Hash qw();
+use Meta::Baseline::Aegis qw();
+use Meta::Tool::Editor qw();
+use Meta::Utils::File::File qw();
+use Meta::Ds::Enum qw();
+use Meta::Utils::Output qw();
+
+my($freg,$type,$acti,$repe,$demo,$verb,$prin,$lrep,$lreg,$match);
+my($opts)=Meta::Utils::Opts::Opts->new();
+my($type_enum)=Meta::Ds::Enum->new();
+$type_enum->insert("change");
+$type_enum->insert("project");
+$type_enum->insert("source");
+my($action_enum)=Meta::Ds::Enum->new();
+$action_enum->insert("none");
+$action_enum->insert("print");
+$action_enum->insert("edit");
+$action_enum->insert("replace");
+$action_enum->insert("checkout");
+$action_enum->insert("checkout_edit");
+$action_enum->insert("checkout_replace");
+$opts->set_standard();
+$opts->def_stri("fileregexp","regular expression on the file names","",\$freg);
+$opts->def_enum("type","what types of files to look at ?","source",\$type,$type_enum);
+$opts->def_enum("action","what action to be done with the files found ?","print",\$acti,$action_enum);
+$opts->def_stri("replace","regular expression for substitution","",\$repe);
+$opts->def_bool("rep_file","should the substitution be loaded from file ?",0,\$lrep);
+$opts->def_bool("rep_rege","should the regexp be loaded from file ?",0,\$lreg);
+$opts->def_bool("demo","play around or do it for real ?",0,\$demo);
+$opts->def_bool("verbose","noisy or quiet ?",0,\$verb);
+$opts->def_bool("print","print progress ?",0,\$prin);
+$opts->def_bool("match","match file regexps ?",1,\$match);
+$opts->set_free_allo(1);
+$opts->set_free_stri("[regexp]");
+$opts->set_free_mini(1);
+$opts->set_free_maxi(1);
+$opts->analyze(\@ARGV);
+
+my($rege)=$ARGV[0];
+if($lreg) {
+	$rege=Meta::Utils::File::File::load($rege);
+}
+if($lrep) {
+	$repe=Meta::Utils::File::File::load($repe);
+}
+my($show,$chec,$edit,$repl)=(0,0,0,0);
+if($acti eq "none") {
+}
+if($acti eq "print") {
+	$show=1;
+}
+if($acti eq "edit") {
+	$edit=1;
+}
+if($acti eq "replace") {
+	$repl=1;
+}
+if($acti eq "checkout") {
+	$chec=1;
+}
+if($acti eq "checeout_edit") {
+	$chec=1;
+	$edit=1;
+}
+if($acti eq "checeout_replace") {
+	$chec=1;
+	$repl=1;
+}
+my($hash);
+if($type eq "change") {
+	$hash=Meta::Baseline::Aegis::change_files_hash(1,1,0,1,1,1);
+}
+if($type eq "project") {
+	$hash=Meta::Baseline::Aegis::project_files_hash(1,1,1);
+}
+if($type eq "source") {
+	$hash=Meta::Baseline::Aegis::source_files_hash(1,1,0,1,1,1);
+}
+if($match) {
+	$hash=Meta::Utils::Hash::filter_regexp($hash,$freg,1);
+	$hash=Meta::Utils::Hash::filter_file_sing_regexp($hash,$rege,$show);
+}
+if($verb) {
+	my($numb)=Meta::Utils::Hash::size($hash);
+	if($prin) {
+		Meta::Utils::Output::print("doing [".$numb."] files\n");
+	}
+	Meta::Utils::Hash::print(Meta::Utils::Output::get_file(),$hash);
+}
+if($chec) {
+	if(!$demo) {
+		my($change)=Meta::Baseline::Aegis::change_files_hash(1,1,0,1,1,1);
+		Meta::Utils::Hash::remove_hash($hash,$change,0);
+		Meta::Baseline::Aegis::checkout_hash($hash);
+	}
+}
+if($edit) {
+	if(!$demo) {
+		my($list)=Meta::Utils::Hash::to_list($hash);
+		if(Meta::Utils::List::notempty($list)) {
+			Meta::Tool::Editor::edit_mult($list);
+		}
+	}
+}
+if($repl) {
+	if(!$demo) {
+		while(my($keyx,$valx)=each(%$hash)) {
+			if($verb) {
+				Meta::Utils::Output::print("doing [".$keyx."]\n");
+			}
+			my($count)=Meta::Utils::File::File::subst($keyx,$rege,$repe);
+			if($verb) {
+				Meta::Utils::Output::print("replaced [".$count."]\n");
+			}
+		}
+	}
+}
+Meta::Utils::System::exit(1);
+
+__END__
+
+=head1 NAME
+
+base_tool_grep.pl - grep multiple source files according to patterns.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2001, 2002 Mark Veltzer;
+All rights reserved.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+
+=head1 DETAILS
+
+	MANIFEST: base_tool_grep.pl
+	PROJECT: meta
+	VERSION: 0.32
+
+=head1 SYNOPSIS
+
+	base_tool_grep.pl
+
+=head1 DESCRIPTION
+
+This script accepts:
+0. relative path in the baseline
+1. regular expression to search for in the files content.
+2. regular expression for names of files to be searched (*.nw,*.cc,*.java,*.pl,*.pm etc...).
+3. type of image to take as baseline. Three options are available:
+	a. change: search only my change.
+	b. project: search the current baseline.
+	c. source: search my image of the baseline (meaning the baseline as
+		it is overriden by my change). This is the default.
+The idea is to be able to quickly and efficiently do massive editing jobs on your entire
+source code usually from your changed point of view. You can do various things with this script:
+1. checkout multiple files from the baseline.
+2. replace regular expressions on multiple files.
+3. checkout and replace (1+2).
+4. just print which files match.
+5. run an editor on all matched files.
+6. checkout and run an editor on all matched files (1+5).
+You can actually use aefind which is supplied with Aegis to do finds instead of
+this script (this is quite a new feature from Peter Miller).
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<help> (type: bool, default: 0)
+
+display help message
+
+=item B<pod> (type: bool, default: 0)
+
+display pod options snipplet
+
+=item B<man> (type: bool, default: 0)
+
+display manual page
+
+=item B<quit> (type: bool, default: 0)
+
+quit without doing anything
+
+=item B<gtk> (type: bool, default: 0)
+
+run a gtk ui to get the parameters
+
+=item B<license> (type: bool, default: 0)
+
+show license and exit
+
+=item B<copyright> (type: bool, default: 0)
+
+show copyright and exit
+
+=item B<history> (type: bool, default: 0)
+
+show history and exit
+
+=item B<fileregexp> (type: stri, default: )
+
+regular expression on the file names
+
+=item B<type> (type: enum, default: source)
+
+what types of files to look at ?
+
+options [change,project,source]
+
+=item B<action> (type: enum, default: print)
+
+what action to be done with the files found ?
+
+options [none,print,edit,replace,checkout,checkout_edit,checkout_replace]
+
+=item B<replace> (type: stri, default: )
+
+regular expression for substitution
+
+=item B<rep_file> (type: bool, default: 0)
+
+should the substitution be loaded from file ?
+
+=item B<rep_rege> (type: bool, default: 0)
+
+should the regexp be loaded from file ?
+
+=item B<demo> (type: bool, default: 0)
+
+play around or do it for real ?
+
+=item B<verbose> (type: bool, default: 0)
+
+noisy or quiet ?
+
+=item B<print> (type: bool, default: 0)
+
+print progress ?
+
+=item B<match> (type: bool, default: 1)
+
+match file regexps ?
+
+=back
+
+minimum of [1] free arguments required
+no maximum limit on number of free arguments placed
+
+=head1 BUGS
+
+None.
+
+=head1 AUTHOR
+
+	Name: Mark Veltzer
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
+	CPAN id: VELTZER
+
+=head1 HISTORY
+
+	0.00 MV initial code brought in
+	0.01 MV c++ and perl code quality checks
+	0.02 MV make quality checks on perl code
+	0.03 MV more perl checks
+	0.04 MV make Meta::Utils::Opts object oriented
+	0.05 MV more harsh checks on perl code
+	0.06 MV fix todo items look in pod documentation
+	0.07 MV make all tests real tests
+	0.08 MV fix all tests change
+	0.09 MV more on tests
+	0.10 MV silense all tests
+	0.11 MV more perl quality
+	0.12 MV change new methods to have prototypes
+	0.13 MV perl code quality
+	0.14 MV more perl quality
+	0.15 MV more perl quality
+	0.16 MV perl documentation
+	0.17 MV more perl quality
+	0.18 MV revision change
+	0.19 MV languages.pl test online
+	0.20 MV perl reorganization
+	0.21 MV perl packaging
+	0.22 MV license issues
+	0.23 MV md5 project
+	0.24 MV database
+	0.25 MV perl module versions in files
+	0.26 MV thumbnail user interface
+	0.27 MV more thumbnail issues
+	0.28 MV website construction
+	0.29 MV improve the movie db xml
+	0.30 MV web site development
+	0.31 MV web site automation
+	0.32 MV SEE ALSO section fix
+
+=head1 SEE ALSO
+
+Meta::Baseline::Aegis(3), Meta::Ds::Enum(3), Meta::Tool::Editor(3), Meta::Utils::File::File(3), Meta::Utils::Hash(3), Meta::Utils::Opts::Opts(3), Meta::Utils::Output(3), Meta::Utils::System(3), strict(3)
+
+=head1 TODO
+
+-add an option to just print which files match without the match content (one print per file).

@@ -10,11 +10,12 @@ use Meta::Utils::File::Remove qw();
 use Compress::Zlib qw();
 
 our($VERSION,@ISA);
-$VERSION="0.02";
+$VERSION="0.05";
 @ISA=qw();
 
 #sub process($);
 #sub get_oneliner($);
+#sub TEST($);
 
 #__DATA__
 
@@ -43,7 +44,8 @@ sub get_oneliner($) {
 	return(undef);
 }
 
-sub TEST() {
+sub TEST($) {
+	my($context)=@_;
 	my($file)="/usr/share/man/man1/ls.1.gz";
 	my($content)=Meta::Utils::File::File::load($file);
 	my($full)=Compress::Zlib::memGunzip($content);
@@ -90,7 +92,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Groff.pm
 	PROJECT: meta
-	VERSION: 0.02
+	VERSION: 0.05
 
 =head1 SYNOPSIS
 
@@ -107,6 +109,7 @@ This module eases the job of running groff for you.
 
 	process($)
 	get_oneliner($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -122,7 +125,15 @@ This method will get the one line description from the content of a manual page.
 If this method is unable to extract the one line description (problem with
 the content of the troff manual page) then it will return "undef".
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -131,8 +142,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -140,10 +151,13 @@ None.
 	0.00 MV import tests
 	0.01 MV dbman package creation
 	0.02 MV more thumbnail issues
+	0.03 MV website construction
+	0.04 MV web site automation
+	0.05 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Compress::Zlib(3), Meta::Utils::File::File(3), Meta::Utils::File::Remove(3), Meta::Utils::System(3), Meta::Utils::Utils(3), strict(3)
 
 =head1 TODO
 

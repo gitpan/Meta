@@ -6,7 +6,7 @@ use strict qw(vars refs subs);
 use Meta::Utils::Output qw();
 
 our($VERSION,@ISA);
-$VERSION="0.22";
+$VERSION="0.25";
 @ISA=qw();
 
 #sub new($);
@@ -16,6 +16,7 @@ $VERSION="0.22";
 #sub remove_line_nre($$);
 #sub get_text($);
 #sub get_text_fixed($);
+#sub TEST($);
 
 #__DATA__
 
@@ -102,6 +103,11 @@ sub get_text_fixed($) {
 	return($text);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -135,7 +141,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Lines.pm
 	PROJECT: meta
-	VERSION: 0.22
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
@@ -161,6 +167,7 @@ the text that results.
 	remove_line_nre($$)
 	get_text($)
 	get_text_fixed($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -195,7 +202,15 @@ This will retrieve the text currently stored in the object.
 This method is the same as get_text except it adds the delimiter at the end
 if it is not there.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -204,8 +219,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -233,10 +248,13 @@ None.
 	0.20 MV movies and small fixes
 	0.21 MV thumbnail user interface
 	0.22 MV more thumbnail issues
+	0.23 MV website construction
+	0.24 MV web site automation
+	0.25 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Utils::Output(3), strict(3)
 
 =head1 TODO
 

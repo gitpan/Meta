@@ -15,14 +15,13 @@ use Meta::Baseline::Cook qw();
 use Meta::Tool::Sgml2 qw();
 use Meta::Tool::Docbook2 qw();
 use Meta::Tool::Openjade qw();
-use Meta::Tool::Gzip qw();
 
 #tools that we are currently not using
 #use Meta::Tool::Jade qw();
 #use Meta::Tool::Nsgmls qw();
 
 our($VERSION,@ISA);
-$VERSION="0.12";
+$VERSION="0.15";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2chec($);
@@ -41,8 +40,8 @@ $VERSION="0.12";
 #sub c2xmlx($);
 #sub c2late($);
 #sub c2lyxx($);
-#sub c2gzxx($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -162,17 +161,17 @@ sub c2lyxx($) {
 #	return(Meta::Tool::Sgmltools::c2lyxx($buil));
 }
 
-sub c2gzxx($) {
-	my($buil)=@_;
-	return(Meta::Tool::Gzip::c2gzxx($buil));
-}
-
 sub my_file($$) {
 	my($self,$file)=@_;
 	if($file=~/^sgml\/.*\.sgml$/) {
 		return(1);
 	}
 	return(0);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -208,7 +207,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Sgml.pm
 	PROJECT: meta
-	VERSION: 0.12
+	VERSION: 0.15
 
 =head1 SYNOPSIS
 
@@ -246,8 +245,8 @@ for which the API is not yet stable like sgmltools or others.
 	c2xmlx($)
 	c2late($)
 	c2lyxx($)
-	c2gzxx($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -323,16 +322,20 @@ This will convert DocBook files to Latex.
 
 This will convert DocBook files to LyX.
 
-=item B<c2gzxx($)>
-
-This will convert DocBook files to compressed docbook files.
-
 =item B<my_file($$)>
 
 This method will return true if the file received should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -341,8 +344,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -360,10 +363,13 @@ None.
 	0.10 MV thumbnail user interface
 	0.11 MV dbman package creation
 	0.12 MV more thumbnail issues
+	0.13 MV website construction
+	0.14 MV web site automation
+	0.15 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Cook(3), Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Lang::Sgml::Sgml(3), Meta::Lang::Xml::Xml(3), Meta::Tool::Aspell(3), Meta::Tool::Docbook2(3), Meta::Tool::Onsgmls(3), Meta::Tool::Openjade(3), Meta::Tool::Sgml2(3), Meta::Tool::Sgmltools(3), Meta::Tool::Sgmltoolslite(3), strict(3)
 
 =head1 TODO
 

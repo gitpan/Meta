@@ -9,12 +9,13 @@ use Meta::Baseline::Aegis qw();
 use Meta::Utils::Text::Unique qw();
 
 our($VERSION,@ISA);
-$VERSION="0.10";
+$VERSION="0.13";
 @ISA=qw();
 
 #sub checksgml($);
 #sub checkhtml($);
 #sub checktxt($);
+#sub TEST($);
 
 #__DATA__
 
@@ -62,6 +63,11 @@ sub checktxt($) {
 	return(1);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -95,7 +101,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Aspell.pm
 	PROJECT: meta
-	VERSION: 0.10
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
@@ -114,6 +120,7 @@ from you.
 	checksgml($)
 	checkhtml($)
 	checktxt($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -146,7 +153,15 @@ our HTML documents are SGML compliant.
 This method will check a regular text file.
 Currently it is unimplemented and just returns true.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -155,8 +170,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -172,10 +187,13 @@ None.
 	0.08 MV movies and small fixes
 	0.09 MV thumbnail user interface
 	0.10 MV more thumbnail issues
+	0.11 MV website construction
+	0.12 MV web site automation
+	0.13 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Aegis(3), Meta::Utils::Output(3), Meta::Utils::System(3), Meta::Utils::Text::Unique(3), strict(3)
 
 =head1 TODO
 

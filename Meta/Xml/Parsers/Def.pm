@@ -14,7 +14,7 @@ use Meta::Db::Constraint qw();
 use Meta::Xml::Parsers::Base qw();
 
 our($VERSION,@ISA);
-$VERSION="0.42";
+$VERSION="0.45";
 @ISA=qw(Meta::Xml::Parsers::Base);
 
 #sub new($);
@@ -22,6 +22,7 @@ $VERSION="0.42";
 #sub handle_start($$);
 #sub handle_end($$);
 #sub handle_char($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -223,6 +224,11 @@ sub handle_char($$) {
 	}
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -256,7 +262,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Def.pm
 	PROJECT: meta
-	VERSION: 0.42
+	VERSION: 0.45
 
 =head1 SYNOPSIS
 
@@ -288,6 +294,7 @@ want to put them in). For this case we create the basic object at the begining.
 	handle_start($$)
 	handle_end($$)
 	handle_char($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -316,7 +323,15 @@ This currently does nothing.
 This will handle actual text.
 This currently, according to context, sets attributes for the various objects.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Xml::Parsers::Base(3)
 
 =head1 BUGS
 
@@ -325,8 +340,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -374,10 +389,13 @@ None.
 	0.40 MV thumbnail user interface
 	0.41 MV dbman package creation
 	0.42 MV more thumbnail issues
+	0.43 MV website construction
+	0.44 MV web site automation
+	0.45 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Db::Constraint(3), Meta::Db::Def(3), Meta::Db::Enum(3), Meta::Db::Field(3), Meta::Db::Member(3), Meta::Db::Set(3), Meta::Db::Table(3), Meta::Db::User(3), Meta::Xml::Parsers::Base(3), strict(3)
 
 =head1 TODO
 

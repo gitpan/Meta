@@ -8,13 +8,14 @@ use Meta::Pdmt::Handlers qw();
 use Meta::Pdmt::Listen qw();
 
 our($VERSION,@ISA);
-$VERSION="0.07";
+$VERSION="0.10";
 @ISA=qw();
 
 #sub new($);
 #sub get_graph($);
 #sub get_handlers($);
 #sub listen($);
+#sub TEST($);
 
 #__DATA__
 
@@ -41,6 +42,11 @@ sub listen($) {
 	my($self)=@_;
 	my($listen)=Meta::Pdmt::Listen->new();
 	$listen->listen();
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -76,7 +82,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Pdmt.pm
 	PROJECT: meta
-	VERSION: 0.07
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
@@ -87,7 +93,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DESCRIPTION
 
-Put a lot of documentation here to show what your class does.
+This is the Pdmt main object which stores the graph handlers and all.
 
 =head1 FUNCTIONS
 
@@ -95,6 +101,7 @@ Put a lot of documentation here to show what your class does.
 	get_graph($)
 	get_handlers($)
 	listen($)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -117,7 +124,15 @@ This will give you the handlers object.
 This method will receive events and will handle them.
 The events are: build [nodes],print_graph.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+None.
 
 =head1 BUGS
 
@@ -126,8 +141,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -140,10 +155,13 @@ None.
 	0.05 MV movies and small fixes
 	0.06 MV thumbnail user interface
 	0.07 MV more thumbnail issues
+	0.08 MV website construction
+	0.09 MV web site automation
+	0.10 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Pdmt::Graph(3), Meta::Pdmt::Handlers(3), Meta::Pdmt::Listen(3), strict(3)
 
 =head1 TODO
 

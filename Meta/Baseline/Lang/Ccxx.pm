@@ -9,7 +9,7 @@ use Meta::Tool::Cincl qw();
 use Meta::Tool::Gcc qw();
 
 our($VERSION,@ISA);
-$VERSION="0.27";
+$VERSION="0.30";
 @ISA=qw(Meta::Baseline::Lang);
 
 #sub c2deps($);
@@ -17,6 +17,7 @@ $VERSION="0.27";
 #sub c2html($);
 #sub c2objs($);
 #sub my_file($$);
+#sub TEST($);
 
 #__DATA__
 
@@ -61,6 +62,11 @@ sub my_file($$) {
 	return(0);
 }
 
+sub TEST($) {
+	my($context)=@_;
+	return(1);
+}
+
 1;
 
 __END__
@@ -94,7 +100,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Ccxx.pm
 	PROJECT: meta
-	VERSION: 0.27
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
@@ -120,6 +126,7 @@ This includes:
 	c2html($)
 	c2objs($)
 	my_file($$)
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -146,7 +153,15 @@ This will turn C++ files into object files (compile them).
 This method will return true if the file receives should be handled by this
 module.
 
+=item B<TEST($)>
+
+Test suite for this module.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Baseline::Lang(3)
 
 =head1 BUGS
 
@@ -155,8 +170,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -189,10 +204,13 @@ None.
 	0.25 MV movies and small fixes
 	0.26 MV thumbnail user interface
 	0.27 MV more thumbnail issues
+	0.28 MV website construction
+	0.29 MV web site automation
+	0.30 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Baseline::Lang(3), Meta::Baseline::Utils(3), Meta::Tool::Cincl(3), Meta::Tool::Gcc(3), strict(3)
 
 =head1 TODO
 

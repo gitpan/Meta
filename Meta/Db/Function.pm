@@ -7,15 +7,16 @@ use Meta::Ds::Enumerated qw();
 use Meta::Ds::Enum qw();
 
 our($VERSION,@ISA);
-$VERSION="0.23";
+$VERSION="0.26";
 @ISA=qw(Meta::Ds::Enumerated);
 
 #sub BEGIN();
 #sub get_enum();
+#sub TEST($);
 
 #__DATA__
 
-my($enum);
+our($enum);
 
 sub BEGIN() {
 	$enum=Meta::Ds::Enum->new();
@@ -34,6 +35,11 @@ sub BEGIN() {
 sub get_enum() {
 	my($self)=@_;
 	return($enum);
+}
+
+sub TEST($) {
+	my($context)=@_;
+	return(1);
 }
 
 1;
@@ -69,7 +75,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 	MANIFEST: Function.pm
 	PROJECT: meta
-	VERSION: 0.23
+	VERSION: 0.26
 
 =head1 SYNOPSIS
 
@@ -85,6 +91,7 @@ This object handle the opcodes for the basic operations on a database.
 
 	BEGIN()
 	get_enum()
+	TEST($)
 
 =head1 FUNCTION DOCUMENTATION
 
@@ -100,7 +107,15 @@ all the functions which have permissions in a modern RDBMS system.
 This overriden get_enum function which returns the pre-prepared enumeation
 object.
 
+=item B<TEST($)>
+
+Test suite for this object.
+
 =back
+
+=head1 SUPER CLASSES
+
+Meta::Ds::Enumerated(3)
 
 =head1 BUGS
 
@@ -109,8 +124,8 @@ None.
 =head1 AUTHOR
 
 	Name: Mark Veltzer
-	Email: mark2776@yahoo.com
-	WWW: http://www.geocities.com/mark2776
+	Email: mailto:veltzer@cpan.org
+	WWW: http://www.veltzer.org
 	CPAN id: VELTZER
 
 =head1 HISTORY
@@ -139,10 +154,13 @@ None.
 	0.21 MV more thumbnail code
 	0.22 MV thumbnail user interface
 	0.23 MV more thumbnail issues
+	0.24 MV website construction
+	0.25 MV web site automation
+	0.26 MV SEE ALSO section fix
 
 =head1 SEE ALSO
 
-Nothing.
+Meta::Ds::Enum(3), Meta::Ds::Enumerated(3), strict(3)
 
 =head1 TODO
 
