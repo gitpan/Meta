@@ -1,12 +1,57 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::File::Move;
+
+use strict qw(vars refs subs);
+use File::Copy qw();
+use Meta::Utils::System qw();
+
+our($VERSION,@ISA);
+$VERSION="0.28";
+@ISA=qw();
+
+#sub mv_nodie($$);
+#sub mv($$);
+#sub mv_noov($$);
+
+#__DATA__
+
+sub mv_nodie($$) {
+	my($fil1,$fil2)=@_;
+	if(!File::Copy::move($fil1,$fil2)) {
+		return(0);
+	} else {
+		return(1);
+	}
+}
+
+sub mv($$) {
+	my($fil1,$fil2)=@_;
+	my($scod)=mv_nodie($fil1,$fil2);
+	if(!$scod) {
+		Meta::Utils::System::die("unable to move [".$fil1."] to [".$fil2."]");
+	}
+}
+
+sub mv_noov($$) {
+	my($fil1,$fil2)=@_;
+	if(-f $fil2) {
+		Meta::Utils::System::die("file [".$fil2."] exists");
+	}
+	return(&mv($fil1,$fil2));
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::File::Move - library to help you move files.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,94 +72,45 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Move.pm
-PROJECT: meta
+	MANIFEST: Move.pm
+	PROJECT: meta
+	VERSION: 0.28
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::File::Move qw();>
-C<Meta::Utils::File::Move::mv($file1,$file2);>
+	package foo;
+	use Meta::Utils::File::Move qw();
+	Meta::Utils::File::Move::mv($file1,$file2);
 
 =head1 DESCRIPTION
 
-This module eases the case for moving files.
+This module eases moving files around. Why should you need this ? You
+already have File::Copy (which this module uses). Well - what if you don't
+want to overwrite anything ? What if you want to throw an exception in
+case the move fails ? What if you don't want to do that in your code ?
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<mv_nodie($$)>
-C<mv($$)>
-C<mv_noov($$)>
-
-=cut
-
-package Meta::Utils::File::Move;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use File::Copy qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub mv_nodie($$);
-#sub mv($$);
-#sub mv_noov($$);
-
-#__DATA__
+	mv_nodie($$)
+	mv($$)
+	mv_noov($$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<mv_nodie($$)>
 
 This function moves a file to another and does not die if it fails.
 
-=cut
-
-sub mv_nodie($$) {
-	my($fil1,$fil2)=@_;
-	if(!File::Copy::move($fil1,$fil2)) {
-		return(0);
-	} else {
-		return(1);
-	}
-}
-
 =item B<mv($$)>
 
 This function moves a file to another and dies if it fails.
-
-=cut
-
-sub mv($$) {
-	my($fil1,$fil2)=@_;
-	my($scod)=mv_nodie($fil1,$fil2);
-	if(!$scod) {
-		Meta::Utils::System::die("unable to move [".$fil1."] to [".$fil2."]");
-	}
-}
 
 =item B<mv_noov($$)>
 
 This function moves a file to another and dies if it fails or the target
 file already exists.
-
-=cut
-
-sub mv_moov($$) {
-	my($fil1,$fil2)=@_;
-	if(-f $fil2) {
-		Meta::Utils::System::die("file [".$fil2."] exists");
-	}
-	return(&mv($fil1,$fil2));
-}
-
-1;
 
 =back
 
@@ -124,30 +120,42 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Mon Jan  1 16:38:12 2001	MV	initial code brought in
-2	Sat Jan  6 11:39:39 2001	MV	make quality checks on perl code
-3	Sat Jan  6 17:14:09 2001	MV	more perl checks
-4	Sun Jan  7 18:17:29 2001	MV	make Meta::Utils::Opts object oriented
-5	Tue Jan  9 18:15:19 2001	MV	check that all uses have qw
-5	Tue Jan  9 19:29:31 2001	MV	fix todo items look in pod documentation
-6	Sun Jan 14 02:26:10 2001	MV	introduce docbook into the baseline
-7	Thu Jan 18 01:55:38 2001	MV	spelling change
-8	Thu Jan 18 13:57:59 2001	MV	make lilypond work
-8	Thu Jan 18 15:59:13 2001	MV	correct die usage
-9	Sun Jan 28 02:34:56 2001	MV	perl code quality
-10	Sun Jan 28 13:51:26 2001	MV	more perl quality
-11	Tue Jan 30 03:03:17 2001	MV	more perl quality
-12	Sat Feb  3 23:41:08 2001	MV	perl documentation
-13	Mon Feb  5 03:21:02 2001	MV	more perl quality
-14	Tue Feb  6 01:04:52 2001	MV	perl qulity code
-15	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-16	Tue Feb  6 22:19:51 2001	MV	revision change
-end of revision info
+	0.00 MV initial code brought in
+	0.01 MV make quality checks on perl code
+	0.02 MV more perl checks
+	0.03 MV make Meta::Utils::Opts object oriented
+	0.04 MV check that all uses have qw
+	0.05 MV fix todo items look in pod documentation
+	0.06 MV introduce docbook into the baseline
+	0.07 MV spelling change
+	0.08 MV make lilypond work
+	0.09 MV correct die usage
+	0.10 MV perl code quality
+	0.11 MV more perl quality
+	0.12 MV more perl quality
+	0.13 MV perl documentation
+	0.14 MV more perl quality
+	0.15 MV perl qulity code
+	0.16 MV more perl code quality
+	0.17 MV revision change
+	0.18 MV languages.pl test online
+	0.19 MV multi image viewer
+	0.20 MV perl packaging
+	0.21 MV md5 project
+	0.22 MV database
+	0.23 MV perl module versions in files
+	0.24 MV movies and small fixes
+	0.25 MV thumbnail user interface
+	0.26 MV dbman package creation
+	0.27 MV more thumbnail issues
+	0.28 MV md5 project
 
 =head1 SEE ALSO
 
@@ -155,6 +163,6 @@ Nothing.
 
 =head1 TODO
 
-Nothing.
+-add a method which moves a file to a directory (and optionally makes sure that it is a directory). with overwrite and without.
 
-=cut
+-add a method that moves a file to a directory and if a file already exists there with that name changes the name until it finds a name for it. (optionally checks if the files are the same and if so does not copy ?!?).

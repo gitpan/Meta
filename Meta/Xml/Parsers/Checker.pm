@@ -1,12 +1,57 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Xml::Parsers::Checker;
+
+use strict qw(vars refs subs);
+use XML::Checker::Parser qw();
+use Meta::Utils::Output qw();
+use Meta::Baseline::Aegis qw();
+use Meta::Utils::File::File qw();
+
+our($VERSION,@ISA);
+$VERSION="0.06";
+@ISA=qw(XML::Checker::Parser);
+
+#sub new($);
+#sub handle_externent($$$$);
+
+#__DATA__
+
+sub new($) {
+	my($clas)=@_;
+	my($self)=XML::Checker::Parser->new();
+	if(!$self) {
+		Meta::Utils::System::die("didn't get a parser");
+	}
+	$self->setHandlers(
+		'ExternEnt'=>\&handle_externent,
+	);
+	bless($self,$clas);
+	return($self);
+}
+
+sub handle_externent($$$$) {
+	my($self,$base,$sysi,$pubi)=@_;
+	my($find)=Meta::Baseline::Aegis::which($sysi);
+	my($data)=Meta::Utils::File::File::load($find);
+	#Meta::Utils::Output::print("in handle_externent\n");
+	#Meta::Utils::Output::print("base is [".$base."]\n");
+	#Meta::Utils::Output::print("sysi is [".$sysi."]\n");
+	#Meta::Utils::Output::print("pubi is [".$pubi."]\n");
+	return($data);
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Xml::Parsers::Checker - an XML checker class.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,16 +72,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Checker.pm
-PROJECT: meta
+	MANIFEST: Checker.pm
+	PROJECT: meta
+	VERSION: 0.06
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Xml::Parsers::Checker qw();>
-C<my($def_parser)=Meta::Xml::Parsers::Checker->new();>
-C<$def_parser->parsefile($file);>
-C<my($def)=$def_parser->get_result();>
+	package foo;
+	use Meta::Xml::Parsers::Checker qw();
+	my($def_parser)=Meta::Xml::Parsers::Checker->new();
+	$def_parser->parsefile($file);
+	my($def)=$def_parser->get_result();
 
 =head1 DESCRIPTION
 
@@ -46,74 +92,22 @@ of external file resolution which should be done according
 to the search path and that is precisely the only method
 which is derived here over the regular checker.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-C<handle_externent($$$$)>
-
-=cut
-
-package Meta::Xml::Parsers::Checker;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use XML::Checker::Parser qw();
-use Meta::Utils::Output qw();
-use Meta::Baseline::Aegis qw();
-use Meta::Utils::File::File qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter XML::Checker::Parser);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub new($);
-#sub handle_externent($$$$);
-
-#__DATA__
+	new($)
+	handle_externent($$$$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<new($)>
 
 This gives you a new object for a parser.
 
-=cut
-
-sub new($) {
-	my($clas)=@_;
-	my($self)=XML::Checker::Parser->new();
-	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
-	}
-	$self->setHandlers(
-		'ExternEnt'=>\&handle_externent,
-	);
-	bless($self,$clas);
-	return($self);
-}
-
 =item B<handle_externent($$$$)>
 
 This method will handle resolving external references.
-
-=cut
-
-sub handle_externent($$$$) {
-	my($self,$base,$sysi,$pubi)=@_;
-	my($find)=Meta::Baseline::Aegis::which($sysi);
-	my($data)=Meta::Utils::File::File::load($find);
-	#Meta::Utils::Output::print("in handle_externent\n");
-	#Meta::Utils::Output::print("base is [".$base."]\n");
-	#Meta::Utils::Output::print("sysi is [".$sysi."]\n");
-	#Meta::Utils::Output::print("pubi is [".$pubi."]\n");
-	return($data);
-}
-
-1;
 
 =back
 
@@ -123,12 +117,20 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-end of revision info
+	0.00 MV perl packaging
+	0.01 MV md5 project
+	0.02 MV database
+	0.03 MV perl module versions in files
+	0.04 MV movies and small fixes
+	0.05 MV thumbnail user interface
+	0.06 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -137,5 +139,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut

@@ -1,12 +1,86 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::Options;
+
+use strict qw(vars refs subs);
+use Meta::Utils::File::File qw();
+use Meta::Utils::Env qw();
+use Meta::Utils::Utils qw();
+use Meta::Ds::Ohash qw();
+use Meta::Baseline::Aegis qw();
+
+our($VERSION,@ISA);
+$VERSION="0.30";
+@ISA=qw(Meta::Ds::Ohash);
+
+#sub new_file($);
+#sub new_deve($);
+#sub read($$);
+#sub getd($$$);
+#sub getenv($$);
+
+#__DATA__
+
+sub new_file($) {
+	my($file)=@_;
+	my($object)=Meta::Utils::Options->new();
+	$object->read($file);
+	return($object);
+}
+
+sub new_deve($) {
+	my($deve)=@_;
+	my($object)=Meta::Utils::Options::new_file(Meta::Baseline::Aegis::which($deve));
+	return($object);
+}
+
+sub read($$) {
+	my($self,$file)=@_;
+#	Meta::Utils::Arg::check_arg($self,"Meta::Utils::Options");
+	my($text)=Meta::Utils::File::File::load($file);
+	$text=Meta::Utils::Utils::remove_comments($text);
+	my(@line)=split(/;/,$text);
+	for(my($i)=0;$i<=$#line;$i++) {
+		my($current)=$line[$i];
+		if($current=~/=/) {
+			my($elem,$valx)=($current=~/^\s*(\S+)\s*=\s*(.*)\s*$/);
+			$self->insert($elem,$valx);
+		}
+	}
+	return(1);
+}
+
+sub getd($$$) {
+	my($self,$elem,$defa)=@_;
+#	Meta::Utils::Arg::check_arg($self,"Meta::Utils::Options");
+	if($self->has($elem)) {
+		return($self->get($elem));
+	} else {
+		return($defa);
+	}
+}
+
+sub getenv($$) {
+	my($self,$elem)=@_;
+#	Meta::Utils::Arg::check_arg($self,"Meta::Utils::Options");
+	my($resu)=$self->get($elem);
+	if(Meta::Utils::Env::has($elem)) {
+		$resu=Meta::Utils::Env::get($elem);
+	}
+	return($resu);
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::Options - utilities to let you manipulate option files.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,125 +101,54 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Options.pm
-PROJECT: meta
+	MANIFEST: Options.pm
+	PROJECT: meta
+	VERSION: 0.30
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::Options qw();>
-C<my($opti)=Meta::Utils::Options->new();>
-C<$opti->read("my_configuration_file");>
-C<$obje=$opti->get("my_variable");>
+	package foo;
+	use Meta::Utils::Options qw();
+	my($opti)=Meta::Utils::Options->new();
+	$opti->read("my_configuration_file");
+	$obje=$opti->get("my_variable");
 
 =head1 DESCRIPTION
 
 This library lets you read and write configuration files.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-C<read($$)>
-C<getd($$$)>
-C<getenv($$)>
-
-=cut
-
-package Meta::Utils::Options;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Utils::File::File qw();
-use Meta::Utils::Env qw();
-use Meta::Utils::Utils qw();
-use Meta::Ds::Ohash qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter Meta::Ds::Ohash);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub new($);
-#sub read($$);
-#sub getd($$$);
-#sub getenv($$);
-
-#__DATA__
+	new_file($)
+	new_deve($)
+	read($$)
+	getd($$$)
+	getenv($$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
-=item B<new($)>
+=item B<new_file($)>
 
-Gives you a new options object.
+This method will give you a new Options object read from a file.
 
-=cut
+=item B<new_deve($)>
 
-sub new($) {
-	my($clas)=@_;
-	my($self)=Meta::Ds::Ohash->new();
-	bless($self,$clas);
-	return($self);
-}
+Gives you a new options object according to a development file.
 
 =item B<read($$)>
 
 This lets you read a file in options format.
 
-=cut
-
-sub read($$) {
-	my($self,$file)=@_;
-	Meta::Utils::Arg::check_arg($self,"Meta::Utils::Options");
-	my($text)=Meta::Utils::File::File::load($file);
-	$text=Meta::Utils::Utils::remove_comments($text);
-	my(@line)=split(/;/,$text);
-	for(my($i)=0;$i<=$#line;$i++) {
-		my($current)=$line[$i];
-		if($current=~/=/) {
-			my($elem,$valx)=($current=~/^\s*(\S+)\s*=\s*(.*)\s*$/);
-			$self->insert($elem,$valx);
-		}
-	}
-	return(1);
-}
-
 =item B<getd($$$)>
 
 This will get a value but will return a default value if no value exists.
-
-=cut
-
-sub getd($$$) {
-	my($self,$elem,$defa)=@_;
-	Meta::Utils::Arg::check_arg($self,"Meta::Utils::Options");
-	if($self->has($elem)) {
-		return($self->get($elem));
-	} else {
-		return($defa);
-	}
-}
 
 =item B<getenv($$)>
 
 This is a new get routine which is overridable by the envrionment.
 Mind you, that a default value must be available in the options file.
-
-=cut
-
-sub getenv($$) {
-	my($self,$elem)=@_;
-	Meta::Utils::Arg::check_arg($self,"Meta::Utils::Options");
-	my($resu)=$self->get($elem);
-	if(Meta::Utils::Env::has($elem)) {
-		$resu=Meta::Utils::Env::get($elem);
-	}
-	return($resu);
-}
-
-1;
 
 =back
 
@@ -155,30 +158,44 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Mon Jan  1 16:38:12 2001	MV	initial code brought in
-2	Tue Jan  2 06:08:54 2001	MV	bring databases on line
-2	Wed Jan  3 07:02:01 2001	MV	handle architectures better
-3	Sat Jan  6 11:39:39 2001	MV	make quality checks on perl code
-4	Sat Jan  6 17:14:09 2001	MV	more perl checks
-5	Sun Jan  7 18:17:29 2001	MV	make Meta::Utils::Opts object oriented
-6	Tue Jan  9 18:15:19 2001	MV	check that all uses have qw
-6	Tue Jan  9 19:29:31 2001	MV	fix todo items look in pod documentation
-7	Wed Jan 10 12:05:55 2001	MV	more on tests/more checks to perl
-8	Fri Jan 12 13:36:01 2001	MV	make options a lot better
-9	Sun Jan 28 02:34:56 2001	MV	perl code quality
-10	Sun Jan 28 13:51:26 2001	MV	more perl quality
-11	Tue Jan 30 03:03:17 2001	MV	more perl quality
-12	Sat Feb  3 23:41:08 2001	MV	perl documentation
-13	Mon Feb  5 03:21:02 2001	MV	more perl quality
-14	Tue Feb  6 01:04:52 2001	MV	perl qulity code
-15	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-16	Tue Feb  6 22:19:51 2001	MV	revision change
-end of revision info
+	0.00 MV initial code brought in
+	0.01 MV bring databases on line
+	0.02 MV handle architectures better
+	0.03 MV make quality checks on perl code
+	0.04 MV more perl checks
+	0.05 MV make Meta::Utils::Opts object oriented
+	0.06 MV check that all uses have qw
+	0.07 MV fix todo items look in pod documentation
+	0.08 MV more on tests/more checks to perl
+	0.09 MV make options a lot better
+	0.10 MV perl code quality
+	0.11 MV more perl quality
+	0.12 MV more perl quality
+	0.13 MV perl documentation
+	0.14 MV more perl quality
+	0.15 MV perl qulity code
+	0.16 MV more perl code quality
+	0.17 MV revision change
+	0.18 MV languages.pl test online
+	0.19 MV remove old c++ files
+	0.20 MV PDMT/SWIG support
+	0.21 MV Pdmt stuff
+	0.22 MV perl packaging
+	0.23 MV md5 project
+	0.24 MV database
+	0.25 MV perl module versions in files
+	0.26 MV movies and small fixes
+	0.27 MV thumbnail project basics
+	0.28 MV more thumbnail stuff
+	0.29 MV thumbnail user interface
+	0.30 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -187,5 +204,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut

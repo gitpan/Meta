@@ -1,76 +1,16 @@
 #!/bin/echo This is a perl module and should not be run
 
-=head1 NAME
-
-Meta::Tool::Openjade - run open jade for various stuff.
-
-=head1 COPYRIGHT
-
-Copyright (C) 2001 Mark Veltzer;
-All rights reserved.
-
-=head1 LICENSE
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-
-=head1 DETAILS
-
-MANIFEST: Openjade.pm
-PROJECT: meta
-
-=head1 SYNOPSIS
-
-C<package foo;>
-C<use Meta::Tool::Openjade qw();>
-C<my($object)=Meta::Tool::Openjade->new();>
-C<my($result)=$object->method();>
-
-=head1 DESCRIPTION
-
-This module will hide the complexity of running Openjade from you.
-This is the best way to work with sgml and not use other types of
-wrapper like sgmltools sgmltools-lite sgml2x docbook-utils etc...
-Openjade also supplies an sgml2xml converter and we use it.
-
-=head1 EXPORTS
-
-C<c2psxx($)>
-C<c2txtx($)>
-C<c2html($)>
-C<c2rtfx($)>
-C<c2mifx($)>
-C<c2pdfx($)>
-C<c2xmlx($)>
-C<c2some($)>
-
-=cut
-
 package Meta::Tool::Openjade;
 
 use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
 use Meta::Utils::Output qw();
 use Meta::Utils::System qw();
 use Meta::Baseline::Utils qw();
 use Meta::Baseline::Aegis qw();
 
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
+our($VERSION,@ISA);
+$VERSION="0.13";
+@ISA=qw();
 
 #sub c2psxx($);
 #sub c2txtx($);
@@ -79,19 +19,14 @@ $VERSION="1.00";
 #sub c2mifx($);
 #sub c2pdfx($);
 #sub c2xmlx($);
+#sub c2texx($);
+#sub c2dvix($);
+#sub c2info($);
+#sub c2late($);
+#sub c2lyxx($);
 #sub c2some($);
 
 #__DATA__
-
-=head1 FUNCTION DOCUMENTATION
-
-=over
-
-=item B<c2psxx($)>
-
-This will run open jade and will convert it to postscript.
-
-=cut
 
 sub c2psxx($) {
 	my($buil)=@_;
@@ -99,23 +34,11 @@ sub c2psxx($) {
 	return(1);
 }
 
-=item B<c2txtx($)>
-
-This will run open jade and will convert it to plain text.
-
-=cut
-
 sub c2txtx($) {
 	my($buil)=@_;
 	Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	return(1);
 }
-
-=item B<c2html($)>
-
-This will run open jade and will convert it to a single html file.
-
-=cut
 
 sub c2html($) {
 	my($buil)=@_;
@@ -123,23 +46,11 @@ sub c2html($) {
 	return(1);
 }
 
-=item B<c2rtfx($)>
-
-This will run open jade and will convert it to a single rtf file.
-
-=cut
-
 sub c2rtfx($) {
 	my($buil)=@_;
 	Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	return(1);
 }
-
-=item B<c2mifx($)>
-
-This will run open jade and will convert it to a single mif file.
-
-=cut
 
 sub c2mifx($) {
 	my($buil)=@_;
@@ -147,24 +58,11 @@ sub c2mifx($) {
 	return(1);
 }
 
-=item B<c2pdfx($)>
-
-This will run open jade on the given SGML file and will convert it to PDF
-(Portable Documentation Format from Adobe) format.
-
-=cut
-
 sub c2pdfx($) {
 	my($buil)=@_;
 	Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	return(1);
 }
-
-=item B<c2xmlx($)>
-
-This method will convert SGML input to XML.
-
-=cut
 
 sub c2xmlx($) {
 	my($buil)=@_;
@@ -172,11 +70,36 @@ sub c2xmlx($) {
 	return(1);
 }
 
-=item B<c2some($)>
+sub c2texx($) {
+	my($buil)=@_;
+	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	return(1);
+	#return(c2some($buil));
+}
 
-This will run open jade and will convert sgml to several formats.
+sub c2dvix($) {
+	my($buil)=@_;
+	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	return(1);
+}
 
-=cut
+sub c2info($) {
+	my($buil)=@_;
+	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	return(1);
+}
+
+sub c2late($) {
+	my($buil)=@_;
+	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	return(1);
+}
+
+sub c2lyxx($) {
+	my($buil)=@_;
+	Meta::Baseline::Utils::xmlfile_emblem($buil->get_targ());
+	return(1);
+}
 
 sub c2some($) {
 	my($buil)=@_;
@@ -233,6 +156,126 @@ sub c2some($) {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Meta::Tool::Openjade - run open jade for various stuff.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2001, 2002 Mark Veltzer;
+All rights reserved.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+
+=head1 DETAILS
+
+	MANIFEST: Openjade.pm
+	PROJECT: meta
+	VERSION: 0.13
+
+=head1 SYNOPSIS
+
+	package foo;
+	use Meta::Tool::Openjade qw();
+	my($object)=Meta::Tool::Openjade->new();
+	my($result)=$object->method();
+
+=head1 DESCRIPTION
+
+This module will hide the complexity of running Openjade from you.
+This is the best way to work with sgml and not use other types of
+wrapper like sgmltools sgmltools-lite sgml2x docbook-utils etc...
+Openjade also supplies an sgml2xml converter and we use it.
+
+=head1 FUNCTIONS
+
+	c2psxx($)
+	c2txtx($)
+	c2html($)
+	c2rtfx($)
+	c2mifx($)
+	c2pdfx($)
+	c2xmlx($)
+	c2texx($)
+	c2dvix($)
+	c2info($)
+	c2late($)
+	c2lyxx($)
+	c2some($)
+
+=head1 FUNCTION DOCUMENTATION
+
+=over 4
+
+=item B<c2psxx($)>
+
+This will run open jade and will convert it to postscript.
+
+=item B<c2txtx($)>
+
+This will run open jade and will convert it to plain text.
+
+=item B<c2html($)>
+
+This will run open jade and will convert it to a single html file.
+
+=item B<c2rtfx($)>
+
+This will run open jade and will convert it to a single rtf file.
+
+=item B<c2mifx($)>
+
+This will run open jade and will convert it to a single mif file.
+
+=item B<c2pdfx($)>
+
+This will run open jade on the given SGML file and will convert it to PDF
+(Portable Documentation Format from Adobe) format.
+
+=item B<c2xmlx($)>
+
+This method will convert SGML input to XML.
+
+=item B<c2texx($)>
+
+This method will convert SGML input to TeX.
+
+=item B<c2dvix($)>
+
+This method will convert SGML input to DVI.
+
+=item B<c2info($)>
+
+This method will convert SGML input to GNU info output.
+
+=item B<c2late($)>
+
+This method will convert SGML input to LaTEX output.
+
+=item B<c2lyxx($)>
+
+This method will convert SGML input to Lyx output.
+
+=item B<c2some($)>
+
+This will run open jade and will convert sgml to several formats.
+
 =back
 
 =head1 BUGS
@@ -241,12 +284,27 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-end of revision info
+	0.00 MV pics with db support
+	0.01 MV write some papers and custom dssls
+	0.02 MV spelling and papers
+	0.03 MV fix docbook and other various stuff
+	0.04 MV perl packaging
+	0.05 MV BuildInfo object change
+	0.06 MV xml encoding
+	0.07 MV md5 project
+	0.08 MV database
+	0.09 MV perl module versions in files
+	0.10 MV movies and small fixes
+	0.11 MV thumbnail user interface
+	0.12 MV dbman package creation
+	0.13 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -255,5 +313,3 @@ Nothing.
 =head1 TODO
 
 -use the -w option when running openjade to get warnings.
-
-=cut

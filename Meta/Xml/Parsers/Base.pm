@@ -1,12 +1,98 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Xml::Parsers::Base;
+
+use strict qw(vars refs subs);
+use XML::Parser::Expat qw();
+use Meta::Utils::Output qw();
+use Meta::Baseline::Aegis qw();
+use Meta::Utils::File::File qw();
+use Meta::Utils::Utils qw();
+
+our($VERSION,@ISA);
+$VERSION="0.08";
+@ISA=qw(XML::Parser::Expat);
+
+#sub new($);
+#sub in_context($$$);
+#sub in_ccontext($$);
+#sub in_abs_context($$$);
+#sub in_abs_ccontext($$);
+#sub handle_externent($$$$);
+#sub parsefile_deve($$);
+
+#__DATA__
+
+sub new($) {
+	my($clas)=@_;
+	my($self)=XML::Parser::Expat->new();
+	if(!$self) {
+		Meta::Utils::System::die("didn't get a parser");
+	}
+	$self->setHandlers(
+		'ExternEnt'=>\&handle_externent,
+	);
+	bless($self,$clas);
+	return($self);
+}
+
+sub in_context($$$) {
+	my($self,$stri,$elem)=@_;
+	my($context)=join(".",$self->context(),$elem);
+#	Meta::Utils::Output::print("checking [".$stri."] [".$context."]\n");
+	my($res)=Meta::Utils::Utils::is_suffix($context,$stri);
+#	Meta::Utils::Output::print("res is [".$res."]\n");
+	return($res);
+}
+
+sub in_ccontext($$) {
+	my($self,$stri)=@_;
+	my($context)=join(".",$self->context());
+#	Meta::Utils::Output::print("checking [".$stri."] [".$context."]\n");
+	my($res)=Meta::Utils::Utils::is_suffix($context,$stri);
+#	Meta::Utils::Output::print("res is [".$res."]\n");
+	return($res);
+}
+
+sub in_abs_context($$$) {
+	my($self,$stri,$elem)=@_;
+	my($context)=join(".",$self->context(),$elem);
+	return($stri eq $context);
+}
+
+sub in_abs_ccontext($$) {
+	my($self,$stri)=@_;
+	my($context)=join(".",$self->context());
+	return($stri eq $context);
+}
+
+sub handle_externent($$$$) {
+	my($self,$base,$sysi,$pubi)=@_;
+	my($find)=Meta::Baseline::Aegis::which($sysi);
+	my($data)=Meta::Utils::File::File::load($find);
+	#Meta::Utils::Output::print("in handle_externent\n");
+	#Meta::Utils::Output::print("base is [".$base."]\n");
+	#Meta::Utils::Output::print("sysi is [".$sysi."]\n");
+	#Meta::Utils::Output::print("pubi is [".$pubi."]\n");
+	return($data);
+}
+
+sub parsefile_deve($$) {
+	my($self,$file)=@_;
+	$self->parsefile(Meta::Baseline::Aegis::which($file));
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Xml::Parsers::Base - object to derive XML parsers from.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,154 +113,66 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Base.pm
-PROJECT: meta
+	MANIFEST: Base.pm
+	PROJECT: meta
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Xml::Parsers::Base qw();>
-C<my($def_parser)=Meta::Xml::Parsers::Base->new();>
-C<$def_parser->parsefile($file);>
-C<my($def)=$def_parser->get_result();>
+	package foo;
+	use Meta::Xml::Parsers::Base qw();
+	my($def_parser)=Meta::Xml::Parsers::Base->new();
+	$def_parser->parsefile($file);
+	my($def)=$def_parser->get_result();
 
 =head1 DESCRIPTION
 
 Derive all your XML/Expat parsers from this one.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-C<in_context($$$)>
-C<in_ccontext($$)>
-C<in_abs_context($$$)>
-C<in_abs_ccontext($$)>
-C<handle_externent($$$$)>
-
-=cut
-
-package Meta::Xml::Parsers::Base;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use XML::Parser::Expat qw();
-use Meta::Utils::Output qw();
-use Meta::Baseline::Aegis qw();
-use Meta::Utils::File::File qw();
-use Meta::Utils::Utils qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter XML::Parser::Expat);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub new($);
-#sub in_context($$$);
-#sub in_ccontext($$);
-#sub in_abs_context($$$);
-#sub in_abs_ccontext($$);
-#sub handle_externent($$$$);
-
-#__DATA__
+	new($)
+	in_context($$$)
+	in_ccontext($$)
+	in_abs_context($$$)
+	in_abs_ccontext($$)
+	handle_externent($$$$)
+	parsefile_deve($$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<new($)>
 
 This gives you a new object for a parser.
-
-=cut
-
-sub new($) {
-	my($clas)=@_;
-	my($self)=XML::Parser::Expat->new();
-	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
-	}
-	$self->setHandlers(
-		'ExternEnt'=>\&handle_externent,
-	);
-	bless($self,$clas);
-	return($self);
-}
 
 =item B<in_context($$$)>
 
 This method will return true if you are in a postfix context.
 This is a service method to derived classes.
 
-=cut
-
-sub in_context($$$) {
-	my($self,$stri,$elem)=@_;
-	my($context)=join(".",$self->context(),$elem);
-#	Meta::Utils::Output::print("checking [".$stri."] [".$context."]\n");
-	my($res)=Meta::Utils::Utils::is_suffix($context,$stri);
-#	Meta::Utils::Output::print("res is [".$res."]\n");
-	return($res);
-}
-
 =item B<in_ccontext($$)>
 
 Same as the above in_context except for char handling.
-
-=cut
-
-sub in_ccontext($$) {
-	my($self,$stri)=@_;
-	my($context)=join(".",$self->context());
-#	Meta::Utils::Output::print("checking [".$stri."] [".$context."]\n");
-	my($res)=Meta::Utils::Utils::is_suffix($context,$stri);
-#	Meta::Utils::Output::print("res is [".$res."]\n");
-	return($res);
-}
 
 =item B<in_abs_context($$$)>
 
 This method will return true if you are in a specific context.
 This is a service method to derived classes.
 
-=cut
-
-sub in_abs_context($$$) {
-	my($self,$stri,$elem)=@_;
-	my($context)=join(".",$self->context(),$elem);
-	return($stri eq $context);
-}
-
 =item B<in_abs_ccontext($$)>
 
 Same as the above in_abs_context except for char handling.
-
-=cut
-
-sub in_abs_ccontext($$) {
-	my($self,$stri)=@_;
-	my($context)=join(".",$self->context());
-	return($stri eq $context);
-}
 
 =item B<handle_externent($$$$)>
 
 This method will handle resolving external references.
 
-=cut
+=item B<parsefile_deve($$)>
 
-sub handle_externent($$$$) {
-	my($self,$base,$sysi,$pubi)=@_;
-	my($find)=Meta::Baseline::Aegis::which($sysi);
-	my($data)=Meta::Utils::File::File::load($find);
-	#Meta::Utils::Output::print("in handle_externent\n");
-	#Meta::Utils::Output::print("base is [".$base."]\n");
-	#Meta::Utils::Output::print("sysi is [".$sysi."]\n");
-	#Meta::Utils::Output::print("pubi is [".$pubi."]\n");
-	return($data);
-}
-
-1;
+This method will do the same as the parents parsefile except it will
+search for the file in the development context.
 
 =back
 
@@ -184,12 +182,22 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-end of revision info
+	0.00 MV perl packaging
+	0.01 MV db inheritance
+	0.02 MV md5 project
+	0.03 MV database
+	0.04 MV perl module versions in files
+	0.05 MV movies and small fixes
+	0.06 MV movie stuff
+	0.07 MV thumbnail user interface
+	0.08 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -198,5 +206,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut

@@ -1,12 +1,58 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::Progname;
+
+use strict qw(vars refs subs);
+use File::Basename qw();
+
+our($VERSION,@ISA);
+$VERSION="0.21";
+@ISA=qw();
+
+#sub basename();
+#sub progname();
+#sub fullname();
+#sub TEST();
+
+#__DATA__
+
+sub basename() {
+	my($prog)=progname();
+	my($base)=($prog=~/^(.*)\.pl$/);
+	if(!defined($base)) {
+		Meta::Utils::System::die("unable to extract name from script [".$prog."]");
+	}
+	return($base);
+}
+
+sub progname() {
+	return(File::Basename::basename($0));
+}
+
+sub fullname() {
+	return($0);
+}
+
+sub TEST() {
+	my($base)=basename();
+	my($prog)=progname();
+	my($full)=fullname();
+	Meta::Utils::Output::print("basename is [".$base."]\n");
+	Meta::Utils::Output::print("progname is [".$prog."]\n");
+	Meta::Utils::Output::print("fullname is [".$full."]\n");
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::Progname - give you the name of the current script.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,45 +73,44 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Progname.pm
-PROJECT: meta
+	MANIFEST: Progname.pm
+	PROJECT: meta
+	VERSION: 0.21
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::Progname qw();>
-C<my($prog)=Meta::Utils::Progname::progname();>
+	package foo;
+	use Meta::Utils::Progname qw();
+	my($prog)=Meta::Utils::Progname::progname();
 
 =head1 DESCRIPTION
 
 This is a lean and mean library to give you the name of the current script
 you're running.
 
-=head1 EXPORTS
+Why should you have such a library ? Doesn't $0 contain that ? Well - anyone
+that think that $0 is a good variable name for holding the current script
+name raise his hand! No one ? good. Use this library - I'm sure that $0 will
+be gone one day and they you'll be sorry.
 
-C<progname()>
+=head1 FUNCTIONS
 
-=cut
-
-package Meta::Utils::Progname;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use File::Basename qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub progname();
-
-#__DATA__
+	basename()
+	progname()
+	fullname()
+	TEST()
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
+
+=item B<basename()>
+
+This method will give you the name of the current perl script
+you are running without the a ".pl" extension. If your script does
+not have a ".pl" extension calling this method will cause an
+exception so you better know which type of standard for names
+your scripts follow.
 
 =item B<progname()>
 
@@ -74,13 +119,15 @@ The implementation is currently just taking the $0 variable (which
 holds the running image path) and removes all the junk using the basename
 function.
 
-=cut
+=item B<fullname()>
 
-sub progname() {
-	return(File::Basename::basename($0));
-}
+This routine returns the full path to the current script. This could be
+useful for various purposes.
 
-1;
+=item B<TEST()>
+
+A small test suite for this module. Call it to test the functionality
+of the module.
 
 =back
 
@@ -90,25 +137,35 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Mon Jan  1 16:38:12 2001	MV	initial code brought in
-2	Sat Jan  6 11:39:39 2001	MV	make quality checks on perl code
-3	Sat Jan  6 17:14:09 2001	MV	more perl checks
-4	Tue Jan  9 18:15:19 2001	MV	check that all uses have qw
-4	Tue Jan  9 19:29:31 2001	MV	fix todo items look in pod documentation
-5	Wed Jan 10 12:05:55 2001	MV	more on tests/more checks to perl
-6	Sun Jan 28 02:34:56 2001	MV	perl code quality
-7	Sun Jan 28 13:51:26 2001	MV	more perl quality
-8	Tue Jan 30 03:03:17 2001	MV	more perl quality
-9	Sat Feb  3 23:41:08 2001	MV	perl documentation
-10	Mon Feb  5 03:21:02 2001	MV	more perl quality
-11	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-12	Tue Feb  6 22:19:51 2001	MV	revision change
-end of revision info
+	0.00 MV initial code brought in
+	0.01 MV make quality checks on perl code
+	0.02 MV more perl checks
+	0.03 MV check that all uses have qw
+	0.04 MV fix todo items look in pod documentation
+	0.05 MV more on tests/more checks to perl
+	0.06 MV perl code quality
+	0.07 MV more perl quality
+	0.08 MV more perl quality
+	0.09 MV perl documentation
+	0.10 MV more perl quality
+	0.11 MV more perl code quality
+	0.12 MV revision change
+	0.13 MV languages.pl test online
+	0.14 MV perl packaging
+	0.15 MV md5 project
+	0.16 MV database
+	0.17 MV perl module versions in files
+	0.18 MV movies and small fixes
+	0.19 MV thumbnail user interface
+	0.20 MV dbman package creation
+	0.21 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -117,5 +174,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut

@@ -1,12 +1,39 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::Text::Unique;
+
+use strict qw(vars refs subs);
+
+our($VERSION,@ISA);
+$VERSION="0.07";
+@ISA=qw();
+
+#sub filter($$);
+
+#__DATA__
+
+sub filter($$) {
+	my($text,$sepa)=@_;
+	my(@vals)=split($sepa,$text);
+	my(%hash);
+	for(my($i)=0;$i<=$#vals;$i++) {
+		my($curr)=$vals[$i];
+		$hash{$curr}=defined;
+	}
+	return(join($sepa,keys(%hash)));
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::Text::Unique - do the same job as cmd line uniq.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,65 +54,34 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Unique.pm
-PROJECT: meta
+	MANIFEST: Unique.pm
+	PROJECT: meta
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::Text::Unique qw();>
-C<my($object)=Meta::Utils::Text::Unique->new();>
-C<my($result)=$object->method();>
+	package foo;
+	use Meta::Utils::Text::Unique qw();
+	my($object)=Meta::Utils::Text::Unique->new();
+	my($result)=$object->method();
 
 =head1 DESCRIPTION
 
 Give this class some text and it will give you only the unique
 lines (no repetitions).
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<filter($$)>
-
-=cut
-
-package Meta::Utils::Text::Unique;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub filter($$);
-
-#__DATA__
+	filter($$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<filter($$)>
 
 This method gets some text with a delimiter and returns the same text
 with the same delimiter with only unique values in it.
-
-=cut
-
-sub filter($$) {
-	my($text,$sepa)=@_;
-	my(@vals)=split($sepa,$text);
-	my(%hash);
-	for(my($i)=0;$i<=$#vals;$i++) {
-		my($curr)=$vals[$i];
-		$hash{$curr}=defined;
-	}
-	return(join($sepa,keys(%hash)));
-}
-
-1;
 
 =back
 
@@ -95,11 +91,21 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-None.
+	0.00 MV spelling and papers
+	0.01 MV perl packaging
+	0.02 MV md5 project
+	0.03 MV database
+	0.04 MV perl module versions in files
+	0.05 MV movies and small fixes
+	0.06 MV thumbnail user interface
+	0.07 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -108,5 +114,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut

@@ -1,12 +1,74 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::File::Copy;
+
+use strict qw(vars refs subs);
+use Meta::Utils::File::Remove qw();
+use File::Copy qw();
+use File::Basename qw();
+use File::Path qw();
+use Meta::Utils::Output qw();
+
+our($VERSION,@ISA);
+$VERSION="0.27";
+@ISA=qw();
+
+#sub copy($$);
+#sub copy_unlink($$);
+#sub copy_mkdir($$);
+
+#__DATA__
+
+sub copy($$) {
+	my($fil1,$fil2)=@_;
+	my($verb)=0;
+	if($verb) {
+		Meta::Utils::Output::print("copying [".$fil1."] to [".$fil2."]\n");
+	}
+	if(!File::Copy::copy($fil1,$fil2)) {
+		Meta::Utils::System::die("unable to copy [".$fil1."] to [".$fil2."]");
+	}
+	return(1);
+}
+
+sub copy_unlink($$) {
+	my($fil1,$fil2)=@_;
+	my($verb)=0;
+	if($verb) {
+		Meta::Utils::Output::print("removing [".$fil2."]\n");
+	}
+	if(!Meta::Utils::File::Remove::rm($fil2)) {
+		return(0);
+	}
+	return(&copy($fil1,$fil2));
+}
+
+sub copy_mkdir($$) {
+	my($fil1,$fil2)=@_;
+	my($dire)=File::Basename::dirname($fil2);
+	if(!(-e $dire)) {
+		my($verb)=0;
+		if($verb) {
+			Meta::Utils::Output::print("making directory [".$dire."]\n");
+		}
+		if(!File::Path::mkpath($dire)) {
+			return(0);
+		}
+	}
+	return(&copy($fil1,$fil2));
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::File::Copy - library to help you copy files.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,113 +89,43 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Copy.pm
-PROJECT: meta
+	MANIFEST: Copy.pm
+	PROJECT: meta
+	VERSION: 0.27
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::File::Copy qw();>
-C<Meta::Utils::File::Copy::copy($file1,$file2);>
+	package foo;
+	use Meta::Utils::File::Copy qw();
+	Meta::Utils::File::Copy::copy($file1,$file2);
 
 =head1 DESCRIPTION
 
 This module eases the case for copying files.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<copy($$)>
-C<copy_unlink($$$)>
-C<copy_mkdir($$$)>
-
-=cut
-
-package Meta::Utils::File::Copy;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Utils::File::Remove qw();
-use File::Copy qw();
-use File::Basename qw();
-use File::Path qw();
-use Meta::Utils::Output qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub copy($$);
-#sub copy_unlink($$);
-#sub copy_mkdir($$);
-
-#__DATA__
+	copy($$)
+	copy_unlink($$)
+	copy_mkdir($$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<copy($$)>
 
 This function copies a file to another and dies if it cannot succeed.
-
-=cut
-
-sub copy($$) {
-	my($fil1,$fil2)=@_;
-	my($verb)=0;
-	if($verb) {
-		Meta::Utils::Output::print("copying [".$fil1."] to [".$fil2."]\n");
-	}
-	if(!File::Copy::copy($fil1,$fil2)) {
-		Meta::Utils::System::die("unable to copy [".$fil1."] to [".$fil2."]");
-	}
-	return(1);
-}
 
 =item B<copy_unlink($$)>
 
 This function assumes that the target file exists, unlinks it, and then
 copies the source to the target
 
-=cut
-
-sub copy_unlink($$) {
-	my($fil1,$fil2)=@_;
-	my($verb)=0;
-	if($verb) {
-		Meta::Utils::Output::print("removing [".$fil2."]\n");
-	}
-	if(!Meta::Utils::File::Remove::rm($fil2)) {
-		return(0);
-	}
-	return(&copy($fil1,$fil2));
-}
-
 =item B<copy_mkdir($$)>
 
 This function copies one file to another and creates the directory
 if neccessary. More than one hierarchy of directories can be created...
-
-=cut
-
-sub copy_mkdir($$) {
-	my($fil1,$fil2)=@_;
-	my($dire)=File::Basename::dirname($fil2);
-	if(!(-e $dire)) {
-		my($verb)=0;
-		if($verb) {
-			Meta::Utils::Output::print("making directory [".$dire."]\n");
-		}
-		if(!File::Path::mkpath($dire)) {
-			return(0);
-		}
-	}
-	return(&copy($fil1,$fil2));
-}
-
-1;
 
 =back
 
@@ -143,30 +135,41 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Mon Jan  1 16:38:12 2001	MV	initial code brought in
-2	Sat Jan  6 11:39:39 2001	MV	make quality checks on perl code
-3	Sat Jan  6 17:14:09 2001	MV	more perl checks
-4	Sun Jan  7 18:17:29 2001	MV	make Meta::Utils::Opts object oriented
-5	Tue Jan  9 18:15:19 2001	MV	check that all uses have qw
-5	Tue Jan  9 19:29:31 2001	MV	fix todo items look in pod documentation
-6	Wed Jan 10 12:05:55 2001	MV	more on tests/more checks to perl
-7	Thu Jan 18 01:55:38 2001	MV	spelling change
-8	Thu Jan 18 15:59:13 2001	MV	correct die usage
-9	Sun Jan 28 02:34:56 2001	MV	perl code quality
-10	Sun Jan 28 13:51:26 2001	MV	more perl quality
-11	Mon Jan 29 20:54:18 2001	MV	chess and code quality
-11	Tue Jan 30 03:03:17 2001	MV	more perl quality
-12	Sat Feb  3 23:41:08 2001	MV	perl documentation
-13	Mon Feb  5 03:21:02 2001	MV	more perl quality
-14	Tue Feb  6 01:04:52 2001	MV	perl qulity code
-15	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-16	Tue Feb  6 22:19:51 2001	MV	revision change
-end of revision info
+	0.00 MV initial code brought in
+	0.01 MV make quality checks on perl code
+	0.02 MV more perl checks
+	0.03 MV make Meta::Utils::Opts object oriented
+	0.04 MV check that all uses have qw
+	0.05 MV fix todo items look in pod documentation
+	0.06 MV more on tests/more checks to perl
+	0.07 MV spelling change
+	0.08 MV correct die usage
+	0.09 MV perl code quality
+	0.10 MV more perl quality
+	0.11 MV chess and code quality
+	0.12 MV more perl quality
+	0.13 MV perl documentation
+	0.14 MV more perl quality
+	0.15 MV perl qulity code
+	0.16 MV more perl code quality
+	0.17 MV revision change
+	0.18 MV languages.pl test online
+	0.19 MV more on images
+	0.20 MV perl packaging
+	0.21 MV fix database problems
+	0.22 MV md5 project
+	0.23 MV database
+	0.24 MV perl module versions in files
+	0.25 MV movies and small fixes
+	0.26 MV thumbnail user interface
+	0.27 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -175,5 +178,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut

@@ -1,12 +1,83 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::Time;
+
+use strict qw(vars refs subs);
+use Time::localtime qw();
+use Time::Local qw();
+use Date::Manip qw();
+
+our($VERSION,@ISA);
+$VERSION="0.23";
+@ISA=qw();
+
+#sub tm_to_string($);
+#sub tm_to_epoch($);
+#sub now_tm();
+#sub now_string();
+#sub now_epoch();
+#sub unixdate2mysql($);
+
+#__DATA__
+
+sub tm_to_string($) {
+	my($tm)=@_;
+	my($retu)=sprintf("%04d_%02d_%02d_%02d_%02d_%02d",
+		$tm->year+1900,
+		$tm->mon+1,
+		$tm->mday,
+		$tm->hour,
+		$tm->min,
+		$tm->sec);
+	return($retu);
+}
+
+sub tm_to_epoch($) {
+	my($tm)=@_;
+	return(Time::Local::timelocal(
+		$tm->sec,
+		$tm->min,
+		$tm->hour,
+		$tm->mday,
+		$tm->mon,
+		$tm->year));
+}
+
+sub now_tm() {
+	return(Time::localtime::localtime());
+}
+
+sub now_string() {
+	return(tm_to_string(now_tm()));
+}
+
+sub now_epoch() {
+	return(tm_to_epoch(now_tm()));
+}
+
+sub unixdate2mysql($) {
+	my($string)=@_;
+	my($object)=Date::Manip::UnixDate($string,"%Y-%m-%d %T");
+	return($object);
+}
+
+sub stat2mysql($) {
+	my($secs)=@_;
+	my($date)=Date::Manip::ParseDateString("epoch ".$secs);
+	return(unixdate2mysql($date));
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::Time - module to let you access dates and times.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,14 +98,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Time.pm
-PROJECT: meta
+	MANIFEST: Time.pm
+	PROJECT: meta
+	VERSION: 0.23
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::Time qw();>
-C<my($string)=Meta::Utils::Time::now_string();>
+	package foo;
+	use Meta::Utils::Time qw();
+	my($string)=Meta::Utils::Time::now_string();
 
 =head1 DESCRIPTION
 
@@ -48,109 +120,52 @@ Therefore we use the string and epoch as merely printing and you should
 hold internal representations of time in tm's which you cannot!!! generate
 by yourself...(sad but true...).
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<tm_to_string($)>
-C<tm_to_epoch($)>
-C<now_tm()>
-C<now_string()>
-C<now_epoch()>
-
-=cut
-
-package Meta::Utils::Time;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Time::localtime qw();
-use Time::Local qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub tm_to_string($);
-#sub tm_to_epoch($);
-#sub now_tm();
-#sub now_string();
-#sub now_epoch();
-
-#__DATA__
+	tm_to_string($)
+	tm_to_epoch($)
+	now_tm()
+	now_string()
+	now_epoch()
+	unixdate2mysql($)
+	stat2mysql($)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<tm_to_string($)>
 
 Convert time structure to one coherent string that we use to denote time.
 
-=cut
-
-sub tm_to_string($) {
-	my($tm)=@_;
-	my($retu)=sprintf("%04d_%02d_%02d_%02d_%02d_%02d",
-		$tm->year+1900,
-		$tm->mon+1,
-		$tm->mday,
-		$tm->hour,
-		$tm->min,
-		$tm->sec);
-	return($retu);
-}
-
 =item B<tm_to_epoch($)>
 
 This routine receives a tm structure time and converts it to epoch.
 
-=cut
-
-sub tm_to_epoch($) {
-	my($tm)=@_;
-	return(Time::Local::timelocal(
-		$tm->sec,
-		$tm->min,
-		$tm->hour,
-		$tm->mday,
-		$tm->mon,
-		$tm->year));
-}
-
 =item B<now_tm()>
 
 This routine returns the current time as a tm structure.
-
-=cut
-
-sub now_tm() {
-	return(Time::localtime::localtime());
-}
 
 =item B<now_string()>
 
 This routine gives you the current time in a standard form of two digits per
 each element , larget to smaller of the current date and time up to the second.
 
-=cut
-
-sub now_string() {
-	return(tm_to_string(now_tm()));
-}
-
 =item B<now_epoch()>
 
 Routine that returns the current time in epoch terms (seconds since
 1/1/1970). Dont ask why we need this (something to do with cook).
 
-=cut
+=item B<unixdate2mysql($)>
 
-sub now_epoch() {
-	return(tm_to_epoch(now_tm()));
-}
+This routine converts a UNIX date (as comes out of the Date command) to
+a string which is suitable for insertion as a DateTime field in a MySQL
+database. This method uses the Date::Manip module (a very good module).
 
-1;
+=item B<stat2mysql($)>
+
+This method converts the dates returned from stat (epoch 1970 seconds) to
+a format suitable for Mysql. Uses Date::Manip.
 
 =back
 
@@ -160,26 +175,37 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Mon Jan  1 16:38:12 2001	MV	initial code brought in
-2	Sat Jan  6 11:39:39 2001	MV	make quality checks on perl code
-3	Sat Jan  6 17:14:09 2001	MV	more perl checks
-4	Tue Jan  9 18:15:19 2001	MV	check that all uses have qw
-5	Tue Jan  9 19:29:31 2001	MV	fix todo items look in pod documentation
-6	Wed Jan 10 12:05:55 2001	MV	more on tests/more checks to perl
-7	Sun Jan 28 02:34:56 2001	MV	perl code quality
-8	Sun Jan 28 13:51:26 2001	MV	more perl quality
-9	Tue Jan 30 03:03:17 2001	MV	more perl quality
-10	Sat Feb  3 23:41:08 2001	MV	perl documentation
-11	Mon Feb  5 03:21:02 2001	MV	more perl quality
-12	Tue Feb  6 01:04:52 2001	MV	perl qulity code
-13	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-14	Tue Feb  6 22:19:51 2001	MV	revision change
-end of revision info
+	0.00 MV initial code brought in
+	0.01 MV make quality checks on perl code
+	0.02 MV more perl checks
+	0.03 MV check that all uses have qw
+	0.04 MV fix todo items look in pod documentation
+	0.05 MV more on tests/more checks to perl
+	0.06 MV perl code quality
+	0.07 MV more perl quality
+	0.08 MV more perl quality
+	0.09 MV perl documentation
+	0.10 MV more perl quality
+	0.11 MV perl qulity code
+	0.12 MV more perl code quality
+	0.13 MV revision change
+	0.14 MV languages.pl test online
+	0.15 MV perl packaging
+	0.16 MV more movies
+	0.17 MV md5 project
+	0.18 MV database
+	0.19 MV perl module versions in files
+	0.20 MV movies and small fixes
+	0.21 MV movie stuff
+	0.22 MV thumbnail user interface
+	0.23 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -189,4 +215,6 @@ Nothing.
 
 -Rewrite this whole thing with my own time structure (Tom Christiansen sucks in that he wont allow people to use his...).
 
-=cut
+-add more functionality. (to postress, to oracle etc...).
+
+-maybe use a different module than Date::Manip since it's supposed to be slow.

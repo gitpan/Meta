@@ -1,75 +1,8 @@
 #!/bin/echo This is a perl module and should not be run
 
-=head1 NAME
-
-Meta::Tool::Sgmltools - run sgmltools for you.
-
-=head1 COPYRIGHT
-
-Copyright (C) 2001 Mark Veltzer;
-All rights reserved.
-
-=head1 LICENSE
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-
-=head1 DETAILS
-
-MANIFEST: Sgmltools.pm
-PROJECT: meta
-
-=head1 SYNOPSIS
-
-C<package foo;>
-C<use Meta::Tool::Sgmltools qw();>
-C<my($object)=Meta::Tool::Sgmltools->new();>
-C<my($result)=$object->method();>
-
-=head1 DESCRIPTION
-
-This module is here to ease the job of running sgmltools for you if
-you wish to use them (I think it's better to use the Jade.pm module
-which runs jade or openjade directly).
-
-Sgmltools is quite problematic:
-1. Sgmltools has a --jade-opt option but you CANT specify several options this
-	way - you have to join everything into one thing.
-
-=head1 EXPORTS
-
-C<check($$)>
-C<c2texx($)>
-C<c2dvix($)>
-C<c2psxx($)>
-C<c2txtx($)>
-C<c2html($)>
-C<c2rtfx($)>
-C<c2mifx($)>
-C<c2info($)>
-C<c2pdfx($)>
-C<c2late($)>
-C<c2lyxx($)>
-C<tool($$$$)>
-
-=cut
-
 package Meta::Tool::Sgmltools;
 
 use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
 use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 use Meta::Utils::Text::Lines qw();
@@ -78,10 +11,9 @@ use Meta::Utils::File::Remove qw();
 use Meta::Utils::File::Move qw();
 use Meta::Utils::Utils qw();
 
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
+our($VERSION,@ISA);
+$VERSION="0.17";
+@ISA=qw();
 
 #sub check($$);
 #sub c2texx($);
@@ -99,107 +31,45 @@ $VERSION="1.00";
 
 #__DATA__
 
-=head1 FUNCTION DOCUMENTATION
-
-=over
-
-=item B<check($$)>
-
-Run a check on the SGML document using the sgmlcheck utility.
-
-=cut
-
 sub check($$) {
 	my($srcx,$path)=@_;
 	return(1);
 }
-
-=item B<c2texx($)>
-
-This routine will convert sgml DocBook files to Tex.
-
-=cut
 
 sub c2texx($) {
 	my($buil)=@_;
 	return(tool($buil,"tex","jadetex","sgml2tex"));
 }
 
-=item B<c2dvix($)>
-
-This routine will convert sgml DocBook files to Dvi.
-
-=cut
-
 sub c2dvix($) {
 	my($buil)=@_;
 	return(tool($buil,"dvi","dvi","sgml2dvi"));
 }
-
-=item B<c2psxx($)>
-
-This routine will convert sgml DocBook files to Postscript.
-
-=cut
 
 sub c2psxx($) {
 	my($buil)=@_;
 	return(tool($buil,"ps","ps","sgml2ps"));
 }
 
-=item B<c2txtx($)>
-
-This routine will convert sgml DocBook files to Text.
-
-=cut
-
 sub c2txtx($) {
 	my($buil)=@_;
 	return(tool($buil,"txt","txt","sgml2txt"));
 }
-
-=item B<c2html($)>
-
-This routine will convert sgml DocBook files to HTML.
-
-=cut
 
 sub c2html($) {
 	my($buil)=@_;
 	return(tool($buil,"html","onehtml","sgml2html"));
 }
 
-=item B<c2rtfx($)>
-
-This routine will convert sgml DocBook files to Rtf (Rich Text Format).
-
-=cut
-
 sub c2rtfx($) {
 	my($buil)=@_;
 	return(tool($buil,"rtf","rtf","sgml2rtf"));
 }
 
-=item B<c2mifx($)>
-
-This routine will convert sgml DocBook files to Mif (Microsoft Interchange Format).
-Currently this does not do the actual convertion because sgml tool do not
-support this so it just put an emblem.
-
-=cut
-
 sub c2mifx($) {
 	my($buil)=@_;
 	return(tool($buil,"mif","mif","sgml2mif"));
 }
-
-=item B<c2info($)>
-
-This routine will convert sgml DocBook files to GNU info format.
-These is no info backend to sgmltools at the moment (3.0) that I am
-aware of. This means that this routine is broken. Do not use it.
-
-=cut
 
 sub c2info($) {
 	my($buil)=@_;
@@ -208,27 +78,10 @@ sub c2info($) {
 	#return(tool($buil,"info","info","sgml2info"));
 }
 
-=item B<c2pdfx($)>
-
-This routine will convert sgml DocBook files to Pdf (Portable Documentation
-Format).
-This way of prducing pdfs seems to be broken (I have not been able to see
-the resulting pdf using xpdf).
-In any case - this backend IS supported by sgmltools altough you cannot see
-this in the documentation.
-
-=cut
-
 sub c2pdfx($) {
 	my($buil)=@_;
 	return(tool($buil,"pdf","pdf","sgml2pdf"));
 }
-
-=item B<c2late($)>
-
-This method will convert SGML DocBook files to Latex.
-
-=cut
 
 sub c2late($) {
 	my($buil)=@_;
@@ -236,27 +89,11 @@ sub c2late($) {
 	return(1);
 }
 
-=item B<c2lyxx($)>
-
-This method will convert SGML DocBook files to Lyx.
-
-=cut
-
 sub c2lyxx($) {
 	my($buil)=@_;
 	Meta::Baseline::Utils::file_emblem($buil->get_targ());
 	return(1);
 }
-
-=item B<tool($$$$)>
-
-This is the actual wrapper code. We pass directory search paths to jade
-via the option in sgmltools to pass options to jade...:)
-The problem is that sgmltools does not allow the option to specify the
-output file and so we do all the work using a temporary file and then
-move the result.
-
-=cut
 
 sub tool($$$$) {
 	my($buil,$suff,$back,$prog)=@_;
@@ -334,6 +171,141 @@ sub tool($$$$) {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Meta::Tool::Sgmltools - run sgmltools for you.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2001, 2002 Mark Veltzer;
+All rights reserved.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+
+=head1 DETAILS
+
+	MANIFEST: Sgmltools.pm
+	PROJECT: meta
+	VERSION: 0.17
+
+=head1 SYNOPSIS
+
+	package foo;
+	use Meta::Tool::Sgmltools qw();
+	my($object)=Meta::Tool::Sgmltools->new();
+	my($result)=$object->method();
+
+=head1 DESCRIPTION
+
+This module is here to ease the job of running sgmltools for you if
+you wish to use them (I think it's better to use the Jade.pm module
+which runs jade or openjade directly).
+
+Sgmltools is quite problematic:
+1. Sgmltools has a --jade-opt option but you CANT specify several options this
+	way - you have to join everything into one thing.
+
+=head1 FUNCTIONS
+
+	check($$)
+	c2texx($)
+	c2dvix($)
+	c2psxx($)
+	c2txtx($)
+	c2html($)
+	c2rtfx($)
+	c2mifx($)
+	c2info($)
+	c2pdfx($)
+	c2late($)
+	c2lyxx($)
+	tool($$$$)
+
+=head1 FUNCTION DOCUMENTATION
+
+=over 4
+
+=item B<check($$)>
+
+Run a check on the SGML document using the sgmlcheck utility.
+
+=item B<c2texx($)>
+
+This routine will convert sgml DocBook files to Tex.
+
+=item B<c2dvix($)>
+
+This routine will convert sgml DocBook files to Dvi.
+
+=item B<c2psxx($)>
+
+This routine will convert sgml DocBook files to Postscript.
+
+=item B<c2txtx($)>
+
+This routine will convert sgml DocBook files to Text.
+
+=item B<c2html($)>
+
+This routine will convert sgml DocBook files to HTML.
+
+=item B<c2rtfx($)>
+
+This routine will convert sgml DocBook files to Rtf (Rich Text Format).
+
+=item B<c2mifx($)>
+
+This routine will convert sgml DocBook files to Mif (Microsoft Interchange Format).
+Currently this does not do the actual convertion because sgml tool do not
+support this so it just put an emblem.
+
+=item B<c2info($)>
+
+This routine will convert sgml DocBook files to GNU info format.
+These is no info backend to sgmltools at the moment (3.0) that I am
+aware of. This means that this routine is broken. Do not use it.
+
+=item B<c2pdfx($)>
+
+This routine will convert sgml DocBook files to Pdf (Portable Documentation
+Format).
+This way of prducing pdfs seems to be broken (I have not been able to see
+the resulting pdf using xpdf).
+In any case - this backend IS supported by sgmltools altough you cannot see
+this in the documentation.
+
+=item B<c2late($)>
+
+This method will convert SGML DocBook files to Latex.
+
+=item B<c2lyxx($)>
+
+This method will convert SGML DocBook files to Lyx.
+
+=item B<tool($$$$)>
+
+This is the actual wrapper code. We pass directory search paths to jade
+via the option in sgmltools to pass options to jade...:)
+The problem is that sgmltools does not allow the option to specify the
+output file and so we do all the work using a temporary file and then
+move the result.
+
 =back
 
 =head1 BUGS
@@ -342,12 +314,31 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-end of revision info
+	0.00 MV history change
+	0.01 MV web site stuff
+	0.02 MV real deps for docbook files
+	0.03 MV remove old c++ files
+	0.04 MV pics with db support
+	0.05 MV bring back sgml to working condition
+	0.06 MV write some papers and custom dssls
+	0.07 MV spelling and papers
+	0.08 MV fix docbook and other various stuff
+	0.09 MV finish lit database and convert DocBook to SGML
+	0.10 MV perl packaging
+	0.11 MV BuildInfo object change
+	0.12 MV md5 project
+	0.13 MV database
+	0.14 MV perl module versions in files
+	0.15 MV movies and small fixes
+	0.16 MV thumbnail user interface
+	0.17 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -364,5 +355,3 @@ Nothing.
 -try to use symlinks instead of the copies here (it will be faster).
 
 -add a C<-o> option to sgmltools so I wont need to bypass them here.
-
-=cut

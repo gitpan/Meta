@@ -1,116 +1,8 @@
 #!/bin/echo This is a perl module and should not be run
 
-=head1 NAME
-
-Meta::Baseline::Aegis - library to encapsulate aegis interface in perl scripts.
-
-=head1 COPYRIGHT
-
-Copyright (C) 2001 Mark Veltzer;
-All rights reserved.
-
-=head1 LICENSE
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-
-=head1 DETAILS
-
-MANIFEST: Aegis.pm
-PROJECT: meta
-
-=head1 SYNOPSIS
-
-C<package foo;>
-C<use Meta::Baseline::Aegis qw();>
-C<my($change)=Meta::Baseline::Aegis::change();>
-
-=head1 DESCRIPTION
-
-This is a perl library to serve as an interface to Aegis.
-It provides a lot of helpful routines for all the scripts to make them
-shorter and more understandable. It also encapsulates the way we talk
-to aegis - you should only speak to aegis through this library and never
-address aegis alone since the interface to aegis may change and we may
-want to do some of the stuff (like getting the current change directory)
-in a more efficient manner (like storing it in an environment variable).
-
-The services here are divided into several categories:
-0. variable substituion.
-1. history services.
-2. file lists.
-3. performing operations (checkout etc...).
-
-=head1 EXPORTS
-
-C<aesub($)>
-C<aesub_file($)>
-C<search_path()>
-C<baseline()>
-C<project()>
-C<change()>
-C<version()>
-C<architecture()>
-C<state()>
-C<developer()>
-C<developer_list()>
-C<reviewer_list()>
-C<integrator_list()>
-C<administrator_list()>
-C<development_directory()>
-C<integration_directory()>
-C<history()>
-C<deve()>
-C<inte()>
-C<work_dir()>
-C<which_nodie($)>
-C<which($)>
-C<which_f($)>
-C<search_path_list()>
-C<search_path_hash()>
-C<developer_list_list()>
-C<developer_list_hash()>
-C<reviewer_list_list()>
-C<reviewer_list_hash()>
-C<integrator_list_list()>
-C<integrator_list_hash()>
-C<administrator_list_list()>
-C<administrator_list_hash()>
-C<change_files_hash($$$$$$)>
-C<project_files_hash($$$)>
-C<source_files_hash($$$$$$)>
-C<base_files_hash($$)>
-C<missing_files_hash()>
-C<extra_files_hash($)>
-C<total_files_hash($$)>
-C<change_files_list($$$$$$)>
-C<project_files_list($$$)>
-C<source_files_list($$$$$$)>
-C<base_files_list($$)>
-C<missing_files_list()>
-C<extra_files_list($)>
-C<total_files_list($$)>
-C<no_missing_files($)>
-C<checkout_hash($)>
-
-=cut
-
 package Meta::Baseline::Aegis;
 
 use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
 use Meta::Utils::List qw();
 use Meta::Utils::Hash qw();
 use Meta::Utils::File::Collect qw();
@@ -120,10 +12,9 @@ use Meta::Utils::Parse::Text qw();
 use Meta::Utils::File::Path qw();
 use Meta::Utils::Output qw();
 
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
+our($VERSION,@ISA);
+$VERSION="0.43";
+@ISA=qw();
 
 #sub aesub($);
 #sub aesub_file($);
@@ -132,8 +23,10 @@ $VERSION="1.00";
 #sub baseline();
 #sub project();
 #sub change();
+#sub change_description();
 #sub version();
 #sub architecture();
+#sub copyright_years();
 #sub state();
 #sub developer();
 #sub developer_list();
@@ -143,7 +36,7 @@ $VERSION="1.00";
 
 #sub development_directory();
 #sub integration_directory();
-#sub history();
+#sub history_directory();
 
 #sub deve();
 #sub inte();
@@ -153,6 +46,8 @@ $VERSION="1.00";
 #sub which_nodie($);
 #sub which($);
 #sub which_f($);
+
+#sub search_path_object();
 
 #sub search_path_list();
 #sub search_path_hash();
@@ -187,32 +82,12 @@ $VERSION="1.00";
 
 #__DATA__
 
-=head1 FUNCTION DOCUMENTATION
-
-=over
-
-=item B<aesub($)>
-
-This routine will substitute a string for you from aegis and give you the
-string after substitution.
-This is done using the aesub aegis routine.
-
-=cut
-
 sub aesub($) {
 	my($stri)=@_;
 	my($resu)=Meta::Utils::System::system_out_val("aesub",["'$stri'"]);
 	chop($resu);
 	return($resu);
 }
-
-=item B<aesub_file($)>
-
-This method will get a file name and will run aesub on the content of the
-file and return the content after substitution. This method uses the aesub
-method.
-
-=cut
 
 sub aesub_file($) {
 	my($file)=@_;
@@ -221,178 +96,73 @@ sub aesub_file($) {
 	return($resu);
 }
 
-=item B<search_path()>
-
-This routine returns a list that is the search list for the current
-This routine produces a string which is the correct search list as
-far as aegis is concerned for source files in the current change or
-branch. This could be fed into cook as the search_path, converted to
-compiler include or link directives etc...
-
-=cut
-
 sub search_path() {
 	return(&aesub("\$Search_Path"));
 }
-
-=item B<baseline()>
-
-This routine gives you the baseline dir for your project.
-Another implementation (thorough aegis) is the one used.
-It could be implemented by the environment but that would be a bad
-solution as it is not stable and depends on correct configuration of
-the environment.
-
-=cut
 
 sub baseline() {
 	return(&aesub("\$Baseline"));
 }
 
-=item B<project()>
-
-This routine returns the current project name.
-
-=cut
-
 sub project() {
 	return(&aesub("\$Project"));
 }
-
-=item B<change()>
-
-This routine returns the current change name.
-
-=cut
 
 sub change() {
 	return(&aesub("\$Change"));
 }
 
-=item B<version()>
-
-This routine returns the current version name.
-
-=cut
+sub change_description() {
+	return(&aesub("\${Change description}"));
+}
 
 sub version() {
 	return(&aesub("\$Version"));
 }
 
-=item B<architecture()>
-
-This routine returns the current architecture name.
-
-=cut
-
 sub architecture() {
 	return(&aesub("\$Architecture"));
 }
 
-=item B<state()>
-
-This routine returns the current state name.
-
-=cut
+sub copyright_years() {
+	return(&aesub("\$Copyright_Years"));
+}
 
 sub state() {
 	return(&aesub("\$STate"));
 }
 
-=item B<developer()>
-
-This routine returns the current developer name.
-
-=cut
-
 sub developer() {
 	return(&aesub("\$Developer"));
 }
-
-=item B<developer_list()>
-
-This routine returns the current developer list.
-This is implemented as aesub.
-
-=cut
 
 sub developer_list() {
 	return(&aesub("\$DEVeloper_List"));
 }
 
-=item B<reviewer_list()>
-
-This routine returns the current reviewer list.
-This is implemented as aesub.
-
-=cut
-
 sub reviewer_list() {
 	return(&aesub("\$Reviewer_List"));
 }
-
-=item B<integrator_list()>
-
-This routine returns the current integrator list.
-This is implemented as aesub.
-
-=cut
 
 sub integrator_list() {
 	return(&aesub("\$Integrator_List"));
 }
 
-=item B<administrator_list()>
-
-This routine returns the current administrator list.
-This is implemented as aesub.
-
-=cut
-
 sub administrator_list() {
 	return(&aesub("\$Administrator_List"));
 }
-
-=item B<development_directory()>
-
-This routine gives you the development directory for the current change.
-This is only valid if the change is in the development stage.
-This is implemented as aesub.
-
-=cut
 
 sub development_directory() {
 	return(&aesub("\$Development_Directory"));
 }
 
-=item B<integration_directory()>
-
-This routine gives you the integration directory for the current change.
-This is only valid if the change is in the integration stage.
-This is implemented as aesub.
-
-=cut
-
 sub integration_directory() {
 	return(&aesub("\$Integration_Directory"));
 }
 
-=item B<history()>
-
-This method will return the history directory for this project.
-
-=cut
-
-sub history() {
-	return(baseline()."/../history");
+sub history_directory() {
+	return(&aesub("\$History_Directory"));
 }
-
-=item B<deve()>
-
-Returns whether the change is in a development state.
-This checks if the current changes state is "being_developed".
-
-=cut
 
 sub deve() {
 	if(state() eq "being_developed") {
@@ -402,13 +172,6 @@ sub deve() {
 	}
 }
 
-=item B<inte()>
-
-Returns whether the change is in an integration state.
-This checks if the current changes state is "being_integrated".
-
-=cut
-
 sub inte() {
 	if(state() eq "being_integrated") {
 		return(1);
@@ -416,14 +179,6 @@ sub inte() {
 		return(0);
 	}
 }
-
-=item B<work_dir()>
-
-Returns what I defined to be the work dir. This is the development directory
-if the change is begin developed and the integration directory if the change
-is being integrated.
-
-=cut
 
 sub work_dir() {
 	if(deve()) {
@@ -435,40 +190,20 @@ sub work_dir() {
 	Meta::Utils::System::die("strange state");
 }
 
-=item B<which_nodie($)>
-
-This routine does the same as the which routine and does not die if the file
-is not found (just returns undef...).
-
-=cut
+sub exists($) {
+	my($file)=@_;
+	return(Meta::Utils::File::Path::exists(&search_path(),$file,":"));
+}
 
 sub which_nodie($) {
 	my($file)=@_;
-	return(Meta::Utils::File::Path::resolve_nodie(search_path(),$file,":"));
+	return(Meta::Utils::File::Path::resolve_nodie(&search_path(),$file,":"));
 }
-
-=item B<which($)>
-
-This tells you where a source is in the search_path.
-The file could be in the development directory and up the branches up to the
-baseline.
-If the routine doenst find the file it dies.
-It uses the "which_nodie" routine to do it's thing.
-
-=cut
 
 sub which($) {
 	my($file)=@_;
 	return(Meta::Utils::File::Path::resolve(search_path(),$file,":"));
 }
-
-=item B<which_f($)>
-
-This routine tells you the absolute name of a file in the project but allows
-for the file to begin with a "/" (meaning allows it to be absolute already).
-In that case, it just returns the file name.
-
-=cut
 
 sub which_f($) {
 	my($file)=@_;
@@ -479,24 +214,15 @@ sub which_f($) {
 	}
 }
 
-=item B<search_path_list()>
-
-This routine returns the search_path for perl purposes. I.e. - in a list where
-every element is an element of the path.
-
-=cut
+sub search_path_object() {
+	my($object)=Meta::Utils::File::Patho->new_data(search_path(),":");
+	return($object);
+}
 
 sub search_path_list() {
 	my(@arra)=split(':',search_path());
 	return(\@arra);
 }
-
-=item B<search_path_hash()>
-
-This routine does exactly as "search_path_list" but returns the results in
-a hash. This uses "search_path_list" to get a list and converts it into a hash.
-
-=cut
 
 sub search_path_hash() {
 	my($list)=developer_list_list();
@@ -504,22 +230,10 @@ sub search_path_hash() {
 	return($hash);
 }
 
-=item B<developer_list_list()>
-
-This routine returns the list of developers in a perl list reference.
-
-=cut
-
 sub developer_list_list() {
 	my(@arra)=split(' ',developer_list());
 	return(\@arra);
 }
-
-=item B<developer_list_hash()>
-
-This routine returns the list of developers in a perl hash reference.
-
-=cut
 
 sub developer_list_hash() {
 	my($list)=developer_list_list();
@@ -527,22 +241,10 @@ sub developer_list_hash() {
 	return($hash);
 }
 
-=item B<reviewer_list_list()>
-
-This routine returns the list of reviewers in a perl list reference.
-
-=cut
-
 sub reviewer_list_list() {
 	my(@arra)=split(' ',reviewer_list());
 	return(\@arra);
 }
-
-=item B<reviewer_list_hash()>
-
-This routine returns the list of reviewers in a perl hash reference.
-
-=cut
 
 sub reviewer_list_hash() {
 	my($list)=reviewer_list_list();
@@ -550,22 +252,10 @@ sub reviewer_list_hash() {
 	return($hash);
 }
 
-=item B<integrator_list_list()>
-
-This routine returns the list of integrators in a perl list reference.
-
-=cut
-
 sub integrator_list_list() {
 	my(@arra)=split(' ',integrator_list());
 	return(\@arra);
 }
-
-=item B<integrator_list_hash()>
-
-This routine returns the list of integrators in a perl hash reference.
-
-=cut
 
 sub integrator_list_hash() {
 	my($list)=integrator_list_list();
@@ -573,50 +263,16 @@ sub integrator_list_hash() {
 	return($hash);
 }
 
-=item B<administrator_list_list()>
-
-This routine returns the list of administrators in a perl list reference.
-
-=cut
-
 sub administrator_list_list() {
 	my(@arra)=split(' ',administrator_list());
 	return(\@arra);
 }
-
-=item B<administrator_list_hash()>
-
-This routine returns the list of administrators in a perl hash reference.
-
-=cut
 
 sub administrator_list_hash() {
 	my($list)=administrator_list_list();
 	my($hash)=Meta::Utils::List::to_hash($list);
 	return($hash);
 }
-
-=item B<change_files_hash($$$$$$)>
-
-This script gives out all the files in the current change with
-no extra aegis information.
-The idea is to use this in other scripts.
-The best way to implement this is using aegis report and write
-a special report to do this work.
-another is using ael cf (aegis -List Change_Files).
-yet another is aer Change_Files (this is the version that is implemented).
-An even better way is if we could get a client C interface to aegis
-from peter miller and hook to it directly from perl (or maybe a perl
-interface ? could peter miller be this good ?).
-The data for this routine are:
-0. newx - do you want new files included ?
-1. modi - do you want modified files included ?
-2. dele - do you want deleted files included ?
-3. srcx - do you want source files included ?
-4. test - do you want test files included ?
-5. abso - do you want absolute file names or relative in the output ?
-
-=cut
 
 sub change_files_hash($$$$$$) {
 	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
@@ -674,12 +330,6 @@ sub change_files_hash($$$$$$) {
 	return(\%hash);
 }
 
-=item B<project_files_hash($$$)>
-
-List all the files in the current baseline project.
-
-=cut
-
 sub project_files_hash($$$) {
 	my($srcx,$test,$abso)=@_;
 	my($resu)=which("aegi/repo/proj_files.rpt");
@@ -721,23 +371,6 @@ sub project_files_hash($$$) {
 	return(\%hash);
 }
 
-=item B<source_files_hash($$$$$$)>
-
-List all the files viewed from the changes point of view
-This is very useful for grepping etc...
-There are two parameters: whether deleted files are wanted or not
-and wheter absolute file names are wanted as a result.
-There is a trick here - if absolute names are reuiqred (for example-as
-collected by cook...:) then the aegis is consulted for the files which are
-in the current change and a switcharoo on the prefix is performed...
-This is because if we call our own routines with the absolute flag turned on
-we wont be able to subtract the moved files from the baseline ones (they
-will have different names...).
-Aegis has such a report so maybe I should add an implementation which
-uses it and then check out which performs better.
-
-=cut
-
 sub source_files_hash($$$$$$) {
 	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
 	my($basehash)=project_files_hash($srcx,$test,0);
@@ -752,12 +385,6 @@ sub source_files_hash($$$$$$) {
 	return($basehash);
 }
 
-=item B<base_files_hash($$)>
-
-This gives out all the files left in the baseline.
-
-=cut
-
 sub base_files_hash($$) {
 	my($dele,$abso)=@_;
 	my($basehash)=project_files_hash(1,1,0);
@@ -769,28 +396,11 @@ sub base_files_hash($$) {
 	return($basehash);
 }
 
-=item B<missing_files_hash()>
-
-This routine gives out all the missing files for the current change.
-It does so by using change_files 1 1 1 1 and filtering out
-all the files which exist using Meta::Utils::Hash::filter_exist().
-
-=cut
-
 sub missing_files_hash() {
 	my($hash)=change_files_hash(1,1,1,1,1,1);
 	$hash=Meta::Utils::Hash::filter_notexists($hash);
 	return($hash);
 }
-
-=item B<extra_files_hash($)>
-
-This returns a hash with all the extra files (files which are not change
-files) which are lying around in the directory.
-The algorithm: collect all the files in the working directory and subtract
-all the files which are in the change.
-
-=cut
 
 sub extra_files_hash($) {
 	my($abso)=@_;
@@ -799,12 +409,6 @@ sub extra_files_hash($) {
 	Meta::Utils::Hash::remove_hash($full,$hash,$abso);
 	return($full);
 }
-
-=item B<total_files_hash($$)>
-
-This gives you all the files from the changes point of view (source+target).
-
-=cut
 
 sub total_files_hash($$) {
 	my($dele,$abso)=@_;
@@ -831,90 +435,39 @@ sub total_files_hash($$) {
 	return($resuhash);
 }
 
-=item B<change_files_list($$$$$$)>
-
-This function is the same as change_files_hash but returns a list.
-
-=cut
-
 sub change_files_list($$$$$$) {
 	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
 	return(Meta::Utils::Hash::to_list(change_files_hash($newx,$modi,$dele,$srcx,$test,$abso)));
 }
-
-=item B<project_files_list($$$)>
-
-This function is the same as project_files_hash but returns a list.
-
-=cut
 
 sub project_files_list($$$) {
 	my($srcx,$test,$abso)=@_;
 	return(Meta::Utils::Hash::to_list(project_files_hash($srcx,$test,$abso)));
 }
 
-=item B<source_files_list($$$$$$)>
-
-This function is the same as source_files_hash but returns a list.
-
-=cut
-
 sub source_files_list($$$$$$) {
 	my($newx,$modi,$dele,$srcx,$test,$abso)=@_;
 	return(Meta::Utils::Hash::to_list(source_files_hash($newx,$modi,$dele,$srcx,$test,$abso)));
 }
-
-=item B<base_files_list($$)>
-
-This function is the same as base_files_hash but returns a list.
-
-=cut
 
 sub base_files_list($$) {
 	my($dele,$abso)=@_;
 	return(Meta::Utils::Hash::to_list(base_files_hash($dele,$abso)));
 }
 
-=item B<missing_files_list()>
-
-This routine gives out all the missing files for the current change.
-It does so by using change_files 1 1 1 1 and filtering out
-all the files which exist using Meta::Utils::List::filter_exist().
-
-=cut
-
 sub missing_files_list() {
 	return(Meta::Utils::Hash::to_list(missing_files_hash()));
 }
-
-=item B<extra_files_list($)>
-
-This method is the same as extra_files_hash expect it returns a list.
-
-=cut
 
 sub extra_files_list($) {
 	my($abso)=@_;
 	return(Meta::Utils::Hash::to_list(extra_files_hash($abso)));
 }
 
-=item B<total_files_list($$)>
-
-This method is the same as total_files_hash expect it returns a list.
-
-=cut
-
 sub total_files_list($$) {
 	my($dele,$abso)=@_;
 	return(Meta::Utils::Hash::to_list(total_files_hash($dele,$abso)));
 }
-
-=item B<no_missing_files($)>
-
-This routine returns a boolean according to whether there are or aren't any
-missing files.
-
-=cut
 
 sub no_missing_files($) {
 	my($verb)=@_;
@@ -924,13 +477,6 @@ sub no_missing_files($) {
 	}
 	return(Meta::Utils::List::empty($list));
 }
-
-=item B<checkout_hash($)>
-
-This will receive a hash reference and will check out all the files in
-the hash.
-
-=cut
 
 sub checkout_hash($) {
 	my($hash)=@_;
@@ -956,6 +502,404 @@ sub checkout_hash($) {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Meta::Baseline::Aegis - library to encapsulate aegis interface in perl scripts.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2001, 2002 Mark Veltzer;
+All rights reserved.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+
+=head1 DETAILS
+
+	MANIFEST: Aegis.pm
+	PROJECT: meta
+	VERSION: 0.43
+
+=head1 SYNOPSIS
+
+	package foo;
+	use Meta::Baseline::Aegis qw();
+	my($change)=Meta::Baseline::Aegis::change();
+
+=head1 DESCRIPTION
+
+This is a perl library to serve as an interface to Aegis.
+It provides a lot of helpful routines for all the scripts to make them
+shorter and more understandable. It also encapsulates the way we talk
+to aegis - you should only speak to aegis through this library and never
+address aegis alone since the interface to aegis may change and we may
+want to do some of the stuff (like getting the current change directory)
+in a more efficient manner (like storing it in an environment variable).
+
+The services here are divided into several categories:
+0. variable substituion.
+1. history services.
+2. file lists.
+3. performing operations (checkout etc...).
+
+=head1 FUNCTIONS
+
+	aesub($)
+	aesub_file($)
+	search_path()
+	baseline()
+	project()
+	change()
+	change_description()
+	version()
+	architecture()
+	copyright_years()
+	state()
+	developer()
+	developer_list()
+	reviewer_list()
+	integrator_list()
+	administrator_list()
+	development_directory()
+	integration_directory()
+	history_directory()
+	deve()
+	inte()
+	work_dir()
+	which_nodie($)
+	which($)
+	which_f($)
+	search_path_object()
+	search_path_list()
+	search_path_hash()
+	developer_list_list()
+	developer_list_hash()
+	reviewer_list_list()
+	reviewer_list_hash()
+	integrator_list_list()
+	integrator_list_hash()
+	administrator_list_list()
+	administrator_list_hash()
+	change_files_hash($$$$$$)
+	project_files_hash($$$)
+	source_files_hash($$$$$$)
+	base_files_hash($$)
+	missing_files_hash()
+	extra_files_hash($)
+	total_files_hash($$)
+	change_files_list($$$$$$)
+	project_files_list($$$)
+	source_files_list($$$$$$)
+	base_files_list($$)
+	missing_files_list()
+	extra_files_list($)
+	total_files_list($$)
+	no_missing_files($)
+	checkout_hash($)
+
+=head1 FUNCTION DOCUMENTATION
+
+=over 4
+
+=item B<aesub($)>
+
+This routine will substitute a string for you from aegis and give you the
+string after substitution.
+This is done using the aesub aegis routine.
+
+=item B<aesub_file($)>
+
+This method will get a file name and will run aesub on the content of the
+file and return the content after substitution. This method uses the aesub
+method.
+
+=item B<search_path()>
+
+This routine returns a list that is the search list for the current
+This routine produces a string which is the correct search list as
+far as aegis is concerned for source files in the current change or
+branch. This could be fed into cook as the search_path, converted to
+compiler include or link directives etc...
+
+=item B<baseline()>
+
+This routine gives you the baseline dir for your project.
+Another implementation (thorough aegis) is the one used.
+It could be implemented by the environment but that would be a bad
+solution as it is not stable and depends on correct configuration of
+the environment.
+
+=item B<project()>
+
+This routine returns the current project name.
+
+=item B<change()>
+
+This routine returns the current change name.
+
+=item B<change_description()>
+
+This routine returns the current change description.
+
+=item B<version()>
+
+This routine returns the current version name.
+
+=item B<architecture()>
+
+This routine returns the current architecture name.
+
+=item B<copyright_years()>
+
+This routine returns the copyright years attribute.
+
+=item B<state()>
+
+This routine returns the current state name.
+
+=item B<developer()>
+
+This routine returns the current developer name.
+
+=item B<developer_list()>
+
+This routine returns the current developer list.
+This is implemented as aesub.
+
+=item B<reviewer_list()>
+
+This routine returns the current reviewer list.
+This is implemented as aesub.
+
+=item B<integrator_list()>
+
+This routine returns the current integrator list.
+This is implemented as aesub.
+
+=item B<administrator_list()>
+
+This routine returns the current administrator list.
+This is implemented as aesub.
+
+=item B<development_directory()>
+
+This routine gives you the development directory for the current change.
+This is only valid if the change is in the development stage.
+This is implemented as aesub.
+
+=item B<integration_directory()>
+
+This routine gives you the integration directory for the current change.
+This is only valid if the change is in the integration stage.
+This is implemented as aesub.
+
+=item B<history_directory()>
+
+This routine gives you the history directory for the current project.
+This is always valid. This is implemented as a call to aesub.
+
+=item B<deve()>
+
+Returns whether the change is in a development state.
+This checks if the current changes state is "being_developed".
+
+=item B<inte()>
+
+Returns whether the change is in an integration state.
+This checks if the current changes state is "being_integrated".
+
+=item B<work_dir()>
+
+Returns what I defined to be the work dir. This is the development directory
+if the change is begin developed and the integration directory if the change
+is being integrated.
+
+=item B<exists($)>
+
+This method returns true iff the file given exists in development.
+
+=item B<which_nodie($)>
+
+This routine does the same as the which routine and does not die if the file
+is not found (just returns undef...).
+
+=item B<which($)>
+
+This tells you where a source is in the search_path.
+The file could be in the development directory and up the branches up to the
+baseline.
+If the routine doenst find the file it dies.
+It uses the "which_nodie" routine to do it's thing.
+
+=item B<which_f($)>
+
+This routine tells you the absolute name of a file in the project but allows
+for the file to begin with a "/" (meaning allows it to be absolute already).
+In that case, it just returns the file name.
+
+=item B<search_path_object()>
+
+This method will give you the Aegis search path as a search_path object.
+See the Meta::Utils::File::Patho object documentation about using this
+object.
+
+=item B<search_path_list()>
+
+This routine returns the search_path for perl purposes. I.e. - in a list where
+every element is an element of the path.
+
+=item B<search_path_hash()>
+
+This routine does exactly as "search_path_list" but returns the results in
+a hash. This uses "search_path_list" to get a list and converts it into a hash.
+
+=item B<developer_list_list()>
+
+This routine returns the list of developers in a perl list reference.
+
+=item B<developer_list_hash()>
+
+This routine returns the list of developers in a perl hash reference.
+
+=item B<reviewer_list_list()>
+
+This routine returns the list of reviewers in a perl list reference.
+
+=item B<reviewer_list_hash()>
+
+This routine returns the list of reviewers in a perl hash reference.
+
+=item B<integrator_list_list()>
+
+This routine returns the list of integrators in a perl list reference.
+
+=item B<integrator_list_hash()>
+
+This routine returns the list of integrators in a perl hash reference.
+
+=item B<administrator_list_list()>
+
+This routine returns the list of administrators in a perl list reference.
+
+=item B<administrator_list_hash()>
+
+This routine returns the list of administrators in a perl hash reference.
+
+=item B<change_files_hash($$$$$$)>
+
+This script gives out all the files in the current change with
+no extra aegis information.
+The idea is to use this in other scripts.
+The best way to implement this is using aegis report and write
+a special report to do this work.
+another is using ael cf (aegis -List Change_Files).
+yet another is aer Change_Files (this is the version that is implemented).
+An even better way is if we could get a client C interface to aegis
+from peter miller and hook to it directly from perl (or maybe a perl
+interface ? could peter miller be this good ?).
+The data for this routine are:
+0. newx - do you want new files included ?
+1. modi - do you want modified files included ?
+2. dele - do you want deleted files included ?
+3. srcx - do you want source files included ?
+4. test - do you want test files included ?
+5. abso - do you want absolute file names or relative in the output ?
+
+=item B<project_files_hash($$$)>
+
+List all the files in the current baseline project.
+
+=item B<source_files_hash($$$$$$)>
+
+List all the files viewed from the changes point of view
+This is very useful for grepping etc...
+There are two parameters: whether deleted files are wanted or not
+and wheter absolute file names are wanted as a result.
+There is a trick here - if absolute names are reuiqred (for example-as
+collected by cook...:) then the aegis is consulted for the files which are
+in the current change and a switcharoo on the prefix is performed...
+This is because if we call our own routines with the absolute flag turned on
+we wont be able to subtract the moved files from the baseline ones (they
+will have different names...).
+Aegis has such a report so maybe I should add an implementation which
+uses it and then check out which performs better.
+
+=item B<base_files_hash($$)>
+
+This gives out all the files left in the baseline.
+
+=item B<missing_files_hash()>
+
+This routine gives out all the missing files for the current change.
+It does so by using change_files 1 1 1 1 and filtering out
+all the files which exist using Meta::Utils::Hash::filter_exist().
+
+=item B<extra_files_hash($)>
+
+This returns a hash with all the extra files (files which are not change
+files) which are lying around in the directory.
+The algorithm: collect all the files in the working directory and subtract
+all the files which are in the change.
+
+=item B<total_files_hash($$)>
+
+This gives you all the files from the changes point of view (source+target).
+
+=item B<change_files_list($$$$$$)>
+
+This function is the same as change_files_hash but returns a list.
+
+=item B<project_files_list($$$)>
+
+This function is the same as project_files_hash but returns a list.
+
+=item B<source_files_list($$$$$$)>
+
+This function is the same as source_files_hash but returns a list.
+
+=item B<base_files_list($$)>
+
+This function is the same as base_files_hash but returns a list.
+
+=item B<missing_files_list()>
+
+This routine gives out all the missing files for the current change.
+It does so by using change_files 1 1 1 1 and filtering out
+all the files which exist using Meta::Utils::List::filter_exist().
+
+=item B<extra_files_list($)>
+
+This method is the same as extra_files_hash expect it returns a list.
+
+=item B<total_files_list($$)>
+
+This method is the same as total_files_hash expect it returns a list.
+
+=item B<no_missing_files($)>
+
+This routine returns a boolean according to whether there are or aren't any
+missing files.
+
+=item B<checkout_hash($)>
+
+This will receive a hash reference and will check out all the files in
+the hash.
+
 =back
 
 =head1 BUGS
@@ -964,12 +908,57 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-end of revision info
+	0.00 MV initial code brought in
+	0.01 MV c++ and perl code quality checks
+	0.02 MV make quality checks on perl code
+	0.03 MV more perl checks
+	0.04 MV make Meta::Utils::Opts object oriented
+	0.05 MV check that all uses have qw
+	0.06 MV fix todo items look in pod documentation
+	0.07 MV make all tests real tests
+	0.08 MV more on tests/more checks to perl
+	0.09 MV fix all tests change
+	0.10 MV more on tests
+	0.11 MV more perl quality
+	0.12 MV make lilypond work
+	0.13 MV correct die usage
+	0.14 MV perl quality change
+	0.15 MV perl code quality
+	0.16 MV more perl quality
+	0.17 MV chess and code quality
+	0.18 MV more perl quality
+	0.19 MV perl documentation
+	0.20 MV more perl quality
+	0.21 MV perl qulity code
+	0.22 MV more perl code quality
+	0.23 MV more perl quality
+	0.24 MV revision change
+	0.25 MV revision in files
+	0.26 MV revision for perl files and better sanity checks
+	0.27 MV languages.pl test online
+	0.28 MV history change
+	0.29 MV web site and docbook style sheets
+	0.30 MV spelling and papers
+	0.31 MV perl packaging
+	0.32 MV more perl packaging
+	0.33 MV perl packaging again
+	0.34 MV PDMT
+	0.35 MV tree type organization in databases
+	0.36 MV md5 project
+	0.37 MV database
+	0.38 MV perl module versions in files
+	0.39 MV movies and small fixes
+	0.40 MV graph visualization
+	0.41 MV md5 progress
+	0.42 MV thumbnail user interface
+	0.43 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -984,5 +973,3 @@ Nothing.
 -add an interface to aefind here.
 
 -add the aegis backup code here.
-
-=cut

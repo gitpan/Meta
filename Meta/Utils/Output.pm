@@ -1,12 +1,49 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::Output;
+
+use strict qw(vars refs subs);
+use IO::Handle qw();
+
+our($VERSION,@ISA);
+$VERSION="0.10";
+@ISA=qw();
+
+#sub print($);
+#sub get_file();
+#sub get_handle();
+
+#__DATA__
+
+sub BEGIN() {
+	STDOUT->IO::Handle::autoflush(1);
+#	STDERR->IO::Handle::autoflush(1);
+}
+
+sub print($) {
+	my($stri)=@_;
+	print STDOUT $stri;
+}
+
+sub get_file() {
+	return(*STDOUT);
+}
+
+sub get_handle() {
+	return(\*STDOUT);
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::Output - write output messages to console.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,53 +64,36 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Output.pm
-PROJECT: meta
+	MANIFEST: Output.pm
+	PROJECT: meta
+	VERSION: 0.10
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::Output qw();>
-C<my($object)=Meta::Utils::Output->new();>
-C<my($result)=$object->method();>
+	package foo;
+	use Meta::Utils::Output qw();
+	my($object)=Meta::Utils::Output->new();
+	my($result)=$object->method();
 
 =head1 DESCRIPTION
-
-SPECIAL STDERR FILE
 
 This is a central controller of output to the console. All output to the
 console (i.e. what usually you did using stdout and stderr) you should do
 through this.
 
-=head1 EXPORTS
+this is a SPECIAL STDERR FILE
 
-C<print($)>
-C<get_file()>
+=head1 FUNCTIONS
 
-=cut
-
-package Meta::Utils::Output;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use IO::Handle qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub print($);
-#sub get_file();
-
-#__DATA__
+	print($)
+	get_file()
+	get_handle()
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
-=item B<BEGIN>
+=item B<BEGIN()>
 
 This is the BEGIN block for this module.
 It is executed when the module is loaded.
@@ -81,35 +101,19 @@ Currently it just sets the autoflush on STDOUT which is not so by default.
 The reason I don't do this for STDERR bacause by default STDERR is already
 so.
 
-=cut
-
-BEGIN {
-	STDOUT->IO::Handle::autoflush(1);
-}
-
 =item B<print($)>
 
 This prints out an output method to the console.
-
-=cut
-
-sub print($) {
-	my($stri)=@_;
-	print STDOUT $stri;
-}
 
 =item B<get_file()>
 
 This method will return a file handle that other code can write to in order
 to get output on the console.
 
-=cut
+=item B<get_handle()>
 
-sub get_file() {
-	return(*STDOUT);
-}
-
-1;
+This method will return the code handle that other code can write to in order
+to get output to the console.
 
 =back
 
@@ -119,11 +123,24 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-None.
+	0.00 MV languages.pl test online
+	0.01 MV get imdb ids of directors and movies
+	0.02 MV perl packaging
+	0.03 MV more movies
+	0.04 MV md5 project
+	0.05 MV database
+	0.06 MV perl module versions in files
+	0.07 MV movies and small fixes
+	0.08 MV thumbnail user interface
+	0.09 MV import tests
+	0.10 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -139,4 +156,4 @@ Nothing.
 
 -read whether we should do the flushing from the XML options file.
 
-=cut
+-get rid of the "SPECIAL STDERR FILE" tag here intended to allow using STDERR.

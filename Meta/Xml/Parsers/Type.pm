@@ -1,12 +1,57 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Xml::Parsers::Type;
+
+use strict qw(vars refs subs);
+use Meta::Xml::Parsers::Base qw();
+use Meta::Utils::Output qw();
+
+our($VERSION,@ISA);
+$VERSION="0.07";
+@ISA=qw(Meta::Xml::Parsers::Base);
+
+#sub new($);
+#sub get_result($);
+#sub handle_doctype($$$$$);
+
+#__DATA__
+
+sub new($) {
+	my($clas)=@_;
+	my($self)=XML::Parser::Expat->new();
+	if(!$self) {
+		Meta::Utils::System::die("didn't get a parser");
+	}
+	$self->setHandlers(
+		'Doctype'=>\&handle_doctype,
+	);
+	bless($self,$clas);
+	$self->{TYPE}=defined;
+	return($self);
+}
+
+sub get_result($$) {
+	my($self)=@_;
+	return($self->{TYPE});
+}
+
+sub handle_doctype($$$$$) {
+	my($self,$name,$sysid,$pubid,$internal)=@_;
+#	Meta::Utils::Output::print("in handle_doctype\n");
+	$self->{TYPE}=$name;
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Xml::Parsers::Type - find type of an XML file.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,98 +72,45 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Type.pm
-PROJECT: meta
+	MANIFEST: Type.pm
+	PROJECT: meta
+	VERSION: 0.07
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Xml::Parsers::Type qw();>
-C<my($deps_parser)=Meta::Xml::Parsers::Type->new();>
-C<$deps_parser->parsefile($file);>
-C<my($deps)=$desp_parser->get_result();>
+	package foo;
+	use Meta::Xml::Parsers::Type qw();
+	my($deps_parser)=Meta::Xml::Parsers::Type->new();
+	$deps_parser->parsefile($file);
+	my($deps)=$desp_parser->get_result();
 
 =head1 DESCRIPTION
 
 This is an Expat based parser who's sole purpose is to find the
 type of certain XML file.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-C<get_result($)>
-C<handle_doctype($$$$$)>
-
-=cut
-
-package Meta::Xml::Parsers::Type;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Xml::Parsers::Base qw();
-use Meta::Utils::Output qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter Meta::Xml::Parsers::Base);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub new($);
-#sub get_result($);
-#sub handle_doctype($$$$$);
-
-#__DATA__
+	new($)
+	get_result($)
+	handle_doctype($$$$$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<new($)>
 
 This gives you a new object for a parser.
 
-=cut
-
-sub new($) {
-	my($clas)=@_;
-	my($self)=XML::Parser::Expat->new();
-	if(!$self) {
-		Meta::Utils::System::die("didn't get a parser");
-	}
-	$self->setHandlers(
-		'Doctype'=>\&handle_doctype,
-	);
-	bless($self,$clas);
-	$self->{TYPE}=defined;
-	return($self);
-}
-
 =item B<get_result($)>
 
 This will return the dependency object which is the result of the parse.
-
-=cut
-
-sub get_result($$) {
-	my($self)=@_;
-	return($self->{TYPE});
-}
 
 =item B<handle_doctype($$$$$)>
 
 This method will handle the document type declarations and will add the
 dependency on the dtd to the deps object.
-
-=cut
-
-sub handle_doctype($$$$$) {
-	my($self,$name,$sysid,$pubid,$internal)=@_;
-#	Meta::Utils::Output::print("in handle_doctype\n");
-	$self->{TYPE}=$name;
-}
-
-1;
 
 =back
 
@@ -128,11 +120,21 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-None.
+	0.00 MV perl packaging
+	0.01 MV PDMT
+	0.02 MV md5 project
+	0.03 MV database
+	0.04 MV perl module versions in files
+	0.05 MV movies and small fixes
+	0.06 MV thumbnail user interface
+	0.07 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -141,5 +143,3 @@ Nothing.
 =head1 TODO
 
 -couldnt we stop the parsing after we found the type ? (saves time).
-
-=cut

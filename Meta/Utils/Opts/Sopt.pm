@@ -1,12 +1,200 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Utils::Opts::Sopt;
+
+use strict qw(vars refs subs);
+use Meta::Utils::File::File qw();
+use Meta::Utils::File::Dir qw();
+use Meta::Baseline::Aegis qw();
+
+our($VERSION,@ISA);
+$VERSION="0.25";
+@ISA=qw();
+
+#sub new($);
+#sub get_name($);
+#sub set_name($$);
+#sub get_description($);
+#sub set_description($$);
+#sub get_type($);
+#sub set_type($$);
+#sub get_defs($);
+#sub set_defs($$);
+#sub get_poin($);
+#sub set_poin($$);
+#sub get_valu($);
+#sub set_valu($$);
+#sub get_enum($);
+#sub set_enum($$);
+#sub verify($$);
+#sub print($$);
+
+#__DATA__
+
+sub new($) {
+	my($clas)=@_;
+	my($self)={};
+	bless($self,$clas);
+	$self->{NAME}=defined;
+	$self->{DESC}=defined;
+	$self->{TYPE}=defined;
+	$self->{DEFA}=defined;
+	$self->{POIN}=defined;
+	$self->{VALU}=defined;
+	$self->{ENUM}=defined;
+	return($self);
+}
+
+sub get_name($) {
+	my($self)=@_;
+	return($self->{NAME});
+}
+
+sub set_name($$) {
+	my($self,$name)=@_;
+	$self->{NAME}=$name;
+}
+
+sub get_description($) {
+	my($self)=@_;
+	return($self->{DESC});
+}
+
+sub set_description($$) {
+	my($self,$desc)=@_;
+	$self->{DESC}=$desc;
+}
+
+sub get_type($) {
+	my($self)=@_;
+	return($self->{TYPE});
+}
+
+sub set_type($$) {
+	my($self,$type)=@_;
+	$self->{TYPE}=$type;
+}
+
+sub get_defa($) {
+	my($self)=@_;
+	return($self->{DEFA});
+}
+
+sub set_defa($$) {
+	my($self,$defa)=@_;
+	$self->{DEFA}=$defa;
+}
+
+sub get_poin($) {
+	my($self)=@_;
+	return($self->{POIN});
+}
+
+sub set_poin($$) {
+	my($self,$poin)=@_;
+	$self->{POIN}=$poin;
+}
+
+sub get_valu($) {
+	my($self)=@_;
+	return($self->{VALU});
+}
+
+sub set_valu($$) {
+	my($self,$valx)=@_;
+	$self->{VALU}=$valx;
+}
+
+sub get_enum($) {
+	my($self)=@_;
+	return($self->{ENUM});
+}
+
+sub set_enum($$) {
+	my($self,$valx)=@_;
+	$self->{ENUM}=$valx;
+}
+
+sub verify($$) {
+	my($self,$erro)=@_;
+	my($type)=$self->get_type();
+	if($type eq "dire") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Utils::File::Dir::exist($valu);
+		if(!$scod) {
+			$$erro="directory [".$valu."] does not exist";
+		}
+		return($scod);
+	}
+	if($type eq "newd") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Utils::File::Dir::exist($valu);
+		if($scod) {
+			$$erro="directory [".$valu."] exists";
+		}
+		return(!$scod);
+	}
+	if($type eq "devd") {
+		return(1);
+	}
+	if($type eq "file") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Utils::File::File::exist($valu);
+		if(!$scod) {
+			$$erro="file [".$valu."] does not exist";
+		}
+		return($scod);
+	}
+	if($type eq "newf") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Utils::File::File::exist($valu);
+		if($scod) {
+			$$erro="file [".$valu."] exists";
+		}
+		return(!$scod);
+	}
+	if($type eq "devf") {
+		my($valu)=$self->get_valu();
+		my($scod)=Meta::Baseline::Aegis::exists($valu);
+		if(!$scod) {
+			$$erro="file [".$valu."] does not exist as a development file";
+		}
+		return($scod);
+	}
+	if($type eq "enum") {
+		my($valu)=$self->get_valu();
+		my($enum)=$self->get_enum();
+		my($scod)=$enum->has($valu);
+		if(!$scod) {
+			$$erro="value [".$valu."] is not part of the enum";
+		}
+		return($scod);
+	}
+	return(1);
+}
+
+sub print($$) {
+	my($self,$file)=@_;
+	print $file "sopt info name=[".$self->get_name()."]\n";
+	print $file "sopt info desc=[".$self->get_description()."]\n";
+	print $file "sopt info type=[".$self->get_type()."]\n";
+	print $file "sopt info defa=[".$self->get_defa()."]\n";
+	print $file "sopt info poin=[".$self->get_poin()."]\n";
+	print $file "sopt info valu=[".$self->get_valu()."]\n";
+	print $file "sopt info enum=[".$self->get_enum()."]\n";
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Utils::Opts::Sopt - Object to store a definition for a command line option.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,322 +215,112 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Sopt.pm
-PROJECT: meta
+	MANIFEST: Sopt.pm
+	PROJECT: meta
+	VERSION: 0.25
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Utils::Opts::Sopt qw();>
-C<my($sopt)=Meta::Utils::Opts::Sopt->new();>
-C<$sopt->set_name("name");>
+	package foo;
+	use Meta::Utils::Opts::Sopt qw();
+	my($sopt)=Meta::Utils::Opts::Sopt->new();
+	$sopt->set_name("name");
 
 =head1 DESCRIPTION
 
 This object is used by the Opts object to store information about a single command line argument.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-C<get_name($)>
-C<set_name($$)>
-C<get_desc($)>
-C<set_desc($$)>
-C<get_type($)>
-C<set_type($$)>
-C<get_defs($)>
-C<set_defs($$)>
-C<get_poin($)>
-C<set_poin($$)>
-C<get_valu($)>
-C<set_valu($$)>
-C<get_enum($)>
-C<set_enum($$)>
-C<verify($$)>
-C<print($$)>
-
-=cut
-
-package Meta::Utils::Opts::Sopt;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Utils::File::File qw();
-use Meta::Utils::File::Dir qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub new($);
-#sub get_name($);
-#sub set_name($$);
-#sub get_desc($);
-#sub set_desc($$);
-#sub get_type($);
-#sub set_type($$);
-#sub get_defs($);
-#sub set_defs($$);
-#sub get_poin($);
-#sub set_poin($$);
-#sub get_valu($);
-#sub set_valu($$);
-#sub get_enum($);
-#sub set_enum($$);
-#sub verify($$);
-#sub print($$);
-
-#__DATA__
+	new($)
+	get_name($)
+	set_name($$)
+	get_description($)
+	set_description($$)
+	get_type($)
+	set_type($$)
+	get_defs($)
+	set_defs($$)
+	get_poin($)
+	set_poin($$)
+	get_valu($)
+	set_valu($$)
+	get_enum($)
+	set_enum($$)
+	verify($$)
+	print($$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<new($)>
 
 This gives you a new Sopt object.
 
-=cut
-
-sub new($) {
-	my($clas)=@_;
-	my($self)={};
-	bless($self,$clas);
-	$self->{NAME}=defined;
-	$self->{DESC}=defined;
-	$self->{TYPE}=defined;
-	$self->{DEFA}=defined;
-	$self->{POIN}=defined;
-	$self->{VALU}=defined;
-	$self->{ENUM}=defined;
-	return($self);
-}
-
 =item B<get_name($)>
 
-=cut
-
-sub get_name($) {
-	my($self)=@_;
-	return($self->{NAME});
-}
+This will retrieve the name of the current object.
 
 =item B<set_name($$)>
 
 This will set the name for the current object.
 
-=cut
-
-sub set_name($$) {
-	my($self,$name)=@_;
-	$self->{NAME}=$name;
-}
-
-=item B<get_desc($)>
+=item B<get_description($)>
 
 This returns the description for the current object.
 
-=cut
-
-sub get_desc($) {
-	my($self)=@_;
-	return($self->{DESC});
-}
-
-=item B<set_desc($$)>
+=item B<set_description($$)>
 
 This will set the description for the current object.
-
-=cut
-
-sub set_desc($$) {
-	my($self,$desc)=@_;
-	$self->{DESC}=$desc;
-}
 
 =item B<get_type($)>
 
 This method returns the type of the current object.
 
-=cut
-
-sub get_type($) {
-	my($self)=@_;
-	return($self->{TYPE});
-}
-
 =item B<set_type($$)>
 
 This method will set the type of the current object.
-
-=cut
-
-sub set_type($$) {
-	my($self,$type)=@_;
-	$self->{TYPE}=$type;
-}
 
 =item B<get_defa($)>
 
 This method will returns the default value of the current object.
 
-=cut
-
-sub get_defa($) {
-	my($self)=@_;
-	return($self->{DEFA});
-}
-
 =item B<set_defa($$)>
 
 This method will set the default value of the current object.
-
-=cut
-
-sub set_defa($$) {
-	my($self,$defa)=@_;
-	$self->{DEFA}=$defa;
-}
 
 =item B<get_poin($)>
 
 This method will return the pointer of the current object.
 
-=cut
-
-sub get_poin($) {
-	my($self)=@_;
-	return($self->{POIN});
-}
-
 =item B<set_opti($$)>
 
 This method will set the pointer of the current object.
-
-=cut
-
-sub set_poin($$) {
-	my($self,$poin)=@_;
-	$self->{POIN}=$poin;
-}
 
 =item B<get_valu($)>
 
 This method will retrieve the current value of the current object.
 
-=cut
-
-sub get_valu($) {
-	my($self)=@_;
-	return($self->{VALU});
-}
-
 =item B<set_valu($$)>
 
 This method will set the current value of the current object.
-
-=cut
-
-sub set_valu($$) {
-	my($self,$valx)=@_;
-	$self->{VALU}=$valx;
-}
 
 =item B<get_enum($)>
 
 This method will retrieve the current enum of the current object.
 
-=cut
-
-sub get_enum($) {
-	my($self)=@_;
-	return($self->{ENUM});
-}
-
 =item B<set_enum($$)>
 
 This method will set the current enum of the current object.
-
-=cut
-
-sub set_enum($$) {
-	my($self,$valx)=@_;
-	$self->{ENUM}=$valx;
-}
 
 =item B<verify($$)>
 
 This will run sanity checks on the value inside.
 
-=cut
-
-sub verify($$) {
-	my($self,$erro)=@_;
-	my($type)=$self->get_type();
-	if($type eq "new_file") {
-		my($valu)=$self->get_valu();
-		my($scod)=Meta::Utils::File::File::exist($valu);
-		if($scod) {
-			$$erro="file [".$valu."] exists";
-			return(0);
-		} else {
-			return(1);
-		}
-	}
-	if($type eq "file") {
-		my($valu)=$self->get_valu();
-		my($scod)=Meta::Utils::File::File::exist($valu);
-		if(!$scod) {
-			$$erro="file [".$valu."] does not exist";
-			return(0);
-		} else {
-			return(1);
-		}
-	}
-	if($type eq "dire") {
-		my($valu)=$self->get_valu();
-		my($scod)=Meta::Utils::File::Dir::exist($valu);
-		if(!$scod) {
-			$$erro="directory [".$valu."] does not exist";
-			return(0);
-		} else {
-			return(1);
-		}
-	}
-	if($type eq "enum") {
-		my($valu)=$self->get_valu();
-		my($enum)=$self->get_enum();
-		my($scod)=$enum->has($valu);
-		if(!$scod) {
-			$$erro="value [".$valu."] is not part of the enum";
-			return(0);
-		} else {
-			return(1);
-		}
-	}
-	return(1);
-}
-
 =item B<print($$)>
 
 This prints out the current Sopt object.
-
-=cut
-
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "sopt info name=[".$self->get_name()."]\n";
-	print $file "sopt info desc=[".$self->get_desc()."]\n";
-	print $file "sopt info type=[".$self->get_type()."]\n";
-	print $file "sopt info defa=[".$self->get_defa()."]\n";
-	print $file "sopt info poin=[".$self->get_poin()."]\n";
-	print $file "sopt info valu=[".$self->get_valu()."]\n";
-	print $file "sopt info enum=[".$self->get_enum()."]\n";
-}
-
-1;
 
 =back
 
@@ -352,27 +330,39 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Sun Jan  7 18:17:29 2001	MV	make Meta::Utils::Opts object oriented
-2	Tue Jan  9 19:29:31 2001	MV	fix todo items look in pod documentation
-3	Tue Jan  9 22:40:39 2001	MV	add enumerated types to options
-4	Wed Jan 10 12:05:55 2001	MV	more on tests/more checks to perl
-5	Fri Jan 12 15:53:19 2001	MV	change new methods to have prototypes
-6	Sun Jan 28 02:34:56 2001	MV	perl code quality
-7	Sun Jan 28 13:51:26 2001	MV	more perl quality
-8	Tue Jan 30 03:03:17 2001	MV	more perl quality
-9	Wed Jan 31 15:28:22 2001	MV	get basic Simul up and running
-10	Sat Feb  3 23:41:08 2001	MV	perl documentation
-11	Mon Feb  5 03:21:02 2001	MV	more perl quality
-12	Tue Feb  6 01:04:52 2001	MV	perl qulity code
-13	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-14	Tue Feb  6 22:19:51 2001	MV	revision change
-14	Thu Feb  8 00:23:21 2001	MV	betern general cook schemes
-end of revision info
+	0.00 MV make Meta::Utils::Opts object oriented
+	0.01 MV fix todo items look in pod documentation
+	0.02 MV add enumerated types to options
+	0.03 MV more on tests/more checks to perl
+	0.04 MV change new methods to have prototypes
+	0.05 MV perl code quality
+	0.06 MV more perl quality
+	0.07 MV more perl quality
+	0.08 MV get basic Simul up and running
+	0.09 MV perl documentation
+	0.10 MV more perl quality
+	0.11 MV perl qulity code
+	0.12 MV more perl code quality
+	0.13 MV revision change
+	0.14 MV better general cook schemes
+	0.15 MV languages.pl test online
+	0.16 MV Pdmt stuff
+	0.17 MV perl packaging
+	0.18 MV PDMT
+	0.19 MV tree type organization in databases
+	0.20 MV md5 project
+	0.21 MV database
+	0.22 MV perl module versions in files
+	0.23 MV movies and small fixes
+	0.24 MV thumbnail user interface
+	0.25 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -390,5 +380,3 @@ Nothing.
 	a file which doesnt exist in new_file).
 
 -add clean character strings types (only nice characters...).
-
-=cut

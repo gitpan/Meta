@@ -1,12 +1,35 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Tool::Docbook2;
+
+use strict qw(vars refs subs);
+use Meta::Baseline::Utils qw();
+
+our($VERSION,@ISA);
+$VERSION="0.08";
+@ISA=qw();
+
+#sub c2manx($);
+
+#__DATA__
+
+sub c2manx($) {
+	my($buil)=@_;
+	Meta::Baseline::Utils::file_emblem($buil->get_targ());
+	return(1);
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Tool::Docbook2 - run docbook2 tool.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,59 +50,32 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Docbook2.pm
-PROJECT: meta
+	MANIFEST: Docbook2.pm
+	PROJECT: meta
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Tool::Docbook2 qw();>
-C<my($object)=Meta::Tool::Docbook2->new();>
-C<my($result)=$object->method();>
+	package foo;
+	use Meta::Tool::Docbook2 qw();
+	my($object)=Meta::Tool::Docbook2->new();
+	my($result)=$object->method();
 
 =head1 DESCRIPTION
 
 This job will make it easier to run the Docbook2 type tool.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<c2manx($)>
-
-=cut
-
-package Meta::Tool::Docbook2;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Baseline::Utils qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub c2manx($);
-
-#__DATA__
+	c2manx($)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<c2manx($)>
 
 This routine will convert sgml DocBook files to manual page format.
-
-=cut
-
-sub c2manx($) {
-	my($buil)=@_;
-	Meta::Baseline::Utils::file_emblem($buil->get_targ());
-	return(1);
-}
-
-1;
 
 =back
 
@@ -89,12 +85,22 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-end of revision info
+	0.00 MV fix docbook and other various stuff
+	0.01 MV perl packaging
+	0.02 MV BuildInfo object change
+	0.03 MV md5 project
+	0.04 MV database
+	0.05 MV perl module versions in files
+	0.06 MV movies and small fixes
+	0.07 MV thumbnail user interface
+	0.08 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -103,5 +109,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut

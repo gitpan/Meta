@@ -1,12 +1,141 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Revision::Revision;
+
+use strict qw(vars refs subs);
+use Meta::Ds::Array qw();
+use IO::String qw();
+use XML::Writer qw();
+use Meta::Math::Pad qw();
+
+our($VERSION,@ISA);
+$VERSION="0.13";
+@ISA=qw(Meta::Ds::Array);
+
+#sub print($$);
+#sub perl_pod($);
+#sub perl_current($);
+#sub docbook_revhistory_print($$);
+#sub docbook_revhistory($);
+#sub docbook_edition_print($$);
+#sub docbook_edition($);
+#sub docbook_date_print($$);
+#sub docbook_date($);
+#sub html_last_print($$);
+#sub html_last($);
+
+#__DATA__
+
+sub print($$) {
+	my($self,$file)=@_;
+	print $file "size is [".$self->size()."]\n";
+	for(my($i)=0;$i<$self->size();$i++) {
+		$self->getx($i)->print($file);
+	}
+}
+
+sub perl_pod($) {
+	my($self)=@_;
+	my($retu)="";
+	#$retu.="start of revision info\n";
+	for(my($i)=0;$i<$self->size();$i++) {
+		$retu.=$self->getx($i)->perl_pod_line($i);
+	}
+	#$retu.="end of revision info";
+	return($retu);
+}
+
+sub perl_current($) {
+	my($self)=@_;
+	return("0.".Meta::Math::Pad::pad($self->size()-1,2));
+}
+
+sub docbook_revhistory_print($$) {
+	my($self,$writ)=@_;
+	$writ->startTag("revhistory");
+	for(my($i)=0;$i<$self->size();$i++) {
+		$self->getx($i)->printd($writ);
+	}
+	$writ->endTag("revhistory");
+}
+
+sub docbook_revhistory($) {
+	my($self)=@_;
+	my($string);
+	my($io)=IO::String->new($string);
+	my($writer)=XML::Writer->new(OUTPUT=>$io);
+	$self->docbook_revhistory_print($writer);
+	$io->close();
+	return($string);
+}
+
+sub docbook_edition_print($$) {
+	my($self,$writ)=@_;
+	$writ->startTag("edition");
+	my($last)=$self->getx($self->size()-1);
+	$writ->characters($last->get_number());
+	$writ->endTag("edition");
+}
+
+sub docbook_edition($) {
+	my($self)=@_;
+	my($string);
+	my($io)=IO::String->new($string);
+	my($writer)=XML::Writer->new(OUTPUT=>$io);
+	$self->docbook_edition_print($writer);
+	$io->close();
+	return($string);
+}
+
+sub docbook_date_print($$) {
+	my($self,$writ)=@_;
+	$writ->startTag("date");
+	my($first)=$self->getx(0);
+	$writ->characters($first->get_date());
+	$writ->endTag("date");
+}
+
+sub docbook_date($) {
+	my($self)=@_;
+	my($string);
+	my($io)=IO::String->new($string);
+	my($writer)=XML::Writer->new(OUTPUT=>$io);
+	$self->docbook_date_print($writer);
+	$io->close();
+	return($string);
+}
+
+sub html_last_print($$) {
+	my($self,$writ)=@_;
+	$writ->startTag("p");
+	$writ->startTag("small");
+	my($last)=$self->getx($self->size()-1);
+	$writ->characters("Page last modified at ".$last->get_date());
+	$writ->endTag("small");
+	$writ->endTag("p");
+}
+
+sub html_last($) {
+	my($self)=@_;
+	my($string);
+	my($io)=IO::String->new($string);
+	my($writer)=XML::Writer->new(OUTPUT=>$io);
+	$self->html_last_print($writer);
+	$io->close();
+	return($string);
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Revision::Revision - an object representing full revision history.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,226 +156,87 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Revision.pm
-PROJECT: meta
+	MANIFEST: Revision.pm
+	PROJECT: meta
+	VERSION: 0.13
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Revision::Revision qw();>
-C<my($object)=Meta::Revision::Revision->new();>
-C<my($result)=$object->printd($xml);>
+	package foo;
+	use Meta::Revision::Revision qw();
+	my($object)=Meta::Revision::Revision->new();
+	my($result)=$object->printd($xml);
 
 =head1 DESCRIPTION
 
 This object represents a full revision history of a module.
 The object is able to print itself in DocBook xml format.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-C<print($$)>
-C<string($)>
-C<docbook_revhistory_print($$)>
-C<docbook_revhistory($)>
-C<docbook_edition_print($$)>
-C<docbook_edition($)>
-C<docbook_date_print($$)>
-C<docbook_date($)>
-C<html_last_print($$)>
-C<html_last($)>
-
-=cut
-
-package Meta::Revision::Revision;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Ds::Array qw();
-use IO::String qw();
-use XML::Writer qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter Meta::Ds::Array);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub print($$);
-#sub string($);
-#sub docbook_revhistory_print($$);
-#sub docbook_revhistory($);
-#sub docbook_edition_print($$);
-#sub docbook_edition($);
-#sub docbook_date_print($$);
-#sub docbook_date($);
-#sub html_last_print($$);
-#sub html_last($);
-
-#__DATA__
+	new($)
+	print($$)
+	perl_pod($)
+	perl_current($)
+	docbook_revhistory_print($$)
+	docbook_revhistory($)
+	docbook_edition_print($$)
+	docbook_edition($)
+	docbook_date_print($$)
+	docbook_date($)
+	html_last_print($$)
+	html_last($)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<print($$)>
 
 This method prints the object to a regular file.
 The format is debug.
 
-=cut
-
-sub print($$) {
-	my($self,$file)=@_;
-	print $file "size is [".$self->size()."]\n";
-	for(my($i)=0;$i<$self->size();$i++) {
-		$self->getx($i)->print($file);
-	}
-}
-
-=item B<string($)>
+=item B<perl_pod($)>
 
 This method will create a string representing the current revision information.
 The format is perl revision.
 
-=cut
+=item B<perl_current($)>
 
-sub string($) {
-	my($self)=@_;
-	my($retu)="";
-	$retu.="start of revision info\n";
-	for(my($i)=0;$i<$self->size();$i++) {
-		$retu.=$self->getx($i)->string();
-	}
-	$retu.="end of revision info";
-	return($retu);
-}
+This method will return a the current perl module version of the X.YY form.
 
 =item B<docbook_revhistory_print($$)>
 
 This method prints the Revision history to an XML file writer.
 This format is XML docbook.
 
-=cut
-
-sub docbook_revhistory_print($$) {
-	my($self,$writ)=@_;
-	$writ->startTag("revhistory");
-	for(my($i)=0;$i<$self->size();$i++) {
-		$self->getx($i)->printd($writ);
-	}
-	$writ->endTag("revhistory");
-}
-
 =item B<docbook_revhistory($)>
 
 This method will create an XML string representing the current revision information.
-
-=cut
-
-sub docbook_revhistory($) {
-	my($self)=@_;
-	my($string);
-	my($io)=IO::String->new($string);
-	my($writer)=XML::Writer->new(OUTPUT=>$io);
-	$self->docbook_revhistory_print($writer);
-	$io->close();
-	return($string);
-}
 
 =item B<docbook_edition_print($$)>
 
 This will print the edition information to a XML::Writer type object.
 
-=cut
-
-sub docbook_edition_print($$) {
-	my($self,$writ)=@_;
-	$writ->startTag("edition");
-	my($last)=$self->getx($self->size()-1);
-	$writ->characters($last->get_number());
-	$writ->endTag("edition");
-}
-
 =item B<docbook_edition($)>
 
 This method will create an XML string representing the current edition information.
-
-=cut
-
-sub docbook_edition($) {
-	my($self)=@_;
-	my($string);
-	my($io)=IO::String->new($string);
-	my($writer)=XML::Writer->new(OUTPUT=>$io);
-	$self->docbook_edition_print($writer);
-	$io->close();
-	return($string);
-}
 
 =item B<docbook_date_print($$)>
 
 This will print the date information to a XML::Writer type object.
 
-=cut
-
-sub docbook_date_print($$) {
-	my($self,$writ)=@_;
-	$writ->startTag("date");
-	my($first)=$self->getx(0);
-	$writ->characters($first->get_date());
-	$writ->endTag("date");
-}
-
 =item B<docbook_date($)>
 
 This method will create an XML string representing the current date information.
-
-=cut
-
-sub docbook_date($) {
-	my($self)=@_;
-	my($string);
-	my($io)=IO::String->new($string);
-	my($writer)=XML::Writer->new(OUTPUT=>$io);
-	$self->docbook_date_print($writer);
-	$io->close();
-	return($string);
-}
 
 =item B<html_last_print($$)>
 
 This will print a "page last modified at" html notice.
 
-=cut
-
-sub html_last_print($$) {
-	my($self,$writ)=@_;
-	$writ->startTag("p");
-	$writ->startTag("small");
-	my($last)=$self->getx($self->size()-1);
-	$writ->characters("Page last modified at ".$last->get_date());
-	$writ->endTag("small");
-	$writ->endTag("p");
-}
-
 =item B<html_last($)>
 
 This method will create an XML string representing the last modified information.
-
-=cut
-
-sub html_last($) {
-	my($self)=@_;
-	my($string);
-	my($io)=IO::String->new($string);
-	my($writer)=XML::Writer->new(OUTPUT=>$io);
-	$self->html_last_print($writer);
-	$io->close();
-	return($string);
-}
-
-1;
 
 =back
 
@@ -256,14 +246,27 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-2	Tue Feb  6 22:19:51 2001	MV	revision change
-end of revision info
+	0.00 MV more perl code quality
+	0.01 MV revision change
+	0.02 MV languages.pl test online
+	0.03 MV Revision in DocBook files stuff
+	0.04 MV PDMT stuff
+	0.05 MV C++ and temp stuff
+	0.06 MV perl packaging
+	0.07 MV md5 project
+	0.08 MV database
+	0.09 MV perl module versions in files
+	0.10 MV movies and small fixes
+	0.11 MV md5 progress
+	0.12 MV thumbnail user interface
+	0.13 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -271,6 +274,6 @@ Nothing.
 
 =head1 TODO
 
-Nothing.
+-do we really need the print method here ? (doesnt the array have one like that ?)
 
-=cut
+-the date method here returns the data of the first edition. Is that right ?

@@ -1,12 +1,36 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Development::Deps;
+
+use strict qw(vars refs subs);
+use Meta::Ds::Graph qw();
+
+our($VERSION,@ISA);
+$VERSION="0.08";
+@ISA=qw(Meta::Ds::Graph);
+
+#sub new($);
+
+#__DATA__
+
+sub new($) {
+	my($clas)=@_;
+	my($self)=Meta::Ds::Graph->new();
+	bless($self,$clas);
+	return($self);
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
-Meta::Development::Deps - what does your module/class do.
+Meta::Development::Deps - projects dependency graph object.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,60 +51,32 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Deps.pm
-PROJECT: meta
+	MANIFEST: Deps.pm
+	PROJECT: meta
+	VERSION: 0.08
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Development::Deps qw();>
-C<my($object)=Meta::Development::Deps->new();>
+	package foo;
+	use Meta::Development::Deps qw();
+	my($object)=Meta::Development::Deps->new();
 
 =head1 DESCRIPTION
 
 This is a graph object storing dependency information between files in
-a project.
+a project. Currently this is just a Graph.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-
-=cut
-
-package Meta::Development::Deps;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Ds::Graph qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter Meta::Ds::Graph);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub new($);
-
-#__DATA__
+	new($)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<new($)>
 
 This is a constructor for the Meta::Development::Deps object.
-
-=cut
-
-sub new($) {
-	my($clas)=@_;
-	my($self)=Meta::Ds::Graph->new();
-	bless($self,$clas);
-	return($self);
-}
-
-1;
 
 =back
 
@@ -90,11 +86,22 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-None.
+	0.00 MV good xml support
+	0.01 MV perl packaging
+	0.02 MV some chess work
+	0.03 MV md5 project
+	0.04 MV database
+	0.05 MV perl module versions in files
+	0.06 MV movies and small fixes
+	0.07 MV thumbnail user interface
+	0.08 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -102,6 +109,4 @@ Nothing.
 
 =head1 TODO
 
-Nothing.
-
-=cut
+-we don't need the dummy constructor here.

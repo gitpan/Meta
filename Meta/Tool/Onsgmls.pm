@@ -1,80 +1,19 @@
 #!/bin/echo This is a perl module and should not be run
 
-=head1 NAME
-
-Meta::Tool::Onsgmls - run onsgmls for you.
-
-=head1 COPYRIGHT
-
-Copyright (C) 2001 Mark Veltzer;
-All rights reserved.
-
-=head1 LICENSE
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-
-=head1 DETAILS
-
-MANIFEST: Onsgmls.pm
-PROJECT: meta
-
-=head1 SYNOPSIS
-
-C<package foo;>
-C<use Meta::Tool::Onsgmls qw();>
-C<my($object)=Meta::Tool::Onsgmls->new();>
-C<my($result)=$object->method();>
-
-=head1 DESCRIPTION
-
-This module will ease the work of running onsgmls for you.
-
-=head1 EXPORTS
-
-C<dochec($)>
-
-=cut
-
 package Meta::Tool::Onsgmls;
 
 use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
 use Meta::Utils::System qw();
 use Meta::Utils::Output qw();
 use Meta::Lang::Docb::Params qw();
 
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
+our($VERSION,@ISA);
+$VERSION="0.12";
+@ISA=qw();
 
 #sub dochec($);
 
 #__DATA__
-
-=head1 FUNCTION DOCUMENTATION
-
-=over
-
-=item B<dochec($)>
-
-This method will check an sgml file using nsgmls and will return a boolean
-value according to whether that file is correct.
-
-=cut
 
 sub dochec($) {
 	my($buil)=@_;
@@ -134,6 +73,63 @@ sub dochec($) {
 
 1;
 
+__END__
+
+=head1 NAME
+
+Meta::Tool::Onsgmls - run onsgmls for you.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2001, 2002 Mark Veltzer;
+All rights reserved.
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+
+=head1 DETAILS
+
+	MANIFEST: Onsgmls.pm
+	PROJECT: meta
+	VERSION: 0.12
+
+=head1 SYNOPSIS
+
+	package foo;
+	use Meta::Tool::Onsgmls qw();
+	my($object)=Meta::Tool::Onsgmls->new();
+	my($result)=$object->method();
+
+=head1 DESCRIPTION
+
+This module will ease the work of running onsgmls for you.
+
+=head1 FUNCTIONS
+
+	dochec($)
+
+=head1 FUNCTION DOCUMENTATION
+
+=over 4
+
+=item B<dochec($)>
+
+This method will check an sgml file using nsgmls and will return a boolean
+value according to whether that file is correct.
+
 =back
 
 =head1 BUGS
@@ -142,12 +138,26 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-end of revision info
+	0.00 MV history change
+	0.01 MV papers
+	0.02 MV spelling and papers
+	0.03 MV publish gz on the internet
+	0.04 MV finish lit database and convert DocBook to SGML
+	0.05 MV perl packaging
+	0.06 MV BuildInfo object change
+	0.07 MV md5 project
+	0.08 MV database
+	0.09 MV perl module versions in files
+	0.10 MV movies and small fixes
+	0.11 MV thumbnail user interface
+	0.12 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -158,5 +168,3 @@ Nothing.
 -fix the docbook dtd and remove the -wno-mixed flag that I use here to bypass it.
 
 -get the path for onsgmls (/local/tools/bin) out of here and into some external options file.
-
-=cut

@@ -1,12 +1,42 @@
 #!/bin/echo This is a perl module and should not be run
 
+package Meta::Baseline::Lang;
+
+use strict qw(vars refs subs);
+use Meta::Baseline::Utils qw();
+
+our($VERSION,@ISA);
+$VERSION="0.17";
+@ISA=qw();
+
+#sub new($);
+#sub create_file($$);
+
+#__DATA__
+
+sub new($) {
+	my($clas)=@_;
+	my($self)={};
+	bless($self,$clas);
+	return($self);
+}
+
+sub create_file($$) {
+	my($self,$file)=@_;
+	Meta::Baseline::Utils::file_emblem($file);
+}
+
+1;
+
+__END__
+
 =head1 NAME
 
 Meta::Baseline::Lang - module to help to sort through all available languages.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2001 Mark Veltzer;
+Copyright (C) 2001, 2002 Mark Veltzer;
 All rights reserved.
 
 =head1 LICENSE
@@ -27,73 +57,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 
 =head1 DETAILS
 
-MANIFEST: Lang.pm
-PROJECT: meta
+	MANIFEST: Lang.pm
+	PROJECT: meta
+	VERSION: 0.17
 
 =head1 SYNOPSIS
 
-C<package foo;>
-C<use Meta::Baseline::Lang qw();>
-C<my($lang)=Meta::Baseline::Lang->new();>
-C<$lang->create_file("my.pm");>
+	package foo;
+	use Meta::Baseline::Lang qw();
+	my($lang)=Meta::Baseline::Lang->new();
+	$lang->create_file("my.pm");
 
 =head1 DESCRIPTION
 
 This is the base class to all language modules.
 
-=head1 EXPORTS
+=head1 FUNCTIONS
 
-C<new($)>
-C<create_file($$)>
-
-=cut
-
-package Meta::Baseline::Lang;
-
-use strict qw(vars refs subs);
-use Exporter qw();
-use vars qw($VERSION @ISA @EXPORT_OK @EXPORT);
-use Meta::Baseline::Utils qw();
-
-$VERSION="1.00";
-@ISA=qw(Exporter);
-@EXPORT_OK=qw();
-@EXPORT=qw();
-
-#sub new($);
-#sub create_file($$);
-
-#__DATA__
+	new($)
+	create_file($$)
 
 =head1 FUNCTION DOCUMENTATION
 
-=over
+=over 4
 
 =item B<new($)>
 
 This is the constructor.
 
-=cut
-
-sub new($) {
-	my($clas)=@_;
-	my($self)={};
-	bless($self,$clas);
-	return($self);
-}
-
 =item B<create_file($$)>
 
 This method will create a stub template file.
-
-=cut
-
-sub create_file($$) {
-	my($self,$file)=@_;
-	Meta::Baseline::Utils::file_emblem($file);
-}
-
-1;
 
 =back
 
@@ -103,21 +97,31 @@ None.
 
 =head1 AUTHOR
 
-Mark Veltzer <mark2776@yahoo.com>
+	Name: Mark Veltzer
+	Email: mark2776@yahoo.com
+	WWW: http://www.geocities.com/mark2776
+	CPAN id: VELTZER
 
 =head1 HISTORY
 
-start of revision info
-1	Sat Jan 27 19:56:28 2001	MV	perl quality change
-2	Sun Jan 28 02:34:56 2001	MV	perl code quality
-3	Sun Jan 28 13:51:26 2001	MV	more perl quality
-4	Tue Jan 30 03:03:17 2001	MV	more perl quality
-5	Sat Feb  3 23:41:08 2001	MV	perl documentation
-6	Mon Feb  5 03:21:02 2001	MV	more perl quality
-7	Tue Feb  6 01:04:52 2001	MV	perl qulity code
-8	Tue Feb  6 07:02:13 2001	MV	more perl code quality
-9	Tue Feb  6 22:19:51 2001	MV	revision change
-end of revision info
+	0.00 MV perl quality change
+	0.01 MV perl code quality
+	0.02 MV more perl quality
+	0.03 MV more perl quality
+	0.04 MV perl documentation
+	0.05 MV more perl quality
+	0.06 MV perl qulity code
+	0.07 MV more perl code quality
+	0.08 MV revision change
+	0.09 MV languages.pl test online
+	0.10 MV upload system revamp
+	0.11 MV perl packaging
+	0.12 MV md5 project
+	0.13 MV database
+	0.14 MV perl module versions in files
+	0.15 MV movies and small fixes
+	0.16 MV thumbnail user interface
+	0.17 MV more thumbnail issues
 
 =head1 SEE ALSO
 
@@ -126,5 +130,3 @@ Nothing.
 =head1 TODO
 
 Nothing.
-
-=cut
